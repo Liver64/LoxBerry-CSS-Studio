@@ -129,7 +129,65 @@ if (-f $json_path) {
 }
 
 my $tokens = ref($data->{tokens}) eq 'HASH' ? $data->{tokens} : {};
-my $custom_css = defined $data->{custom_css} ? "$data->{custom_css}" : '';
+
+sub _normalize_custom_css_value {
+    my ($value) = @_;
+    return '' if !defined $value;
+    if (ref($value) eq '') {
+        $value = "$value";
+        return '' if $value eq '[object Object]';
+        return $value;
+    }
+    if (ref($value) eq 'ARRAY') {
+        return join("\n", grep { defined $_ && $_ ne '' } map { _normalize_custom_css_value($_) } @{$value});
+    }
+    if (ref($value) eq 'HASH') {
+        return _normalize_custom_css_value($value->{css}) if exists $value->{css};
+        return _normalize_custom_css_value($value->{custom_css}) if exists $value->{custom_css};
+        return _normalize_custom_css_value($value->{text}) if exists $value->{text};
+        return '';
+    }
+    return '';
+}
+
+sub _make_css_color_opaque {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/^\s+|\s+$//g;
+    return $value if $value eq '';
+
+    if ($value =~ /^#([0-9a-fA-F]{8})$/) {
+        return '#' . lc(substr($1, 0, 6));
+    }
+    if ($value =~ /^#([0-9a-fA-F]{4})$/) {
+        my @c = split(//, $1);
+        return '#' . lc($c[0] . $c[0] . $c[1] . $c[1] . $c[2] . $c[2]);
+    }
+    if ($value =~ /^rgba?\s*\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)/i) {
+        my ($r, $g, $b) = (int($1 + 0.5), int($2 + 0.5), int($3 + 0.5));
+        $r = 0 if $r < 0; $r = 255 if $r > 255;
+        $g = 0 if $g < 0; $g = 255 if $g > 255;
+        $b = 0 if $b < 0; $b = 255 if $b > 255;
+        return "rgb($r, $g, $b)";
+    }
+    if ($value =~ /^hsla?\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)/i) {
+        my ($h, $s, $l) = ($1, $2, $3);
+        $h =~ s/^\s+|\s+$//g;
+        $s =~ s/^\s+|\s+$//g;
+        $l =~ s/^\s+|\s+$//g;
+        return "hsl($h, $s, $l)";
+    }
+
+    return $value;
+}
+
+sub _force_opaque_theme_tokens {
+    my ($token, $value) = @_;
+    return _make_css_color_opaque($value) if defined $token && $token eq '--lb-sidebar-bg';
+    return $value;
+}
+
+my $custom_css = _normalize_custom_css_value($data->{custom_css});
 
 my $import_meta = {};
 if (ref($data->{import_meta}) eq 'HASH') {
@@ -196,6 +254,7 @@ my $wallpaper = {
 # Avoid nested USER CUSTOM markers when importing/saving repeatedly.
 $custom_css =~ s{/\*\s*USER CUSTOM CSS START\s*\*/}{}ig;
 $custom_css =~ s{/\*\s*USER CUSTOM CSS END\s*\*/}{}ig;
+$custom_css =~ s/(--lb-sidebar-bg\s*:\s*)(rgba?\s*\([^)]+\)|hsla?\s*\([^)]+\)|#[0-9a-fA-F]{3,8})/$1 . _make_css_color_opaque($2)/ge;
 $custom_css =~ s/^\s+|\s+$//g;
 
 my %clean_tokens;
@@ -217,6 +276,7 @@ for my $token (sort keys %{$tokens}) {
     $value =~ s/^\s+|\s+$//g;
     next if $value eq '';
     next if $value =~ /[{};]/;
+    $value = _force_opaque_theme_tokens($token, $value);
     $clean_tokens{$token} = $value;
 }
 
@@ -330,19 +390,6 @@ $css .= ".$id .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.acti
 $css .= ".$id .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active):hover {\n";
 $css .= "  background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;\n";
 $css .= "  color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;\n";
-$css .= "}\n";
-$css .= "body.$id .lb-sidebar .lb-sidebar-link, .$id .lb-sidebar .lb-sidebar-link {\n";
-$css .= "  color: var(--lb-sidebar-item-text, var(--lb-sidebar-text, inherit)) !important;\n";
-$css .= "  background-color: var(--lb-sidebar-item-bg, transparent) !important;\n";
-$css .= "  border-radius: var(--lb-sidebar-item-radius, var(--lb-radius-sm, 8px)) !important;\n";
-$css .= "}\n";
-$css .= "body.$id .lb-sidebar .lb-sidebar-link:hover, body.$id .lb-sidebar .lb-sidebar-link:focus, .$id .lb-sidebar .lb-sidebar-link:hover, .$id .lb-sidebar .lb-sidebar-link:focus {\n";
-$css .= "  background-color: var(--lb-sidebar-link-hover-bg, var(--lb-nav-hover-bg, var(--lb-hover-bg, transparent))) !important;\n";
-$css .= "  color: var(--lb-sidebar-link-hover-text, var(--lb-sidebar-item-text, var(--lb-sidebar-text, inherit))) !important;\n";
-$css .= "}\n";
-$css .= "body.$id .lb-sidebar .lb-sidebar-link.active, body.$id .lb-sidebar .lb-sidebar-link.is-active, body.$id .lb-sidebar .lb-sidebar-link[aria-current=page], .$id .lb-sidebar .lb-sidebar-link.active, .$id .lb-sidebar .lb-sidebar-link.is-active, .$id .lb-sidebar .lb-sidebar-link[aria-current=page] {\n";
-$css .= "  background-color: var(--lb-sidebar-active-bg, var(--lb-nav-active-bg, var(--lb-active-bg, #007aff))) !important;\n";
-$css .= "  color: var(--lb-sidebar-active-text, var(--lb-nav-active-text, var(--lb-active-text, #fff))) !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-toggle .lb-toggle-slider, body.$id .lb-toggle input:not(:checked) + .lb-toggle-slider, .$id .lb-toggle .lb-toggle-slider, .$id .lb-toggle input:not(:checked) + .lb-toggle-slider {\n";
 $css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, rgba(0,0,0,.22))) !important;\n";

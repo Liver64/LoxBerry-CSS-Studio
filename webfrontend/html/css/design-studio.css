@@ -44,9 +44,9 @@
 .cfw-app-preview { display:grid; grid-template-columns:180px 1fr; min-height:730px; border:1px solid rgba(0,0,0,.14); border-radius:20px; overflow:hidden; background:var(--lb-content-bg, rgba(255,255,255,.54)); }
 .cfw-app-sidebar { background:var(--lb-sidebar-bg, rgba(0,0,0,.09)); color:var(--lb-sidebar-text, inherit); padding:16px; }
 .cfw-logo-dot { width:38px; height:38px; border-radius:50%; background:var(--lb-active-bg, #007aff); margin-bottom:20px; }
-.cfw-nav-item { padding:9px 11px; border-radius:10px; margin-bottom:7px; }
-.cfw-nav-item:hover { background:var(--lb-nav-hover-bg, var(--lb-hover-bg, rgba(0,0,0,.08))); color:var(--lb-hover-text, inherit); }
-.cfw-nav-item.active { background:var(--lb-nav-active-bg, var(--lb-active-bg, #007aff)); color:var(--lb-nav-active-text, var(--lb-active-text, #fff)); }
+.cfw-nav-item { padding:9px 11px; border-radius:var(--lb-sidebar-link-radius, var(--lb-radius-sm, 10px)); margin-bottom:7px; background:transparent; color:var(--lb-sidebar-text, inherit); }
+.cfw-nav-item:hover { background:var(--lb-sidebar-link-hover-bg, var(--lb-nav-hover-bg, var(--lb-hover-bg, rgba(0,0,0,.08)))); color:var(--lb-sidebar-link-hover-text, var(--lb-sidebar-text, inherit)); }
+.cfw-nav-item.active { background:var(--lb-sidebar-active-bg, var(--lb-nav-active-bg, var(--lb-active-bg, #007aff))); color:var(--lb-sidebar-active-text, var(--lb-nav-active-text, var(--lb-active-text, #fff))); }
 .cfw-app-main { padding:16px; }
 .cfw-app-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding:12px 14px; border-radius:14px; background:var(--lb-header-bg, rgba(255,255,255,.62)); color:var(--lb-header-text, inherit); border:1px solid var(--lb-header-border, rgba(0,0,0,.12)); }
 .cfw-mini-btn { padding:6px 10px; }
@@ -71,7 +71,7 @@
 .cfw-switch-row { display:flex; gap:10px; align-items:center; justify-content:space-between; }
 .cfw-switch input { display:none; }
 .cfw-switch span { display:inline-block; width:54px; height:28px; border-radius:var(--lb-switch-radius, 999px); background:var(--lb-switch-on-bg, var(--lb-active-bg, #007aff)); border:1px solid var(--lb-switch-border, rgba(0,0,0,.18)); position:relative; vertical-align:middle; }
-.cfw-switch span:after { content:""; width:22px; height:22px; border-radius:50%; background:var(--lb-switch-thumb-bg, #fff); position:absolute; right:3px; top:2px; box-shadow:0 1px 4px rgba(0,0,0,.25); }
+.cfw-switch span:after { content:""; width:22px; height:22px; border-radius:50%; background:var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, #fff))); position:absolute; right:3px; top:2px; box-shadow:0 1px 4px rgba(0,0,0,.25); }
 .cfw-feedback-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
 .cfw-badge, .cfw-notify, .cfw-validation { display:inline-block; padding:5px 10px; border-radius:999px; }
 .cfw-badge { background:var(--lb-active-bg, #007aff); color:var(--lb-active-text, #fff); }
@@ -1103,3 +1103,375 @@
   max-width: 100%;
   box-sizing: border-box;
 }
+
+/* ============================================================
+   V93 AI Designer polish
+   - Header shows a small Powered by Puter.js note next to the title.
+   - Consent field background follows the current LoxBerry page background.
+   - AI model select gets a visible dropdown arrow.
+   - Request/context and KI result fields are read-only output fields.
+   ============================================================ */
+.cfw-page.cfw-v93 .cfw-toolbar-title {
+  min-width: 0;
+}
+.cfw-page.cfw-v93 .cfw-title-line {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.cfw-page.cfw-v93 .cfw-title-line h1 {
+  margin: 0 0 4px 0;
+}
+.cfw-page.cfw-v93 .cfw-powered-by {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.64;
+  white-space: nowrap;
+}
+.cfw-page.cfw-v93 .cfw-consent {
+  background: var(--lb-bg, transparent);
+}
+.cfw-page.cfw-v93 .cfw-select-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+}
+.cfw-page.cfw-v93 .cfw-select-wrap select {
+  margin-top: 0;
+  padding-right: 38px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.cfw-page.cfw-v93 .cfw-select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-35%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+  opacity: 0.72;
+  pointer-events: none;
+}
+.cfw-page.cfw-v93 #aiRequest[readonly],
+.cfw-page.cfw-v93 #aiResult[readonly] {
+  cursor: default;
+  resize: vertical;
+}
+.cfw-page.cfw-v93 #aiRequest[readonly]:focus,
+.cfw-page.cfw-v93 #aiResult[readonly]:focus {
+  outline: none;
+  border-color: var(--lb-input-focus-border, var(--lb-active-bg, rgba(0,122,255,.55)));
+  box-shadow: var(--lb-input-focus-shadow, 0 0 0 3px rgba(0,122,255,.14));
+}
+
+
+
+
+/* ============================================================
+   V101: Final preview layout adapts when the LoxBerry sidebar is open.
+   ------------------------------------------------------------
+   The outer LoxBerry sidebar can reduce the available content width.
+   The internal preview keeps its own sidebar, but the main preview area
+   must shrink/wrap instead of overflowing to the right.
+   ============================================================ */
+.cfw-page.cfw-v101,
+.cfw-page.cfw-v101 .cfw-panel,
+.cfw-page.cfw-v101 .cfw-preview,
+.cfw-page.cfw-v101 .cfw-app-preview,
+.cfw-page.cfw-v101 .cfw-app-main,
+.cfw-page.cfw-v101 .cfw-hero-card,
+.cfw-page.cfw-v101 .cfw-form-card,
+.cfw-page.cfw-v101 .cfw-form-grid,
+.cfw-page.cfw-v101 .cfw-inline-controls,
+.cfw-page.cfw-v101 .cfw-preview-table {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.cfw-page.cfw-v101 .cfw-preview {
+  overflow: hidden;
+}
+
+.cfw-page.cfw-v101 .cfw-app-preview {
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+  max-width: 100%;
+}
+
+.cfw-page.cfw-v101 .cfw-app-main {
+  overflow: hidden;
+}
+
+.cfw-page.cfw-v101 .cfw-app-header,
+.cfw-page.cfw-v101 .cfw-header-actions,
+.cfw-page.cfw-v101 .cfw-inline-controls,
+.cfw-page.cfw-v101 .cfw-feedback-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cfw-page.cfw-v101 .cfw-app-header {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cfw-page.cfw-v101 .cfw-header-actions,
+.cfw-page.cfw-v101 .cfw-inline-controls {
+  flex-wrap: wrap;
+}
+
+.cfw-page.cfw-v101 .cfw-form-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+}
+
+.cfw-page.cfw-v101 .cfw-form-grid > label,
+.cfw-page.cfw-v101 .cfw-form-grid input,
+.cfw-page.cfw-v101 .cfw-form-grid select,
+.cfw-page.cfw-v101 .cfw-form-grid textarea,
+.cfw-page.cfw-v101 .cfw-inline-controls input,
+.cfw-page.cfw-v101 .cfw-inline-controls select,
+.cfw-page.cfw-v101 .cfw-inline-controls textarea,
+.cfw-page.cfw-v101 .cfw-inline-controls button,
+.cfw-page.cfw-v101 .cfw-preview-btn-group {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cfw-page.cfw-v101 .cfw-form-grid textarea.lb-input {
+  width: 100%;
+  resize: vertical;
+}
+
+.cfw-page.cfw-v101 .cfw-preview-table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 1180px) {
+  .cfw-page.cfw-v101 .cfw-app-preview {
+    grid-template-columns: minmax(118px, 150px) minmax(0, 1fr);
+  }
+
+  .cfw-page.cfw-v101 .cfw-app-sidebar {
+    padding: 12px;
+  }
+
+  .cfw-page.cfw-v101 .cfw-app-main {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 920px) {
+  .cfw-page.cfw-v101 .cfw-app-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .cfw-page.cfw-v101 .cfw-app-sidebar {
+    display: none;
+  }
+}
+
+
+/* ============================================================
+   V102 Studio testing refinements
+   - token chips use one fixed readable background
+   - preview slider editing is scoped to slider tokens
+   - undo button disabled state
+   ============================================================ */
+.cfw-page.cfw-v102 .cfw-property-body code,
+.cfw-page.cfw-v102 .cfw-token-list code,
+.cfw-page.cfw-v102 .cfw-palette-tile .cfw-palette-token {
+  background: #fef3c7 !important;
+  color: #2d241a !important;
+  text-shadow: none !important;
+  border: 1px solid rgba(120, 83, 28, 0.26) !important;
+}
+
+.cfw-page.cfw-v102 .cfw-palette-tile .cfw-palette-value {
+  text-shadow: none;
+}
+
+.cfw-page.cfw-v102 .cfw-button:disabled,
+.cfw-page.cfw-v102 .cfw-button[disabled] {
+  opacity: .48;
+  cursor: not-allowed;
+}
+
+.cfw-page.cfw-v102 .cfw-range {
+  --cfw-range-active: var(--lb-slider-active-bg, var(--lb-primary, var(--lb-active-bg, #007aff)));
+  --cfw-range-track: var(--lb-slider-bg, rgba(0,0,0,.20));
+  --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
+  accent-color: var(--cfw-range-active);
+}
+
+.cfw-page.cfw-v102 .cfw-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right,
+    var(--cfw-range-active) 0%,
+    var(--cfw-range-active) var(--lb-slider-fill, 60%),
+    var(--cfw-range-track) var(--lb-slider-fill, 60%),
+    var(--cfw-range-track) 100%);
+}
+
+.cfw-page.cfw-v102 .cfw-range::-webkit-slider-thumb {
+  background: var(--cfw-range-thumb);
+  border-color: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+}
+
+.cfw-page.cfw-v102 .cfw-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cfw-range-track);
+}
+
+.cfw-page.cfw-v102 .cfw-range::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cfw-range-active);
+}
+
+.cfw-page.cfw-v102 .cfw-range::-moz-range-thumb {
+  background: var(--cfw-range-thumb);
+  border-color: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+}
+
+
+/* ============================================================
+   V103 Slider thumb alignment and dedicated thumb color
+   ------------------------------------------------------------
+   Keep slider styling scoped to the internal final preview.
+   The thumb uses dedicated slider tokens and is vertically centered
+   on the custom 6px track in WebKit/Blink browsers.
+   ============================================================ */
+.cfw-page.cfw-v103 .cfw-range {
+  --cfw-range-active: var(--lb-slider-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)));
+  --cfw-range-track: var(--lb-slider-bg, rgba(0,0,0,.22));
+  --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
+  --cfw-range-thumb-border: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--cfw-range-active);
+}
+
+.cfw-page.cfw-v103 .cfw-range:focus {
+  outline: none;
+}
+
+.cfw-page.cfw-v103 .cfw-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--lb-slider-border, rgba(0,0,0,.18));
+  background: linear-gradient(to right,
+    var(--cfw-range-active) 0%,
+    var(--cfw-range-active) var(--lb-slider-fill, 60%),
+    var(--cfw-range-track) var(--lb-slider-fill, 60%),
+    var(--cfw-range-track) 100%);
+  box-sizing: border-box;
+}
+
+.cfw-page.cfw-v103 .cfw-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--cfw-range-thumb) !important;
+  border: 2px solid var(--cfw-range-thumb-border) !important;
+  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22));
+  box-sizing: border-box;
+}
+
+.cfw-page.cfw-v103 .cfw-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--lb-slider-border, rgba(0,0,0,.18));
+  background: var(--cfw-range-track);
+  box-sizing: border-box;
+}
+
+.cfw-page.cfw-v103 .cfw-range::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cfw-range-active);
+}
+
+.cfw-page.cfw-v103 .cfw-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cfw-range-thumb) !important;
+  border: 2px solid var(--cfw-range-thumb-border) !important;
+  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22));
+  box-sizing: border-box;
+}
+
+.cfw-page.cfw-v103 .cfw-range:focus::-webkit-slider-thumb,
+.cfw-page.cfw-v103 .cfw-range:focus::-moz-range-thumb {
+  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22)), 0 0 0 3px color-mix(in srgb, var(--cfw-range-active) 22%, transparent);
+}
+
+/* V104: Toggle editing is strictly scoped to toggle/switch tokens.
+   The preview shows both off/background and on/active states so both colors are visible. */
+.cfw-toggle-demo-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cfw-page.cfw-v104 .cfw-switch span {
+  background: var(--lb-switch-off-bg, var(--lb-toggle-bg, rgba(0,0,0,.22)));
+}
+.cfw-page.cfw-v104 .cfw-switch input:checked + span {
+  background: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff))));
+}
+
+
+/* ============================================================
+   V114 Slider track/fill color bridge
+   ------------------------------------------------------------
+   Slider editing now drives both the visible fill and the
+   remaining track. Keep this scoped to the Studio preview and
+   slider-specific tokens only.
+   ============================================================ */
+.cfw-page.cfw-v114 .cfw-range {
+  --cfw-range-active: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))));
+  --cfw-range-track: var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22))));
+  --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
+  --cfw-range-thumb-border: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+}
+
+.cfw-page.cfw-v114 .cfw-range::-webkit-slider-runnable-track {
+  background: linear-gradient(to right,
+    var(--cfw-range-active) 0%,
+    var(--cfw-range-active) var(--lb-slider-fill, 60%),
+    var(--cfw-range-track) var(--lb-slider-fill, 60%),
+    var(--cfw-range-track) 100%) !important;
+}
+
+.cfw-page.cfw-v114 .cfw-range::-moz-range-track {
+  background: var(--cfw-range-track) !important;
+}
+
+.cfw-page.cfw-v114 .cfw-range::-moz-range-progress {
+  background: var(--cfw-range-active) !important;
+}
+
+/* V115: generated theme slider track colors must not change slider height. */
+
+
+/* V116 Slider thumb generated-theme alignment is handled in theme-save.cgi via --lb-slider-thumb-offset. */
+
+/* V122: Sidebar background is stored opaque by the generator/save path. */

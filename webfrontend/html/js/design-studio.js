@@ -333,12 +333,12 @@
         'Hover': ['--lb-sidebar-link-hover-bg', '--lb-nav-hover-bg']
       },
       'Sidebar Einträge': {
-        'Textfarbe': ['--lb-sidebar-item-text'],
+        'Textfarbe': ['--lb-sidebar-text'],
         'Buttonfarbe': ['--lb-sidebar-active-bg'],
         'Button-Textfarbe': ['--lb-sidebar-active-text'],
         'Hover': ['--lb-sidebar-link-hover-bg'],
         'Hover Textfarbe': ['--lb-sidebar-link-hover-text'],
-        'Radius': ['--lb-sidebar-item-radius']
+        'Radius': ['--lb-sidebar-link-radius']
       }
     },
     'hover': {
@@ -531,6 +531,46 @@
     return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + (alpha / 100).toFixed(2) + ')';
   }
 
+  function makeCssColorOpaque(value) {
+    value = String(value || '').trim();
+    if (!value) return value;
+
+    var hex8 = value.match(/^#([0-9a-f]{8})$/i);
+    if (hex8) return '#' + hex8[1].slice(0, 6).toLowerCase();
+
+    var hex4 = value.match(/^#([0-9a-f]{4})$/i);
+    if (hex4) {
+      var h = hex4[1];
+      return ('#' + h[0] + h[0] + h[1] + h[1] + h[2] + h[2]).toLowerCase();
+    }
+
+    var rgbaMatch = value.match(/^rgba?\s*\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)/i);
+    if (rgbaMatch) {
+      return 'rgb(' + Math.round(parseFloat(rgbaMatch[1])) + ', ' + Math.round(parseFloat(rgbaMatch[2])) + ', ' + Math.round(parseFloat(rgbaMatch[3])) + ')';
+    }
+
+    var hslaMatch = value.match(/^hsla?\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)/i);
+    if (hslaMatch) {
+      return 'hsl(' + hslaMatch[1].trim() + ', ' + hslaMatch[2].trim() + ', ' + hslaMatch[3].trim() + ')';
+    }
+
+    return value;
+  }
+
+  function isForcedOpaqueToken(token) {
+    return token === '--lb-sidebar-bg';
+  }
+
+  function enforceForcedOpaqueTokens(tokens) {
+    if (!tokens || typeof tokens !== 'object') return tokens;
+    Object.keys(tokens).forEach(function (token) {
+      if (isForcedOpaqueToken(token)) {
+        tokens[token] = makeCssColorOpaque(tokens[token]);
+      }
+    });
+    return tokens;
+  }
+
 
   function normalizeHexColor(value) {
     value = String(value || '').trim();
@@ -551,7 +591,7 @@
   var preferredPaletteTokens = [
     '--lb-bg', '--lb-content-bg', '--lb-card-bg', '--lb-card-text', '--lb-primary', '--lb-primary-hover', '--lb-primary-dark',
     '--lb-active-bg', '--lb-active-text', '--lb-btn-primary-bg', '--lb-btn-primary-text', '--lb-btn-bg', '--lb-btn-text',
-    '--lb-sidebar-bg', '--lb-sidebar-text', '--lb-sidebar-item-text', '--lb-sidebar-active-bg', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-bg', '--lb-sidebar-link-hover-text', '--lb-text', '--lb-text-secondary', '--lb-text-muted', '--lb-border-color',
+    '--lb-sidebar-bg', '--lb-sidebar-text', '--lb-sidebar-active-bg', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-bg', '--lb-sidebar-link-hover-text', '--lb-text', '--lb-text-secondary', '--lb-text-muted', '--lb-border-color',
     '--lb-border', '--lb-card-border', '--lb-input-bg', '--lb-input-text', '--lb-input-border', '--lb-table-header-bg',
     '--lb-table-header-text', '--lb-table-bg', '--lb-table-border-color', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg', '--lb-slider-thumb-bg', '--lb-slider-thumb-border', '--lb-slider-compact-active-bg', '--lb-slider-compact-bg', '--lb-slider-compact-thumb-bg', '--lb-slider-compact-thumb-border', '--lb-success', '--lb-warning', '--lb-danger'
   ];
@@ -1131,10 +1171,13 @@
         } else if (/blur/.test(token)) {
           tokens[token] = Math.max(0, Math.round(entry.brightness / 4)) + 'px';
         } else {
-          tokens[token] = rgba(entry.color, entry.alpha, entry.brightness);
+          tokens[token] = isForcedOpaqueToken(token)
+            ? rgba(entry.color, 100, entry.brightness)
+            : rgba(entry.color, entry.alpha, entry.brightness);
         }
       });
     });
+    enforceForcedOpaqueTokens(tokens);
     return tokens;
   }
 
@@ -1266,7 +1309,7 @@
       '--lb-active-bg','--lb-active-text','--lb-primary','--lb-primary-hover','--lb-btn-primary-bg','--lb-btn-primary-text',
       '--lb-header-btn-bg','--lb-header-btn-text','--lb-header-btn-hover-bg','--lb-header-btn-hover-text',
       '--lb-table-bg','--lb-table-row-bg','--lb-table-header-bg','--lb-table-header-text','--lb-table-border','--lb-table-border-color','--lb-table-cell-text','--lb-table-row-hover-bg','--lb-table-row-hover-text',
-      '--lb-sidebar-bg','--lb-sidebar-text','--lb-sidebar-item-bg','--lb-sidebar-item-text','--lb-sidebar-item-radius','--lb-sidebar-active-bg','--lb-sidebar-active-text','--lb-sidebar-link-hover-bg','--lb-sidebar-link-hover-text',
+      '--lb-sidebar-bg','--lb-sidebar-text','--lb-sidebar-link-radius','--lb-sidebar-active-bg','--lb-sidebar-active-text','--lb-sidebar-link-hover-bg','--lb-sidebar-link-hover-text',
       '--lb-slider-active-bg','--lb-slider-fill-bg','--lb-range-active-bg','--lb-slider-bg','--lb-slider-track-bg','--lb-range-track-bg','--lb-slider-thumb-bg','--lb-slider-thumb-border','--lb-slider-compact-active-bg','--lb-slider-compact-bg','--lb-slider-compact-thumb-bg','--lb-slider-compact-thumb-border',
       '--lb-radius','--lb-radius-sm','--lb-btn-radius','--lb-card-radius','--lb-radius-card','--lb-table-radius','--lb-focus-ring','--lb-focus-ring-strong'
     ];
@@ -1341,6 +1384,23 @@
   function openSaveModal() { updateThemeIdentityFromName(); saveModal.hidden = false; }
   function closeSaveModal() { saveModal.hidden = true; }
 
+  function normalizeCustomCssValue(value) {
+    if (value == null) return '';
+    if (typeof value === 'string') {
+      return value === '[object Object]' ? '' : value;
+    }
+    if (Array.isArray(value)) {
+      return value.map(normalizeCustomCssValue).filter(Boolean).join('\n');
+    }
+    if (typeof value === 'object') {
+      if (typeof value.css === 'string') return normalizeCustomCssValue(value.css);
+      if (typeof value.custom_css === 'string') return normalizeCustomCssValue(value.custom_css);
+      if (typeof value.text === 'string') return normalizeCustomCssValue(value.text);
+      return '';
+    }
+    return String(value || '');
+  }
+
   function meaningfulCustomCss(value) {
     var text = String(value || '')
       .replace(/\/\*\s*USER CUSTOM CSS START\s*\*\//ig, '')
@@ -1357,7 +1417,7 @@
     // preview was based on AI/imported tokens or rule-derived values.
     var effectiveTokens = applyDesignRules(collectTokens());
     var wallpaperPayload = buildWallpaperPayload();
-    if (!Object.keys(effectiveTokens).filter(function (name) { return /^--lb-/.test(name); }).length && !meaningfulCustomCss(customCss.value) && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
+    if (!Object.keys(effectiveTokens).filter(function (name) { return /^--lb-/.test(name); }).length && !meaningfulCustomCss(normalizeCustomCssValue(customCss && customCss.value)) && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
       setStatus(t('messages.noSaveableContent', 'Nicht gespeichert: Es sind keine Theme-Tokens oder nutzbaren Custom-CSS-Regeln vorhanden. Bitte erst KI-Entwurf laden, CSS importieren oder einen Wert ändern.'), true);
       return;
     }
@@ -1366,7 +1426,7 @@
       name: normalizeThemeDisplayName(themeName.value),
       version: themeVersion.value.trim(),
       tokens: effectiveTokens,
-      custom_css: customCss.value,
+      custom_css: normalizeCustomCssValue(customCss && customCss.value),
       studio_model: studioModel,
       import_meta: lastImportMeta,
       wallpaper: wallpaperPayload,
@@ -1535,7 +1595,7 @@
     pushUndoSnapshot('load-theme');
     studioModel = {};
     aiImportedTokens = themeTokensFromJson(theme);
-    aiImportedCss = theme.custom_css || theme.css || '';
+    aiImportedCss = normalizeCustomCssValue(theme.custom_css || theme.css || '');
     lastImportMeta = theme.import_meta || null;
     setWallpaperFromTheme(theme);
     if (customCss) customCss.value = aiImportedCss || '/* USER CUSTOM CSS START */\n/* Eigene Ergänzungen bleiben beim Speichern erhalten. */\n/* USER CUSTOM CSS END */';
@@ -1556,7 +1616,7 @@
       name: payload.name || payload.id,
       version: payload.version || '0.1.0',
       tokens: payload.tokens || {},
-      custom_css: payload.custom_css || '',
+      custom_css: normalizeCustomCssValue(payload.custom_css || ''),
       studio_model: payload.studio_model || {},
       wallpaper: payload.wallpaper || null,
       studio_version: payload.studio_version || 'V31_TokenLabelsSaveCssFix'
@@ -2104,7 +2164,7 @@
     force(['--lb-text-muted', '--lb-text-secondary', '--lb-input-placeholder-text', '--lb-table-footer-text'], p.muted);
     force(['--lb-border-color', '--lb-input-border', '--lb-select-border', '--lb-btn-border', '--lb-table-border-color', '--lb-table-cell-border-color', '--lb-multiselect-border', '--lb-multiselect-menu-border'], p.border);
     force(['--lb-sidebar-bg'], p.sidebar);
-    force(['--lb-sidebar-text', '--lb-sidebar-item-text', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-text', '--lb-active-text', '--lb-btn-primary-text', '--lb-btn-primary-hover-text', '--lb-header-btn-text', '--lb-header-btn-hover-text'], p.sidebarText);
+    force(['--lb-sidebar-text', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-text', '--lb-active-text', '--lb-btn-primary-text', '--lb-btn-primary-hover-text', '--lb-header-btn-text', '--lb-header-btn-hover-text'], p.sidebarText);
     force(['--lb-input-focus-border'], p.primary);
     force(['--lb-input-focus-shadow'], p.focusShadow);
     return tokens;
@@ -2153,7 +2213,7 @@
     put(['--lb-header-text', '--lb-header-btn-text'], text);
     put(['--lb-header-border'], border);
     put(['--lb-sidebar-bg'], colorValue(colors.sidebar, mixColor(text, 10)));
-    put(['--lb-sidebar-text', '--lb-sidebar-item-text'], colorValue(colors.sidebar_text, '#ffffff'));
+    put(['--lb-sidebar-text'], colorValue(colors.sidebar_text, '#ffffff'));
     put(['--lb-sidebar-active-bg', '--lb-sidebar-link-hover-bg'], primary);
     put(['--lb-sidebar-active-text', '--lb-sidebar-link-hover-text'], colorValue(colors.on_primary, readableTextFor(primary)));
     put(['--lb-success'], colorValue(colors.success, '#2e8b57'));
@@ -2356,7 +2416,7 @@
     studioModel = {};
     aiImportedTokens = compileSemanticDraftToTokens(draft);
     syncCurrentControlsFromAiTokens(aiImportedTokens);
-    aiImportedCss = draft.css || '';
+    aiImportedCss = normalizeCustomCssValue(draft.custom_css || draft.css || '');
     if (aiImportedCss) {
       customCss.value = '/* USER CUSTOM CSS START */\n' + aiImportedCss + '\n/* USER CUSTOM CSS END */';
     }
