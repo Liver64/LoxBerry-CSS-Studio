@@ -1,0 +1,401 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use utf8;
+
+use lib "/opt/loxberry/libs/perllib";
+use FindBin qw($Bin);
+use lib "$Bin/lib";
+
+use CGI qw(:standard);
+use JSON::PP qw(decode_json encode_json);
+use File::Path qw(make_path);
+use File::Copy qw(move copy);
+use POSIX qw(strftime);
+use LoxBerry::System;
+use LoxBerry::Web;
+use LoxBerry::JSON;
+
+our ($lbpconfigdir, $lbpdatadir);
+
+my $plugin = 'cssframework';
+my $cfgdir = $lbpconfigdir || $ENV{LBPCONFIG} || "/opt/loxberry/config/plugins/$plugin";
+my $datadir = $lbpdatadir || $ENV{LBPDATA} || "/opt/loxberry/data/plugins/$plugin";
+
+# V79 storage split:
+# - JSON/editable Studio state stays in config/plugins/cssframework/themes.
+# - CSS/assets live only in data/plugins/cssframework/themes.
+# - Browser delivery is handled by theme-file.cgi; no webfrontend theme mirror is used.
+my $theme_json_dir = "$cfgdir/themes";
+my $theme_dir      = "$datadir/themes";
+my $manifest_dir   = "$cfgdir/manifests";
+
+sub _pretty_json {
+    my ($payload) = @_;
+    return JSON::PP->new->canonical(1)->pretty(1)->encode($payload);
+}
+
+sub _respond {
+    my ($status, $payload) = @_;
+    print header(
+        -type    => 'application/json',
+        -charset => 'utf-8',
+        -status  => $status,
+    );
+    print encode_json($payload);
+    exit;
+}
+
+for my $dir ($theme_json_dir, $theme_dir, $manifest_dir) {
+    if (!-d $dir) {
+        eval { make_path($dir, { mode => 0775 }); 1 }
+            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot create directory: $dir" });
+    }
+}
+
+my $raw = do { local $/; <STDIN> };
+my $data = eval { decode_json($raw || '{}') };
+_respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid JSON payload' }) if $@ || ref($data) ne 'HASH';
+
+sub _normalize_name {
+    my ($name) = @_;
+    $name = defined $name ? "$name" : '';
+    $name =~ s/^\s+|\s+$//g;
+    $name =~ s/^loxberry[\s_-]*//i;
+    $name =~ s/^\s+|\s+$//g;
+    return $name ne '' ? $name : 'User Theme';
+}
+
+sub _theme_id_from_name {
+    my ($name) = @_;
+    my $slug = lc(_normalize_name($name));
+    $slug =~ s/ä/ae/g;
+    $slug =~ s/ö/oe/g;
+    $slug =~ s/ü/ue/g;
+    $slug =~ s/ß/ss/g;
+    $slug =~ s/[^a-z0-9]+/-/g;
+    $slug =~ s/^-+|-+$//g;
+    $slug = 'theme' if $slug eq '';
+    return 'theme-user-' . $slug;
+}
+
+sub _inc_patch {
+    my ($version) = @_;
+    $version = '0.1.0' if !defined $version || $version !~ /^(\d+)\.(\d+)\.(\d+)/;
+    my ($maj, $min, $patch) = ($1, $2, $3);
+    return join('.', $maj, $min, $patch + 1);
+}
+
+my $name = _normalize_name($data->{name});
+my $id = _theme_id_from_name($name);
+
+my $version = $data->{version} || '0.1.0';
+$version =~ s/^\s+|\s+$//g;
+$version = '0.1.0' if $version !~ /^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9_.-]+)?$/;
+
+my $json_path = "$theme_json_dir/$id.json";
+my $legacy_data_json_path = "$theme_dir/$id.json";
+
+# V76 temporarily stored JSON next to CSS in data/themes.
+# Move such JSON files back to config/themes on the next save.
+if (!-f $json_path && -f $legacy_data_json_path) {
+    if (copy($legacy_data_json_path, $json_path)) {
+        chmod 0664, $json_path;
+        unlink($legacy_data_json_path);
+    }
+}
+elsif (-f $json_path && -f $legacy_data_json_path) {
+    unlink($legacy_data_json_path);
+}
+
+my $previous_backup = '';
+if (-f $json_path) {
+    my $old;
+    if (open(my $rfh, '<:raw', $json_path)) {
+        local $/;
+        my $old_raw = <$rfh>;
+        close($rfh);
+        $old = eval { decode_json($old_raw) };
+    }
+    $version = _inc_patch(ref($old) eq 'HASH' ? $old->{version} : $version);
+    my $stamp = strftime('%Y%m%d-%H%M%S', localtime);
+    my $bak = "$theme_json_dir/$id.$stamp.v$version.json.bak";
+    if (!move($json_path, $bak)) {
+        _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot backup previous JSON: $json_path" });
+    }
+    chmod 0664, $bak;
+    $previous_backup = $bak;
+}
+
+my $tokens = ref($data->{tokens}) eq 'HASH' ? $data->{tokens} : {};
+my $custom_css = defined $data->{custom_css} ? "$data->{custom_css}" : '';
+
+my $import_meta = {};
+if (ref($data->{import_meta}) eq 'HASH') {
+    my $src = $data->{import_meta};
+    $import_meta = {
+        mode                => defined $src->{mode} ? "$src->{mode}" : 'hybrid-tokens-plus-custom-css',
+        file                => defined $src->{file} ? "$src->{file}" : '',
+        tokenCount          => int($src->{tokenCount} || 0),
+        customRuleCount     => int($src->{customRuleCount} || 0),
+        customCssPreserved  => $src->{customCssPreserved} ? JSON::PP::true : JSON::PP::false,
+        effects             => (ref($src->{effects}) eq 'HASH' ? $src->{effects} : {}),
+    };
+}
+
+sub _clamp_int {
+    my ($value, $min, $max, $default) = @_;
+    $value = defined $value && $value =~ /^-?\d+$/ ? int($value) : $default;
+    $value = $min if $value < $min;
+    $value = $max if $value > $max;
+    return $value;
+}
+
+sub _wallpaper_mode {
+    my ($mode) = @_;
+    $mode = defined $mode ? lc("$mode") : 'cover';
+    return $mode if $mode =~ /^(cover|contain|repeat|center)$/;
+    return 'cover';
+}
+
+sub _css_string_escape {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/\\/\\\\/g;
+    $value =~ s/"/\\"/g;
+    return $value;
+}
+
+sub _theme_file_url_for_css {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/^\s+|\s+$//g;
+
+    # Legacy mirror URLs are rewritten to the V79 data-serving CGI.
+    if ($value =~ m{^/plugins/cssframework/themes/(.+)$}) {
+        $value = $1;
+    }
+    if ($value =~ m{^(theme-user-[A-Za-z0-9_-]+\.css|assets/[A-Za-z0-9_./-]+)$}) {
+        my $file = $value;
+        $file =~ s/([^A-Za-z0-9_.~\/-])/sprintf("%%%02X", ord($1))/ge;
+        $file =~ s{/}{%2F}g;
+        return "theme-file.cgi?file=$file";
+    }
+    return $value;
+}
+
+my $wallpaper_src = ref($data->{wallpaper}) eq 'HASH' ? $data->{wallpaper} : {};
+my $wallpaper = {
+    enabled    => ($wallpaper_src->{enabled} && defined $wallpaper_src->{image} && "$wallpaper_src->{image}" ne '') ? JSON::PP::true : JSON::PP::false,
+    image      => defined $wallpaper_src->{image} ? "$wallpaper_src->{image}" : '',
+    mode       => _wallpaper_mode($wallpaper_src->{mode}),
+    brightness => _clamp_int($wallpaper_src->{brightness}, 0, 150, 100),
+    opacity    => _clamp_int($wallpaper_src->{opacity}, 0, 100, 100),
+};
+# Avoid nested USER CUSTOM markers when importing/saving repeatedly.
+$custom_css =~ s{/\*\s*USER CUSTOM CSS START\s*\*/}{}ig;
+$custom_css =~ s{/\*\s*USER CUSTOM CSS END\s*\*/}{}ig;
+$custom_css =~ s/^\s+|\s+$//g;
+
+my %clean_tokens;
+sub _blocked_token {
+    my ($token) = @_;
+    return 1 if $token =~ /^--lb-table-status-/;
+    # Tooltip colors are protected from AI/user free editing, but the Design
+    # Rules Engine deliberately writes these two derived values.
+    return 0 if $token eq '--lb-tooltip-bg' || $token eq '--lb-tooltip-text';
+    return 1 if $token =~ /^--lb-tooltip-/;
+    return 0;
+}
+for my $token (sort keys %{$tokens}) {
+    my $value = $tokens->{$token};
+    next if $token !~ /^--lb-[a-z0-9-]+$/;
+    next if _blocked_token($token);
+    next if !defined $value;
+    $value = "$value";
+    $value =~ s/^\s+|\s+$//g;
+    next if $value eq '';
+    next if $value =~ /[{};]/;
+    $clean_tokens{$token} = $value;
+}
+
+my $meaningful_custom_css = $custom_css;
+$meaningful_custom_css =~ s{/\*[\s\S]*?\*/}{}g;
+$meaningful_custom_css =~ s/^\s+|\s+$//g;
+if (!keys(%clean_tokens) && $meaningful_custom_css eq '' && !$wallpaper->{enabled}) {
+    _respond('400 Bad Request', {
+        ok => JSON::PP::false,
+        error => 'No theme tokens or usable custom CSS received. CSS would be empty.'
+    });
+}
+
+my $css_file = "$id.css";
+my $manifest = {
+    id           => $id,
+    name         => $name,
+    type         => 'user-theme',
+    version      => $version,
+    loxberry_min => '4.0',
+    plugin       => $plugin,
+    css          => $css_file,
+    assets       => {
+        wallpaper => "assets/images/$id/wallpaper.jpg",
+        icons     => "assets/icons/$id/",
+    },
+    features     => {
+        custom_css   => JSON::PP::true,
+        wallpaper    => JSON::PP::true,
+        token_editor => JSON::PP::true,
+        workbench_ui => JSON::PP::true,
+        css_import => JSON::PP::true,
+        hybrid_import => JSON::PP::true,
+    },
+};
+
+my $editable = {
+    id         => $id,
+    name       => $name,
+    version    => $version,
+    tokens     => \%clean_tokens,
+    custom_css => $custom_css,
+    studio_model => (ref($data->{studio_model}) eq 'HASH' ? $data->{studio_model} : {}),
+    import_meta  => $import_meta,
+    wallpaper    => $wallpaper,
+    studio       => { generator => 'CSS-Studio' },
+    studio_version => ($data->{studio_version} || 'V39_HybridImportTokensPlusCustomCss'),
+};
+
+my $css = "/*\n";
+$css .= " * CSS-Studio\n";
+$css .= " * Generated by LoxBerry CSS Framework Design Studio\n";
+$css .= " * Plugin folder: cssframework\n";
+$css .= " * Theme: $name ($id)\n";
+$css .= " * Source-JSON: config/plugins/cssframework/themes/$id.json\n";
+$css .= " */\n\n";
+$css .= "body.$id,\n.$id {\n";
+for my $token (sort keys %clean_tokens) {
+    $css .= "  $token: $clean_tokens{$token};\n";
+}
+$css .= "}\n\n";
+$css .= "/* USER CUSTOM CSS START */\n" . $custom_css . "\n/* USER CUSTOM CSS END */\n";
+
+
+# Optional wallpaper generated by Design Studio V49. The background color token
+# stays authoritative; the wallpaper is layered behind page content.
+if ($wallpaper->{enabled}) {
+    my $img = _css_string_escape(_theme_file_url_for_css($wallpaper->{image}));
+    my $mode = $wallpaper->{mode};
+    my $size = $mode eq 'contain' ? 'contain' : ($mode eq 'repeat' ? 'auto' : 'cover');
+    my $repeat = $mode eq 'repeat' ? 'repeat' : 'no-repeat';
+    my $opacity = sprintf('%.2f', $wallpaper->{opacity} / 100);
+    my $brightness = sprintf('%.2f', $wallpaper->{brightness} / 100);
+    $css .= "\n/* DESIGN STUDIO WALLPAPER START */\n";
+    $css .= "body.$id .lb-main, .$id .lb-main {\n";
+    $css .= "  position: relative !important;\n";
+    $css .= "  overflow: hidden;\n";
+    $css .= "  text-shadow: none;\n";
+    $css .= "}\n";
+    $css .= "body.$id .lb-main::before, .$id .lb-main::before {\n";
+    $css .= "  content: \"\";\n";
+    $css .= "  position: fixed;\n";
+    $css .= "  inset: 0;\n";
+    $css .= "  pointer-events: none;\n";
+    $css .= "  background-image: url(\"$img\");\n";
+    $css .= "  background-size: $size;\n";
+    $css .= "  background-repeat: $repeat;\n";
+    $css .= "  background-position: center center;\n";
+    $css .= "  opacity: $opacity;\n";
+    $css .= "  filter: brightness($brightness);\n";
+    $css .= "  z-index: 0;\n";
+    $css .= "}\n";
+    $css .= "body.$id .lb-main > *, .$id .lb-main > * { position: relative; z-index: 1; }\n";
+    $css .= "/* DESIGN STUDIO WALLPAPER END */\n";
+}
+
+# Design Studio generated compatibility helpers. These are scoped to the user
+# theme and keep protected/compound components consistent without touching Core.
+$css .= "\n/* DESIGN STUDIO RULES START */\n";
+$css .= "body.$id .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active),\n";
+$css .= "body.$id .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active),\n";
+$css .= ".$id .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active),\n";
+$css .= ".$id .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active) {\n";
+$css .= "  background-color: var(--lb-btn-group-inactive-bg, var(--lb-btn-group-active-text, #fff)) !important;\n";
+$css .= "  color: var(--lb-btn-group-inactive-text, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;\n";
+$css .= "  border-color: var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, #d7e7d9))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active):hover,\n";
+$css .= "body.$id .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active):hover,\n";
+$css .= ".$id .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active):hover,\n";
+$css .= ".$id .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active):hover {\n";
+$css .= "  background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;\n";
+$css .= "  color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .lb-tooltip, body.$id [role=tooltip], .$id .lb-tooltip, .$id [role=tooltip] {\n";
+$css .= "  background-color: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;\n";
+$css .= "  color: var(--lb-tooltip-text, var(--lb-sidebar-text, #fff)) !important;\n";
+$css .= "}\n";
+$css .= "/* DESIGN STUDIO RULES END */\n";
+
+sub _read_file_head {
+    my ($file, $limit) = @_;
+    $limit ||= 8192;
+    return '' if !defined $file || !-f $file || !-r $file;
+    my $fh;
+    return '' if !open($fh, '<:encoding(UTF-8)', $file);
+    local $/;
+    my $content = <$fh>;
+    close($fh);
+    $content = '' if !defined $content;
+    return substr($content, 0, $limit);
+}
+
+sub _cleanup_orphan_studio_css {
+    # V79: data/plugins/cssframework/themes is the CSS/assets storage.
+    # Do not delete CSS-only package/example themes just because no editable JSON
+    # exists yet. Explicit deletion is handled by theme-delete.cgi.
+    return [];
+}
+
+my @writes = (
+    [$json_path, _pretty_json($editable)],
+    ["$manifest_dir/$id.manifest.json", _pretty_json($manifest)],
+    ["$theme_dir/$css_file", $css],
+);
+
+for my $item (@writes) {
+    my ($file, $content) = @{$item};
+    my $fh;
+    if (!open($fh, '>:encoding(UTF-8)', $file)) {
+        _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot write file: $file" });
+    }
+    print {$fh} $content;
+    if (!close($fh)) {
+        _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot close/write file: $file" });
+    }
+    chmod 0664, $file;
+}
+
+my $orphan_css_deleted = _cleanup_orphan_studio_css();
+
+if (!-f "$theme_dir/$css_file" || -s "$theme_dir/$css_file" <= 0) {
+    _respond('500 Internal Server Error', {
+        ok => JSON::PP::false,
+        error => "CSS was not created or is empty: $theme_dir/$css_file"
+    });
+}
+
+
+_respond('200 OK', {
+    ok         => JSON::PP::true,
+    id         => $id,
+    name       => $name,
+    version    => $version,
+    theme_json => "config/plugins/cssframework/themes/$id.json",
+    manifest   => "config/plugins/cssframework/manifests/$id.manifest.json",
+    css        => "data/plugins/cssframework/themes/$css_file",
+    public_css => "theme-file.cgi?file=$css_file",
+    css_written => JSON::PP::true,
+    previous_backup => $previous_backup,
+    orphan_css_deleted => scalar(@{$orphan_css_deleted || []}),
+});

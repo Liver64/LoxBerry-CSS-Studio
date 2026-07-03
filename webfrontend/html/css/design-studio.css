@@ -1,0 +1,1105 @@
+/* CSS Framework Design Studio V25 - strict Studio/Preview theme separation */
+.cfw-page { max-width: 1860px; margin: 0 auto; padding: 14px; }
+.cfw-toolbar { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:14px; }
+.cfw-toolbar h1 { margin:0 0 4px 0; }
+.cfw-toolbar p { margin:0; opacity:.78; }
+.cfw-toolbar-actions { display:flex; gap:10px; white-space:nowrap; }
+.cfw-workbench { display:grid; grid-template-columns:minmax(380px, 42vw) minmax(620px, 1fr); gap:14px; align-items:start; }
+.cfw-left { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+.cfw-step-panel, .cfw-palette-panel, .cfw-mono-panel, .cfw-slider-panel, .cfw-import-panel { min-width:0; }
+.cfw-import-panel { grid-column:1 / -1; }
+.cfw-panel { border:1px solid var(--lb-border, rgba(0,0,0,.16)); border-radius:var(--lb-radius-card, 16px); background:var(--lb-card-bg, rgba(255,255,255,.88)); color:var(--lb-card-text, inherit); padding:14px; box-sizing:border-box; }
+.cfw-panel h2 { margin:0 0 12px 0; font-size:1.12rem; }
+.cfw-label { display:block; margin:0 0 10px 0; font-weight:600; }
+.cfw-label input, .cfw-label select, .cfw-panel textarea, .cfw-import-panel input[type=file] { display:block; width:100%; box-sizing:border-box; margin-top:5px; padding:8px 10px; border-radius:var(--lb-radius-input, 10px); border:1px solid var(--lb-input-border, rgba(0,0,0,.25)); background:var(--lb-input-bg, #fff); color:var(--lb-input-text, #111); }
+.cfw-button { padding:8px 14px; border-radius:var(--lb-radius-button, 12px); border:1px solid var(--lb-btn-border, rgba(0,0,0,.25)); background:var(--lb-btn-bg, rgba(0,0,0,.06)); color:var(--lb-btn-text, inherit); cursor:pointer; }
+.cfw-button-primary { background:var(--lb-active-bg, #007aff); color:var(--lb-active-text, #fff); }
+.cfw-hint { margin:4px 0 0 0; opacity:.78; font-size:.9rem; }
+.cfw-control-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; }
+.cfw-small-value { display:inline-block; margin-top:3px; opacity:.72; font-size:.88rem; }
+.cfw-palette-grid { display:grid; grid-template-columns:repeat(2, minmax(120px, 1fr)); gap:10px; }
+.cfw-palette-tile { min-height:82px; border:1px solid rgba(0,0,0,.18); border-radius:16px; box-shadow:0 8px 22px rgba(0,0,0,.12); display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-start; gap:3px; padding:10px; cursor:pointer; box-sizing:border-box; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.62); overflow:hidden; text-align:left; }
+.cfw-palette-tile span { font-family:monospace; font-size:.88rem; background:rgba(0,0,0,.23); padding:2px 5px; border-radius:6px; }
+.cfw-palette-tile small { background:rgba(0,0,0,.23); padding:2px 5px; border-radius:6px; }
+.cfw-mono-preview { display:grid; grid-template-columns:1fr; gap:9px; max-height:360px; overflow:auto; padding-right:2px; }
+.cfw-mono-card { border:1px solid rgba(0,0,0,.13); border-radius:14px; padding:10px; background:rgba(255,255,255,.42); }
+.cfw-mono-card strong { display:block; margin-bottom:7px; }
+.cfw-mono-card input, .cfw-mono-card select, .cfw-mono-card textarea, .cfw-mono-card button { width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid rgba(0,0,0,.25); border-radius:10px; background:#fff; color:#111; }
+.cfw-mono-card table { width:100%; border-collapse:collapse; background:#fff; }
+.cfw-mono-card th, .cfw-mono-card td { border:1px solid rgba(0,0,0,.18); padding:6px; text-align:left; }
+.cfw-mono-card th { background:#f2f2f2; }
+.cfw-mono-card .mini-card, .cfw-mono-card .mini-note, .cfw-mono-card .mini-modal { border:1px solid rgba(0,0,0,.18); border-radius:12px; padding:9px; background:#fff; }
+.cfw-advanced { margin-top:12px; }
+.cfw-advanced summary { cursor:pointer; font-weight:700; margin-bottom:8px; }
+.cfw-status { min-height:24px; white-space:pre-wrap; overflow:auto; margin:10px 0 0 0; }
+.cfw-status-info { color:#1d4ed8; font-weight:600; }
+.cfw-status-success { color:#15803d; font-weight:600; }
+.cfw-status-warning { color:#b45309; font-weight:600; }
+.cfw-status-error { color:#b00020; font-weight:600; }
+.cfw-preview-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; margin-bottom:12px; }
+.cfw-preview-head h2 { margin:0 0 4px 0; }
+.cfw-preview-head p { margin:0; opacity:.78; }
+.cfw-token-pill { border:1px solid rgba(0,0,0,.14); border-radius:999px; padding:6px 12px; white-space:nowrap; background:rgba(255,255,255,.45); }
+.cfw-preview { min-height:760px; padding:14px; border-radius:var(--lb-radius-card, 16px); background:var(--lb-bg, rgba(0,0,0,.05)); color:var(--lb-text, inherit); }
+.cfw-app-preview { display:grid; grid-template-columns:180px 1fr; min-height:730px; border:1px solid rgba(0,0,0,.14); border-radius:20px; overflow:hidden; background:var(--lb-content-bg, rgba(255,255,255,.54)); }
+.cfw-app-sidebar { background:var(--lb-sidebar-bg, rgba(0,0,0,.09)); color:var(--lb-sidebar-text, inherit); padding:16px; }
+.cfw-logo-dot { width:38px; height:38px; border-radius:50%; background:var(--lb-active-bg, #007aff); margin-bottom:20px; }
+.cfw-nav-item { padding:9px 11px; border-radius:10px; margin-bottom:7px; }
+.cfw-nav-item:hover { background:var(--lb-nav-hover-bg, var(--lb-hover-bg, rgba(0,0,0,.08))); color:var(--lb-hover-text, inherit); }
+.cfw-nav-item.active { background:var(--lb-nav-active-bg, var(--lb-active-bg, #007aff)); color:var(--lb-nav-active-text, var(--lb-active-text, #fff)); }
+.cfw-app-main { padding:16px; }
+.cfw-app-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding:12px 14px; border-radius:14px; background:var(--lb-header-bg, rgba(255,255,255,.62)); color:var(--lb-header-text, inherit); border:1px solid var(--lb-header-border, rgba(0,0,0,.12)); }
+.cfw-mini-btn { padding:6px 10px; }
+.cfw-hero-card, .cfw-form-card, .cfw-preview .lb-card { background:var(--cfw-preview-card-bg, var(--lb-card-bg, rgba(255,255,255,.86))); color:var(--lb-card-text, inherit); border:1px solid var(--lb-card-border, rgba(0,0,0,.15)); border-radius:var(--lb-radius-card, 16px); box-shadow:var(--lb-card-shadow, none); padding:14px; margin-bottom:14px; }
+.cfw-hero-card:hover, .cfw-form-card:hover { background:var(--lb-card-hover-bg, var(--cfw-preview-card-bg, var(--lb-card-bg, rgba(255,255,255,.86)))); border-color:var(--lb-card-hover-border, var(--lb-card-border, rgba(0,0,0,.15))); box-shadow:var(--lb-card-hover-shadow, var(--lb-card-shadow, none)); }
+.cfw-hero-card h3, .cfw-form-card h3 { margin:0 0 8px 0; }
+.cfw-inline-controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.cfw-form-grid { display:grid; grid-template-columns:repeat(3, minmax(150px, 1fr)); gap:12px; align-items:end; }
+.cfw-form-grid label { font-weight:600; }
+.cfw-preview .lb-input { background:var(--cfw-preview-input-bg, var(--lb-input-bg, #fff)); color:var(--cfw-preview-input-text, var(--lb-input-text, #111)); border:1px solid var(--cfw-preview-input-border, var(--lb-input-border, rgba(0,0,0,.25))); border-radius:var(--lb-radius-input, 10px); padding:8px 10px; box-sizing:border-box; max-width:100%; }
+.cfw-preview .lb-input:focus { outline:none; border-color:var(--lb-input-focus-border, var(--lb-active-bg, #007aff)); box-shadow:var(--lb-input-focus-shadow, 0 0 0 3px rgba(0,122,255,.18)); }
+.cfw-preview .lb-button { background:var(--cfw-preview-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06))); color:var(--cfw-preview-button-text, var(--lb-btn-text, inherit)); border:1px solid var(--lb-btn-border, rgba(0,0,0,.25)); border-radius:var(--lb-radius-button, 12px); box-shadow:var(--lb-btn-shadow, none); padding:8px 12px; }
+.cfw-preview .lb-button:hover { background:var(--lb-btn-hover-bg, var(--cfw-preview-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06)))); border-color:var(--lb-btn-hover-border, var(--lb-btn-border, rgba(0,0,0,.25))); }
+.cfw-preview .lb-button-active { background:var(--lb-active-bg, #007aff); color:var(--lb-active-text, #fff); border-color:var(--lb-active-border, var(--lb-btn-border, rgba(0,0,0,.25))); }
+.cfw-range { width:100%; accent-color:var(--cfw-preview-range-accent, var(--lb-primary, var(--lb-active-bg, #007aff))); }
+.cfw-left input[type=range] { accent-color:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
+.cfw-left input[type=range]::-webkit-slider-thumb { background:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
+.cfw-left input[type=range]::-moz-range-thumb { background:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); border-color:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
+.cfw-left input[type=range]::-moz-range-progress { background:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
+.cfw-left input[type=color] { accent-color:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
+.cfw-check { display:flex; gap:8px; align-items:center; }
+.cfw-switch-row { display:flex; gap:10px; align-items:center; justify-content:space-between; }
+.cfw-switch input { display:none; }
+.cfw-switch span { display:inline-block; width:54px; height:28px; border-radius:var(--lb-switch-radius, 999px); background:var(--lb-switch-on-bg, var(--lb-active-bg, #007aff)); border:1px solid var(--lb-switch-border, rgba(0,0,0,.18)); position:relative; vertical-align:middle; }
+.cfw-switch span:after { content:""; width:22px; height:22px; border-radius:50%; background:var(--lb-switch-thumb-bg, #fff); position:absolute; right:3px; top:2px; box-shadow:0 1px 4px rgba(0,0,0,.25); }
+.cfw-feedback-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+.cfw-badge, .cfw-notify, .cfw-validation { display:inline-block; padding:5px 10px; border-radius:999px; }
+.cfw-badge { background:var(--lb-active-bg, #007aff); color:var(--lb-active-text, #fff); }
+.cfw-notify { background:var(--cfw-preview-notify-bg, var(--lb-success-bg, var(--lb-active-bg, #007aff))); color:var(--lb-success-text, var(--lb-active-text, #fff)); border:1px solid var(--lb-success-border, transparent); }
+.cfw-validation { background:var(--cfw-preview-validation-bg, var(--lb-warning-bg, rgba(255,190,0,.20))); color:var(--lb-warning-text, inherit); border:1px solid var(--lb-warning-border, rgba(255,190,0,.55)); }
+.cfw-preview-table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:var(--lb-table-radius, 12px); }
+.cfw-preview-table th, .cfw-preview-table td { padding:10px; border-bottom:1px solid var(--lb-table-border, rgba(0,0,0,.16)); background:var(--cfw-preview-table-bg, var(--lb-table-bg, rgba(255,255,255,.65))); color:var(--lb-table-text, inherit); }
+.cfw-preview-table th { background:var(--lb-table-header-bg, rgba(0,0,0,.06)); color:var(--lb-table-header-text, inherit); text-align:left; }
+.cfw-preview-table tbody tr:hover td { background:var(--cfw-preview-table-hover-bg, var(--lb-table-row-hover-bg, rgba(0,0,0,.05))); color:var(--lb-table-hover-text, var(--lb-table-text, inherit)); }
+.cfw-modal[hidden] { display:none; }
+.cfw-modal { position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.38); padding:18px; }
+.cfw-modal-card { width:min(480px, 100%); background:var(--lb-card-bg, #fff); color:var(--lb-card-text, inherit); border-radius:18px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.28); }
+.cfw-modal-card h2 { margin:0 0 12px 0; }
+.cfw-modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
+@media (max-width:1320px) { .cfw-workbench { grid-template-columns:1fr; } .cfw-preview { min-height:auto; } }
+@media (max-width:760px) { .cfw-toolbar { flex-direction:column; } .cfw-left, .cfw-control-grid, .cfw-form-grid { grid-template-columns:1fr; } .cfw-app-preview { grid-template-columns:1fr; } .cfw-app-sidebar { display:none; } }
+
+/* AI Designer tab */
+.cfw-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 16px 0;
+  border-bottom: 1px solid rgba(120, 130, 150, 0.28);
+}
+.cfw-tab {
+  border: 1px solid rgba(120, 130, 150, 0.28);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.55);
+  color: inherit;
+  cursor: pointer;
+}
+.cfw-tab.is-active {
+  background: rgba(255,255,255,0.92);
+  font-weight: 700;
+}
+.cfw-tab-panel[hidden] { display: none !important; }
+.cfw-ai-layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 38%) minmax(420px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.cfw-ai-left, .cfw-ai-right {
+  display: grid;
+  gap: 16px;
+}
+.cfw-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid rgba(120,130,150,.28);
+  border-radius: 12px;
+  background: rgba(255,255,255,.55);
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+.cfw-ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+#aiPrompt, #aiRequest, #aiResult {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1px solid rgba(120,130,150,.35);
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: rgba(255,255,255,.78);
+  color: #111827;
+}
+#aiPrompt { font-family: inherit; }
+.cfw-ai-preview {
+  min-height: 180px;
+  border: 1px dashed rgba(120,130,150,.45);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,.66);
+}
+.cfw-ai-preview .ai-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.cfw-ai-preview .ai-swatch {
+  border-radius: 12px;
+  border: 1px solid rgba(120,130,150,.32);
+  overflow: hidden;
+  background: rgba(255,255,255,.8);
+}
+.cfw-ai-preview .ai-swatch-color {
+  height: 54px;
+}
+.cfw-ai-preview .ai-swatch code {
+  display: block;
+  padding: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 1000px) {
+  .cfw-ai-layout { grid-template-columns: 1fr; }
+}
+
+/* V13 AI semantic preview and form-control coverage */
+.cfw-page.cfw-v18 .cfw-preview select.lb-input,
+.cfw-page.cfw-v18 .cfw-preview select.lb-input option {
+  background: var(--cfw-preview-select-bg, var(--lb-select-bg, var(--cfw-preview-input-bg, var(--lb-input-bg, #fff)))) !important;
+  color: var(--cfw-preview-select-text, var(--lb-select-text, var(--lb-input-text, #111))) !important;
+  border-color: var(--cfw-preview-select-border, var(--lb-select-border, var(--lb-input-border, rgba(0,0,0,.25)))) !important;
+}
+.cfw-page.cfw-v18 .cfw-preview textarea.lb-input {
+  background: var(--cfw-preview-textarea-bg, var(--lb-input-bg, #fff)) !important;
+  color: var(--cfw-preview-textarea-text, var(--lb-input-text, #111)) !important;
+  border-color: var(--cfw-preview-textarea-border, var(--lb-input-border, rgba(0,0,0,.25))) !important;
+}
+.cfw-page.cfw-v18 .cfw-ai-preview { color:#111827; background:rgba(255,255,255,.76); }
+.cfw-page.cfw-v18 .cfw-ai-preview .ai-token-heading { margin:14px 0 10px 0; font-size:1rem; color:#111827; }
+.cfw-page.cfw-v18 .ai-theme-preview {
+  display:grid; grid-template-columns:140px 1fr; min-height:360px; overflow:hidden;
+  border:1px solid var(--ai-border, rgba(0,0,0,.16)); border-radius:18px;
+  background:var(--ai-bg, #f6fbf5); color:var(--ai-text, #1f2d1f);
+  box-shadow:var(--ai-shadow, 0 10px 28px rgba(0,0,0,.14));
+}
+.cfw-page.cfw-v18 .ai-theme-preview aside { background:var(--lb-sidebar-bg, rgba(0,0,0,.12)); color:var(--lb-sidebar-text, var(--ai-text)); padding:14px; display:flex; flex-direction:column; gap:10px; }
+.cfw-page.cfw-v18 .ai-theme-preview aside .dot { width:34px; height:34px; border-radius:50%; background:var(--ai-primary, #2e8b57); margin-bottom:8px; }
+.cfw-page.cfw-v18 .ai-theme-preview aside b { background:var(--ai-primary, #2e8b57); color:var(--lb-active-text, #fff); padding:8px 10px; border-radius:10px; }
+.cfw-page.cfw-v18 .ai-theme-preview main { padding:14px; display:grid; gap:12px; align-content:start; }
+.cfw-page.cfw-v18 .ai-theme-preview header,
+.cfw-page.cfw-v18 .ai-theme-preview .ai-card { background:var(--ai-surface, #fff); color:var(--ai-text, #111); border:1px solid var(--ai-border, #d7e7d9); border-radius:var(--ai-radius, 14px); padding:12px; box-shadow:var(--ai-shadow, none); }
+.cfw-page.cfw-v18 .ai-theme-preview header { display:flex; justify-content:space-between; align-items:center; }
+.cfw-page.cfw-v18 .ai-theme-preview .ai-form-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.cfw-page.cfw-v18 .ai-theme-preview .ai-form-grid { display:grid; grid-template-columns:repeat(3, minmax(110px,1fr)); gap:10px; }
+.cfw-page.cfw-v18 .ai-theme-preview input,
+.cfw-page.cfw-v18 .ai-theme-preview textarea { background:var(--ai-input-bg, #fff); color:var(--ai-input-text, #111); border:1px solid var(--ai-input-border, #cfd8d3); border-radius:var(--lb-radius-sm, 10px); padding:8px 10px; box-sizing:border-box; min-width:0; }
+.cfw-page.cfw-v18 .ai-theme-preview select { background:var(--ai-select-bg, var(--ai-input-bg, #fff)); color:var(--ai-select-text, var(--ai-input-text, #111)); border:1px solid var(--ai-select-border, var(--ai-input-border, #cfd8d3)); border-radius:var(--lb-radius-sm, 10px); padding:8px 10px; box-sizing:border-box; min-width:0; }
+.cfw-page.cfw-v18 .ai-theme-preview button { background:var(--ai-btn-bg, var(--ai-surface, #fff)); color:var(--ai-btn-text, var(--ai-text, #111)); border:1px solid var(--ai-btn-border, var(--ai-border, #cfd8d3)); border-radius:var(--lb-btn-radius, var(--ai-radius, 12px)); padding:8px 12px; }
+.cfw-page.cfw-v18 .ai-theme-preview button.active { background:var(--ai-primary, #2e8b57); color:var(--lb-active-text, #fff); border-color:var(--ai-primary, #2e8b57); }
+.cfw-page.cfw-v18 .ai-theme-preview table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:var(--lb-table-radius, var(--ai-radius, 12px)); }
+.cfw-page.cfw-v18 .ai-theme-preview th,
+.cfw-page.cfw-v18 .ai-theme-preview td { padding:9px; background:var(--ai-table-bg, var(--ai-surface, #fff)); color:var(--ai-table-text, var(--ai-text, #111)); border-bottom:1px solid var(--ai-border, #d7e7d9); }
+.cfw-page.cfw-v18 .ai-theme-preview th { background:var(--ai-table-header-bg, var(--ai-surface-alt, #eef5ee)); text-align:left; }
+.cfw-page.cfw-v18 .ai-theme-preview tbody tr:hover td { background:var(--ai-table-hover, rgba(46,139,87,.12)); }
+.cfw-page.cfw-v18 .cfw-ai-preview .ai-swatch { background:#fff; color:#111827; }
+.cfw-page.cfw-v18 .cfw-ai-preview .ai-swatch code { color:#111827; background:#f8fafc; }
+@media (max-width:760px) { .cfw-page.cfw-v18 .ai-theme-preview { grid-template-columns:1fr; } .cfw-page.cfw-v18 .ai-theme-preview aside { display:none; } .cfw-page.cfw-v18 .ai-theme-preview .ai-form-grid { grid-template-columns:1fr; } }
+
+/* V17 cautious mapping and click-to-edit additions */
+.cfw-page.cfw-v18 [data-cfw-area] { cursor: pointer; }
+.cfw-page.cfw-v18 [data-cfw-area]:hover { outline: 2px dashed rgba(0,122,255,.65); outline-offset: 3px; }
+.cfw-page.cfw-v18 .cfw-edit-highlight { outline: 3px solid #007aff !important; outline-offset: 4px; box-shadow: 0 0 0 6px rgba(0,122,255,.18) !important; }
+.cfw-header-actions { display:flex; gap:8px; align-items:center; }
+.cfw-preview .cfw-header-btn {
+  background: var(--lb-header-btn-bg, var(--cfw-preview-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06)))) !important;
+  color: var(--lb-header-btn-text, var(--cfw-preview-button-text, var(--lb-btn-text, inherit))) !important;
+}
+.cfw-preview .cfw-header-btn:hover {
+  background: var(--lb-header-btn-hover-bg, var(--lb-btn-hover-bg, var(--lb-header-btn-bg, var(--lb-btn-bg, rgba(0,0,0,.08))))) !important;
+  color: var(--lb-header-btn-hover-text, var(--lb-header-btn-text, var(--lb-btn-hover-text, inherit))) !important;
+}
+.cfw-preview-btn-group { display:inline-flex; align-items:center; margin-left:8px; border-radius:var(--lb-btn-radius, 12px); overflow:hidden; vertical-align:middle; }
+.cfw-preview-btn-group button { border:0; padding:8px 11px; background:var(--lb-btn-bg, rgba(0,0,0,.06)); color:var(--lb-btn-text, inherit); }
+.cfw-preview-btn-group button:hover { background:var(--lb-btn-group-hover-bg, var(--lb-btn-hover-bg, rgba(0,0,0,.08))); color:var(--lb-btn-group-hover-text, var(--lb-btn-hover-text, inherit)); }
+.cfw-preview-btn-group button.is-active { background:var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)); color:var(--lb-btn-group-active-text, var(--lb-active-text, #fff)); }
+.cfw-preview-btn-group button.is-active:hover { background:var(--lb-btn-group-active-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))); color:var(--lb-btn-group-active-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))); }
+
+
+/* V18: Click-to-edit is primary; Mono Preview removed. */
+.cfw-page.cfw-v18 .cfw-step-panel h2::after { content: '  · Klick in der Preview wählt automatisch'; font-size:.78rem; font-weight:500; opacity:.68; }
+.cfw-page.cfw-v18 .cfw-mono-panel { display:none !important; }
+.cfw-page.cfw-v18 .ai-theme-preview header button { background:var(--ai-header-btn-bg, var(--ai-btn-bg, var(--ai-primary, #2e8b57))); color:var(--ai-header-btn-text, var(--ai-btn-text, #fff)); }
+.cfw-page.cfw-v18 .cfw-header-actions .cfw-header-btn { border-color: var(--lb-header-btn-border, var(--lb-btn-border, transparent)) !important; }
+
+
+/* V19: click-to-edit direct inspector */
+.cfw-preview-editable {
+  cursor: pointer;
+  position: relative;
+}
+.cfw-preview-editable:hover {
+  outline: 2px dashed color-mix(in srgb, var(--lb-focus-ring, #007aff) 70%, transparent) !important;
+  outline-offset: 3px;
+}
+.cfw-component-inspector {
+  border-color: color-mix(in srgb, var(--lb-active-bg, #2e8b57) 45%, var(--lb-border, #d7e7d9)) !important;
+}
+.cfw-component-inspector[hidden] { display: none !important; }
+.cfw-inspector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cfw-icon-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--lb-border, #d7e7d9);
+  background: var(--lb-btn-bg, #fff);
+  color: var(--lb-btn-text, #111);
+  font-weight: 700;
+  cursor: pointer;
+}
+.cfw-inspector-title {
+  font-weight: 700;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--lb-active-soft-bg, rgba(46,139,87,.12));
+  color: var(--lb-text, #111);
+  margin: 10px 0;
+}
+.cfw-inspector-meta {
+  font-size: 0.92rem;
+  color: var(--lb-text-secondary, #5b6f59);
+}
+.cfw-token-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+.cfw-token-list code {
+  padding: 3px 6px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--lb-active-bg, #2e8b57) 18%, transparent);
+  color: var(--lb-text, #111);
+}
+.cfw-small-note {
+  font-size: 0.84rem;
+  opacity: .82;
+}
+.cfw-inspector-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+
+/* V22 - apply generated theme softly to Design Studio chrome; never inherit a single edited component token. */
+.cfw-page.cfw-v20.cfw-theme-applied-disabled {
+  background: var(--cfw-studio-bg, transparent);
+  color: var(--cfw-studio-text, inherit);
+  border-radius: var(--lb-radius-card, 16px);
+  transition: background .18s ease, color .18s ease;
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-panel,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-modal-card {
+  background: var(--cfw-studio-panel-bg, var(--lb-card-bg, rgba(255,255,255,.88)));
+  color: var(--cfw-studio-panel-text, var(--lb-text, inherit));
+  border-color: var(--cfw-studio-panel-border, var(--lb-border, rgba(0,0,0,.16)));
+  box-shadow: var(--lb-card-shadow, none);
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-label input,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-label select,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-panel textarea,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-import-panel input[type=file],
+.cfw-page.cfw-v20.cfw-theme-applied-disabled #aiRequest,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled #aiResult,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled #customCss {
+  background: var(--cfw-studio-control-bg, var(--lb-input-bg, #fff)) !important;
+  color: var(--cfw-studio-control-text, var(--lb-input-text, #111)) !important;
+  border-color: var(--cfw-studio-control-border, var(--lb-input-border, rgba(0,0,0,.25))) !important;
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-button,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-tab,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-icon-button {
+  background: var(--cfw-studio-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06)));
+  color: var(--cfw-studio-button-text, var(--lb-btn-text, inherit));
+  border-color: var(--cfw-studio-button-border, var(--lb-btn-border, rgba(0,0,0,.25)));
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-button-primary,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-tab.is-active {
+  background: var(--cfw-studio-active-bg, var(--lb-active-bg, #007aff));
+  color: var(--cfw-studio-active-text, var(--lb-active-text, #fff));
+  border-color: var(--cfw-studio-active-bg, var(--lb-active-bg, #007aff));
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-hint,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-small-value,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-inspector-meta {
+  color: var(--lb-text-muted, var(--lb-text-secondary, inherit));
+  opacity: .92;
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-token-pill,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-consent,
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-direct-edit-hint {
+  background: color-mix(in srgb, var(--cfw-studio-panel-bg, #fff) 86%, transparent);
+  color: var(--cfw-studio-panel-text, inherit);
+  border-color: var(--cfw-studio-panel-border, rgba(0,0,0,.16));
+}
+
+/* V24 - Studio sliders follow the selected theme accent, not the browser default. */
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range] {
+  accent-color: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range]::-webkit-slider-thumb {
+  background: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range]::-moz-range-thumb {
+  background: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
+  border-color: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
+}
+.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range]::-moz-range-progress {
+  background: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
+}
+
+
+
+/* V26: Preview hover-to-edit and double-click UX. Studio remains LoxBerry themed; only preview canvas receives draft tokens. */
+.cfw-page.cfw-v26 .cfw-preview-editable:hover,
+.cfw-page.cfw-v26 .cfw-hover-highlight {
+  outline: 2px dashed var(--lb-focus-ring, var(--lb-active-bg, #007aff)) !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--lb-focus-ring, var(--lb-active-bg, #007aff)) 18%, transparent) !important;
+}
+.cfw-preview-hover-card {
+  position: absolute;
+  z-index: 999999;
+  min-width: 220px;
+  max-width: 280px;
+  padding: 9px 11px;
+  border-radius: var(--lb-radius, 12px);
+  border: 1px solid var(--lb-border, rgba(0,0,0,.18));
+  background: var(--lb-card-bg, #fff);
+  color: var(--lb-text, #111);
+  box-shadow: var(--lb-card-shadow, 0 10px 28px rgba(0,0,0,.18));
+  font-size: 12px;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity .12s ease, transform .12s ease;
+}
+.cfw-preview-hover-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.cfw-preview-hover-card strong,
+.cfw-preview-hover-card span,
+.cfw-preview-hover-card em {
+  display: block;
+}
+.cfw-preview-hover-card span {
+  margin-top: 3px;
+  opacity: .82;
+}
+.cfw-preview-hover-card em {
+  margin-top: 5px;
+  font-style: normal;
+  font-size: 11px;
+  opacity: .68;
+}
+.cfw-page.cfw-v26 .cfw-preview-head #previewCaption {
+  min-height: 1.2em;
+}
+
+
+/* V27: Theme selector in Studio chrome. Studio itself remains LoxBerry-themed. */
+.cfw-theme-actions { display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; }
+.cfw-theme-select-label { display:flex; flex-direction:column; gap:4px; font-size:.86rem; font-weight:600; min-width:220px; }
+.cfw-theme-select { min-height:36px; padding:7px 10px; border-radius:10px; }
+.cfw-preview-btn-group { border:1px solid var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent))); }
+.cfw-preview-btn-group button { background:var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-bg, rgba(0,0,0,.06))); color:var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-text, inherit)); }
+
+
+/* V28: deterministic tooltip and button-group rules inside the final preview canvas */
+.cfw-preview .lb-tooltip,
+.cfw-preview .cfw-tooltip,
+.cfw-preview [role="tooltip"] {
+  background: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;
+  color: var(--lb-tooltip-text, var(--lb-sidebar-text, #fff)) !important;
+}
+.cfw-preview-btn-group button:not(.is-active) {
+  background: var(--lb-btn-group-inactive-bg, var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-group-active-text, #fff))) !important;
+  color: var(--lb-btn-group-inactive-text, var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)))) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)))))) !important;
+}
+.cfw-preview-btn-group button:not(.is-active):hover {
+  background: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
+  color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;
+}
+
+
+/* V29: AI import is enabled only after successful validation. */
+.cfw-button.is-disabled, .cfw-button:disabled { opacity:.45; cursor:not-allowed; filter:grayscale(.35); }
+.cfw-preview-btn-group { border-color: var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent))) !important; }
+.cfw-preview-btn-group button { border-right:1px solid var(--lb-border-color, var(--lb-border, transparent)); }
+.cfw-preview-btn-group button:last-child { border-right:0; }
+
+/* V33: Component Inspector UX replaces the visible 1/2/3 dropdown workflow. */
+.cfw-page.cfw-v33 .cfw-legacy-selects {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.cfw-page.cfw-v33 .cfw-selection-inspector {
+  display: grid;
+  gap: 12px;
+}
+.cfw-page.cfw-v33 .cfw-selected-component-card {
+  border: 1px solid var(--lb-border-color, var(--lb-border, rgba(120,130,150,.28)));
+  background: var(--lb-card-bg, rgba(255,255,255,.72));
+  color: var(--lb-card-text, var(--lb-text, inherit));
+  border-radius: var(--lb-radius, 14px);
+  padding: 12px;
+}
+.cfw-page.cfw-v33 .cfw-selected-eyebrow {
+  font-size: .78rem;
+  opacity: .7;
+  margin-bottom: 4px;
+}
+.cfw-page.cfw-v33 .cfw-selected-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.cfw-page.cfw-v33 .cfw-selected-meta {
+  margin-top: 4px;
+  font-size: .88rem;
+  opacity: .78;
+}
+.cfw-page.cfw-v33 .cfw-property-list {
+  display: grid;
+  gap: 8px;
+}
+.cfw-page.cfw-v33 .cfw-property-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  padding: 10px;
+  border-radius: var(--lb-radius, 12px);
+  border: 1px solid var(--lb-border-color, var(--lb-border, rgba(120,130,150,.28)));
+  background: var(--lb-card-bg, rgba(255,255,255,.68));
+  color: var(--lb-text, inherit);
+  cursor: pointer;
+}
+.cfw-page.cfw-v33 .cfw-property-item:hover,
+.cfw-page.cfw-v33 .cfw-property-item.is-active {
+  border-color: var(--lb-active-bg, var(--lb-primary, #007aff));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lb-active-bg, var(--lb-primary, #007aff)) 22%, transparent);
+}
+.cfw-page.cfw-v33 .cfw-property-item.is-active {
+  background: var(--lb-active-soft-bg, color-mix(in srgb, var(--lb-active-bg, var(--lb-primary, #007aff)) 12%, var(--lb-card-bg, #fff)));
+}
+.cfw-page.cfw-v33 .cfw-property-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--lb-active-bg, var(--lb-primary, #007aff));
+  color: var(--lb-active-text, #fff);
+  font-weight: 800;
+  font-size: .86rem;
+}
+.cfw-page.cfw-v33 .cfw-property-body {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.cfw-page.cfw-v33 .cfw-property-body strong {
+  font-size: .96rem;
+  line-height: 1.1;
+}
+.cfw-page.cfw-v33 .cfw-property-body code,
+.cfw-page.cfw-v33 .cfw-token-list code {
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--lb-highlight-bg, rgba(0,0,0,.08));
+  color: var(--lb-text, inherit);
+  font-size: .78rem;
+}
+.cfw-page.cfw-v33 .cfw-property-more {
+  font-size: .78rem;
+  opacity: .72;
+}
+.cfw-page.cfw-v33 .cfw-token-details {
+  margin-top: 2px;
+}
+.cfw-page.cfw-v33 .cfw-token-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+
+/* V34: Selected element card can open the direct editor. */
+.cfw-page.cfw-v34 .cfw-selected-component-card {
+  cursor: pointer;
+}
+.cfw-page.cfw-v34 .cfw-selected-component-card:hover,
+.cfw-page.cfw-v34 .cfw-selected-component-card:focus {
+  outline: 2px solid var(--lb-focus-ring, var(--lb-primary, #007aff));
+  outline-offset: 2px;
+}
+.cfw-page.cfw-v34 .cfw-selected-component-card::after {
+  content: none;
+  display: none;
+}
+.cfw-page .cfw-component-inspector.cfw-direct-focus {
+  animation: cfwDirectFocusPulse 1.2s ease-out 1;
+}
+@keyframes cfwDirectFocusPulse {
+  0% { box-shadow: 0 0 0 0 var(--lb-focus-ring, rgba(0,122,255,.45)); }
+  60% { box-shadow: 0 0 0 6px rgba(0,122,255,0); }
+  100% { box-shadow: none; }
+}
+
+
+/* V35: Property/token tiles are the primary entry point for the direct editor. */
+.cfw-page.cfw-v35 .cfw-property-item {
+  cursor: pointer;
+}
+.cfw-page.cfw-v35 .cfw-property-item:hover code,
+.cfw-page.cfw-v35 .cfw-property-item:focus code {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+.cfw-page.cfw-v35 .cfw-property-item::after {
+  content: none;
+  display: none;
+}
+
+
+/* V36: cleaner inspector/direct-editor layout and theme-conform preview color cards. */
+.cfw-page.cfw-v36 .cfw-palette-tile {
+  border-color: var(--lb-border-color, var(--lb-border, rgba(0,0,0,.18)));
+  box-shadow: var(--lb-card-shadow, 0 6px 18px rgba(0,0,0,.10));
+  border-radius: var(--lb-radius, 14px);
+}
+.cfw-page.cfw-v36 .cfw-palette-tile span,
+.cfw-page.cfw-v36 .cfw-palette-tile small {
+  background: color-mix(in srgb, var(--lb-card-bg, #fff) 72%, transparent);
+  color: var(--lb-text, #111);
+  text-shadow: none;
+  border: 1px solid color-mix(in srgb, var(--lb-border-color, #ccc) 55%, transparent);
+}
+.cfw-page.cfw-v36 .cfw-selected-eyebrow {
+  line-height: 1.35;
+}
+.cfw-page.cfw-v36 .cfw-component-inspector {
+  order: 3;
+}
+.cfw-page.cfw-v36 .cfw-slider-panel {
+  order: 4;
+}
+.cfw-page.cfw-v36 .cfw-import-panel {
+  order: 5;
+}
+
+
+/* V37: swap direct editor and settings positions in the two-column left workbench.
+   Row 1: selection + palette. Row 2: settings + direct editor. */
+.cfw-page.cfw-v37 .cfw-slider-panel {
+  order: 3;
+}
+.cfw-page.cfw-v37 .cfw-component-inspector {
+  order: 4;
+}
+.cfw-page.cfw-v37 .cfw-import-panel {
+  order: 5;
+}
+
+
+/* V43: Embedded original Preview/Documentation pages. */
+.cfw-embedded-panel {
+  padding: 0;
+}
+.cfw-embedded-frame {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 230px);
+  height: calc(100vh - 230px);
+  border: 0;
+  background: var(--lb-bg, #fff);
+  border-radius: var(--lb-radius-lg, 18px);
+}
+
+/* ============================================================
+   V49 Background & Wallpaper Editor
+   ============================================================ */
+.cfw-page.cfw-v49 .cfw-wallpaper-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--cfw-studio-panel-border, var(--lb-border-color, rgba(0,0,0,.16)));
+  border-radius: var(--lb-radius, 10px);
+  background: rgba(0,0,0,.025);
+}
+.cfw-page.cfw-v49 .cfw-wallpaper-controls[hidden] { display: none !important; }
+.cfw-page.cfw-v49 .cfw-wallpaper-controls input[type="text"],
+.cfw-page.cfw-v49 .cfw-wallpaper-controls select {
+  width: 100%;
+  box-sizing: border-box;
+}
+.cfw-page.cfw-v49 .cfw-preview {
+  position: relative;
+  overflow: hidden;
+}
+.cfw-page.cfw-v49 .cfw-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--cfw-wallpaper-image, none);
+  background-size: var(--cfw-wallpaper-size, cover);
+  background-repeat: var(--cfw-wallpaper-repeat, no-repeat);
+  background-position: var(--cfw-wallpaper-position, center center);
+  opacity: var(--cfw-wallpaper-opacity, 1);
+  filter: brightness(var(--cfw-wallpaper-brightness, 1));
+}
+.cfw-page.cfw-v49 .cfw-preview:not(.cfw-wallpaper-enabled)::before {
+  display: none;
+}
+.cfw-page.cfw-v49 .cfw-preview > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   V50 Wallpaper Editor placement
+   ============================================================ */
+.cfw-page.cfw-v50 .cfw-wallpaper-panel {
+  min-width: 0;
+  grid-column: 1;
+  order: 4;
+}
+.cfw-page.cfw-v50 .cfw-slider-panel {
+  grid-column: 1;
+  order: 3;
+}
+.cfw-page.cfw-v50 .cfw-component-inspector {
+  grid-column: 2;
+  order: 3;
+}
+.cfw-page.cfw-v50 .cfw-import-panel {
+  grid-column: 1 / -1;
+  order: 6;
+}
+.cfw-page.cfw-v50 .cfw-wallpaper-panel[hidden] {
+  display: none !important;
+}
+.cfw-page.cfw-v50 .cfw-wallpaper-grid {
+  grid-template-columns: 1fr;
+}
+.cfw-page.cfw-v50 .cfw-wallpaper-grid input[type="text"],
+.cfw-page.cfw-v50 .cfw-wallpaper-grid input[type="file"],
+.cfw-page.cfw-v50 .cfw-wallpaper-grid select {
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width:760px) {
+  .cfw-page.cfw-v50 .cfw-slider-panel,
+  .cfw-page.cfw-v50 .cfw-component-inspector,
+  .cfw-page.cfw-v50 .cfw-wallpaper-panel,
+  .cfw-page.cfw-v50 .cfw-import-panel {
+    grid-column: auto;
+  }
+}
+
+
+/* ============================================================
+   V52 Wallpaper file picker + preview sync polish
+   ============================================================ */
+.cfw-page.cfw-v52 .cfw-wallpaper-grid input[type="file"].cfw-file-native {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.cfw-page.cfw-v52 .cfw-file-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-sm, 8px);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.cfw-page.cfw-v52 .cfw-file-button.lb-btn {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.cfw-page.cfw-v52 .cfw-file-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--lb-text-secondary, #404040);
+  font-size: var(--lb-font-sm, .875rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   V53 layout, DS file picker and calmer preview palette
+   ============================================================ */
+.cfw-page.cfw-v53 .cfw-slider-panel {
+  grid-column: 1;
+  order: 3;
+  align-self: start;
+}
+.cfw-page.cfw-v53 .cfw-component-inspector {
+  grid-column: 2;
+  order: 3;
+  align-self: start;
+}
+.cfw-page.cfw-v53 .cfw-wallpaper-panel {
+  grid-column: 1;
+  order: 4;
+}
+.cfw-page.cfw-v53 .cfw-import-panel {
+  grid-column: 1 / -1;
+  order: 6;
+}
+.cfw-page.cfw-v53 .cfw-import-panel input[type="file"].cfw-file-native,
+.cfw-page.cfw-v53 input[type="file"].cfw-file-native {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.cfw-page.cfw-v53 .cfw-file-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-sm, 8px);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 5px;
+  padding: 8px 10px;
+  border-radius: var(--lb-radius-input, 10px);
+  border: 1px solid var(--lb-input-border, rgba(0,0,0,.25));
+  background: var(--lb-input-bg, #fff);
+  color: var(--lb-input-text, #111);
+}
+.cfw-page.cfw-v53 .cfw-file-picker .cfw-file-button.lb-btn {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.cfw-page.cfw-v53 .cfw-file-picker .cfw-file-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--lb-text-secondary, #404040);
+  font-size: var(--lb-font-sm, .875rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cfw-page.cfw-v53 .cfw-app-main {
+  background: var(--lb-bg, transparent);
+  min-width: 0;
+}
+.cfw-page.cfw-v53 .cfw-app-main.cfw-preview-editable:hover {
+  outline-offset: -6px;
+}
+@media (max-width:760px) {
+  .cfw-page.cfw-v53 .cfw-slider-panel,
+  .cfw-page.cfw-v53 .cfw-component-inspector,
+  .cfw-page.cfw-v53 .cfw-wallpaper-panel,
+  .cfw-page.cfw-v53 .cfw-import-panel {
+    grid-column: auto;
+  }
+}
+
+
+/* ============================================================
+   V54 layout stabilization, fixed wallpaper controls and file fields
+   ============================================================ */
+.cfw-page.cfw-v54 .cfw-selection-inspector {
+  grid-column: 1;
+  order: 1;
+  align-self: start;
+}
+.cfw-page.cfw-v54 .cfw-palette-panel {
+  grid-column: 2;
+  order: 1;
+  align-self: start;
+}
+.cfw-page.cfw-v54 .cfw-slider-panel {
+  grid-column: 1;
+  order: 2;
+  align-self: start;
+}
+.cfw-page.cfw-v54 .cfw-component-inspector {
+  grid-column: 2;
+  order: 2;
+  align-self: start;
+}
+.cfw-page.cfw-v54 .cfw-wallpaper-panel {
+  grid-column: 1;
+  order: 3;
+  align-self: start;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.cfw-page.cfw-v54 .cfw-import-panel {
+  grid-column: 1 / -1;
+  order: 6;
+}
+.cfw-page.cfw-v54 .cfw-wallpaper-grid,
+.cfw-page.cfw-v54 .cfw-wallpaper-grid .cfw-label,
+.cfw-page.cfw-v54 .cfw-wallpaper-grid input,
+.cfw-page.cfw-v54 .cfw-wallpaper-grid select,
+.cfw-page.cfw-v54 .cfw-file-picker {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.cfw-page.cfw-v54 .cfw-wallpaper-grid input[type="text"],
+.cfw-page.cfw-v54 .cfw-wallpaper-grid select {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cfw-page.cfw-v54 .cfw-file-picker .cfw-file-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cfw-page.cfw-v54 .cfw-file-picker .cfw-file-button.lb-btn {
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width:760px) {
+  .cfw-page.cfw-v54 .cfw-selection-inspector,
+  .cfw-page.cfw-v54 .cfw-palette-panel,
+  .cfw-page.cfw-v54 .cfw-slider-panel,
+  .cfw-page.cfw-v54 .cfw-component-inspector,
+  .cfw-page.cfw-v54 .cfw-wallpaper-panel,
+  .cfw-page.cfw-v54 .cfw-import-panel {
+    grid-column: auto;
+  }
+}
+
+/* V54 toggle state tokens: off/default and checked/on are separate. */
+.cfw-page.cfw-v54 .cfw-switch span {
+  background: var(--lb-switch-off-bg, var(--lb-toggle-bg, rgba(0,0,0,.22)));
+}
+.cfw-page.cfw-v54 .cfw-switch input:checked + span {
+  background: var(--lb-switch-on-bg, var(--lb-active-bg, #007aff));
+}
+
+/* ============================================================
+   V67 Preview colors and AI status refinement
+   - palette tiles now show up to 12 effective theme colors
+   - informational AI status must be blue, not error red
+   ============================================================ */
+.cfw-page.cfw-v67 .cfw-palette-grid {
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 10px;
+}
+.cfw-page.cfw-v67 .cfw-palette-tile {
+  min-height: 82px;
+}
+.cfw-page.cfw-v67 .cfw-status-info {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   V68 Preview color selection refinement
+   - palette tiles show concrete theme token names and values
+   - valid KI draft status uses success/green state via JS kind
+   ============================================================ */
+.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-token,
+.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-value {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-token {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .78rem;
+}
+.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .82rem;
+}
+
+/* V70 AI advanced view toggle */
+.cfw-ai-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cfw-ai-title-row h2 {
+  margin: 0;
+}
+.cfw-ai-advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cfw-ai-advanced-toggle input {
+  width: 18px;
+  height: 18px;
+}
+.cfw-ai-advanced-section[hidden] {
+  display: none !important;
+}
+
+/* ============================================================
+   V71 AI action placement + KI palette filtering
+   - Validate/Import are shown below the KI Designer block only after a valid draft exists
+   - KI palette excludes semantic status colors by default
+   ============================================================ */
+.cfw-page.cfw-v71 .cfw-ai-validated-actions[hidden] {
+  display: none !important;
+}
+.cfw-page.cfw-v71 .cfw-ai-validated-actions {
+  border-color: var(--lb-success, #2e8b57);
+}
+.cfw-page.cfw-v71 .cfw-ai-validated-actions .cfw-ai-actions {
+  margin-top: 0;
+}
+
+
+/* ============================================================
+   V75 initial preview palette + fixed workbench layout polish
+   - Preview color tiles use the active LoxBerry runtime theme as initial Working State.
+   - Settings and Wallpaper Editor stay side-by-side.
+   - Direct editor opens dynamically below the Wallpaper Editor.
+   - KI Validation panel uses the normal panel border, no green success frame.
+   ============================================================ */
+.cfw-page.cfw-v75 .cfw-slider-panel {
+  grid-column: 1;
+  order: 2;
+  align-self: start;
+}
+.cfw-page.cfw-v75 .cfw-wallpaper-panel {
+  grid-column: 2;
+  order: 2;
+  align-self: start;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.cfw-page.cfw-v75 .cfw-component-inspector {
+  grid-column: 2;
+  order: 3;
+  align-self: start;
+}
+.cfw-page.cfw-v75 .cfw-import-panel {
+  grid-column: 1 / -1;
+  order: 6;
+}
+.cfw-page.cfw-v75 .cfw-ai-validated-actions {
+  border-color: var(--lb-border, rgba(0,0,0,.16));
+}
+@media (max-width: 760px) {
+  .cfw-page.cfw-v75 .cfw-slider-panel,
+  .cfw-page.cfw-v75 .cfw-wallpaper-panel,
+  .cfw-page.cfw-v75 .cfw-component-inspector,
+  .cfw-page.cfw-v75 .cfw-import-panel {
+    grid-column: auto;
+  }
+}
+
+/* ============================================================
+   V77 Wallpaper activation gating
+   - The Wallpaper Editor keeps only the activation checkbox visible by default.
+   - Path, file picker, display mode and sliders appear after enabling wallpaper.
+   ============================================================ */
+.cfw-page.cfw-v77 .cfw-wallpaper-advanced {
+  display: none;
+  grid-template-columns: 1fr;
+  gap: 10px 12px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.cfw-page.cfw-v77 .cfw-wallpaper-panel.cfw-wallpaper-enabled .cfw-wallpaper-advanced,
+.cfw-page.cfw-v77 .cfw-wallpaper-grid:has(#wallpaperEnabled:checked) .cfw-wallpaper-advanced {
+  display: grid;
+}
+.cfw-page.cfw-v77 .cfw-wallpaper-advanced[hidden] {
+  display: none !important;
+}
+.cfw-page.cfw-v77 .cfw-wallpaper-advanced .cfw-label,
+.cfw-page.cfw-v77 .cfw-wallpaper-advanced input,
+.cfw-page.cfw-v77 .cfw-wallpaper-advanced select,
+.cfw-page.cfw-v77 .cfw-wallpaper-advanced .cfw-file-picker {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}

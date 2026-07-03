@@ -1,0 +1,43 @@
+/*
+ * LoxBerry User Theme Template
+ * File name convention: theme-user-<slug>.css
+ * Theme class convention: body.theme-user-<slug>
+ * Generated themes should override tokens only.
+ */
+
+body.theme-user-template {
+  --lb-font: system-ui, -apple-system, sans-serif;
+
+  --lb-bg: #f4f5f7;
+  --lb-text: #1a1a2e;
+  --lb-text-secondary: #555555;
+  --lb-text-muted: #888888;
+  --lb-border-color: #e5e5e5;
+
+  --lb-primary: #6dac20;
+  --lb-primary-hover: #5a9418;
+  --lb-danger: #dc2626;
+  --lb-warning: #ca8a04;
+  --lb-info: #0a4586;
+  --lb-success: #6dac20;
+
+  --lb-radius: 10px;
+  --lb-radius-sm: 6px;
+
+  --lb-card-bg: #ffffff;
+  --lb-card-border: 1px solid var(--lb-border-color);
+  --lb-card-shadow: 0 1px 3px rgba(0,0,0,.06);
+
+  --lb-btn-bg: #e6e6e6;
+  --lb-btn-hover-bg: #d4d4d4;
+  --lb-btn-text: #000000;
+  --lb-btn-border: #7e7e7e;
+  --lb-btn-radius: 4px;
+  --lb-btn-primary-bg: var(--lb-primary);
+  --lb-btn-primary-text: #ffffff;
+  --lb-btn-primary-border: var(--lb-primary-hover);
+
+  --lb-input-bg: #ffffff;
+  --lb-input-border: var(--lb-border-color);
+  --lb-input-text: var(--lb-text);
+}

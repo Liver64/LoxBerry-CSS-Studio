@@ -1,0 +1,477 @@
+{
+  "version": "63.0.0",
+  "description": "German to English color/style normalization for Design Studio AI prompts. Technical prompt context only; not UI language.",
+  "colors": [
+    {
+      "de": [
+        "schwarz",
+        "black"
+      ],
+      "en": "black",
+      "family": "black"
+    },
+    {
+      "de": [
+        "weiß",
+        "weiss",
+        "white"
+      ],
+      "en": "white",
+      "family": "white"
+    },
+    {
+      "de": [
+        "rot",
+        "red"
+      ],
+      "en": "red",
+      "family": "red"
+    },
+    {
+      "de": [
+        "hellrot",
+        "light red",
+        "red"
+      ],
+      "en": "light red",
+      "family": "red"
+    },
+    {
+      "de": [
+        "dunkelrot",
+        "dark red",
+        "red"
+      ],
+      "en": "dark red",
+      "family": "red"
+    },
+    {
+      "de": [
+        "bordeaux",
+        "weinrot",
+        "burgundy",
+        "maroon"
+      ],
+      "en": "burgundy",
+      "family": "maroon"
+    },
+    {
+      "de": [
+        "grün",
+        "gruen",
+        "green"
+      ],
+      "en": "green",
+      "family": "green"
+    },
+    {
+      "de": [
+        "hellgrün",
+        "hellgruen",
+        "light green",
+        "green"
+      ],
+      "en": "light green",
+      "family": "green"
+    },
+    {
+      "de": [
+        "dunkelgrün",
+        "dunkelgruen",
+        "dark green",
+        "green"
+      ],
+      "en": "dark green",
+      "family": "green"
+    },
+    {
+      "de": [
+        "limette",
+        "lime"
+      ],
+      "en": "lime",
+      "family": "lime"
+    },
+    {
+      "de": [
+        "oliv",
+        "olivgrün",
+        "olivgruen",
+        "olive"
+      ],
+      "en": "olive",
+      "family": "olive"
+    },
+    {
+      "de": [
+        "blau",
+        "blue"
+      ],
+      "en": "blue",
+      "family": "blue"
+    },
+    {
+      "de": [
+        "hellblau",
+        "hell blau",
+        "light blue",
+        "blue"
+      ],
+      "en": "light blue",
+      "family": "blue"
+    },
+    {
+      "de": [
+        "dunkelblau",
+        "dunkel blau",
+        "dark blue",
+        "navy"
+      ],
+      "en": "dark blue",
+      "family": "navy"
+    },
+    {
+      "de": [
+        "marineblau",
+        "navy"
+      ],
+      "en": "navy",
+      "family": "navy"
+    },
+    {
+      "de": [
+        "türkis",
+        "tuerkis",
+        "turquoise",
+        "cyan"
+      ],
+      "en": "turquoise",
+      "family": "cyan"
+    },
+    {
+      "de": [
+        "cyan"
+      ],
+      "en": "cyan",
+      "family": "cyan"
+    },
+    {
+      "de": [
+        "aqua",
+        "cyan"
+      ],
+      "en": "aqua",
+      "family": "cyan"
+    },
+    {
+      "de": [
+        "petrol",
+        "blaugrün",
+        "blaugruen",
+        "teal"
+      ],
+      "en": "teal",
+      "family": "teal"
+    },
+    {
+      "de": [
+        "lila",
+        "purple"
+      ],
+      "en": "purple",
+      "family": "purple"
+    },
+    {
+      "de": [
+        "violett",
+        "violet",
+        "purple"
+      ],
+      "en": "violet",
+      "family": "purple"
+    },
+    {
+      "de": [
+        "lavendel",
+        "lavender",
+        "purple"
+      ],
+      "en": "lavender",
+      "family": "purple"
+    },
+    {
+      "de": [
+        "flieder",
+        "lilac",
+        "purple"
+      ],
+      "en": "lilac",
+      "family": "purple"
+    },
+    {
+      "de": [
+        "rosa",
+        "pink",
+        "rose"
+      ],
+      "en": "pink",
+      "family": "rose"
+    },
+    {
+      "de": [
+        "pink",
+        "rose"
+      ],
+      "en": "pink",
+      "family": "rose"
+    },
+    {
+      "de": [
+        "rosé",
+        "rose",
+        "rosefarben",
+        "rosafarben"
+      ],
+      "en": "rose",
+      "family": "rose"
+    },
+    {
+      "de": [
+        "magenta"
+      ],
+      "en": "magenta",
+      "family": "magenta"
+    },
+    {
+      "de": [
+        "fuchsia",
+        "fuchsie",
+        "magenta"
+      ],
+      "en": "fuchsia",
+      "family": "magenta"
+    },
+    {
+      "de": [
+        "gelb",
+        "yellow"
+      ],
+      "en": "yellow",
+      "family": "yellow"
+    },
+    {
+      "de": [
+        "gold",
+        "yellow"
+      ],
+      "en": "gold",
+      "family": "yellow"
+    },
+    {
+      "de": [
+        "orange"
+      ],
+      "en": "orange",
+      "family": "orange"
+    },
+    {
+      "de": [
+        "braun",
+        "brown"
+      ],
+      "en": "brown",
+      "family": "brown"
+    },
+    {
+      "de": [
+        "beige"
+      ],
+      "en": "beige",
+      "family": "beige"
+    },
+    {
+      "de": [
+        "sand",
+        "sandfarben",
+        "beige"
+      ],
+      "en": "sand",
+      "family": "beige"
+    },
+    {
+      "de": [
+        "creme",
+        "cremefarben",
+        "cream",
+        "beige"
+      ],
+      "en": "cream",
+      "family": "beige"
+    },
+    {
+      "de": [
+        "grau",
+        "gray"
+      ],
+      "en": "gray",
+      "family": "gray"
+    },
+    {
+      "de": [
+        "hellgrau",
+        "hell grau",
+        "light gray",
+        "gray"
+      ],
+      "en": "light gray",
+      "family": "gray"
+    },
+    {
+      "de": [
+        "dunkelgrau",
+        "dunkel grau",
+        "dark gray",
+        "dark-gray"
+      ],
+      "en": "dark gray",
+      "family": "dark-gray"
+    },
+    {
+      "de": [
+        "anthrazit",
+        "anthracite",
+        "dark-gray"
+      ],
+      "en": "anthracite",
+      "family": "dark-gray"
+    },
+    {
+      "de": [
+        "silber",
+        "silver"
+      ],
+      "en": "silver",
+      "family": "silver"
+    },
+    {
+      "de": [
+        "transparent"
+      ],
+      "en": "transparent",
+      "family": "transparent"
+    },
+    {
+      "de": [
+        "glas",
+        "glasig",
+        "glass"
+      ],
+      "en": "glass",
+      "family": "glass"
+    }
+  ],
+  "styles": [
+    {
+      "de": [
+        "ruhig",
+        "calm"
+      ],
+      "en": "calm"
+    },
+    {
+      "de": [
+        "modern"
+      ],
+      "en": "modern"
+    },
+    {
+      "de": [
+        "minimalistisch",
+        "minimal"
+      ],
+      "en": "minimal"
+    },
+    {
+      "de": [
+        "elegant"
+      ],
+      "en": "elegant"
+    },
+    {
+      "de": [
+        "warm"
+      ],
+      "en": "warm"
+    },
+    {
+      "de": [
+        "kühl",
+        "kuehl",
+        "cool"
+      ],
+      "en": "cool"
+    },
+    {
+      "de": [
+        "kräftig",
+        "kraeftig",
+        "vivid"
+      ],
+      "en": "vivid"
+    },
+    {
+      "de": [
+        "pastell",
+        "pastellfarben",
+        "pastel"
+      ],
+      "en": "pastel"
+    },
+    {
+      "de": [
+        "dunkel",
+        "dark"
+      ],
+      "en": "dark"
+    },
+    {
+      "de": [
+        "hell",
+        "light"
+      ],
+      "en": "light"
+    },
+    {
+      "de": [
+        "dezent",
+        "subtle"
+      ],
+      "en": "subtle"
+    },
+    {
+      "de": [
+        "kontrastreich",
+        "klare kontraste",
+        "high contrast"
+      ],
+      "en": "high contrast"
+    },
+    {
+      "de": [
+        "gut lesbar",
+        "lesbarkeit",
+        "readable"
+      ],
+      "en": "readable"
+    },
+    {
+      "de": [
+        "abgerundet",
+        "runde karten",
+        "abgerundete karten",
+        "rounded"
+      ],
+      "en": "rounded"
+    }
+  ]
+}
