@@ -612,7 +612,16 @@
       family: intent.primary_family,
       normalized_english: intent.normalized_english || intent.primary_family,
       required: true,
-      rule: 'Use the user requested color/style direction as the palette source. Do not copy or preserve the currently loaded theme colors unless explicitly requested.'
+      required_tokens: [
+        '--lb-primary',
+        '--lb-primary-hover',
+        '--lb-primary-dark',
+        '--lb-btn-primary-bg',
+        '--lb-active-bg',
+        '--lb-focus-ring',
+        '--lb-btn-group-active-bg'
+      ],
+      rule: 'The requested palette family is mandatory. The primary/action tokens must visibly belong to this family. Do not copy or preserve the currently loaded theme colors unless explicitly requested.'
     };
   }
 
@@ -802,6 +811,8 @@
       request.intent = 'create-new-theme';
       request.priority_rules = [
         'User color/style is mandatory and outranks any loaded theme.',
+        'Primary/action tokens must visibly use the requested palette family from palette_directive.family. For example, brown means brown/beige/earth accent colors, not blue or green.',
+        'Do not copy or preserve the currently loaded theme colors unless the user explicitly asks for that.',
         'Return compact JSON. Prefer meta + tokens + optional wallpaper/custom_css/import_meta. Do not include full CSS or component catalog unless needed.',
         'Use readable contrast after applying the requested palette.'
       ];

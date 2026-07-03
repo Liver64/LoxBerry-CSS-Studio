@@ -47,6 +47,7 @@
   var saveModal = document.getElementById('saveModal');
   var userThemeSelect = document.getElementById('userThemeSelect');
   var deleteThemeButton = document.getElementById('deleteTheme');
+  var undoThemeButton = document.getElementById('undoTheme');
   var deleteModal = document.getElementById('deleteModal');
   var cancelDeleteButton = document.getElementById('cancelDelete');
   var confirmDeleteButton = document.getElementById('confirmDelete');
@@ -208,22 +209,22 @@
     },
     'Slider': {
       'Standard Slider': {
-        'Grundfarbe': ['--lb-slider-active-bg', '--lb-active-bg'],
-        'Hintergrund': ['--lb-slider-bg'],
+        'Grundfarbe': ['--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg'],
+        'Hintergrund': ['--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg'],
         'Knopf': ['--lb-slider-thumb-bg', '--lb-slider-thumb-border']
       },
       'Compact Slider': {
-        'Grundfarbe': ['--lb-slider-compact-active-bg', '--lb-slider-active-bg'],
-        'Hintergrund': ['--lb-slider-compact-bg', '--lb-slider-bg'],
-        'Knopf': ['--lb-slider-compact-thumb-bg', '--lb-slider-thumb-bg']
+        'Grundfarbe': ['--lb-slider-compact-active-bg', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg'],
+        'Hintergrund': ['--lb-slider-compact-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg'],
+        'Knopf': ['--lb-slider-compact-thumb-bg', '--lb-slider-compact-thumb-border', '--lb-slider-thumb-bg', '--lb-slider-thumb-border']
       }
     },
     'Toggle': {
       'Standard Toggle': {
-        'Active': ['--lb-switch-on-bg', '--lb-active-bg'],
-        'Hintergrund': ['--lb-switch-off-bg'],
-        'Rahmen': ['--lb-switch-border'],
-        'Knopf': ['--lb-switch-thumb-bg'],
+        'Active': ['--lb-switch-on-bg', '--lb-toggle-active-bg'],
+        'Hintergrund': ['--lb-switch-off-bg', '--lb-toggle-bg'],
+        'Rahmen': ['--lb-switch-border', '--lb-toggle-border'],
+        'Knopf': ['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'],
         'Radius': ['--lb-switch-radius']
       },
       'Toggle Disabled': {
@@ -328,8 +329,16 @@
       'Sidebar': {
         'Grundfarbe': ['--lb-sidebar-bg'],
         'Textfarbe': ['--lb-sidebar-text'],
-        'Active': ['--lb-nav-active-bg', '--lb-active-bg'],
-        'Hover': ['--lb-nav-hover-bg']
+        'Active': ['--lb-sidebar-active-bg', '--lb-nav-active-bg'],
+        'Hover': ['--lb-sidebar-link-hover-bg', '--lb-nav-hover-bg']
+      },
+      'Sidebar Einträge': {
+        'Textfarbe': ['--lb-sidebar-item-text'],
+        'Buttonfarbe': ['--lb-sidebar-active-bg'],
+        'Button-Textfarbe': ['--lb-sidebar-active-text'],
+        'Hover': ['--lb-sidebar-link-hover-bg'],
+        'Hover Textfarbe': ['--lb-sidebar-link-hover-text'],
+        'Radius': ['--lb-sidebar-item-radius']
       }
     },
     'hover': {
@@ -405,6 +414,9 @@
     'Rahmen': ['#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373', '#6dac20', '#404040'],
     'Hover': ['#f5f5f5', '#e5e5e5', '#edf6e7', '#d4d4d4', '#5a9418', '#404040'],
     'Active': ['#6dac20', '#5a9418', '#4a7a12', '#3d3d3d', '#ffffff', '#171717'],
+    'Buttonfarbe': ['#6dac20', '#5a9418', '#4a7a12', '#8b5e34', '#3d3d3d', '#171717'],
+    'Button-Textfarbe': ['#ffffff', '#f5f5f5', '#171717', '#000000', '#3d3d3d', '#737373'],
+    'Hover Textfarbe': ['#ffffff', '#f5f5f5', '#171717', '#000000', '#3d3d3d', '#737373'],
     'Header': ['#ffffff', '#f7f7f7', '#e5e5e5', '#6dac20', '#3d3d3d', '#171717'],
     'Disabled': ['#f5f5f5', '#eeeeee', '#d4d4d4', '#a3a3a3', '#737373', '#404040'],
     'Focus': ['#6dac20', '#5a9418', '#4a7a12', '#737373', '#404040', '#171717'],
@@ -539,9 +551,9 @@
   var preferredPaletteTokens = [
     '--lb-bg', '--lb-content-bg', '--lb-card-bg', '--lb-card-text', '--lb-primary', '--lb-primary-hover', '--lb-primary-dark',
     '--lb-active-bg', '--lb-active-text', '--lb-btn-primary-bg', '--lb-btn-primary-text', '--lb-btn-bg', '--lb-btn-text',
-    '--lb-sidebar-bg', '--lb-sidebar-text', '--lb-text', '--lb-text-secondary', '--lb-text-muted', '--lb-border-color',
+    '--lb-sidebar-bg', '--lb-sidebar-text', '--lb-sidebar-item-text', '--lb-sidebar-active-bg', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-bg', '--lb-sidebar-link-hover-text', '--lb-text', '--lb-text-secondary', '--lb-text-muted', '--lb-border-color',
     '--lb-border', '--lb-card-border', '--lb-input-bg', '--lb-input-text', '--lb-input-border', '--lb-table-header-bg',
-    '--lb-table-header-text', '--lb-table-bg', '--lb-table-border-color', '--lb-success', '--lb-warning', '--lb-danger'
+    '--lb-table-header-text', '--lb-table-bg', '--lb-table-border-color', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg', '--lb-slider-thumb-bg', '--lb-slider-thumb-border', '--lb-slider-compact-active-bg', '--lb-slider-compact-bg', '--lb-slider-compact-thumb-bg', '--lb-slider-compact-thumb-border', '--lb-success', '--lb-warning', '--lb-danger'
   ];
 
   function uniqueTokenNames(extraNames) {
@@ -647,14 +659,17 @@
 
   function getEntry() {
     var key = currentKey();
-    if (!studioModel[key]) studioModel[key] = defaultEntry(false);
+    if (!studioModel[key]) {
+      if (undoRestoring) return defaultEntry(false);
+      studioModel[key] = defaultEntry(false);
+    }
     return studioModel[key];
   }
 
   function saveControlsToEntry() { studioModel[currentKey()] = defaultEntry(true); }
 
-  function loadEntryToControls() {
-    var entry = getEntry();
+  function loadEntryToControls(entryOverride) {
+    var entry = entryOverride || getEntry();
     colorPicker.value = entry.color || '#007aff';
     alphaRange.value = entry.alpha == null ? 100 : entry.alpha;
     brightnessRange.value = entry.brightness == null ? 0 : entry.brightness;
@@ -776,6 +791,120 @@
     radiusValue.textContent = radiusRange.value + 'px';
     shadowValue.textContent = shadowRange.value;
     updateWallpaperLabels();
+  }
+
+
+  var undoStack = [];
+  var undoLimit = 40;
+  var undoRestoring = false;
+  var undoArmedControl = null;
+
+  function cloneStudioObject(value) {
+    try { return JSON.parse(JSON.stringify(value == null ? null : value)); } catch (e) { return value; }
+  }
+
+  function currentControlSnapshot() {
+    return {
+      color: colorPicker ? (colorPicker.value || '#007aff') : '#007aff',
+      alpha: alphaRange ? parseInt(alphaRange.value || '100', 10) : 100,
+      brightness: brightnessRange ? parseInt(brightnessRange.value || '0', 10) : 0,
+      radius: radiusRange ? parseInt(radiusRange.value || '12', 10) : 12,
+      shadow: shadowRange ? parseInt(shadowRange.value || '1', 10) : 1,
+      dirty: false
+    };
+  }
+
+  function makeUndoSnapshot(label) {
+    return {
+      label: label || '',
+      selection: { area: currentArea(), element: currentElement(), group: currentGroup() },
+      controls: currentControlSnapshot(),
+      studioModel: cloneStudioObject(studioModel || {}),
+      aiImportedTokens: cloneStudioObject(aiImportedTokens || {}),
+      aiImportedCss: aiImportedCss || '',
+      customCssValue: customCss ? (customCss.value || '') : '',
+      lastImportMeta: cloneStudioObject(lastImportMeta || null),
+      wallpaperState: cloneStudioObject(wallpaperState || { enabled: false, image: '', mode: 'cover', brightness: 100, opacity: 100 }),
+      themeIdValue: themeId ? (themeId.value || '') : '',
+      themeNameValue: themeName ? (themeName.value || '') : '',
+      themeVersionValue: themeVersion ? (themeVersion.value || '') : ''
+    };
+  }
+
+  function updateUndoButton() {
+    if (!undoThemeButton) return;
+    undoThemeButton.disabled = undoStack.length === 0;
+    undoThemeButton.title = undoStack.length ? 'Letzte Änderung rückgängig machen' : 'Keine Änderung zum Rückgängigmachen';
+  }
+
+  function pushUndoSnapshot(label) {
+    if (undoRestoring) return;
+    undoStack.push(makeUndoSnapshot(label));
+    if (undoStack.length > undoLimit) undoStack.shift();
+    updateUndoButton();
+  }
+
+  function restoreUndoSnapshot(snapshot) {
+    if (!snapshot) return;
+    undoRestoring = true;
+    studioModel = cloneStudioObject(snapshot.studioModel || {});
+    aiImportedTokens = cloneStudioObject(snapshot.aiImportedTokens || {});
+    aiImportedCss = snapshot.aiImportedCss || '';
+    lastImportMeta = cloneStudioObject(snapshot.lastImportMeta || null);
+    wallpaperState = cloneStudioObject(snapshot.wallpaperState || { enabled: false, image: '', mode: 'cover', brightness: 100, opacity: 100 });
+
+    if (themeId) themeId.value = snapshot.themeIdValue || '';
+    if (themeName) themeName.value = snapshot.themeNameValue || '';
+    if (themeVersion) themeVersion.value = snapshot.themeVersionValue || '';
+    if (customCss) customCss.value = snapshot.customCssValue || aiImportedCss || '';
+
+    if (snapshot.selection && areas[snapshot.selection.area]) {
+      areaSelect.value = snapshot.selection.area;
+      renderElements();
+      if ((areas[snapshot.selection.area] || {})[snapshot.selection.element]) {
+        elementSelect.value = snapshot.selection.element;
+        renderColorGroups();
+      }
+      if ((((areas[snapshot.selection.area] || {})[snapshot.selection.element] || {})[snapshot.selection.group])) {
+        colorGroupSelect.value = snapshot.selection.group;
+      }
+    }
+
+    loadEntryToControls(snapshot.controls || null);
+    loadWallpaperStateToControls();
+    updateWallpaperLabels();
+    updateWallpaperControlVisibility();
+    renderPropertyInspector();
+    refreshPreviewAndPalette();
+    undoRestoring = false;
+    updateUndoButton();
+    setStatus('Letzte Änderung rückgängig gemacht.', false);
+  }
+
+  function undoLastChange() {
+    var snapshot = undoStack.pop();
+    restoreUndoSnapshot(snapshot);
+  }
+
+  function armUndoForControl(control) {
+    if (!control || undoRestoring) return;
+    if (undoArmedControl === control) return;
+    pushUndoSnapshot('control');
+    undoArmedControl = control;
+  }
+
+  function disarmUndoForControl(control) {
+    if (undoArmedControl === control) undoArmedControl = null;
+  }
+
+  function bindUndoControl(control) {
+    if (!control) return;
+    ['pointerdown', 'focus', 'keydown'].forEach(function (eventName) {
+      control.addEventListener(eventName, function () { armUndoForControl(control); });
+    });
+    ['change', 'blur'].forEach(function (eventName) {
+      control.addEventListener(eventName, function () { disarmUndoForControl(control); });
+    });
   }
 
 
@@ -937,6 +1066,7 @@
       tile.querySelector('.cfw-palette-token').textContent = label;
       tile.querySelector('.cfw-palette-value').textContent = value;
       tile.addEventListener('click', function () {
+        pushUndoSnapshot('palette');
         var normalized = normalizeHexColor(color);
         colorPicker.value = normalized || color;
         saveControlsToEntry();
@@ -1070,6 +1200,25 @@
       tokens['--cfw-preview-btn-group-inactive-border'] = tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
     }
 
+    // V102: Slider colors are scoped to slider tokens. Do not derive slider
+    // editing from --lb-active-bg, because that also drives toggles and active
+    // buttons in many themes.
+    var sliderActive = tokens['--lb-slider-active-bg'] || tokens['--lb-primary'] || tokens['--lb-btn-primary-bg'];
+    if (sliderActive) {
+      setRuleToken(tokens, '--lb-slider-active-bg', sliderActive);
+      setRuleToken(tokens, '--lb-slider-fill-bg', tokens['--lb-slider-fill-bg'] || sliderActive);
+      setRuleToken(tokens, '--lb-range-active-bg', tokens['--lb-range-active-bg'] || tokens['--lb-slider-fill-bg'] || sliderActive);
+      var sliderTrack = tokens['--lb-slider-bg'] || tokens['--lb-slider-track-bg'] || tokens['--lb-range-track-bg'] || tokens['--lb-border-color'] || tokens['--lb-border'] || 'rgba(0,0,0,.22)';
+      setRuleToken(tokens, '--lb-slider-bg', sliderTrack);
+      setRuleToken(tokens, '--lb-slider-track-bg', tokens['--lb-slider-track-bg'] || sliderTrack);
+      setRuleToken(tokens, '--lb-range-track-bg', tokens['--lb-range-track-bg'] || tokens['--lb-slider-track-bg'] || sliderTrack);
+      setRuleToken(tokens, '--lb-slider-thumb-bg', tokens['--lb-slider-thumb-bg'] || sliderActive);
+      setRuleToken(tokens, '--lb-slider-thumb-border', tokens['--lb-slider-thumb-border'] || sliderActive);
+      setRuleToken(tokens, '--lb-slider-compact-active-bg', tokens['--lb-slider-compact-active-bg'] || sliderActive);
+      setRuleToken(tokens, '--lb-slider-compact-thumb-bg', tokens['--lb-slider-compact-thumb-bg'] || tokens['--lb-slider-thumb-bg'] || sliderActive);
+      setRuleToken(tokens, '--lb-slider-compact-thumb-border', tokens['--lb-slider-compact-thumb-border'] || tokens['--lb-slider-thumb-border'] || tokens['--lb-slider-compact-thumb-bg'] || tokens['--lb-slider-thumb-bg'] || sliderActive);
+    }
+
     // Header buttons derive from primary/active when no dedicated values are present.
     var primary = tokens['--lb-primary'] || tokens['--lb-active-bg'] || tokens['--lb-btn-primary-bg'];
     var onPrimary = tokens['--lb-active-text'] || tokens['--lb-btn-primary-text'] || (primary ? readableTextFor(primary) : '');
@@ -1117,7 +1266,8 @@
       '--lb-active-bg','--lb-active-text','--lb-primary','--lb-primary-hover','--lb-btn-primary-bg','--lb-btn-primary-text',
       '--lb-header-btn-bg','--lb-header-btn-text','--lb-header-btn-hover-bg','--lb-header-btn-hover-text',
       '--lb-table-bg','--lb-table-row-bg','--lb-table-header-bg','--lb-table-header-text','--lb-table-border','--lb-table-border-color','--lb-table-cell-text','--lb-table-row-hover-bg','--lb-table-row-hover-text',
-      '--lb-sidebar-bg','--lb-sidebar-text','--lb-sidebar-active-bg','--lb-sidebar-active-text','--lb-sidebar-link-hover-bg','--lb-sidebar-link-hover-text',
+      '--lb-sidebar-bg','--lb-sidebar-text','--lb-sidebar-item-bg','--lb-sidebar-item-text','--lb-sidebar-item-radius','--lb-sidebar-active-bg','--lb-sidebar-active-text','--lb-sidebar-link-hover-bg','--lb-sidebar-link-hover-text',
+      '--lb-slider-active-bg','--lb-slider-fill-bg','--lb-range-active-bg','--lb-slider-bg','--lb-slider-track-bg','--lb-range-track-bg','--lb-slider-thumb-bg','--lb-slider-thumb-border','--lb-slider-compact-active-bg','--lb-slider-compact-bg','--lb-slider-compact-thumb-bg','--lb-slider-compact-thumb-border',
       '--lb-radius','--lb-radius-sm','--lb-btn-radius','--lb-card-radius','--lb-radius-card','--lb-table-radius','--lb-focus-ring','--lb-focus-ring-strong'
     ];
     rawVars.forEach(function (name) { page.style.removeProperty(name); });
@@ -1150,6 +1300,17 @@
     });
   }
 
+  function updatePreviewRangeFills() {
+    if (!previewRoot) return;
+    previewRoot.querySelectorAll('.cfw-range').forEach(function (range) {
+      var min = parseFloat(range.min || '0');
+      var max = parseFloat(range.max || '100');
+      var value = parseFloat(range.value || '0');
+      var pct = max > min ? ((value - min) / (max - min)) * 100 : 0;
+      range.style.setProperty('--lb-slider-fill', clamp(pct, 0, 100) + '%');
+    });
+  }
+
   function updatePreview() {
     if (!previewRoot) return;
     var tokens = effectivePreviewTokens();
@@ -1158,6 +1319,7 @@
     appliedPreviewVars.forEach(function (name) { previewRoot.style.setProperty(name, tokens[name]); });
     applyWallpaperPreview();
     applyPreviewFallbacks(tokens);
+    updatePreviewRangeFills();
     broadcastEmbeddedFrameTokens(tokens);
     applyStudioTheme(tokens);
     mappedTokenCount.textContent = Object.keys(tokens).filter(function (name) { return /^--lb-/.test(name); }).length;
@@ -1314,6 +1476,7 @@
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function () {
+      pushUndoSnapshot('css-import');
       var text = String(reader.result || '');
       var meta = classifyCssImport(text, file.name);
       lastImportMeta = meta;
@@ -1369,6 +1532,7 @@
     if (index === '' || index == null) return;
     var theme = userThemes[Number(index)];
     if (!theme) return;
+    pushUndoSnapshot('load-theme');
     studioModel = {};
     aiImportedTokens = themeTokensFromJson(theme);
     aiImportedCss = theme.custom_css || theme.css || '';
@@ -1836,6 +2000,16 @@
         bg: '#fff7ed', surface: '#ffffff', surfaceAlt: '#ffedd5', text: '#2f1d12', muted: '#7c5a3f', border: '#fed7aa',
         sidebar: '#3b2518', sidebarText: '#fff7ed', focusShadow: '0 0 0 3px rgba(234, 88, 12, 0.25)'
       },
+      brown: {
+        primary: '#8b5e34', primaryHover: '#74502f', primaryDark: '#5d4028',
+        bg: '#f7efe4', surface: '#fffaf3', surfaceAlt: '#ead8c0', text: '#2c2118', muted: '#6f5b48', border: '#d9c3a8',
+        sidebar: '#3a2a1f', sidebarText: '#fff7ed', focusShadow: '0 0 0 3px rgba(139, 94, 52, 0.25)'
+      },
+      beige: {
+        primary: '#a57948', primaryHover: '#8b653d', primaryDark: '#6f4f31',
+        bg: '#f9f1e4', surface: '#fffaf2', surfaceAlt: '#efe0c7', text: '#2d241a', muted: '#705f4d', border: '#ddc7a7',
+        sidebar: '#3c3023', sidebarText: '#fff8ed', focusShadow: '0 0 0 3px rgba(165, 121, 72, 0.25)'
+      },
       yellow: {
         primary: '#ca8a04', primaryHover: '#a16207', primaryDark: '#854d0e',
         bg: '#fffbeb', surface: '#ffffff', surfaceAlt: '#fef3c7', text: '#2c2414', muted: '#746843', border: '#fde68a',
@@ -1930,7 +2104,7 @@
     force(['--lb-text-muted', '--lb-text-secondary', '--lb-input-placeholder-text', '--lb-table-footer-text'], p.muted);
     force(['--lb-border-color', '--lb-input-border', '--lb-select-border', '--lb-btn-border', '--lb-table-border-color', '--lb-table-cell-border-color', '--lb-multiselect-border', '--lb-multiselect-menu-border'], p.border);
     force(['--lb-sidebar-bg'], p.sidebar);
-    force(['--lb-sidebar-text', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-text', '--lb-active-text', '--lb-btn-primary-text', '--lb-btn-primary-hover-text', '--lb-header-btn-text', '--lb-header-btn-hover-text'], p.sidebarText);
+    force(['--lb-sidebar-text', '--lb-sidebar-item-text', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-text', '--lb-active-text', '--lb-btn-primary-text', '--lb-btn-primary-hover-text', '--lb-header-btn-text', '--lb-header-btn-hover-text'], p.sidebarText);
     force(['--lb-input-focus-border'], p.primary);
     force(['--lb-input-focus-shadow'], p.focusShadow);
     return tokens;
@@ -1979,7 +2153,7 @@
     put(['--lb-header-text', '--lb-header-btn-text'], text);
     put(['--lb-header-border'], border);
     put(['--lb-sidebar-bg'], colorValue(colors.sidebar, mixColor(text, 10)));
-    put(['--lb-sidebar-text'], colorValue(colors.sidebar_text, '#ffffff'));
+    put(['--lb-sidebar-text', '--lb-sidebar-item-text'], colorValue(colors.sidebar_text, '#ffffff'));
     put(['--lb-sidebar-active-bg', '--lb-sidebar-link-hover-bg'], primary);
     put(['--lb-sidebar-active-text', '--lb-sidebar-link-hover-text'], colorValue(colors.on_primary, readableTextFor(primary)));
     put(['--lb-success'], colorValue(colors.success, '#2e8b57'));
@@ -2056,9 +2230,9 @@
     var toggle = componentsDesign.toggle || componentsDesign.switch || {};
     put(['--lb-toggle-bg', '--lb-switch-off-bg'], componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt));
     put(['--lb-toggle-hover-bg'], componentValue(toggle, ['hover'], mixColor(componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt), -5)));
-    put(['--lb-switch-on-bg', '--lb-active-bg'], componentValue(toggle, ['active', 'on', 'on_bg'], primary));
+    put(['--lb-switch-on-bg', '--lb-toggle-active-bg'], componentValue(toggle, ['active', 'on', 'on_bg'], primary));
     put(['--lb-switch-border'], componentValue(toggle, ['border'], border));
-    put(['--lb-switch-thumb-bg'], componentValue(toggle, ['thumb', 'thumb_bg'], '#ffffff'));
+    put(['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'], componentValue(toggle, ['thumb', 'thumb_bg'], '#ffffff'));
 
     return applyPaletteGuard(out, getCurrentAiPaletteFamily());
   }
@@ -2175,6 +2349,7 @@
       return;
     }
     var draft = aiValidatedDraft;
+    pushUndoSnapshot('ai-import');
     // AI import is a new baseline. Clear earlier manual slider state so
     // stale local selections (for example an old blue input background) do
     // not overwrite the AI draft on the first transfer.
@@ -2449,6 +2624,15 @@
   }
 
 
+  if (previewRoot) {
+    previewRoot.querySelectorAll('.cfw-range').forEach(function (range) {
+      range.addEventListener('input', updatePreviewRangeFills);
+      range.addEventListener('change', updatePreviewRangeFills);
+    });
+    updatePreviewRangeFills();
+  }
+
+
   window.CFW_DESIGN_STUDIO = {
     t: t,
     setAiStatus: setAiStatus,
@@ -2504,6 +2688,12 @@
   });
 
 
+  if (undoThemeButton) {
+    undoThemeButton.addEventListener('click', function () { undoLastChange(); });
+    updateUndoButton();
+  }
+  [colorPicker, alphaRange, brightnessRange, radiusRange, shadowRange, customCss, wallpaperEnabled, wallpaperImage, wallpaperMode, wallpaperBrightness, wallpaperOpacity].forEach(bindUndoControl);
+
   document.getElementById('saveTheme').addEventListener('click', openSaveModal);
   if (deleteThemeButton) deleteThemeButton.addEventListener('click', openDeleteModal);
   if (cancelDeleteButton) cancelDeleteButton.addEventListener('click', closeDeleteModal);
@@ -2532,6 +2722,7 @@
   updateWallpaperFileName(null);
   if (wallpaperFile) {
     wallpaperFile.addEventListener('change', function () {
+      pushUndoSnapshot('wallpaper-file');
       var file = wallpaperFile.files && wallpaperFile.files[0];
       updateWallpaperFileName(file);
       if (!file) {

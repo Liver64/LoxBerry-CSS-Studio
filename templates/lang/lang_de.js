@@ -9,7 +9,8 @@ window.LBDesignStudioLangs.de = {
       "validate": "Validieren",
       "test": "Test",
       "close": "Schließen",
-      "apply": "Übernehmen"
+      "apply": "Übernehmen",
+      "undo": "↶ Rückgängig"
     },
     "common": {
       "yes": "Ja",

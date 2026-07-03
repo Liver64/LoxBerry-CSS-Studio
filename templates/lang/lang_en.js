@@ -9,7 +9,8 @@ window.LBDesignStudioLangs.en = {
       "validate": "Validate",
       "test": "Test",
       "close": "Close",
-      "apply": "Apply"
+      "apply": "Apply",
+      "undo": "↶ Undo"
     },
     "common": {
       "yes": "Yes",

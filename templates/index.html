@@ -5,7 +5,7 @@
 <script><TMPL_VAR GUARD_DE_JS ESCAPE=NONE></script>
 <script><TMPL_VAR GUARD_EN_JS ESCAPE=NONE></script>
 
-<div class="cfw-page cfw-v20 cfw-v24 cfw-v26 cfw-v27 cfw-v29 cfw-v33 cfw-v34 cfw-v35 cfw-v36 cfw-v37 cfw-v41 cfw-v45 cfw-v46 cfw-v48 cfw-v49 cfw-v50 cfw-v52 cfw-v53 cfw-v54 cfw-v66 cfw-v67 cfw-v68 cfw-v70 cfw-v71 cfw-v72 cfw-v73 cfw-v74 cfw-v75 cfw-v77 cfw-v78 cfw-v79 cfw-v88 cfw-v93 cfw-v98">
+<div class="cfw-page cfw-v20 cfw-v24 cfw-v26 cfw-v27 cfw-v29 cfw-v33 cfw-v34 cfw-v35 cfw-v36 cfw-v37 cfw-v41 cfw-v45 cfw-v46 cfw-v48 cfw-v49 cfw-v50 cfw-v52 cfw-v53 cfw-v54 cfw-v66 cfw-v67 cfw-v68 cfw-v70 cfw-v71 cfw-v72 cfw-v73 cfw-v74 cfw-v75 cfw-v77 cfw-v78 cfw-v79 cfw-v88 cfw-v93 cfw-v98 cfw-v99 cfw-v100 cfw-v101 cfw-v102 cfw-v103 cfw-v104 cfw-v114 cfw-v116">
   <div class="cfw-toolbar">
     <div class="cfw-toolbar-title">
       <div class="cfw-title-line">
@@ -20,6 +20,7 @@
           <option value="" data-i18n="toolbar.currentPreviewNewTheme"></option>
         </select>
       </label>
+      <button type="button" id="undoTheme" class="cfw-button" data-role="none" disabled title="Letzte Änderung rückgängig machen" data-i18n="main.buttons.undo">↶ Rückgängig</button>
       <button type="button" id="saveTheme" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.save"></button>
       <button type="button" id="deleteTheme" class="cfw-button" data-role="none" data-i18n="main.buttons.delete"></button>
     </div>
@@ -178,9 +179,9 @@
         <div class="cfw-app-preview">
           <aside class="cfw-app-sidebar" data-cfw-area="Layout" data-cfw-element="Sidebar" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.sidebar">
             <div class="cfw-logo-dot"></div>
-            <div class="cfw-nav-item active" data-i18n="preview.nav.dashboard"></div>
-            <div class="cfw-nav-item" data-i18n="preview.nav.settings"></div>
-            <div class="cfw-nav-item" data-i18n="preview.nav.logfiles"></div>
+            <div class="cfw-nav-item active" data-cfw-area="Layout" data-cfw-element="Sidebar Einträge" data-cfw-group="Buttonfarbe" data-i18n-attr="title:preview.edit.sidebar" data-i18n="preview.nav.dashboard"></div>
+            <div class="cfw-nav-item" data-cfw-area="Layout" data-cfw-element="Sidebar Einträge" data-cfw-group="Textfarbe" data-i18n-attr="title:preview.edit.sidebar" data-i18n="preview.nav.settings"></div>
+            <div class="cfw-nav-item" data-cfw-area="Layout" data-cfw-element="Sidebar Einträge" data-cfw-group="Textfarbe" data-i18n-attr="title:preview.edit.sidebar" data-i18n="preview.nav.logfiles"></div>
           </aside>
           <main class="cfw-app-main" data-cfw-area="Background" data-cfw-element="System Hintergrund" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.background">
             <header class="cfw-app-header">
@@ -208,7 +209,7 @@
                 <label data-cfw-area="Slider" data-cfw-element="Standard Slider" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.slider"><span data-i18n="preview.forms.slider"></span> <input class="cfw-range" type="range" value="60" data-role="none"></label>
                 <label class="cfw-check" data-cfw-area="Checkboxen" data-cfw-element="Standard Checkbox" data-cfw-group="Active" data-i18n-attr="title:preview.edit.checkbox"><input type="checkbox" checked> <span data-i18n="preview.forms.checkbox"></span></label>
                 <label class="cfw-check" data-cfw-area="Radio" data-cfw-element="Standard Radio" data-cfw-group="Active" data-i18n-attr="title:preview.edit.radio"><input type="radio" checked> <span data-i18n="preview.forms.radio"></span></label>
-                <label class="cfw-switch-row" data-cfw-area="Toggle" data-cfw-element="Standard Toggle" data-cfw-group="Active" data-i18n-attr="title:preview.edit.toggle"><span data-i18n="preview.forms.toggle"></span> <span class="cfw-switch"><input type="checkbox" checked><span></span></span></label>
+                <label class="cfw-switch-row" data-cfw-area="Toggle" data-cfw-element="Standard Toggle" data-cfw-group="Active" data-i18n-attr="title:preview.edit.toggle"><span data-i18n="preview.forms.toggle"></span> <span class="cfw-toggle-demo-pair"><span class="cfw-switch" title="Off / Hintergrund"><input type="checkbox"><span></span></span><span class="cfw-switch" title="On / Active"><input type="checkbox" checked><span></span></span></span></label>
               </div>
             </section>
 
@@ -274,7 +275,7 @@
 
         <section id="aiValidatedActionsPanel" class="cfw-panel cfw-ai-validated-actions" hidden>
           <div class="cfw-ai-actions">
-            <button type="button" id="aiValidate" class="cfw-button" data-role="none" data-i18n="main.buttons.validate"></button>
+            <button type="button" id="aiValidate" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.validate"></button>
             <button type="button" id="aiImport" class="cfw-button cfw-button-primary" data-role="none" data-i18n="ai.loadIntoStudio"></button>
           </div>
         </section>
