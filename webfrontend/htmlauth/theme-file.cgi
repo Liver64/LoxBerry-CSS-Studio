@@ -100,12 +100,32 @@ my $mime = _mime_type($file);
 my $mtime = (stat($path))[9] || time;
 my $size = -s $path;
 
+# V138: User theme CSS is edited in the Design Studio and must become visible
+# immediately after saving/switching themes. Do not allow the browser to keep a
+# fresh cached CSS copy for several minutes; this caused changes to appear only
+# after Ctrl+F5 in plugin pages.
+my @cache_headers;
+if ($file =~ /\.css\z/i) {
+    @cache_headers = (
+        -Cache_Control => 'no-store, no-cache, must-revalidate, max-age=0',
+        -Pragma        => 'no-cache',
+        -Expires       => 'Thu, 01 Jan 1970 00:00:00 GMT',
+        -ETag          => '"' . $mtime . '-' . $size . '"',
+    );
+} else {
+    # Assets may still be cached shortly; changed URLs/filenames are expected for
+    # generated assets. Keep Last-Modified for browser revalidation.
+    @cache_headers = (
+        -Cache_Control => 'private, max-age=300',
+    );
+}
+
 print header(
     -type           => $mime,
     -status         => '200 OK',
     -Content_Length => $size,
-    -Cache_Control  => 'private, max-age=300',
     -Last_Modified  => strftime('%a, %d %b %Y %H:%M:%S GMT', gmtime($mtime)),
+    @cache_headers,
 );
 
 open(my $fh, '<', $path) or _respond_text('404 Not Found', 'File not readable');

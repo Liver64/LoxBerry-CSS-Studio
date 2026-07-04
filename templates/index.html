@@ -5,7 +5,7 @@
 <script><TMPL_VAR GUARD_DE_JS ESCAPE=NONE></script>
 <script><TMPL_VAR GUARD_EN_JS ESCAPE=NONE></script>
 
-<div class="cfw-page cfw-v20 cfw-v24 cfw-v26 cfw-v27 cfw-v29 cfw-v33 cfw-v34 cfw-v35 cfw-v36 cfw-v37 cfw-v41 cfw-v45 cfw-v46 cfw-v48 cfw-v49 cfw-v50 cfw-v52 cfw-v53 cfw-v54 cfw-v66 cfw-v67 cfw-v68 cfw-v70 cfw-v71 cfw-v72 cfw-v73 cfw-v74 cfw-v75 cfw-v77 cfw-v78 cfw-v79 cfw-v88 cfw-v93 cfw-v98 cfw-v99 cfw-v100 cfw-v101 cfw-v102 cfw-v103 cfw-v104 cfw-v114 cfw-v116 cfw-v121 cfw-v122">
+<div class="cfw-page cfw-v20 cfw-v24 cfw-v26 cfw-v27 cfw-v29 cfw-v33 cfw-v34 cfw-v35 cfw-v36 cfw-v37 cfw-v41 cfw-v45 cfw-v46 cfw-v48 cfw-v49 cfw-v50 cfw-v52 cfw-v53 cfw-v54 cfw-v66 cfw-v67 cfw-v68 cfw-v70 cfw-v71 cfw-v72 cfw-v73 cfw-v74 cfw-v75 cfw-v77 cfw-v78 cfw-v79 cfw-v88 cfw-v93 cfw-v98 cfw-v99 cfw-v100 cfw-v101 cfw-v102 cfw-v103 cfw-v104 cfw-v114 cfw-v116 cfw-v121 cfw-v122 cfw-v123 cfw-v124 cfw-v125 cfw-v126 cfw-v127 cfw-v128 cfw-v129 cfw-v130 cfw-v131 cfw-v132 cfw-v133 cfw-v135 cfw-v136 cfw-v137 cfw-v139">
   <div class="cfw-toolbar">
     <div class="cfw-toolbar-title">
       <div class="cfw-title-line">
@@ -71,30 +71,27 @@
 
       <section class="cfw-panel cfw-slider-panel">
         <h2 data-i18n="settings.title"></h2>
-        <div class="cfw-control-grid">
-          <label class="cfw-label"><span data-i18n="settings.color"></span>
-            <input id="colorPicker" type="color" value="#007aff" data-role="none">
-          </label>
-          <label class="cfw-label"><span data-i18n="settings.opacity"></span>
-            <input id="alphaRange" type="range" min="0" max="100" value="100" data-role="none">
-            <span id="alphaValue" class="cfw-small-value">100%</span>
-          </label>
-          <label class="cfw-label"><span data-i18n="settings.brightness"></span>
-            <input id="brightnessRange" type="range" min="-40" max="40" value="0" data-role="none">
-            <span id="brightnessValue" class="cfw-small-value">0</span>
-          </label>
+        <div class="cfw-control-grid cfw-control-grid-simple">
+          <div class="cfw-label cfw-color-setting"><span data-i18n="settings.color"></span>
+            <div id="colorPresetPalette" class="cfw-color-preset-palette" aria-label="Farbpalette"></div>
+            <input id="colorPicker" class="cfw-native-color-input" type="color" value="#007aff" data-role="none" aria-label="Eigene Farbe wählen">
+          </div>
           <label class="cfw-label"><span data-i18n="settings.radius"></span>
             <input id="radiusRange" type="range" min="0" max="36" value="12" data-role="none">
             <span id="radiusValue" class="cfw-small-value">12px</span>
           </label>
-          <label class="cfw-label"><span data-i18n="settings.shadowDepth"></span>
-            <input id="shadowRange" type="range" min="0" max="5" value="1" data-role="none">
-            <span id="shadowValue" class="cfw-small-value">1</span>
-          </label>
+
+          <!-- V127: Advanced value channels stay in the internal model, but are no longer shown in the basic settings UI. -->
+          <input id="alphaRange" type="hidden" value="100" data-role="none">
+          <input id="brightnessRange" type="hidden" value="0" data-role="none">
+          <input id="shadowRange" type="hidden" value="1" data-role="none">
+          <span id="alphaValue" hidden>100%</span>
+          <span id="brightnessValue" hidden>0</span>
+          <span id="shadowValue" hidden>1</span>
         </div>
       </section>
 
-      <section id="wallpaperControls" class="cfw-panel cfw-wallpaper-panel">
+      <section id="wallpaperControls" class="cfw-panel cfw-wallpaper-panel" hidden>
         <h2 data-i18n="wallpaper.title"></h2>
         <div class="cfw-control-grid cfw-wallpaper-grid">
           <label class="cfw-label cfw-check"><input id="wallpaperEnabled" type="checkbox" data-role="none"> <span data-i18n="wallpaper.enabled"></span></label>
@@ -197,7 +194,7 @@
                 <select class="lb-input" data-role="none" data-cfw-area="Selects" data-cfw-element="Standard Select" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.select"><option data-i18n="preview.form.select"></option><option data-i18n="preview.form.option"></option></select>
                 <button class="lb-button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Standard Button" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.button" data-i18n="preview.form.button"></button>
                 <button class="lb-button lb-button-active" data-role="none" data-cfw-area="Buttons" data-cfw-element="Active Button" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.activeButton" data-i18n="preview.form.active"></button>
-              <div class="cfw-preview-btn-group" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Active" data-i18n-attr="title:preview.edit.buttonGroup"><button type="button" class="is-active" data-role="none" data-i18n="main.common.yes"></button><button type="button" data-role="none" data-i18n="main.common.no"></button><button type="button" data-role="none" data-i18n="main.common.auto"></button></div></div>
+              <div class="cfw-preview-btn-group" data-i18n-attr="title:preview.edit.buttonGroup"><button type="button" class="is-active" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Active" data-i18n="main.common.yes"></button><button type="button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Grundfarbe" data-i18n="main.common.no"></button><button type="button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Grundfarbe" data-i18n="main.common.auto"></button></div></div>
             </section>
 
             <section class="lb-card cfw-form-card">
@@ -212,13 +209,6 @@
                 <label class="cfw-switch-row" data-cfw-area="Toggle" data-cfw-element="Standard Toggle" data-cfw-group="Active" data-i18n-attr="title:preview.edit.toggle"><span data-i18n="preview.forms.toggle"></span> <span class="cfw-toggle-demo-pair"><span class="cfw-switch" title="Off / Hintergrund"><input type="checkbox"><span></span></span><span class="cfw-switch" title="On / Active"><input type="checkbox" checked><span></span></span></span></label>
               </div>
             </section>
-
-            <section class="cfw-feedback-row">
-              <div class="cfw-notify" data-cfw-area="Validation" data-cfw-element="Success" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.validation" data-i18n="preview.feedback.success"></div>
-              <div class="cfw-validation" data-cfw-area="Validation" data-cfw-element="Warning" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.validation" data-i18n="preview.feedback.warning"></div>
-              <button class="lb-button" data-role="none" data-cfw-area="Modal" data-cfw-element="Standard Modal" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.modal" data-i18n="preview.feedback.openModal"></button>
-            </section>
-
             <table class="lb-table cfw-preview-table" data-cfw-area="tabellen" data-cfw-element="Standard Tabelle" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.table">
               <thead><tr><th data-i18n="preview.table.name"></th><th data-i18n="preview.table.type"></th><th data-i18n="preview.table.status"></th><th data-i18n="preview.table.action"></th></tr></thead>
               <tbody>
@@ -322,9 +312,8 @@
     <label class="cfw-label"><span data-i18n="saveModal.version"></span>
       <input id="themeVersion" value="0.1.0" data-role="none" readonly>
     </label>
-    <label class="cfw-label"><span data-i18n="saveModal.base"></span>
-      <select id="baseTheme" data-role="none"><option value="core" data-i18n="saveModal.baseCore"></option><option value="liquid-glass" data-i18n="saveModal.baseLiquidGlass"></option><option value="rounded" data-i18n="saveModal.baseRounded"></option><option value="classic-mac" data-i18n="saveModal.baseClassicMac"></option></select>
-    </label>
+    <!-- V129: Basis is internal compatibility metadata, not a user setting. -->
+    <input id="baseTheme" type="hidden" value="core">
     <div class="cfw-modal-actions">
       <button type="button" id="cancelSave" class="cfw-button" data-role="none" data-i18n="main.buttons.cancel"></button>
       <button type="button" id="confirmSave" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.saveGenerateCss"></button>
@@ -340,6 +329,21 @@
     <div class="cfw-modal-actions">
       <button type="button" id="cancelDelete" class="cfw-button" data-role="none" data-i18n="main.buttons.cancel"></button>
       <button type="button" id="confirmDelete" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.delete"></button>
+    </div>
+  </div>
+</div>
+
+
+<div id="statusModal" class="cfw-modal cfw-status-modal" hidden role="dialog" aria-modal="true" aria-labelledby="statusModalTitle">
+  <div class="cfw-modal-card cfw-status-modal-card">
+    <div class="cfw-status-modal-header">
+      <span id="statusModalIcon" class="cfw-status-modal-icon" aria-hidden="true">i</span>
+      <h2 id="statusModalTitle" data-i18n="statusModal.infoTitle"></h2>
+    </div>
+    <p id="statusModalMessage" class="cfw-help"></p>
+    <p id="statusModalHint" class="cfw-help cfw-status-modal-hint"></p>
+    <div id="statusModalActions" class="cfw-modal-actions">
+      <button type="button" id="statusModalBack" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.back"></button>
     </div>
   </div>
 </div>

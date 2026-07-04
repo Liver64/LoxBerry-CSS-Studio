@@ -10,7 +10,9 @@ window.LBDesignStudioLangs.de = {
       "test": "Test",
       "close": "Schließen",
       "apply": "Übernehmen",
-      "undo": "↶ Rückgängig"
+      "undo": "↶ Rückgängig",
+      "ok": "OK",
+      "back": "Zurück"
     },
     "common": {
       "yes": "Ja",
@@ -34,7 +36,7 @@ window.LBDesignStudioLangs.de = {
     "ariaLabel": "Design Studio Bereiche",
     "designStudio": "Design Studio",
     "aiDesigner": "KI Designer",
-    "preview": "Vorschau",
+    "preview": "Live Vorschau",
     "documentation": "Dokumentation"
   },
   "inspector": {
@@ -98,8 +100,8 @@ window.LBDesignStudioLangs.de = {
     }
   },
   "preview": {
-    "title": "Finale Preview",
-    "caption": "Preview der gewählten Einstellungen mit allen zugeordneten Tokens.",
+    "title": "Finale Live Vorschau",
+    "caption": "Live Vorschau der gewählten Einstellungen mit allen zugeordneten Tokens.",
     "internalTokens": "interne Tokens",
     "nav": {
       "dashboard": "Dashboard",
@@ -206,6 +208,15 @@ window.LBDesignStudioLangs.de = {
     "validNoValues": "JSON gültig, aber keine anwendbaren Designwerte enthalten.",
     "adoptedValues": "Übernommene Designwerte"
   },
+  "statusModal": {
+    "successTitle": "OK",
+    "infoTitle": "Hinweis",
+    "warningTitle": "Hinweis",
+    "errorTitle": "Fehler",
+    "autoCloseHint": "Diese Meldung schließt automatisch nach 5 Sekunden.",
+    "manualCloseHint": "Bitte bestätigen."
+  },
+
   "deleteModal": {
     "title": "User Theme löschen",
     "help": "User Theme wirklich löschen? JSON und zugehörige CSS-Datei werden gelöscht, wenn sie vom CSS-Studio erzeugt wurden."
@@ -250,6 +261,8 @@ window.LBDesignStudioLangs.de = {
     "aiFocusPrepared": "KI-Fokus für {path} vorbereitet. Bei Bedarf Prompt anpassen und KI Entwurf erzeugen.",
     "directEditorOpened": "Direkteditor geöffnet: {path}",
     "previewSelected": "Preview-Auswahl übernommen: {path}. Doppelklick oder CTRL-/Strg-Klick öffnet den Direkteditor.",
-    "LoxBerryRead": "LoxBerry gelesen: {tokens} Tokens, {themes} Themes."
+    "LoxBerryRead": "LoxBerry gelesen: {tokens} Tokens, {themes} Themes.",
+    "selectElementFirst": "Bitte zuerst ein Element in der finalen Live Vorschau oder im Eigenschaftenbereich auswählen.",
+    "noRadiusForElement": "Dieses Element besitzt keine Radius-Tokens."
   }
 };

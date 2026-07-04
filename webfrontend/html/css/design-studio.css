@@ -438,7 +438,7 @@
 .cfw-theme-actions { display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; }
 .cfw-theme-select-label { display:flex; flex-direction:column; gap:4px; font-size:.86rem; font-weight:600; min-width:220px; }
 .cfw-theme-select { min-height:36px; padding:7px 10px; border-radius:10px; }
-.cfw-preview-btn-group { border:1px solid var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent))); }
+.cfw-preview-btn-group { border:1px solid var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent)))); }
 .cfw-preview-btn-group button { background:var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-bg, rgba(0,0,0,.06))); color:var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-text, inherit)); }
 
 
@@ -462,8 +462,8 @@
 
 /* V29: AI import is enabled only after successful validation. */
 .cfw-button.is-disabled, .cfw-button:disabled { opacity:.45; cursor:not-allowed; filter:grayscale(.35); }
-.cfw-preview-btn-group { border-color: var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent))) !important; }
-.cfw-preview-btn-group button { border-right:1px solid var(--lb-border-color, var(--lb-border, transparent)); }
+.cfw-preview-btn-group { border-color: var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent)))) !important; }
+.cfw-preview-btn-group button { border-right:1px solid var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, transparent))); }
 .cfw-preview-btn-group button:last-child { border-right:0; }
 
 /* V33: Component Inspector UX replaces the visible 1/2/3 dropdown workflow. */
@@ -1475,3 +1475,271 @@
 /* V116 Slider thumb generated-theme alignment is handled in theme-save.cgi via --lb-slider-thumb-offset. */
 
 /* V122: Sidebar background is stored opaque by the generator/save path. */
+
+
+/* V123: Studio preview checkbox/radio colors are token-driven and scoped to the preview only. */
+.cfw-page.cfw-v123 .cfw-check[data-cfw-area="Checkboxen"] {
+  color: var(--lb-checkbox-text, var(--lb-text)) !important;
+}
+.cfw-page.cfw-v123 .cfw-check[data-cfw-area="Radio"] {
+  color: var(--lb-radio-text, var(--lb-text)) !important;
+}
+.cfw-page.cfw-v123 .cfw-check input[type="checkbox"],
+.cfw-page.cfw-v123 .cfw-check input[type="radio"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  display: inline-grid !important;
+  place-content: center !important;
+  box-sizing: border-box !important;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.cfw-page.cfw-v123 .cfw-check input[type="checkbox"] {
+  border: 2px solid var(--lb-checkbox-border, var(--lb-border-color, #cbd5e1)) !important;
+  border-radius: var(--lb-checkbox-radius, 4px) !important;
+  background: var(--lb-checkbox-bg, var(--lb-input-bg, #ffffff)) !important;
+}
+.cfw-page.cfw-v123 .cfw-check input[type="checkbox"]:checked {
+  border-color: var(--lb-checkbox-checked-border, var(--lb-checkbox-checked-bg, var(--lb-primary, #007aff))) !important;
+  background: var(--lb-checkbox-checked-bg, var(--lb-primary, #007aff)) !important;
+}
+.cfw-page.cfw-v123 .cfw-check input[type="checkbox"]:checked::after {
+  content: "✓";
+  color: var(--lb-checkbox-checkmark-text, #ffffff);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateY(-0.5px);
+}
+.cfw-page.cfw-v123 .cfw-check input[type="radio"] {
+  border: 2px solid var(--lb-radio-border, var(--lb-border-color, #cbd5e1)) !important;
+  border-radius: 50% !important;
+  background: var(--lb-radio-bg, var(--lb-input-bg, #ffffff)) !important;
+}
+.cfw-page.cfw-v123 .cfw-check input[type="radio"]:checked {
+  border-color: var(--lb-radio-checked-border, var(--lb-radio-checked-bg, var(--lb-primary, #007aff))) !important;
+  background:
+    radial-gradient(circle at center,
+      var(--lb-radio-dot-bg, #ffffff) 0 36%,
+      transparent 39% 100%),
+    var(--lb-radio-checked-bg, var(--lb-primary, #007aff)) !important;
+}
+
+/* V124: Button-group editing is scoped to button-group tokens. */
+
+
+/* V125: Slider thumb is centered from track/thumb size instead of a fixed pixel guess. */
+.cfw-page.cfw-v125 .cfw-preview-slider {
+  --lb-slider-track-height: var(--lb-slider-track-height, 6px);
+  --lb-slider-thumb-size: var(--lb-slider-thumb-size, 20px);
+}
+.cfw-page.cfw-v125 .cfw-preview-slider::-webkit-slider-runnable-track {
+  height: var(--lb-slider-track-height, 6px) !important;
+}
+.cfw-page.cfw-v125 .cfw-preview-slider::-webkit-slider-thumb {
+  width: var(--lb-slider-thumb-size, 20px) !important;
+  height: var(--lb-slider-thumb-size, 20px) !important;
+  margin-top: calc((var(--lb-slider-track-height, 6px) - var(--lb-slider-thumb-size, 20px)) / 2) !important;
+  box-sizing: border-box !important;
+}
+.cfw-page.cfw-v125 .cfw-preview-slider::-moz-range-track {
+  height: var(--lb-slider-track-height, 6px) !important;
+}
+.cfw-page.cfw-v125 .cfw-preview-slider::-moz-range-thumb {
+  width: var(--lb-slider-thumb-size, 20px) !important;
+  height: var(--lb-slider-thumb-size, 20px) !important;
+  box-sizing: border-box !important;
+}
+
+/* V126: Removed duplicate feedback preview controls; theme loading now forces full token refresh in JS. */
+
+
+/* V127: Basic settings show only color and radius. Advanced internal channels remain hidden in the model. */
+.cfw-control-grid-simple {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.cfw-control-grid-simple input[type="hidden"],
+.cfw-control-grid-simple [hidden] {
+  display: none !important;
+}
+@media (max-width: 760px) {
+  .cfw-control-grid-simple {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* V128: Compact color presets replace the wide native color strip. */
+.cfw-color-setting {
+  position: relative;
+}
+.cfw-color-preset-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 24px;
+}
+.cfw-color-swatch {
+  width: 19px;
+  height: 19px;
+  min-width: 19px;
+  min-height: 19px;
+  padding: 0;
+  border: 1px solid var(--lb-border-color, #d1d5db);
+  border-radius: 4px;
+  background: var(--cfw-swatch-color, #007aff);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+  cursor: pointer;
+}
+.cfw-color-swatch:hover,
+.cfw-color-swatch:focus {
+  outline: 2px solid var(--lb-focus-ring, var(--lb-primary, #007aff));
+  outline-offset: 2px;
+}
+.cfw-color-swatch.is-active {
+  outline: 2px solid var(--lb-focus-ring-strong, var(--lb-primary, #007aff));
+  outline-offset: 2px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65), 0 0 0 1px rgba(0,0,0,0.2);
+}
+.cfw-native-color-input {
+  position: absolute !important;
+  left: 0;
+  bottom: 0;
+  width: 1px !important;
+  height: 1px !important;
+  min-width: 1px !important;
+  min-height: 1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+
+/* V129: Save modal base field is internal only; import summary stays hidden until a real import exists. */
+.cfw-modal input#baseTheme[type="hidden"] {
+  display: none !important;
+}
+
+
+/* V130: Status messages use clear semantic colors: success green, progress/info blue, errors red. */
+.cfw-status.cfw-status-info {
+  color: #1d4ed8 !important;
+  font-weight: 600;
+}
+.cfw-status.cfw-status-success {
+  color: #15803d !important;
+  font-weight: 600;
+}
+.cfw-status.cfw-status-warning {
+  color: #b45309 !important;
+  font-weight: 600;
+}
+.cfw-status.cfw-status-error {
+  color: #b00020 !important;
+  font-weight: 600;
+}
+
+
+/* V131: Temporary status modal for Studio messages. Save/Delete confirmation modals remain unchanged. */
+.cfw-status-modal {
+  z-index: 100010;
+}
+.cfw-status-modal-card {
+  max-width: 520px;
+}
+.cfw-status-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.cfw-status-modal-header h2 {
+  margin: 0;
+}
+.cfw-status-modal-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  background: #1d4ed8;
+  flex: 0 0 auto;
+}
+.cfw-status-modal-card.cfw-status-success .cfw-status-modal-icon {
+  background: #15803d;
+}
+.cfw-status-modal-card.cfw-status-info .cfw-status-modal-icon {
+  background: #1d4ed8;
+}
+.cfw-status-modal-card.cfw-status-warning .cfw-status-modal-icon {
+  background: #b45309;
+}
+.cfw-status-modal-card.cfw-status-error .cfw-status-modal-icon {
+  background: #b00020;
+}
+.cfw-status-modal-card.cfw-status-success {
+  border: 1px solid rgba(21, 128, 61, 0.45);
+}
+.cfw-status-modal-card.cfw-status-info {
+  border: 1px solid rgba(29, 78, 216, 0.45);
+}
+.cfw-status-modal-card.cfw-status-warning {
+  border: 1px solid rgba(180, 83, 9, 0.45);
+}
+.cfw-status-modal-card.cfw-status-error {
+  border: 1px solid rgba(176, 0, 32, 0.55);
+}
+.cfw-status-modal-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--lb-text-secondary, #64748b);
+}
+
+
+/* V132: Auto-closing status modals have no OK button; errors keep the Back button. */
+.cfw-status-modal .cfw-modal-actions[hidden] {
+  display: none !important;
+}
+
+
+/* V133: Status modal is reserved for errors only. Non-error messages stay inline. */
+
+/* V135: Radius edits are scoped in JS to Radius tokens only; selected hints may open a manual info modal. */
+
+
+/* V136: Toggle radius preview uses the same tokens that generated themes write. */
+.cfw-page.cfw-v136 .cfw-switch span {
+  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-toggle-slider-radius, 999px))) !important;
+}
+.cfw-page.cfw-v136 .cfw-switch span::after {
+  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, var(--lb-switch-radius, 999px))) !important;
+}
+
+
+/* V137: Radius preview bridges for inputs/selects and button groups. */
+.cfw-page.cfw-v137 .cfw-preview-card input,
+.cfw-page.cfw-v137 .cfw-preview-card select,
+.cfw-page.cfw-v137 .cfw-preview-card textarea {
+  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px))))) !important;
+}
+.cfw-page.cfw-v137 .cfw-preview-btn-group,
+.cfw-page.cfw-v137 .cfw-preview-btn-group button {
+  border-radius: var(--lb-btn-group-radius, var(--lb-btn-group-item-radius, var(--lb-btn-radius, var(--lb-radius-button, 10px)))) !important;
+}
+
+
+/* V139: Wallpaper Editor is hidden until the background target is selected. */
+.cfw-page.cfw-v139 #wallpaperControls[hidden] {
+  display: none !important;
+}

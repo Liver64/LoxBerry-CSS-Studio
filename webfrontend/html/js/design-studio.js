@@ -8,6 +8,15 @@
 
   var previewRoot = document.getElementById('previewRoot');
   var statusBox = document.getElementById('status');
+  var statusModal = document.getElementById('statusModal');
+  var statusModalCard = statusModal ? statusModal.querySelector('.cfw-status-modal-card') : null;
+  var statusModalTitle = document.getElementById('statusModalTitle');
+  var statusModalMessage = document.getElementById('statusModalMessage');
+  var statusModalHint = document.getElementById('statusModalHint');
+  var statusModalIcon = document.getElementById('statusModalIcon');
+  var statusModalBack = document.getElementById('statusModalBack');
+  var statusModalActions = document.getElementById('statusModalActions');
+  var statusModalTimer = null;
   var areaSelect = document.getElementById('areaSelect');
   var elementSelect = document.getElementById('elementSelect');
   var colorGroupSelect = document.getElementById('colorGroupSelect');
@@ -19,6 +28,7 @@
   var paletteGrid = document.getElementById('paletteGrid');
   var monoPreview = document.getElementById('monoPreview');
   var colorPicker = document.getElementById('colorPicker');
+  var colorPresetPalette = document.getElementById('colorPresetPalette');
   var alphaRange = document.getElementById('alphaRange');
   var brightnessRange = document.getElementById('brightnessRange');
   var radiusRange = document.getElementById('radiusRange');
@@ -58,8 +68,16 @@
   var mappedTokenCount = document.getElementById('mappedTokenCount');
   var previewCaption = document.getElementById('previewCaption');
   var aiImportedTokens = {};
+  var colorPresetValues = [
+    '#ffffff', '#f3f4f6', '#111827',
+    '#ef4444', '#f97316', '#facc15',
+    '#22c55e', '#06b6d4', '#3b82f6',
+    '#8b5cf6', '#ec4899', '#a16207'
+  ];
   var aiImportedCss = '';
   var lastImportMeta = null;
+  // V129: Color swatches only edit an explicitly selected Preview/Inspector target.
+  var hasActiveEditorSelection = false;
   var aiValidatedDraft = null;
   var aiResultSignature = '';
   var selectedComponentTarget = null;
@@ -133,13 +151,13 @@
         'Rahmen': ['--lb-input-border'],
         'Focus': ['--lb-input-focus-border', '--lb-input-focus-shadow'],
         'Disabled': ['--lb-input-disabled-bg', '--lb-input-disabled-text'],
-        'Radius': ['--lb-radius-input', '--lb-input-radius']
+        'Radius': ['--lb-input-radius', '--lb-radius-input', '--lb-radius-sm']
       },
       'Textarea': {
         'Grundfarbe': ['--lb-textarea-bg', '--lb-input-bg'],
         'Textfarbe': ['--lb-textarea-text', '--lb-input-text'],
         'Rahmen': ['--lb-textarea-border', '--lb-input-border'],
-        'Radius': ['--lb-radius-input']
+        'Radius': ['--lb-textarea-radius', '--lb-input-radius', '--lb-radius-input']
       },
       'Input mit Fokus': {
         'Grundfarbe': ['--lb-input-focus-bg', '--lb-input-bg'],
@@ -153,7 +171,7 @@
         'Textfarbe': ['--lb-select-text', '--lb-input-text'],
         'Rahmen': ['--lb-select-border', '--lb-input-border'],
         'Hover': ['--lb-select-hover-bg'],
-        'Radius': ['--lb-radius-input']
+        'Radius': ['--lb-select-radius', '--lb-radius-select', '--lb-input-radius', '--lb-radius-input']
       },
       'Native Select': {
         'Grundfarbe': ['--lb-native-select-bg', '--lb-input-bg'],
@@ -170,9 +188,9 @@
     'Checkboxen': {
       'Standard Checkbox': {
         'Grundfarbe': ['--lb-checkbox-bg'],
-        'Active': ['--lb-checkbox-checked-bg', '--lb-active-bg'],
+        'Active': ['--lb-checkbox-checked-bg'],
         'Rahmen': ['--lb-checkbox-border'],
-        'Textfarbe': ['--lb-checkbox-text', '--lb-text']
+        'Textfarbe': ['--lb-checkbox-text']
       },
       'Checkbox Gruppe': {
         'Grundfarbe': ['--lb-checkbox-group-bg', '--lb-card-bg'],
@@ -183,9 +201,9 @@
     'Radio': {
       'Standard Radio': {
         'Grundfarbe': ['--lb-radio-bg'],
-        'Active': ['--lb-radio-checked-bg', '--lb-active-bg'],
+        'Active': ['--lb-radio-checked-bg'],
         'Rahmen': ['--lb-radio-border'],
-        'Textfarbe': ['--lb-radio-text', '--lb-text']
+        'Textfarbe': ['--lb-radio-text']
       },
       'Radio Gruppe': {
         'Grundfarbe': ['--lb-radio-group-bg', '--lb-card-bg'],
@@ -225,7 +243,7 @@
         'Hintergrund': ['--lb-switch-off-bg', '--lb-toggle-bg'],
         'Rahmen': ['--lb-switch-border', '--lb-toggle-border'],
         'Knopf': ['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'],
-        'Radius': ['--lb-switch-radius']
+        'Radius': ['--lb-switch-radius', '--lb-toggle-radius', '--lb-toggle-slider-radius', '--lb-toggle-thumb-radius', '--lb-toggle-knob-radius']
       },
       'Toggle Disabled': {
         'Grundfarbe': ['--lb-switch-disabled-bg'],
@@ -249,12 +267,16 @@
         'Hover': ['--lb-active-hover-bg']
       },
       'Button Gruppe': {
-        'Grundfarbe': ['--lb-btn-bg'],
-        'Textfarbe': ['--lb-btn-text'],
-        'Rahmen': ['--lb-btn-border'],
-        'Hover': ['--lb-btn-group-hover-bg', '--lb-btn-group-hover-text'],
-        'Active': ['--lb-btn-group-active-bg', '--lb-btn-group-active-text', '--lb-btn-group-active-hover-bg', '--lb-btn-group-active-hover-text'],
-        'Radius': ['--lb-btn-radius']
+        'Grundfarbe': ['--lb-btn-group-inactive-bg'],
+        'Textfarbe': ['--lb-btn-group-inactive-text'],
+        'Rahmen': ['--lb-btn-group-inactive-border'],
+        'Hover': ['--lb-btn-group-hover-bg'],
+        'Hover Textfarbe': ['--lb-btn-group-hover-text'],
+        'Active': ['--lb-btn-group-active-bg'],
+        'Active Textfarbe': ['--lb-btn-group-active-text'],
+        'Active Hover': ['--lb-btn-group-active-hover-bg'],
+        'Active Hover Textfarbe': ['--lb-btn-group-active-hover-text'],
+        'Radius': ['--lb-btn-group-radius', '--lb-btn-group-item-radius', '--lb-btn-radius', '--lb-radius-button']
       },
       'Header Buttons': {
         'Grundfarbe': ['--lb-header-btn-bg'],
@@ -427,10 +449,125 @@
     'Abdunklung': ['#000000', '#171717', '#3d3d3d', '#404040', '#737373', '#a3a3a3'],
     'Unschärfe': ['#ffffff', '#f7f7f7', '#f5f5f5', '#e5e5e5', '#d4d4d4', '#737373']
   };
-  function setStatus(message, isError) {
+  function classifyStatusKind(message, isError, kind) {
+    if (isError) return 'error';
+    if (kind) return kind;
+
+    var text = String(message || '').toLowerCase();
+
+    // Blue: running, waiting, intermediate, or "please do the next step" states.
+    if (
+      /\b(speichere|saving|lösche|deleting|lade\b|loading|frage|requesting|warte|waiting|prüfe|checking|validiere|validating|erzeuge|generating)\b/.test(text) ||
+      /\.\.\./.test(text) ||
+      /bitte\s+(validieren|warten|prüfen|zuerst|danach)/.test(text) ||
+      /(please\s+(validate|wait|review|first|then))/.test(text)
+    ) {
+      return 'info';
+    }
+
+    // Green: completed/OK states.
+    if (
+      /(ok|alles in ordnung|erfolgreich|gültig|valid|geladen|loaded|gelöscht|deleted|gespeichert|saved|importiert|imported|übernommen|applied|erhalten|received|gelesen|read|erstellt|created)/.test(text)
+    ) {
+      return 'success';
+    }
+
+    return 'success';
+  }
+
+  function applyStatusKind(box, kind) {
+    if (!box) return;
+    box.classList.toggle('cfw-status-error', kind === 'error');
+    box.classList.toggle('cfw-status-info', kind === 'info');
+    box.classList.toggle('cfw-status-success', kind === 'success');
+    box.classList.toggle('cfw-status-warning', kind === 'warning');
+  }
+
+  function closeStatusModal() {
+    if (statusModalTimer) {
+      clearTimeout(statusModalTimer);
+      statusModalTimer = null;
+    }
+    if (statusModal) statusModal.hidden = true;
+  }
+
+  function statusModalTitleKey(kind) {
+    if (kind === 'error') return 'statusModal.errorTitle';
+    if (kind === 'success') return 'statusModal.successTitle';
+    if (kind === 'warning') return 'statusModal.warningTitle';
+    return 'statusModal.infoTitle';
+  }
+
+  function statusModalTitleFallback(kind) {
+    if (kind === 'error') return 'Fehler';
+    if (kind === 'success') return 'OK';
+    if (kind === 'warning') return 'Hinweis';
+    return 'Hinweis';
+  }
+
+  function statusModalIconValue(kind) {
+    if (kind === 'error') return '!';
+    if (kind === 'success') return '✓';
+    if (kind === 'warning') return '!';
+    return 'i';
+  }
+
+  function showStatusModal(message, kind, options) {
+    if (!statusModal || !statusModalCard || !message) return;
+    options = options || {};
+    closeStatusModal();
+
+    ['cfw-status-error', 'cfw-status-info', 'cfw-status-success', 'cfw-status-warning'].forEach(function (cls) {
+      statusModalCard.classList.remove(cls);
+    });
+    statusModalCard.classList.add('cfw-status-' + kind);
+
+    if (statusModalTitle) {
+      statusModalTitle.textContent = t(statusModalTitleKey(kind), statusModalTitleFallback(kind));
+    }
+    if (statusModalIcon) statusModalIcon.textContent = statusModalIconValue(kind);
+    if (statusModalMessage) statusModalMessage.textContent = message;
+
+    var timeout = options.timeout;
+    if (timeout == null) timeout = kind === 'error' ? 0 : 5000;
+
+    if (statusModalActions) statusModalActions.hidden = timeout > 0;
+    if (statusModalBack) {
+      statusModalBack.textContent = t(kind === 'error' ? 'main.buttons.back' : 'main.buttons.ok', kind === 'error' ? 'Zurück' : 'OK');
+    }
+    if (statusModalHint) {
+      statusModalHint.textContent = timeout > 0
+        ? t('statusModal.autoCloseHint', 'Diese Meldung schließt automatisch.')
+        : t('statusModal.manualCloseHint', 'Bitte bestätigen.');
+    }
+
+    statusModal.hidden = false;
+
+    if (timeout > 0) {
+      statusModalTimer = setTimeout(function () {
+        closeStatusModal();
+      }, timeout);
+    }
+  }
+
+  function shouldShowStatusModal(message, kind, options) {
+    if (options && options.modal === false) return false;
+
+    // V135: Errors always use the modal. Selected user guidance may explicitly
+    // request a manual info modal with OK button; all other status stays inline.
+    if (options && options.modal === 'manual') return true;
+    return kind === 'error';
+  }
+
+  function setStatus(message, isError, kind, options) {
     if (!statusBox) return;
+    options = options || {};
+    var resolvedKind = classifyStatusKind(message, isError, kind);
     statusBox.textContent = message || '';
-    statusBox.classList.toggle('cfw-status-error', !!isError);
+    applyStatusKind(statusBox, resolvedKind);
+    if (message && shouldShowStatusModal(message, resolvedKind, options)) {
+      showStatusModal(message, resolvedKind, { timeout: 0 });
+    }
   }
 
 
@@ -583,6 +720,70 @@
     return '';
   }
 
+  function canEditCurrentColorTarget() {
+    return !!hasActiveEditorSelection;
+  }
+
+  function requireColorEditTarget() {
+    if (canEditCurrentColorTarget()) return true;
+    setStatus(t('messages.selectElementFirst', 'Bitte zuerst ein Element in der finalen Live Vorschau oder im Eigenschaftenbereich auswählen.'), false, 'info', { modal: 'manual' });
+    return false;
+  }
+
+  function updateColorPresetSelection() {
+    if (!colorPresetPalette || !colorPicker) return;
+    var current = normalizeHexColor(colorPicker.value) || String(colorPicker.value || '').toLowerCase();
+    colorPresetPalette.querySelectorAll('.cfw-color-swatch').forEach(function (button) {
+      button.classList.toggle('is-active', button.getAttribute('data-color') === current);
+    });
+  }
+
+  function openNativeColorPicker() {
+    if (!colorPicker) return;
+    try {
+      if (typeof colorPicker.showPicker === 'function') {
+        colorPicker.showPicker();
+        return;
+      }
+    } catch (e) {
+      // Browser may block showPicker outside direct user activation.
+    }
+    try {
+      colorPicker.focus();
+      colorPicker.click();
+    } catch (e2) {}
+  }
+
+  function choosePresetColor(color) {
+    if (!colorPicker) return;
+    if (!requireColorEditTarget()) return;
+    var normalized = normalizeHexColor(color);
+    if (!normalized) return;
+    colorPicker.value = normalized;
+    colorPicker.dispatchEvent(new Event('input', { bubbles: true }));
+    updateColorPresetSelection();
+    openNativeColorPicker();
+  }
+
+  function renderColorPresetPalette() {
+    if (!colorPresetPalette) return;
+    colorPresetPalette.innerHTML = '';
+    colorPresetValues.forEach(function (color) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'cfw-color-swatch';
+      button.setAttribute('data-color', color);
+      button.style.setProperty('--cfw-swatch-color', color);
+      button.setAttribute('aria-label', 'Farbe ' + color + ' wählen');
+      button.title = color;
+      button.addEventListener('click', function () {
+        choosePresetColor(color);
+      });
+      colorPresetPalette.appendChild(button);
+    });
+    updateColorPresetSelection();
+  }
+
   function pushColorUnique(out, value) {
     var hex = normalizeHexColor(value);
     if (hex && out.indexOf(hex) < 0) out.push(hex);
@@ -689,16 +890,21 @@
   function defaultEntry(dirty) {
     return {
       color: colorPicker.value || '#007aff',
-      alpha: parseInt(alphaRange.value || '100', 10),
-      brightness: parseInt(brightnessRange.value || '0', 10),
+      // V127: Opacity, brightness and shadow are no longer visible controls.
+      // Keep them stable on defaults for new manual Studio edits.
+      alpha: 100,
+      brightness: 0,
       radius: parseInt(radiusRange.value || '12', 10),
-      shadow: parseInt(shadowRange.value || '1', 10),
+      shadow: 1,
       dirty: !!dirty
     };
   }
 
-  function getEntry() {
-    var key = currentKey();
+  function editorKey(area, element, group) {
+    return area + '|' + element + '|' + group;
+  }
+
+  function getEntryForKey(key) {
     if (!studioModel[key]) {
       if (undoRestoring) return defaultEntry(false);
       studioModel[key] = defaultEntry(false);
@@ -706,15 +912,77 @@
     return studioModel[key];
   }
 
-  function saveControlsToEntry() { studioModel[currentKey()] = defaultEntry(true); }
+  function getEntry() {
+    return getEntryForKey(currentKey());
+  }
+
+  function elementGroups(area, element) {
+    return ((areas[area] || {})[element] || {});
+  }
+
+  function groupExistsForCurrentElement(group) {
+    return !!elementGroups(currentArea(), currentElement())[group];
+  }
+
+  function resolveRadiusGroupForCurrentElement() {
+    if (groupExistsForCurrentElement('Radius')) return 'Radius';
+    var groups = elementGroups(currentArea(), currentElement());
+    var names = Object.keys(groups);
+    for (var i = 0; i < names.length; i += 1) {
+      var name = names[i];
+      var mapped = groups[name] || [];
+      if (name === 'Radius' || mapped.some(function (token) { return /radius/.test(token); })) return name;
+    }
+    return '';
+  }
+
+  function saveControlsToEntry(field) {
+    field = field || 'all';
+
+    if (field === 'radius') {
+      var radiusGroup = resolveRadiusGroupForCurrentElement();
+      if (!radiusGroup) {
+        setStatus(t('messages.noRadiusForElement', 'Dieses Element besitzt keine Radius-Tokens.'), false, 'info', { modal: 'manual' });
+        return false;
+      }
+
+      var radiusKey = editorKey(currentArea(), currentElement(), radiusGroup);
+      var radiusEntry = getEntryForKey(radiusKey);
+      radiusEntry.radius = parseInt(radiusRange.value || '12', 10);
+      radiusEntry.dirty = true;
+
+      // Make the implicit target visible in the inspector, but do not touch
+      // background/text color tokens while the radius slider is moved.
+      if (colorGroupSelect && colorGroupSelect.value !== radiusGroup) {
+        colorGroupSelect.value = radiusGroup;
+        loadEntryToControls(radiusEntry);
+      }
+      return true;
+    }
+
+    if (field === 'color') {
+      var colorEntry = getEntry();
+      colorEntry.color = colorPicker.value || colorEntry.color || '#007aff';
+      colorEntry.alpha = 100;
+      colorEntry.brightness = 0;
+      colorEntry.shadow = 1;
+      colorEntry.dirty = true;
+      return true;
+    }
+
+    studioModel[currentKey()] = defaultEntry(true);
+    return true;
+  }
 
   function loadEntryToControls(entryOverride) {
     var entry = entryOverride || getEntry();
     colorPicker.value = entry.color || '#007aff';
-    alphaRange.value = entry.alpha == null ? 100 : entry.alpha;
-    brightnessRange.value = entry.brightness == null ? 0 : entry.brightness;
+    // V127: Hidden advanced channels stay deterministic instead of carrying
+    // stale values between loaded themes and new manual edits.
+    alphaRange.value = 100;
+    brightnessRange.value = 0;
     radiusRange.value = entry.radius == null ? 12 : entry.radius;
-    shadowRange.value = entry.shadow == null ? 1 : entry.shadow;
+    shadowRange.value = 1;
     updateLabels();
   }
 
@@ -724,7 +992,9 @@
   }
 
   function isBackgroundWallpaperEditable() {
-    return currentArea() === 'Background' && currentElement() === 'System Hintergrund';
+    // V139: Wallpaper Editor is contextual. Show it only after the user
+    // explicitly selects the real background target.
+    return hasActiveEditorSelection && currentArea() === 'Background' && currentElement() === 'System Hintergrund';
   }
 
   function syncWallpaperStateFromControls() {
@@ -766,15 +1036,18 @@
 
   function updateWallpaperControlVisibility() {
     if (!wallpaperControls) return;
-    // V78: Keep the Wallpaper Editor panel itself visible. The detailed controls
-    // are shown by a panel class and additionally by a CSS :has() fallback, so
-    // toggling still works even if a browser delays the input/change event.
+    var editable = isBackgroundWallpaperEditable();
     var enabled = !!(wallpaperEnabled && wallpaperEnabled.checked);
-    wallpaperControls.hidden = false;
-    wallpaperControls.classList.toggle('cfw-wallpaper-enabled', enabled);
+
+    wallpaperControls.hidden = !editable;
+    wallpaperControls.setAttribute('aria-hidden', editable ? 'false' : 'true');
+    wallpaperControls.classList.toggle('cfw-wallpaper-enabled', editable && enabled);
+
     if (wallpaperAdvancedControls) {
-      wallpaperAdvancedControls.hidden = false;
-      wallpaperAdvancedControls.setAttribute('aria-hidden', enabled ? 'false' : 'true');
+      // Keep the advanced controls available for the enabled-state CSS/JS bridge,
+      // but only expose them to accessibility when the editor is visible and active.
+      wallpaperAdvancedControls.hidden = !editable;
+      wallpaperAdvancedControls.setAttribute('aria-hidden', editable && enabled ? 'false' : 'true');
     }
   }
 
@@ -831,6 +1104,8 @@
     radiusValue.textContent = radiusRange.value + 'px';
     shadowValue.textContent = shadowRange.value;
     updateWallpaperLabels();
+    updateWallpaperControlVisibility();
+    updateColorPresetSelection();
   }
 
 
@@ -846,10 +1121,10 @@
   function currentControlSnapshot() {
     return {
       color: colorPicker ? (colorPicker.value || '#007aff') : '#007aff',
-      alpha: alphaRange ? parseInt(alphaRange.value || '100', 10) : 100,
-      brightness: brightnessRange ? parseInt(brightnessRange.value || '0', 10) : 0,
+      alpha: 100,
+      brightness: 0,
       radius: radiusRange ? parseInt(radiusRange.value || '12', 10) : 12,
-      shadow: shadowRange ? parseInt(shadowRange.value || '1', 10) : 1,
+      shadow: 1,
       dirty: false
     };
   }
@@ -1067,6 +1342,7 @@
         '<span class="cfw-property-icon">' + propertyIcon(prop) + '</span>' +
         '<span class="cfw-property-body"><strong>' + prop + '</strong><code>' + (first || t('inspector.noToken', 'kein Token')) + '</code>' + more + '</span>';
       item.addEventListener('click', function () {
+        hasActiveEditorSelection = true;
         colorGroupSelect.value = prop;
         loadEntryToControls();
         updateAll();
@@ -1075,6 +1351,7 @@
       item.addEventListener('dblclick', function (event) {
         event.preventDefault();
         event.stopPropagation();
+        hasActiveEditorSelection = true;
         colorGroupSelect.value = prop;
         loadEntryToControls();
         updateAll();
@@ -1226,21 +1503,27 @@
     if (activeBg && activeText) {
       setRuleToken(tokens, '--lb-btn-group-active-bg', activeBg);
       setRuleToken(tokens, '--lb-btn-group-active-text', activeText);
-      var activeHoverBg = tokens['--lb-primary-hover'] || tokens['--lb-btn-primary-hover-bg'] || tokens['--lb-btn-group-active-hover-bg'] || mixColor(activeBg, 8);
-      // V28: hard inversion for inactive button-group items. This is a
-      // deterministic Design Studio rule, not an AI decision.
-      var inactiveBg = activeText;
-      var inactiveText = activeBg;
+      var activeHoverBg = tokens['--lb-btn-group-active-hover-bg'] || tokens['--lb-primary-hover'] || tokens['--lb-btn-primary-hover-bg'] || mixColor(activeBg, 8);
+
+      // V124: Button-group derivation must not overwrite explicit Studio edits.
+      // Inactive, hover and active-text states are independent editor targets.
+      var inactiveBg = tokens['--lb-btn-group-inactive-bg'] || activeText;
+      var inactiveText = tokens['--lb-btn-group-inactive-text'] || activeBg;
+      var inactiveBorder = tokens['--lb-btn-group-inactive-border'] || tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
+      var hoverBg = tokens['--lb-btn-group-hover-bg'] || activeBg;
+      var hoverText = tokens['--lb-btn-group-hover-text'] || activeText;
+      var activeHoverText = tokens['--lb-btn-group-active-hover-text'] || activeText;
+
       setRuleToken(tokens, '--lb-btn-group-active-hover-bg', activeHoverBg);
-      setRuleToken(tokens, '--lb-btn-group-active-hover-text', activeText);
+      setRuleToken(tokens, '--lb-btn-group-active-hover-text', activeHoverText);
       tokens['--lb-btn-group-inactive-bg'] = inactiveBg;
       tokens['--lb-btn-group-inactive-text'] = inactiveText;
-      tokens['--lb-btn-group-inactive-border'] = tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
-      setRuleToken(tokens, '--lb-btn-group-hover-bg', activeBg);
-      setRuleToken(tokens, '--lb-btn-group-hover-text', activeText);
+      tokens['--lb-btn-group-inactive-border'] = inactiveBorder;
+      setRuleToken(tokens, '--lb-btn-group-hover-bg', hoverBg);
+      setRuleToken(tokens, '--lb-btn-group-hover-text', hoverText);
       tokens['--cfw-preview-btn-group-inactive-bg'] = inactiveBg;
       tokens['--cfw-preview-btn-group-inactive-text'] = inactiveText;
-      tokens['--cfw-preview-btn-group-inactive-border'] = tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
+      tokens['--cfw-preview-btn-group-inactive-border'] = inactiveBorder;
     }
 
     // V102: Slider colors are scoped to slider tokens. Do not derive slider
@@ -1374,8 +1657,8 @@
     renderPalette();
   }
 
-  function updateAll(saveCurrent) {
-    if (saveCurrent) saveControlsToEntry();
+  function updateAll(saveCurrent, field) {
+    if (saveCurrent && saveControlsToEntry(field) === false) return;
     updateLabels();
     renderPropertyInspector();
     refreshPreviewAndPalette();
@@ -1516,8 +1799,33 @@
     };
   }
 
+  function importMetaHasVisibleContent(meta) {
+    if (!meta) return false;
+    if (meta.file) return true;
+    if ((meta.tokenCount || 0) > 0) return true;
+    if ((meta.customRuleCount || 0) > 0) return true;
+    if (meta.customCssPreserved) return true;
+    var effects = meta.effects || {};
+    return !!(
+      effects.backdropFilter ||
+      effects.wallpaper ||
+      effects.shadows ||
+      (effects.blur && effects.blur.length) ||
+      (effects.transparency && effects.transparency.length)
+    );
+  }
+
+  function hideImportSummary() {
+    if (!importSummary) return;
+    importSummary.hidden = true;
+    importSummary.innerHTML = '';
+  }
+
   function renderImportSummary(meta) {
-    if (!importSummary || !meta) return;
+    if (!importSummary || !importMetaHasVisibleContent(meta)) {
+      hideImportSummary();
+      return;
+    }
     var effectLabels = [];
     if (meta.effects && meta.effects.backdropFilter) effectLabels.push(t('import.effects.backdropFilter', 'Backdrop Filter'));
     if (meta.effects && meta.effects.blur && meta.effects.blur.length) effectLabels.push(t('import.effects.blur', 'Blur') + ' ' + meta.effects.blur.slice(0, 3).join(', '));
@@ -1593,19 +1901,50 @@
     var theme = userThemes[Number(index)];
     if (!theme) return;
     pushUndoSnapshot('load-theme');
+
+    // V126: Loading a different theme is a complete Working-State replacement.
+    // Clear local edits, import all theme tokens, clear old inline preview vars,
+    // then refresh inspector, preview and palette together. A second animation-
+    // frame refresh catches browser-computed token values after the DOM update.
     studioModel = {};
-    aiImportedTokens = themeTokensFromJson(theme);
+    aiImportedTokens = enforceForcedOpaqueTokens(themeTokensFromJson(theme));
     aiImportedCss = normalizeCustomCssValue(theme.custom_css || theme.css || '');
-    lastImportMeta = theme.import_meta || null;
+    lastImportMeta = importMetaHasVisibleContent(theme.import_meta) ? theme.import_meta : null;
     setWallpaperFromTheme(theme);
     if (customCss) customCss.value = aiImportedCss || '/* USER CUSTOM CSS START */\n/* Eigene Ergänzungen bleiben beim Speichern erhalten. */\n/* USER CUSTOM CSS END */';
     if (themeId) themeId.value = theme.id || 'theme-user-loaded';
     if (themeName) themeName.value = normalizeThemeDisplayName(theme.name || theme.id || 'User Theme');
     if (themeVersion) themeVersion.value = theme.version || '0.1.0';
+
+    hasActiveEditorSelection = false;
+    updateWallpaperControlVisibility();
+    if (previewRoot) {
+      appliedPreviewVars.forEach(function (name) { previewRoot.style.removeProperty(name); });
+      appliedPreviewVars = [];
+      previewRoot.querySelectorAll('.cfw-edit-highlight').forEach(function (node) { node.classList.remove('cfw-edit-highlight'); });
+    }
+
     syncCurrentControlsFromAiTokens(aiImportedTokens);
-    refreshPreviewAndPalette();
-    if (lastImportMeta) renderImportSummary(lastImportMeta);
-    setStatus(t('messages.userThemeLoaded', 'User Theme geladen: {theme}. Nur die finale Preview wurde aktualisiert.', { theme: (theme.name || theme.id) }), false);
+    updateAll(false);
+    if (lastImportMeta) {
+      renderImportSummary(lastImportMeta);
+    } else {
+      hideImportSummary();
+    }
+
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(function () {
+        updateAll(false);
+        broadcastEmbeddedFrameTokens(effectivePreviewTokens());
+      });
+    } else {
+      setTimeout(function () {
+        updateAll(false);
+        broadcastEmbeddedFrameTokens(effectivePreviewTokens());
+      }, 0);
+    }
+
+    setStatus(t('messages.userThemeLoaded', 'User Theme geladen: {theme}. Preview und Tokens wurden aktualisiert.', { theme: (theme.name || theme.id) }), false);
   }
 
   function rememberSavedTheme(payload) {
@@ -1701,10 +2040,7 @@
     var box = document.getElementById('aiStatus');
     if (!box) return;
     box.textContent = message || '';
-    box.classList.toggle('cfw-status-error', !!isError);
-    box.classList.toggle('cfw-status-info', !isError && kind === 'info');
-    box.classList.toggle('cfw-status-success', !isError && kind === 'success');
-    box.classList.toggle('cfw-status-warning', !isError && kind === 'warning');
+    applyStatusKind(box, classifyStatusKind(message, isError, kind));
   }
 
   function currentStudioThemeId() {
@@ -2622,6 +2958,7 @@
 
   function selectEditorTarget(area, element, group) {
     if (!areas[area]) return false;
+    hasActiveEditorSelection = true;
     areaSelect.value = area;
     renderElements();
     if (!((areas[area] || {})[element])) element = Object.keys(areas[area] || {})[0];
@@ -2739,6 +3076,8 @@
 
   applyI18n(document);
 
+  renderColorPresetPalette();
+
   ['cfwPreviewFrame'].forEach(function (id) {
     var frame = document.getElementById(id);
     if (!frame) return;
@@ -2747,6 +3086,8 @@
     });
   });
 
+
+  if (statusModalBack) statusModalBack.addEventListener('click', closeStatusModal);
 
   if (undoThemeButton) {
     undoThemeButton.addEventListener('click', function () { undoLastChange(); });
@@ -2764,9 +3105,30 @@
   areaSelect.addEventListener('change', renderElements);
   elementSelect.addEventListener('change', renderColorGroups);
   colorGroupSelect.addEventListener('change', function () { loadEntryToControls(); updateWallpaperControlVisibility(); updateAll(); });
-  [colorPicker, alphaRange, brightnessRange, radiusRange, shadowRange].forEach(function (el) {
-    el.addEventListener('input', function () { updateAll(true); });
-  });
+  if (colorPicker) {
+    colorPicker.addEventListener('input', function () {
+      if (!requireColorEditTarget()) {
+        updateColorPresetSelection();
+        return;
+      }
+      updateAll(true, 'color');
+    });
+    colorPicker.addEventListener('change', function () {
+      if (!requireColorEditTarget()) {
+        updateColorPresetSelection();
+        return;
+      }
+      updateColorPresetSelection();
+      updateAll(true, 'color');
+    });
+  }
+
+  if (radiusRange) {
+    radiusRange.addEventListener('input', function () {
+      if (!requireColorEditTarget()) return;
+      updateAll(true, 'radius');
+    });
+  }
   if (cssImportButton && cssImport) { cssImportButton.addEventListener('click', function () { cssImport.click(); }); }
   updateCssImportFileName(null);
   if (cssImport) cssImport.addEventListener('change', function () { var file = cssImport.files && cssImport.files[0]; updateCssImportFileName(file); importCss(file); });
@@ -2825,7 +3187,6 @@
   if (userThemeSelect) userThemeSelect.addEventListener('change', function () {
     updateDeleteThemeButton();
     loadUserThemeByIndex(userThemeSelect.value);
-    broadcastEmbeddedFrameTokens(effectivePreviewTokens());
   });
   if (selectedComponentCard) {
     selectedComponentCard.setAttribute('title', t('inspector.selectedCardTitle', 'Doppelklick öffnet den Direkteditor für das aktuell ausgewählte Element'));
