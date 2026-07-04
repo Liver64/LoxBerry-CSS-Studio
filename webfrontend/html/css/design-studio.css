@@ -77,10 +77,10 @@
 .cfw-badge { background:var(--lb-active-bg, #007aff); color:var(--lb-active-text, #fff); }
 .cfw-notify { background:var(--cfw-preview-notify-bg, var(--lb-success-bg, var(--lb-active-bg, #007aff))); color:var(--lb-success-text, var(--lb-active-text, #fff)); border:1px solid var(--lb-success-border, transparent); }
 .cfw-validation { background:var(--cfw-preview-validation-bg, var(--lb-warning-bg, rgba(255,190,0,.20))); color:var(--lb-warning-text, inherit); border:1px solid var(--lb-warning-border, rgba(255,190,0,.55)); }
-.cfw-preview-table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:var(--lb-table-radius, 12px); }
-.cfw-preview-table th, .cfw-preview-table td { padding:10px; border-bottom:1px solid var(--lb-table-border, rgba(0,0,0,.16)); background:var(--cfw-preview-table-bg, var(--lb-table-bg, rgba(255,255,255,.65))); color:var(--lb-table-text, inherit); }
+.cfw-preview-table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:var(--lb-table-radius, var(--lb-radius-table, 12px)); border:1px solid var(--cfw-preview-table-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))); }
+.cfw-preview-table th, .cfw-preview-table td { padding:10px; border-bottom:1px solid var(--cfw-preview-table-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))); background:var(--cfw-preview-table-bg, var(--lb-table-bg, rgba(255,255,255,.65))); color:var(--cfw-preview-table-text, var(--lb-table-text, inherit)); }
 .cfw-preview-table th { background:var(--lb-table-header-bg, rgba(0,0,0,.06)); color:var(--lb-table-header-text, inherit); text-align:left; }
-.cfw-preview-table tbody tr:hover td { background:var(--cfw-preview-table-hover-bg, var(--lb-table-row-hover-bg, rgba(0,0,0,.05))); color:var(--lb-table-hover-text, var(--lb-table-text, inherit)); }
+.cfw-preview-table tbody tr:hover td { background:var(--cfw-preview-table-hover-bg, var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, rgba(0,0,0,.05)))); color:var(--cfw-preview-table-hover-text, var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit)))); }
 .cfw-modal[hidden] { display:none; }
 .cfw-modal { position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.38); padding:18px; }
 .cfw-modal-card { width:min(480px, 100%); background:var(--lb-card-bg, #fff); color:var(--lb-card-text, inherit); border-radius:18px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.28); }
@@ -1742,4 +1742,50 @@
 /* V139: Wallpaper Editor is hidden until the background target is selected. */
 .cfw-page.cfw-v139 #wallpaperControls[hidden] {
   display: none !important;
+}
+
+
+/* V140: Sidebar hover preview and hover text bridge.
+   When a Sidebar hover property is selected, the Settings row is shown in hover state
+   so Hover Textfarbe can be checked without physically hovering the item. */
+.cfw-page.cfw-v140 .cfw-preview.cfw-preview-show-sidebar-hover .cfw-nav-item:not(.active):nth-of-type(2) {
+  background: var(--lb-sidebar-link-hover-bg, var(--lb-sidebar-hover-bg, var(--lb-nav-hover-bg, var(--lb-hover-bg, rgba(0,0,0,.08))))) !important;
+  color: var(--lb-sidebar-link-hover-text, var(--lb-sidebar-hover-text, var(--lb-nav-hover-text, var(--lb-sidebar-text, inherit)))) !important;
+}
+.cfw-page.cfw-v140 .cfw-preview.cfw-preview-show-sidebar-hover .cfw-nav-item:not(.active):nth-of-type(2) * {
+  color: inherit !important;
+}
+.cfw-page.cfw-v140 .cfw-nav-item:hover,
+.cfw-page.cfw-v140 .cfw-nav-item:focus {
+  color: var(--lb-sidebar-link-hover-text, var(--lb-sidebar-hover-text, var(--lb-nav-hover-text, var(--lb-sidebar-text, inherit)))) !important;
+}
+.cfw-page.cfw-v140 .cfw-nav-item:hover *,
+.cfw-page.cfw-v140 .cfw-nav-item:focus * {
+  color: inherit !important;
+}
+
+/* V141: Color preset palette contains 21 colors; swatch size and spacing unchanged. */
+
+
+/* V142: Table token preview bridge. */
+.cfw-page.cfw-v142 .cfw-preview-table thead,
+.cfw-page.cfw-v142 .cfw-preview-table th {
+  background: var(--lb-table-header-bg, rgba(0,0,0,.06)) !important;
+  color: var(--lb-table-header-text, inherit) !important;
+  border-color: var(--cfw-preview-table-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
+}
+.cfw-page.cfw-v142 .cfw-preview-table tbody td {
+  background: var(--cfw-preview-table-bg, var(--lb-table-bg, var(--lb-table-row-bg, rgba(255,255,255,.65)))) !important;
+  color: var(--cfw-preview-table-text, var(--lb-table-row-text, var(--lb-table-text, inherit))) !important;
+  border-color: var(--cfw-preview-table-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
+}
+.cfw-page.cfw-v142 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td {
+  background: var(--cfw-preview-table-hover-bg, var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, rgba(0,0,0,.05)))) !important;
+  color: var(--cfw-preview-table-hover-text, var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit)))) !important;
+}
+.cfw-page.cfw-v142 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td * {
+  color: inherit !important;
+}
+.cfw-page.cfw-v142 .cfw-preview-table tbody tr:last-child td {
+  border-bottom-width: 0;
 }

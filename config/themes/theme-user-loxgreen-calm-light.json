@@ -6,7 +6,16 @@
    "studio" : {
       "generator" : "CSS-Studio"
    },
-   "studio_model" : {},
+   "studio_model" : {
+      "Input|Input Text|Grundfarbe" : {
+         "alpha" : 100,
+         "brightness" : 0,
+         "color" : "#ffffff",
+         "dirty" : false,
+         "radius" : 12,
+         "shadow" : 1
+      }
+   },
    "studio_version" : "V39_HybridImportTokensPlusCustomCss",
    "tokens" : {
       "--lb-active-bg" : "#16a34a",
@@ -104,7 +113,7 @@
       "--lb-tooltip-text" : "#f0fdf4",
       "--lb-warning" : "#d98b00"
    },
-   "version" : "0.1.0",
+   "version" : "0.1.2",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

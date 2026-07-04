@@ -69,10 +69,10 @@
   var previewCaption = document.getElementById('previewCaption');
   var aiImportedTokens = {};
   var colorPresetValues = [
-    '#ffffff', '#f3f4f6', '#111827',
-    '#ef4444', '#f97316', '#facc15',
-    '#22c55e', '#06b6d4', '#3b82f6',
-    '#8b5cf6', '#ec4899', '#a16207'
+    // V141: 3 rows × 7 colors. Swatch size/spacing remains CSS-controlled.
+    '#ffffff', '#f5ead7', '#111827', '#ef4444', '#f97316', '#facc15', '#22c55e',
+    '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#a16207', '#78350f', '#6b7280',
+    '#000000', '#f8fafc', '#fde68a', '#dc2626', '#16a34a', '#0891b2', '#7c3aed'
   ];
   var aiImportedCss = '';
   var lastImportMeta = null;
@@ -310,30 +310,49 @@
     },
     'tabellen': {
       'Standard Tabelle': {
-        'Grundfarbe': ['--lb-table-bg', '--lb-table-row-bg'],
-        'Textfarbe': ['--lb-table-text'],
-        'Header': ['--lb-table-header-bg', '--lb-table-header-text'],
-        'Rahmen': ['--lb-table-border'],
+        'Grundfarbe': ['--lb-table-bg', '--lb-table-row-bg', '--lb-table-body-bg'],
+        'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
+        'Header': ['--lb-table-header-bg'],
+        'Header Textfarbe': ['--lb-table-header-text'],
+        'Rahmen': ['--lb-table-border', '--lb-table-border-color', '--lb-table-header-border', '--lb-table-row-border'],
         'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
-        'Radius': ['--lb-table-radius']
+        'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
+        'Radius': ['--lb-table-radius', '--lb-radius-table']
       },
       'Compact Tabelle': {
         'Grundfarbe': ['--lb-table-compact-bg', '--lb-table-bg'],
         'Textfarbe': ['--lb-table-compact-text', '--lb-table-text'],
         'Header': ['--lb-table-compact-header-bg', '--lb-table-header-bg'],
-        'Rahmen': ['--lb-table-compact-border', '--lb-table-border']
+        'Header Textfarbe': ['--lb-table-compact-header-text', '--lb-table-header-text'],
+        'Rahmen': ['--lb-table-compact-border', '--lb-table-border', '--lb-table-border-color'],
+        'Hover': ['--lb-table-compact-hover-bg', '--lb-table-row-hover-bg', '--lb-table-hover-bg'],
+        'Hover Textfarbe': ['--lb-table-compact-hover-text', '--lb-table-row-hover-text', '--lb-table-hover-text'],
+        'Radius': ['--lb-table-compact-radius', '--lb-table-radius', '--lb-radius-table']
       },
       'Tabelle mit Selects': {
-        'Grundfarbe': ['--lb-table-bg', '--lb-select-bg', '--lb-input-bg'],
-        'Textfarbe': ['--lb-table-text', '--lb-select-text', '--lb-input-text'],
-        'Rahmen': ['--lb-table-border', '--lb-select-border', '--lb-input-border'],
-        'Hover': ['--lb-table-row-hover-bg', '--lb-select-hover-bg']
+        'Grundfarbe': ['--lb-table-bg', '--lb-table-row-bg'],
+        'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
+        'Rahmen': ['--lb-table-border', '--lb-table-border-color'],
+        'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
+        'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
+        'Select Grundfarbe': ['--lb-select-bg', '--lb-input-bg'],
+        'Select Textfarbe': ['--lb-select-text', '--lb-input-text'],
+        'Select Rahmen': ['--lb-select-border', '--lb-input-border'],
+        'Select Hover': ['--lb-select-hover-bg'],
+        'Radius': ['--lb-table-radius', '--lb-radius-table']
       },
       'Tabelle mit Buttons': {
-        'Grundfarbe': ['--lb-table-bg', '--lb-btn-bg'],
-        'Textfarbe': ['--lb-table-text', '--lb-btn-text'],
-        'Rahmen': ['--lb-table-border', '--lb-btn-border'],
-        'Hover': ['--lb-table-row-hover-bg', '--lb-btn-hover-bg']
+        'Grundfarbe': ['--lb-table-bg', '--lb-table-row-bg'],
+        'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
+        'Rahmen': ['--lb-table-border', '--lb-table-border-color'],
+        'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
+        'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
+        'Buttonfarbe': ['--lb-btn-bg'],
+        'Button-Textfarbe': ['--lb-btn-text'],
+        'Button Rahmen': ['--lb-btn-border'],
+        'Button Hover': ['--lb-btn-hover-bg'],
+        'Button Hover Textfarbe': ['--lb-btn-hover-text'],
+        'Radius': ['--lb-table-radius', '--lb-radius-table']
       }
     },
     'Layout': {
@@ -358,8 +377,8 @@
         'Textfarbe': ['--lb-sidebar-text'],
         'Buttonfarbe': ['--lb-sidebar-active-bg'],
         'Button-Textfarbe': ['--lb-sidebar-active-text'],
-        'Hover': ['--lb-sidebar-link-hover-bg'],
-        'Hover Textfarbe': ['--lb-sidebar-link-hover-text'],
+        'Hover': ['--lb-sidebar-link-hover-bg', '--lb-sidebar-hover-bg', '--lb-nav-hover-bg'],
+        'Hover Textfarbe': ['--lb-sidebar-link-hover-text', '--lb-sidebar-hover-text', '--lb-nav-hover-text'],
         'Radius': ['--lb-sidebar-link-radius']
       }
     },
@@ -1474,8 +1493,11 @@
       '--cfw-preview-textarea-bg': tokens['--lb-input-bg'] || tokens['--lb-card-bg'],
       '--cfw-preview-textarea-text': tokens['--lb-input-text'] || tokens['--lb-text'],
       '--cfw-preview-textarea-border': tokens['--lb-input-border'] || tokens['--lb-border'],
-      '--cfw-preview-table-bg': tokens['--lb-table-bg'] || tokens['--lb-table-row-bg'],
-      '--cfw-preview-table-hover-bg': tokens['--lb-table-row-hover-bg'] || tokens['--lb-hover-bg'],
+      '--cfw-preview-table-bg': tokens['--lb-table-bg'] || tokens['--lb-table-row-bg'] || tokens['--lb-table-body-bg'],
+      '--cfw-preview-table-text': tokens['--lb-table-text'] || tokens['--lb-table-row-text'],
+      '--cfw-preview-table-border': tokens['--lb-table-border-color'] || tokens['--lb-table-border'],
+      '--cfw-preview-table-hover-bg': tokens['--lb-table-row-hover-bg'] || tokens['--lb-table-hover-bg'] || tokens['--lb-hover-bg'],
+      '--cfw-preview-table-hover-text': tokens['--lb-table-row-hover-text'] || tokens['--lb-table-hover-text'] || tokens['--lb-table-text'],
       '--cfw-preview-notify-bg': tokens['--lb-success-bg'] || tokens['--lb-notify-bg'] || tokens['--lb-active-bg'],
       '--cfw-preview-validation-bg': tokens['--lb-warning-bg'] || tokens['--lb-error-bg'] || tokens['--lb-card-bg']
     };
@@ -1652,7 +1674,18 @@
     previewCaption.textContent = currentArea() + ' → ' + currentElement() + ' → ' + currentGroup();
   }
 
+  function updatePreviewStateClasses() {
+    if (!previewRoot) return;
+    var isSidebarHoverTarget = currentArea() === 'Layout'
+      && currentElement() === 'Sidebar Einträge'
+      && /^Hover/.test(currentGroup());
+    var isTableHoverTarget = currentArea() === 'tabellen' && /^Hover/.test(currentGroup());
+    previewRoot.classList.toggle('cfw-preview-show-sidebar-hover', !!isSidebarHoverTarget);
+    previewRoot.classList.toggle('cfw-preview-show-table-hover', !!isTableHoverTarget);
+  }
+
   function refreshPreviewAndPalette() {
+    updatePreviewStateClasses();
     updatePreview();
     renderPalette();
   }
