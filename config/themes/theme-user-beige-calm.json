@@ -1,5 +1,5 @@
 {
-   "custom_css" : "/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */",
+   "custom_css" : "/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */",
    "id" : "theme-user-beige-calm",
    "import_meta" : {},
    "name" : "Beige Calm",
@@ -7,8 +7,18 @@
       "generator" : "CSS-Studio"
    },
    "studio_model" : {
+      "Background|System Hintergrund|Grundfarbe" : {
+         "alpha" : 100,
+         "borderWidth" : 1,
+         "brightness" : 0,
+         "color" : "#fffaf2",
+         "dirty" : false,
+         "radius" : 12,
+         "shadow" : 1
+      },
       "Input|Input Text|Grundfarbe" : {
          "alpha" : 100,
+         "borderWidth" : 1,
          "brightness" : 0,
          "color" : "#fffaf2",
          "dirty" : false,
@@ -117,12 +127,12 @@
       "--lb-tooltip-text" : "#fff8ed",
       "--lb-warning" : "#d98b00"
    },
-   "version" : "0.1.7",
+   "version" : "0.1.14",
    "wallpaper" : {
-      "brightness" : 100,
-      "enabled" : false,
-      "image" : "",
+      "brightness" : 50,
+      "enabled" : true,
+      "image" : "assets/images/theme-user-beige-calm/wallpaper.png",
       "mode" : "cover",
-      "opacity" : 100
+      "opacity" : 57
    }
 }

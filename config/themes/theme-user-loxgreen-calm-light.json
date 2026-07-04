@@ -9,6 +9,7 @@
    "studio_model" : {
       "Input|Input Text|Grundfarbe" : {
          "alpha" : 100,
+         "borderWidth" : 1,
          "brightness" : 0,
          "color" : "#ffffff",
          "dirty" : false,
@@ -113,7 +114,7 @@
       "--lb-tooltip-text" : "#f0fdf4",
       "--lb-warning" : "#d98b00"
    },
-   "version" : "0.1.2",
+   "version" : "0.1.3",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

@@ -13,6 +13,7 @@ use JSON::PP qw(decode_json encode_json);
 use File::Path qw(make_path);
 use File::Copy qw(move copy);
 use POSIX qw(strftime);
+use MIME::Base64 qw(decode_base64);
 use LoxBerry::System;
 use LoxBerry::Web;
 use LoxBerry::JSON;
@@ -243,10 +244,78 @@ sub _theme_file_url_for_css {
     return $value;
 }
 
+sub _normalize_wallpaper_image_ref {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/^\s+|\s+$//g;
+    $value =~ s{^/plugins/cssframework/themes/}{};
+    return $value;
+}
+
+sub _write_wallpaper_asset {
+    my ($image, $theme_id) = @_;
+    $image = _normalize_wallpaper_image_ref($image);
+    return '' if $image eq '';
+
+    # Already a stored plugin asset reference.
+    return $image if $image =~ m{^assets/images/\Q$theme_id\E/wallpaper\.(?:png|jpe?g|webp|gif)\z}i;
+
+    # V146: Uploaded wallpapers arrive from the browser as data URLs. Store them
+    # as real files below data/plugins/cssframework/themes/assets/images/<theme-id>/
+    # and keep only the relative asset path in JSON/CSS.
+    if ($image =~ m{^data:image/(png|jpe?g|webp|gif);base64,(.+)\z}is) {
+        my ($type, $b64) = (lc($1), $2);
+        $type = 'jpg' if $type eq 'jpeg';
+        $type = 'jpg' if $type eq 'jpe';
+        my $rel = "assets/images/$theme_id/wallpaper.$type";
+        my $dir = "$theme_dir/assets/images/$theme_id";
+        my $path = "$theme_dir/$rel";
+        my $tmp = "$path.tmp.$$";
+
+        $b64 =~ s/\s+//g;
+        my $raw = eval { decode_base64($b64) };
+        if ($@ || !defined $raw || length($raw) < 16) {
+            _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid wallpaper image data.' });
+        }
+
+        # Guard against accidentally storing huge JSON uploads.
+        if (length($raw) > 8 * 1024 * 1024) {
+            _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Wallpaper image is too large. Maximum is 8 MB.' });
+        }
+
+        eval { make_path($dir, { mode => 0775 }) if !-d $dir; 1 }
+            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot create wallpaper asset directory: $dir" });
+
+        # Remove old wallpaper files with a different extension to avoid stale assets.
+        for my $old_ext (qw(png jpg jpeg webp gif)) {
+            my $old = "$theme_dir/assets/images/$theme_id/wallpaper.$old_ext";
+            unlink $old if $old ne $path && -f $old;
+        }
+
+        open(my $fh, '>', $tmp)
+            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot write wallpaper asset: $path" });
+        binmode $fh;
+        print {$fh} $raw;
+        close($fh);
+        chmod 0664, $tmp;
+        move($tmp, $path)
+            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot finalize wallpaper asset: $path" });
+        chmod 0664, $path;
+
+        return $rel;
+    }
+
+    # Keep any other existing image reference untouched, but normalize legacy prefix.
+    return $image;
+}
+
 my $wallpaper_src = ref($data->{wallpaper}) eq 'HASH' ? $data->{wallpaper} : {};
+my $wallpaper_image = defined $wallpaper_src->{image} ? "$wallpaper_src->{image}" : '';
+$wallpaper_image = _write_wallpaper_asset($wallpaper_image, $id) if $wallpaper_image ne '';
+
 my $wallpaper = {
-    enabled    => ($wallpaper_src->{enabled} && defined $wallpaper_src->{image} && "$wallpaper_src->{image}" ne '') ? JSON::PP::true : JSON::PP::false,
-    image      => defined $wallpaper_src->{image} ? "$wallpaper_src->{image}" : '',
+    enabled    => ($wallpaper_src->{enabled} && $wallpaper_image ne '') ? JSON::PP::true : JSON::PP::false,
+    image      => $wallpaper_image,
     mode       => _wallpaper_mode($wallpaper_src->{mode}),
     brightness => _clamp_int($wallpaper_src->{brightness}, 0, 150, 100),
     opacity    => _clamp_int($wallpaper_src->{opacity}, 0, 100, 100),
@@ -300,7 +369,7 @@ my $manifest = {
     plugin       => $plugin,
     css          => $css_file,
     assets       => {
-        wallpaper => "assets/images/$id/wallpaper.jpg",
+        wallpaper => ($wallpaper->{image} || "assets/images/$id/wallpaper.jpg"),
         icons     => "assets/icons/$id/",
     },
     features     => {
@@ -382,6 +451,8 @@ $css .= ".$id table.lb-table, .$id .lb-table, .$id table.formtable, .$id .lb-con
 $css .= "  background-color: var(--lb-table-bg, var(--lb-table-row-bg, transparent)) !important;\n";
 $css .= "  color: var(--lb-table-text, var(--lb-table-row-text, inherit)) !important;\n";
 $css .= "  border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, 1px)) !important;\n";
 $css .= "  border-radius: var(--lb-table-radius, var(--lb-radius-table, 0px)) !important;\n";
 $css .= "  overflow: hidden;\n";
 $css .= "}\n";
@@ -389,21 +460,25 @@ $css .= "body.$id table.lb-table thead, body.$id table.lb-table th, body.$id .lb
 $css .= ".$id table.lb-table thead, .$id table.lb-table th, .$id .lb-table thead, .$id .lb-table th, .$id table.formtable th, .$id .lb-content table:not(.ui-datepicker-calendar) th {\n";
 $css .= "  background-color: var(--lb-table-header-bg, var(--lb-table-bg, transparent)) !important;\n";
 $css .= "  color: var(--lb-table-header-text, var(--lb-table-text, inherit)) !important;\n";
-$css .= "  border-color: var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;\n";
+$css .= "  border-color: var(--lb-table-header-border-color, var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) !important;\n";
 $css .= "}\n";
 $css .= "body.$id table.lb-table td, body.$id .lb-table td, body.$id table.formtable td, body.$id .lb-content table:not(.ui-datepicker-calendar) td,\n";
 $css .= ".$id table.lb-table td, .$id .lb-table td, .$id table.formtable td, .$id .lb-content table:not(.ui-datepicker-calendar) td {\n";
 $css .= "  background-color: var(--lb-table-row-bg, var(--lb-table-bg, transparent)) !important;\n";
 $css .= "  color: var(--lb-table-row-text, var(--lb-table-text, inherit)) !important;\n";
-$css .= "  border-color: var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;\n";
+$css .= "  border-color: var(--lb-table-row-border-color, var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) 0 !important;\n";
 $css .= "}\n";
-$css .= "body.$id table.lb-table tbody tr:hover td, body.$id .lb-table tbody tr:hover td, body.$id table.formtable tbody tr:hover td, body.$id .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td,\n";
-$css .= ".$id table.lb-table tbody tr:hover td, .$id .lb-table tbody tr:hover td, .$id table.formtable tbody tr:hover td, .$id .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td {\n";
+$css .= "body.$id .lb-table-hover tbody tr:hover td, body.$id table.lb-table.lb-table-hover tbody tr:hover td, body.$id .cfw-table-hover-enabled tbody tr:hover td,\n";
+$css .= ".$id .lb-table-hover tbody tr:hover td, .$id table.lb-table.lb-table-hover tbody tr:hover td, .$id .cfw-table-hover-enabled tbody tr:hover td {\n";
 $css .= "  background-color: var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, var(--lb-hover-bg, transparent))) !important;\n";
 $css .= "  color: var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit))) !important;\n";
 $css .= "}\n";
-$css .= "body.$id table.lb-table tbody tr:hover td *, body.$id .lb-table tbody tr:hover td *, body.$id table.formtable tbody tr:hover td *, body.$id .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td *,\n";
-$css .= ".$id table.lb-table tbody tr:hover td *, .$id .lb-table tbody tr:hover td *, .$id table.formtable tbody tr:hover td *, .$id .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td * {\n";
+$css .= "body.$id .lb-table-hover tbody tr:hover td *, body.$id table.lb-table.lb-table-hover tbody tr:hover td *, body.$id .cfw-table-hover-enabled tbody tr:hover td *,\n";
+$css .= ".$id .lb-table-hover tbody tr:hover td *, .$id table.lb-table.lb-table-hover tbody tr:hover td *, .$id .cfw-table-hover-enabled tbody tr:hover td * {\n";
 $css .= "  color: inherit !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-sidebar a:not(.active):not(.ui-btn-active):not(.lb-active):hover,\n";

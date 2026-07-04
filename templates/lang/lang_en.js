@@ -22,7 +22,9 @@ window.LBDesignStudioLangs.en = {
       "enabled": "Enabled",
       "disabled": "Disabled"
     },
-    "status": {}
+    "status": {
+      "title": "Status"
+    }
   },
   "studio": {
     "title": "LoxBerry Design Studio",
@@ -80,6 +82,7 @@ window.LBDesignStudioLangs.en = {
     "opacity": "Opacity",
     "brightness": "Brightness",
     "radius": "Radius",
+    "borderWidth": "Border width",
     "shadowDepth": "Shadow / depth"
   },
   "import": {
@@ -100,8 +103,9 @@ window.LBDesignStudioLangs.en = {
     }
   },
   "preview": {
-    "title": "Final Live Preview",
-    "caption": "Live preview of the selected settings with all assigned tokens.",
+    "title": "Workspace / Preview",
+    "workHint": "Click individual elements to edit them in the Studio. Double-click opens the direct editor.",
+    "caption": "No element selected.",
     "internalTokens": "internal tokens",
     "nav": {
       "dashboard": "Dashboard",
@@ -263,6 +267,7 @@ window.LBDesignStudioLangs.en = {
     "previewSelected": "Preview selection applied: {path}. Double-click or Ctrl-click opens the direct editor.",
     "coreRead": "Core read: {tokens} tokens, {themes} themes.",
     "selectElementFirst": "Please select an element in the final live preview or in the properties area first.",
-    "noRadiusForElement": "This element has no radius tokens."
+    "noRadiusForElement": "This element has no radius tokens.",
+    "noBorderWidthForElement": "This element has no border-width tokens."
   }
 };

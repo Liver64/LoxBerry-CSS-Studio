@@ -32,6 +32,9 @@
   var alphaRange = document.getElementById('alphaRange');
   var brightnessRange = document.getElementById('brightnessRange');
   var radiusRange = document.getElementById('radiusRange');
+  var borderWidthRange = document.getElementById('borderWidthRange');
+  var borderWidthValue = document.getElementById('borderWidthValue');
+  var borderWidthSetting = document.querySelector('.cfw-border-width-setting');
   var shadowRange = document.getElementById('shadowRange');
   var alphaValue = document.getElementById('alphaValue');
   var brightnessValue = document.getElementById('brightnessValue');
@@ -314,7 +317,8 @@
         'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
         'Header': ['--lb-table-header-bg'],
         'Header Textfarbe': ['--lb-table-header-text'],
-        'Rahmen': ['--lb-table-border', '--lb-table-border-color', '--lb-table-header-border', '--lb-table-row-border'],
+        'Rahmen': ['--lb-table-border-color', '--lb-table-header-border-color', '--lb-table-row-border-color', '--lb-table-border'],
+        'Rahmenstärke': ['--lb-table-border-width', '--lb-table-outer-border-width', '--lb-table-cell-border-width'],
         'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Radius': ['--lb-table-radius', '--lb-radius-table']
@@ -324,7 +328,8 @@
         'Textfarbe': ['--lb-table-compact-text', '--lb-table-text'],
         'Header': ['--lb-table-compact-header-bg', '--lb-table-header-bg'],
         'Header Textfarbe': ['--lb-table-compact-header-text', '--lb-table-header-text'],
-        'Rahmen': ['--lb-table-compact-border', '--lb-table-border', '--lb-table-border-color'],
+        'Rahmen': ['--lb-table-compact-border-color', '--lb-table-border-color', '--lb-table-border'],
+        'Rahmenstärke': ['--lb-table-compact-border-width', '--lb-table-border-width', '--lb-table-outer-border-width'],
         'Hover': ['--lb-table-compact-hover-bg', '--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-compact-hover-text', '--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Radius': ['--lb-table-compact-radius', '--lb-table-radius', '--lb-radius-table']
@@ -332,7 +337,8 @@
       'Tabelle mit Selects': {
         'Grundfarbe': ['--lb-table-bg', '--lb-table-row-bg'],
         'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
-        'Rahmen': ['--lb-table-border', '--lb-table-border-color'],
+        'Rahmen': ['--lb-table-border-color', '--lb-table-border'],
+        'Rahmenstärke': ['--lb-table-border-width', '--lb-table-outer-border-width', '--lb-table-cell-border-width'],
         'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Select Grundfarbe': ['--lb-select-bg', '--lb-input-bg'],
@@ -344,7 +350,8 @@
       'Tabelle mit Buttons': {
         'Grundfarbe': ['--lb-table-bg', '--lb-table-row-bg'],
         'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
-        'Rahmen': ['--lb-table-border', '--lb-table-border-color'],
+        'Rahmen': ['--lb-table-border-color', '--lb-table-border'],
+        'Rahmenstärke': ['--lb-table-border-width', '--lb-table-outer-border-width', '--lb-table-cell-border-width'],
         'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Buttonfarbe': ['--lb-btn-bg'],
@@ -914,6 +921,7 @@
       alpha: 100,
       brightness: 0,
       radius: parseInt(radiusRange.value || '12', 10),
+      borderWidth: borderWidthRange ? parseInt(borderWidthRange.value || '1', 10) : 1,
       shadow: 1,
       dirty: !!dirty
     };
@@ -955,6 +963,28 @@
     return '';
   }
 
+  function isBorderWidthGroup(group) {
+    return group === 'Rahmenstärke' || group === 'Border Width';
+  }
+
+  function resolveBorderWidthGroupForCurrentElement() {
+    if (groupExistsForCurrentElement('Rahmenstärke')) return 'Rahmenstärke';
+    if (groupExistsForCurrentElement('Border Width')) return 'Border Width';
+    var groups = elementGroups(currentArea(), currentElement());
+    var names = Object.keys(groups);
+    for (var i = 0; i < names.length; i += 1) {
+      var name = names[i];
+      var mapped = groups[name] || [];
+      if (isBorderWidthGroup(name) || mapped.some(function (token) { return /border-width/.test(token); })) return name;
+    }
+    return '';
+  }
+
+  function updateConditionalSettingVisibility() {
+    var showBorderWidth = isBorderWidthGroup(currentGroup());
+    if (borderWidthSetting) borderWidthSetting.hidden = !showBorderWidth;
+  }
+
   function saveControlsToEntry(field) {
     field = field || 'all';
 
@@ -975,6 +1005,25 @@
       if (colorGroupSelect && colorGroupSelect.value !== radiusGroup) {
         colorGroupSelect.value = radiusGroup;
         loadEntryToControls(radiusEntry);
+      }
+      return true;
+    }
+
+    if (field === 'borderWidth') {
+      var borderWidthGroup = resolveBorderWidthGroupForCurrentElement();
+      if (!borderWidthGroup) {
+        setStatus(t('messages.noBorderWidthForElement', 'Dieses Element besitzt keine Rahmenstärke-Tokens.'), false, 'info', { modal: 'manual' });
+        return false;
+      }
+
+      var borderWidthKey = editorKey(currentArea(), currentElement(), borderWidthGroup);
+      var borderWidthEntry = getEntryForKey(borderWidthKey);
+      borderWidthEntry.borderWidth = borderWidthRange ? parseInt(borderWidthRange.value || '1', 10) : 1;
+      borderWidthEntry.dirty = true;
+
+      if (colorGroupSelect && colorGroupSelect.value !== borderWidthGroup) {
+        colorGroupSelect.value = borderWidthGroup;
+        loadEntryToControls(borderWidthEntry);
       }
       return true;
     }
@@ -1001,6 +1050,7 @@
     alphaRange.value = 100;
     brightnessRange.value = 0;
     radiusRange.value = entry.radius == null ? 12 : entry.radius;
+    if (borderWidthRange) borderWidthRange.value = entry.borderWidth == null ? 1 : entry.borderWidth;
     shadowRange.value = 1;
     updateLabels();
   }
@@ -1057,17 +1107,33 @@
     if (!wallpaperControls) return;
     var editable = isBackgroundWallpaperEditable();
     var enabled = !!(wallpaperEnabled && wallpaperEnabled.checked);
+    var hasWallpaper = !!(wallpaperState && wallpaperState.enabled && wallpaperState.image);
+    var visible = editable || hasWallpaper;
 
-    wallpaperControls.hidden = !editable;
-    wallpaperControls.setAttribute('aria-hidden', editable ? 'false' : 'true');
+    // V147: When a loaded theme already uses a wallpaper, show the Wallpaper
+    // Editor panel automatically, but keep it collapsed until the user selects
+    // the real background target. This keeps the state visible without clutter.
+    wallpaperControls.hidden = !visible;
+    wallpaperControls.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    wallpaperControls.classList.toggle('cfw-wallpaper-has-saved', hasWallpaper);
+    wallpaperControls.classList.toggle('cfw-wallpaper-context-editable', editable);
     wallpaperControls.classList.toggle('cfw-wallpaper-enabled', editable && enabled);
 
     if (wallpaperAdvancedControls) {
-      // Keep the advanced controls available for the enabled-state CSS/JS bridge,
-      // but only expose them to accessibility when the editor is visible and active.
-      wallpaperAdvancedControls.hidden = !editable;
-      wallpaperAdvancedControls.setAttribute('aria-hidden', editable && enabled ? 'false' : 'true');
+      var expanded = editable && enabled;
+      wallpaperAdvancedControls.hidden = !expanded;
+      wallpaperAdvancedControls.setAttribute('aria-hidden', expanded ? 'false' : 'true');
     }
+  }
+
+  function wallpaperPreviewUrl(image) {
+    image = String(image || '').trim();
+    if (!image) return '';
+    if (/^data:image\//i.test(image) || /^https?:\/\//i.test(image) || image.charAt(0) === '/') return image;
+    if (/^assets\//i.test(image)) {
+      return '/admin/plugins/cssframework/theme-file.cgi?file=' + encodeURIComponent(image).replace(/%2F/g, '%2F');
+    }
+    return image;
   }
 
   function buildWallpaperPayload() {
@@ -1087,7 +1153,7 @@
     var hasWallpaper = !!(wallpaper.enabled && wallpaper.image);
     previewRoot.classList.toggle('cfw-wallpaper-enabled', hasWallpaper);
     if (hasWallpaper) {
-      previewRoot.style.setProperty('--cfw-wallpaper-image', 'url("' + String(wallpaper.image).replace(/"/g, '%22') + '")');
+      previewRoot.style.setProperty('--cfw-wallpaper-image', 'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")');
       previewRoot.style.setProperty('--cfw-wallpaper-opacity', String(wallpaper.opacity / 100));
       previewRoot.style.setProperty('--cfw-wallpaper-brightness', String(wallpaper.brightness / 100));
       previewRoot.style.setProperty('--cfw-wallpaper-size', wallpaper.mode === 'contain' ? 'contain' : (wallpaper.mode === 'repeat' || wallpaper.mode === 'center' ? 'auto' : 'cover'));
@@ -1121,7 +1187,9 @@
     alphaValue.textContent = alphaRange.value + '%';
     brightnessValue.textContent = brightnessRange.value;
     radiusValue.textContent = radiusRange.value + 'px';
+    if (borderWidthValue && borderWidthRange) borderWidthValue.textContent = borderWidthRange.value + 'px';
     shadowValue.textContent = shadowRange.value;
+    updateConditionalSettingVisibility();
     updateWallpaperLabels();
     updateWallpaperControlVisibility();
     updateColorPresetSelection();
@@ -1458,7 +1526,9 @@
       var mapped = (((areas[area] || {})[element] || {})[group]) || [];
       mapped.forEach(function (token) {
         if (!/^--lb-[a-z0-9-]+$/.test(token) || isBlockedToken(token)) return;
-        if (/radius/.test(token) || group === 'Radius') {
+        if (/border-width/.test(token) || isBorderWidthGroup(group)) {
+          tokens[token] = (entry.borderWidth == null ? 1 : entry.borderWidth) + 'px';
+        } else if (/radius/.test(token) || group === 'Radius') {
           tokens[token] = entry.radius + 'px';
         } else if (/shadow/.test(token) || group === 'Schatten') {
           tokens[token] = shadowValueToCss(entry.shadow, entry.color);
@@ -1480,6 +1550,14 @@
   function applyPreviewFallbacks(tokens) {
     var root = previewRoot;
     if (!root) return;
+    [
+      '--cfw-preview-table-bg',
+      '--cfw-preview-table-text',
+      '--cfw-preview-table-border',
+      '--cfw-preview-table-hover-bg',
+      '--cfw-preview-table-hover-text'
+    ].forEach(function (name) { root.style.removeProperty(name); });
+
     var fallbackMap = {
       '--cfw-preview-button-bg': tokens['--lb-btn-bg'] || tokens['--lb-active-bg'] || tokens['--lb-btn-primary-bg'],
       '--cfw-preview-button-text': tokens['--lb-btn-text'] || tokens['--lb-active-text'],
@@ -1496,6 +1574,7 @@
       '--cfw-preview-table-bg': tokens['--lb-table-bg'] || tokens['--lb-table-row-bg'] || tokens['--lb-table-body-bg'],
       '--cfw-preview-table-text': tokens['--lb-table-text'] || tokens['--lb-table-row-text'],
       '--cfw-preview-table-border': tokens['--lb-table-border-color'] || tokens['--lb-table-border'],
+      '--cfw-preview-table-border-width': tokens['--lb-table-border-width'] || tokens['--lb-table-outer-border-width'] || tokens['--lb-table-cell-border-width'],
       '--cfw-preview-table-hover-bg': tokens['--lb-table-row-hover-bg'] || tokens['--lb-table-hover-bg'] || tokens['--lb-hover-bg'],
       '--cfw-preview-table-hover-text': tokens['--lb-table-row-hover-text'] || tokens['--lb-table-hover-text'] || tokens['--lb-table-text'],
       '--cfw-preview-notify-bg': tokens['--lb-success-bg'] || tokens['--lb-notify-bg'] || tokens['--lb-active-bg'],
@@ -1679,8 +1758,10 @@
     var isSidebarHoverTarget = currentArea() === 'Layout'
       && currentElement() === 'Sidebar Einträge'
       && /^Hover/.test(currentGroup());
-    var isTableHoverTarget = currentArea() === 'tabellen' && /^Hover/.test(currentGroup());
+    var isTableTarget = currentArea() === 'tabellen';
+    var isTableHoverTarget = isTableTarget && /^Hover/.test(currentGroup());
     previewRoot.classList.toggle('cfw-preview-show-sidebar-hover', !!isSidebarHoverTarget);
+    previewRoot.classList.toggle('cfw-preview-show-table-target', !!isTableTarget);
     previewRoot.classList.toggle('cfw-preview-show-table-hover', !!isTableHoverTarget);
   }
 
@@ -3160,6 +3241,13 @@
     radiusRange.addEventListener('input', function () {
       if (!requireColorEditTarget()) return;
       updateAll(true, 'radius');
+    });
+  }
+
+  if (borderWidthRange) {
+    borderWidthRange.addEventListener('input', function () {
+      if (!requireColorEditTarget()) return;
+      updateAll(true, 'borderWidth');
     });
   }
   if (cssImportButton && cssImport) { cssImportButton.addEventListener('click', function () { cssImport.click(); }); }

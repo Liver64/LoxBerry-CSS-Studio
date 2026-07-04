@@ -1789,3 +1789,276 @@
 .cfw-page.cfw-v142 .cfw-preview-table tbody tr:last-child td {
   border-bottom-width: 0;
 }
+
+
+/* V143: Final Live Preview table values are forced directly from table tokens.
+   This avoids stale intermediate preview variables and makes each selected table
+   property immediately visible in the Studio preview. */
+.cfw-page.cfw-v143 .cfw-preview-table {
+  background-color: var(--lb-table-bg, var(--lb-table-row-bg, var(--lb-table-body-bg, transparent))) !important;
+  color: var(--lb-table-text, var(--lb-table-row-text, inherit)) !important;
+  border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))) !important;
+  border-radius: var(--lb-table-radius, var(--lb-radius-table, 12px)) !important;
+}
+.cfw-page.cfw-v143 .cfw-preview-table thead,
+.cfw-page.cfw-v143 .cfw-preview-table thead tr,
+.cfw-page.cfw-v143 .cfw-preview-table thead th {
+  background-color: var(--lb-table-header-bg, var(--lb-table-bg, transparent)) !important;
+  color: var(--lb-table-header-text, var(--lb-table-text, inherit)) !important;
+  border-color: var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
+}
+.cfw-page.cfw-v143 .cfw-preview-table tbody,
+.cfw-page.cfw-v143 .cfw-preview-table tbody tr,
+.cfw-page.cfw-v143 .cfw-preview-table tbody td {
+  background-color: var(--lb-table-row-bg, var(--lb-table-bg, var(--lb-table-body-bg, transparent))) !important;
+  color: var(--lb-table-row-text, var(--lb-table-text, inherit)) !important;
+  border-color: var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
+}
+.cfw-page.cfw-v143 .cfw-preview-table tbody td * {
+  color: inherit;
+}
+.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo,
+.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td {
+  background-color: var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, var(--lb-hover-bg, rgba(0,0,0,.05)))) !important;
+  color: var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit))) !important;
+}
+.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td * {
+  color: inherit !important;
+}
+.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-target .cfw-preview-table {
+  box-shadow: 0 0 0 1px var(--lb-focus-ring, var(--lb-primary, rgba(0,122,255,.45)));
+}
+
+
+/* V144: Do not create generic runtime row-hover for tables.
+   Table hover remains only as contextual Studio preview and as optional opt-in
+   runtime helper (.lb-table-hover / .cfw-table-hover-enabled). */
+
+
+/* V145: Table border color and border width support. */
+.cfw-page.cfw-v145 .cfw-border-width-setting[hidden] {
+  display: none !important;
+}
+.cfw-page.cfw-v145 .cfw-preview-table {
+  border-style: solid !important;
+  border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, var(--cfw-preview-table-border-width, 1px))) !important;
+  border-color: var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16)))) !important;
+}
+.cfw-page.cfw-v145 .cfw-preview-table thead th,
+.cfw-page.cfw-v145 .cfw-preview-table tbody td {
+  border-style: solid !important;
+  border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, var(--cfw-preview-table-border-width, 1px))) 0 !important;
+  border-color: var(--lb-table-row-border-color, var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16))))) !important;
+}
+.cfw-page.cfw-v145 .cfw-preview-table thead th {
+  border-color: var(--lb-table-header-border-color, var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16))))) !important;
+}
+
+/* V146: Wallpaper uploads are stored as real assets under data/plugins/cssframework/themes/assets/images/<theme-id>/. */
+
+
+/* V147: If a loaded theme has a wallpaper, show the Wallpaper Editor collapsed.
+   The advanced controls open only when the background element is selected. */
+.cfw-page.cfw-v147 #wallpaperControls[hidden],
+.cfw-page.cfw-v147 #wallpaperAdvancedControls[hidden] {
+  display: none !important;
+}
+.cfw-page.cfw-v147 #wallpaperControls.cfw-wallpaper-has-saved:not(.cfw-wallpaper-context-editable) {
+  opacity: 0.98;
+}
+
+
+/* V148: Release UI polish.
+   CSS import stays in code but is hidden for the first release.
+   Status messages move to a compact Studio-style bar below the workspace.
+   Wallpaper select gets a visible dropdown chevron. */
+.cfw-page.cfw-v148 .cfw-import-panel[hidden] {
+  display: none !important;
+}
+.cfw-page.cfw-v148 .cfw-main-status {
+  max-width: 760px;
+  margin: 12px auto 0 auto;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  border: 1px solid var(--lb-border-color, var(--lb-border, rgba(0,0,0,.16)));
+  border-radius: var(--lb-radius-card, var(--lb-radius, 14px));
+  background: var(--lb-card-bg, rgba(255,255,255,.78));
+  color: var(--lb-card-text, var(--lb-text, inherit));
+  box-shadow: var(--lb-card-shadow, 0 8px 24px rgba(0,0,0,.06));
+}
+.cfw-page.cfw-v148 .cfw-main-status .cfw-status-label {
+  font-weight: 800;
+  opacity: .76;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+.cfw-page.cfw-v148 .cfw-main-status .cfw-status {
+  min-height: 0;
+  max-height: 2.8em;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  white-space: normal;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.cfw-page.cfw-v148 .cfw-main-status .cfw-status:empty::after {
+  content: "\00a0";
+}
+.cfw-page.cfw-v148 #wallpaperMode {
+  padding-right: 34px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% + 1px),
+    calc(100% - 13px) calc(50% + 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+
+/* V149: Static workspace hint plus standalone centered status window. */
+.cfw-page.cfw-v149 .cfw-preview-work-hint {
+  margin: 2px 0 2px 0;
+  color: var(--lb-text-secondary, #475569);
+  font-size: 0.93rem;
+  line-height: 1.35;
+}
+.cfw-page.cfw-v149 .cfw-preview-breadcrumb {
+  margin-top: 4px;
+}
+.cfw-page.cfw-v149 .cfw-status-window {
+  width: 50vw;
+  max-width: calc(100% - 32px);
+  min-width: min(420px, calc(100% - 32px));
+  margin: 14px auto 0 auto;
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  border: 1px solid var(--lb-border-color, var(--lb-border, rgba(0,0,0,.16)));
+  border-radius: var(--lb-radius-card, var(--lb-radius, 14px));
+  background: var(--lb-card-bg, rgba(255,255,255,.82));
+  color: var(--lb-card-text, var(--lb-text, inherit));
+  box-shadow: var(--lb-card-shadow, 0 8px 24px rgba(0,0,0,.06));
+}
+.cfw-page.cfw-v149 .cfw-status-window .cfw-status-label {
+  padding: 9px 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  border-right: 1px solid var(--lb-border-color, var(--lb-border, rgba(0,0,0,.12)));
+  background: color-mix(in srgb, var(--lb-card-bg, #fff) 82%, var(--lb-primary, #2563eb) 18%);
+}
+.cfw-page.cfw-v149 .cfw-status-window .cfw-status {
+  padding: 9px 12px;
+  min-height: 2.7em;
+  max-height: 2.7em;
+  margin: 0;
+  overflow: hidden;
+  white-space: normal;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.cfw-page.cfw-v149 .cfw-status-window .cfw-status:empty::after {
+  content: "\00a0";
+}
+@media (max-width: 900px) {
+  .cfw-page.cfw-v149 .cfw-status-window {
+    width: calc(100% - 24px);
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+}
+
+
+/* V149 override for the V148 status layout. */
+.cfw-page.cfw-v149 .cfw-main-status.cfw-status-window {
+  width: 50vw;
+  max-width: calc(100% - 32px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* V150: Status messages are a real Studio block and the selection breadcrumb is bold. */
+.cfw-page.cfw-v150 #previewCaption,
+.cfw-page.cfw-v150 .cfw-preview-breadcrumb {
+  font-weight: 800 !important;
+}
+
+.cfw-page.cfw-v150 #studioStatusBar,
+#studioStatusBar.cfw-status-window {
+  width: 50vw !important;
+  max-width: calc(100% - 32px) !important;
+  min-width: min(420px, calc(100% - 32px)) !important;
+  margin: 16px auto 0 auto !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  border: 1px solid var(--lb-card-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.16)))) !important;
+  border-radius: var(--lb-radius-card, var(--lb-radius, 14px)) !important;
+  background: var(--lb-card-bg, rgba(255,255,255,.86)) !important;
+  color: var(--lb-card-text, var(--lb-text, inherit)) !important;
+  box-shadow: var(--lb-card-shadow, 0 8px 24px rgba(0,0,0,.08)) !important;
+  overflow: hidden !important;
+}
+
+.cfw-page.cfw-v150 #studioStatusBar .cfw-status-table,
+#studioStatusBar.cfw-status-window .cfw-status-table {
+  display: grid !important;
+  grid-template-columns: 132px minmax(0, 1fr) !important;
+  min-height: 46px !important;
+}
+
+.cfw-page.cfw-v150 #studioStatusBar .cfw-status-label,
+#studioStatusBar.cfw-status-window .cfw-status-label {
+  padding: 10px 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+  border-right: 1px solid var(--lb-card-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.12)))) !important;
+  background: var(--lb-table-header-bg, color-mix(in srgb, var(--lb-card-bg, #fff) 82%, var(--lb-primary, #2563eb) 18%)) !important;
+  color: var(--lb-table-header-text, var(--lb-text, inherit)) !important;
+}
+
+.cfw-page.cfw-v150 #studioStatusBar .cfw-status,
+#studioStatusBar.cfw-status-window .cfw-status {
+  padding: 10px 12px !important;
+  min-height: 2.7em !important;
+  max-height: 2.7em !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  overflow: hidden !important;
+  white-space: normal !important;
+  line-height: 1.35 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.cfw-page.cfw-v150 #studioStatusBar .cfw-status:empty::after,
+#studioStatusBar.cfw-status-window .cfw-status:empty::after {
+  content: "\00a0";
+}
+
+@media (max-width: 900px) {
+  .cfw-page.cfw-v150 #studioStatusBar,
+  #studioStatusBar.cfw-status-window {
+    width: calc(100% - 24px) !important;
+  }
+  .cfw-page.cfw-v150 #studioStatusBar .cfw-status-table,
+  #studioStatusBar.cfw-status-window .cfw-status-table {
+    grid-template-columns: 96px minmax(0, 1fr) !important;
+  }
+}

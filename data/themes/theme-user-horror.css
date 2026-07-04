@@ -67,8 +67,8 @@ body.theme-user-horror,
   --lb-multiselect-shadow: 0 10px 28px rgba(0,0,0,0.16);
   --lb-multiselect-summary-bg: #ffffff;
   --lb-multiselect-text: #103038;
-  --lb-nav-hover-bg: #155e75;
-  --lb-nav-hover-text: #ecfeff;
+  --lb-nav-hover-bg: #fde68a;
+  --lb-nav-hover-text: #155e75;
   --lb-primary: #0891b2;
   --lb-primary-dark: #155e75;
   --lb-primary-hover: #0e7490;
@@ -78,6 +78,7 @@ body.theme-user-horror,
   --lb-radius-input: 0px;
   --lb-radius-select: 0px;
   --lb-radius-sm: 10px;
+  --lb-radius-table: 28px;
   --lb-select-bg: #ffffff;
   --lb-select-border: #a5f3fc;
   --lb-select-hover-bg: #f2f2f2;
@@ -87,15 +88,15 @@ body.theme-user-horror,
   --lb-select-option-hover-text: #103038;
   --lb-select-radius: 0px;
   --lb-select-text: #103038;
-  --lb-sidebar-active-bg: #155e75;
-  --lb-sidebar-active-text: #ecfeff;
-  --lb-sidebar-bg: #fff4eb;
-  --lb-sidebar-hover-bg: #155e75;
-  --lb-sidebar-hover-text: #ecfeff;
+  --lb-sidebar-active-bg: #f5ead7;
+  --lb-sidebar-active-text: #7c3aed;
+  --lb-sidebar-bg: #dc2626;
+  --lb-sidebar-hover-bg: #fde68a;
+  --lb-sidebar-hover-text: #155e75;
   --lb-sidebar-item-text: #103038;
-  --lb-sidebar-link-hover-bg: #155e75;
-  --lb-sidebar-link-hover-text: #ecfeff;
-  --lb-sidebar-text: #155e75;
+  --lb-sidebar-link-hover-bg: #fde68a;
+  --lb-sidebar-link-hover-text: #155e75;
+  --lb-sidebar-text: #ffffff;
   --lb-slider-active-bg: #1096ea;
   --lb-slider-bg: #f0dd0a;
   --lb-slider-thumb-bg: #0af079;
@@ -107,16 +108,19 @@ body.theme-user-horror,
   --lb-switch-thumb-bg: #cffafe;
   --lb-tab-popup-item-hover-bg: #0e7490;
   --lb-table-bg: #ffffff;
-  --lb-table-border-color: #a5f3fc;
+  --lb-table-border: #155e75;
+  --lb-table-border-color: #155e75;
   --lb-table-cell-border-color: #a5f3fc;
   --lb-table-cell-text: #103038;
   --lb-table-footer-bg: #cffafe;
   --lb-table-footer-text: #4b6d75;
-  --lb-table-header-bg: #cffafe;
-  --lb-table-header-text: #103038;
-  --lb-table-radius: 12px;
+  --lb-table-header-bg: #c4b8e0;
+  --lb-table-header-border: #155e75;
+  --lb-table-header-text: #ecfeff;
+  --lb-table-radius: 28px;
   --lb-table-row-alt-bg: #cffafe;
   --lb-table-row-bg: #ffffff;
+  --lb-table-row-border: #155e75;
   --lb-table-row-hover-bg: #b5dee8;
   --lb-text: #103038;
   --lb-text-muted: #4b6d75;
@@ -129,12 +133,12 @@ body.theme-user-horror,
   --lb-toggle-slider-radius: 36px;
   --lb-toggle-thumb-radius: 36px;
   --lb-tooltip-bg: #0e7490;
-  --lb-tooltip-text: #155e75;
+  --lb-tooltip-text: #ffffff;
   --lb-warning: #d98b00;
 }
 
 /* USER CUSTOM CSS START */
-/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
+/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
 /* USER CUSTOM CSS END */
 
 /* DESIGN STUDIO RULES START */
@@ -143,6 +147,8 @@ body.theme-user-horror table.lb-table, body.theme-user-horror .lb-table, body.th
   background-color: var(--lb-table-bg, var(--lb-table-row-bg, transparent)) !important;
   color: var(--lb-table-text, var(--lb-table-row-text, inherit)) !important;
   border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))) !important;
+  border-style: solid !important;
+  border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, 1px)) !important;
   border-radius: var(--lb-table-radius, var(--lb-radius-table, 0px)) !important;
   overflow: hidden;
 }
@@ -150,21 +156,25 @@ body.theme-user-horror table.lb-table thead, body.theme-user-horror table.lb-tab
 .theme-user-horror table.lb-table thead, .theme-user-horror table.lb-table th, .theme-user-horror .lb-table thead, .theme-user-horror .lb-table th, .theme-user-horror table.formtable th, .theme-user-horror .lb-content table:not(.ui-datepicker-calendar) th {
   background-color: var(--lb-table-header-bg, var(--lb-table-bg, transparent)) !important;
   color: var(--lb-table-header-text, var(--lb-table-text, inherit)) !important;
-  border-color: var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
+  border-color: var(--lb-table-header-border-color, var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))))) !important;
+  border-style: solid !important;
+  border-width: var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) !important;
 }
 body.theme-user-horror table.lb-table td, body.theme-user-horror .lb-table td, body.theme-user-horror table.formtable td, body.theme-user-horror .lb-content table:not(.ui-datepicker-calendar) td,
 .theme-user-horror table.lb-table td, .theme-user-horror .lb-table td, .theme-user-horror table.formtable td, .theme-user-horror .lb-content table:not(.ui-datepicker-calendar) td {
   background-color: var(--lb-table-row-bg, var(--lb-table-bg, transparent)) !important;
   color: var(--lb-table-row-text, var(--lb-table-text, inherit)) !important;
-  border-color: var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
+  border-color: var(--lb-table-row-border-color, var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))))) !important;
+  border-style: solid !important;
+  border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) 0 !important;
 }
-body.theme-user-horror table.lb-table tbody tr:hover td, body.theme-user-horror .lb-table tbody tr:hover td, body.theme-user-horror table.formtable tbody tr:hover td, body.theme-user-horror .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td,
-.theme-user-horror table.lb-table tbody tr:hover td, .theme-user-horror .lb-table tbody tr:hover td, .theme-user-horror table.formtable tbody tr:hover td, .theme-user-horror .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td {
+body.theme-user-horror .lb-table-hover tbody tr:hover td, body.theme-user-horror table.lb-table.lb-table-hover tbody tr:hover td, body.theme-user-horror .cfw-table-hover-enabled tbody tr:hover td,
+.theme-user-horror .lb-table-hover tbody tr:hover td, .theme-user-horror table.lb-table.lb-table-hover tbody tr:hover td, .theme-user-horror .cfw-table-hover-enabled tbody tr:hover td {
   background-color: var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, var(--lb-hover-bg, transparent))) !important;
   color: var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit))) !important;
 }
-body.theme-user-horror table.lb-table tbody tr:hover td *, body.theme-user-horror .lb-table tbody tr:hover td *, body.theme-user-horror table.formtable tbody tr:hover td *, body.theme-user-horror .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td *,
-.theme-user-horror table.lb-table tbody tr:hover td *, .theme-user-horror .lb-table tbody tr:hover td *, .theme-user-horror table.formtable tbody tr:hover td *, .theme-user-horror .lb-content table:not(.ui-datepicker-calendar) tbody tr:hover td * {
+body.theme-user-horror .lb-table-hover tbody tr:hover td *, body.theme-user-horror table.lb-table.lb-table-hover tbody tr:hover td *, body.theme-user-horror .cfw-table-hover-enabled tbody tr:hover td *,
+.theme-user-horror .lb-table-hover tbody tr:hover td *, .theme-user-horror table.lb-table.lb-table-hover tbody tr:hover td *, .theme-user-horror .cfw-table-hover-enabled tbody tr:hover td * {
   color: inherit !important;
 }
 body.theme-user-horror .lb-sidebar a:not(.active):not(.ui-btn-active):not(.lb-active):hover,
