@@ -200,6 +200,9 @@ window.LBDesignStudioLangs.de = {
     "advancedView": "erweiterte Sicht",
     "model": "KI Modell",
     "promptLabel": "Theme-Wunsch",
+    "colorDirection": "Farbrichtung",
+    "colorDirectionHint": "Klick ergänzt den Prompt als lesbaren Farbwunsch, nicht als Hex-Code.",
+    "colorDirectionPrompt": "Verwende als Farbrichtung: {color}.",
     "defaultPrompt": "Erstelle ein modernes, ruhiges LoxBerry Theme mit klaren Kontrasten, abgerundeten Karten, dezenten Buttons und guter Lesbarkeit.",
     "showRequest": "Request anzeigen",
     "generate": "KI Entwurf erzeugen",
@@ -266,7 +269,7 @@ window.LBDesignStudioLangs.de = {
     "directEditorOpened": "Direkteditor geöffnet: {path}",
     "previewSelected": "Preview-Auswahl übernommen: {path}. Doppelklick oder CTRL-/Strg-Klick öffnet den Direkteditor.",
     "LoxBerryRead": "LoxBerry gelesen: {tokens} Tokens, {themes} Themes.",
-    "selectElementFirst": "Bitte zuerst ein Element in der finalen Live Vorschau oder im Eigenschaftenbereich auswählen.",
+    "selectElementFirst": "Bitte zuerst ein Element im Arbeitsbereich / Vorschau oder im Eigenschaftenbereich auswählen.",
     "noRadiusForElement": "Dieses Element besitzt keine Radius-Tokens.",
     "noBorderWidthForElement": "Dieses Element besitzt keine Rahmenstärke-Tokens."
   }

@@ -20,8 +20,9 @@ body.theme-user-rose-calm,
   --lb-btn-group-active-hover-bg: #a94363;
   --lb-btn-group-active-hover-text: #f8fafc;
   --lb-btn-group-active-text: #f8fafc;
+  --lb-btn-group-border: #f3c7d4;
   --lb-btn-group-hover-bg: #a94363;
-  --lb-btn-group-hover-text: #2f1a22;
+  --lb-btn-group-hover-text: #fff7fa;
   --lb-btn-group-inactive-bg: #f8fafc;
   --lb-btn-group-inactive-border: #f3c7d4;
   --lb-btn-group-inactive-text: #c75b7a;
@@ -37,7 +38,6 @@ body.theme-user-rose-calm,
   --lb-card-bg: #ffffff;
   --lb-card-border: #f3c7d4;
   --lb-card-shadow: 0 10px 28px rgba(0,0,0,0.16);
-  --lb-danger: #c0392b;
   --lb-dropdown-menu-bg: #ffffff;
   --lb-dropdown-menu-text: #2f1a22;
   --lb-focus-ring: #c75b7a;
@@ -81,7 +81,6 @@ body.theme-user-rose-calm,
   --lb-sidebar-link-hover-bg: #a94363;
   --lb-sidebar-link-hover-text: #fff7fa;
   --lb-sidebar-text: #fff7fa;
-  --lb-success: #2e8b57;
   --lb-tab-popup-item-hover-bg: #a94363;
   --lb-table-bg: #ffffff;
   --lb-table-border: #f2d7e3;
@@ -103,111 +102,112 @@ body.theme-user-rose-calm,
   --lb-toggle-hover-bg: #f0e6ea;
   --lb-tooltip-bg: #a94363;
   --lb-tooltip-text: #fff7fa;
-  --lb-warning: #d98b00;
 }
 
 /* USER CUSTOM CSS START */
-/* Eigene ErgÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
+/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
 /* USER CUSTOM CSS END */
 
 /* DESIGN STUDIO RULES START */
-body.theme-user-rose-calm table.lb-table, body.theme-user-rose-calm .lb-table, body.theme-user-rose-calm table.formtable, body.theme-user-rose-calm .lb-content table:not(.ui-datepicker-calendar),
-.theme-user-rose-calm table.lb-table, .theme-user-rose-calm .lb-table, .theme-user-rose-calm table.formtable, .theme-user-rose-calm .lb-content table:not(.ui-datepicker-calendar) {
-  background-color: var(--lb-table-bg, var(--lb-table-row-bg, transparent)) !important;
-  color: var(--lb-table-text, var(--lb-table-row-text, inherit)) !important;
-  border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))) !important;
+/* V181: Table theme rules intentionally avoid !important on bg/text/border so LoxBerry inline Logmanager status colors remain untouched. */
+body.theme-user-rose-calm table.lb-table, body.theme-user-rose-calm .lb-table,
+.theme-user-rose-calm table.lb-table, .theme-user-rose-calm .lb-table {
+  background-color: var(--lb-table-bg, var(--lb-table-row-bg, transparent));
+  color: var(--lb-table-text, var(--lb-table-row-text, inherit));
+  border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)));
   border-style: solid !important;
   border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, 1px)) !important;
   border-radius: var(--lb-table-radius, var(--lb-radius-table, 0px)) !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
   overflow: hidden;
 }
-body.theme-user-rose-calm table.lb-table thead, body.theme-user-rose-calm table.lb-table th, body.theme-user-rose-calm .lb-table thead, body.theme-user-rose-calm .lb-table th, body.theme-user-rose-calm table.formtable th, body.theme-user-rose-calm .lb-content table:not(.ui-datepicker-calendar) th,
-.theme-user-rose-calm table.lb-table thead, .theme-user-rose-calm table.lb-table th, .theme-user-rose-calm .lb-table thead, .theme-user-rose-calm .lb-table th, .theme-user-rose-calm table.formtable th, .theme-user-rose-calm .lb-content table:not(.ui-datepicker-calendar) th {
-  background-color: var(--lb-table-header-bg, var(--lb-table-bg, transparent)) !important;
-  color: var(--lb-table-header-text, var(--lb-table-text, inherit)) !important;
-  border-color: var(--lb-table-header-border-color, var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))))) !important;
+body.theme-user-rose-calm table.lb-table thead, body.theme-user-rose-calm table.lb-table th, body.theme-user-rose-calm .lb-table thead, body.theme-user-rose-calm .lb-table th,
+.theme-user-rose-calm table.lb-table thead, .theme-user-rose-calm table.lb-table th, .theme-user-rose-calm .lb-table thead, .theme-user-rose-calm .lb-table th {
+  background-color: var(--lb-table-header-bg, var(--lb-table-bg, transparent));
+  color: var(--lb-table-header-text, var(--lb-table-text, inherit));
+  border-color: var(--lb-table-header-border-color, var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))));
   border-style: solid !important;
   border-width: var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) !important;
 }
-body.theme-user-rose-calm table.lb-table td, body.theme-user-rose-calm .lb-table td, body.theme-user-rose-calm table.formtable td, body.theme-user-rose-calm .lb-content table:not(.ui-datepicker-calendar) td,
-.theme-user-rose-calm table.lb-table td, .theme-user-rose-calm .lb-table td, .theme-user-rose-calm table.formtable td, .theme-user-rose-calm .lb-content table:not(.ui-datepicker-calendar) td {
-  background-color: var(--lb-table-row-bg, var(--lb-table-bg, transparent)) !important;
-  color: var(--lb-table-row-text, var(--lb-table-text, inherit)) !important;
-  border-color: var(--lb-table-row-border-color, var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))))) !important;
+body.theme-user-rose-calm table.lb-table td, body.theme-user-rose-calm .lb-table td,
+.theme-user-rose-calm table.lb-table td, .theme-user-rose-calm .lb-table td {
+  background-color: var(--lb-table-row-bg, var(--lb-table-bg, transparent));
+  color: var(--lb-table-row-text, var(--lb-table-text, inherit));
+  border-color: var(--lb-table-row-border-color, var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))));
   border-style: solid !important;
   border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) 0 !important;
 }
-body.theme-user-rose-calm .lb-table-hover tbody tr:hover td, body.theme-user-rose-calm table.lb-table.lb-table-hover tbody tr:hover td, body.theme-user-rose-calm .cfw-table-hover-enabled tbody tr:hover td,
-.theme-user-rose-calm .lb-table-hover tbody tr:hover td, .theme-user-rose-calm table.lb-table.lb-table-hover tbody tr:hover td, .theme-user-rose-calm .cfw-table-hover-enabled tbody tr:hover td {
-  background-color: var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, var(--lb-hover-bg, transparent))) !important;
-  color: var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit))) !important;
+body.theme-user-rose-calm .lb-btn-group, .theme-user-rose-calm .lb-btn-group {
+  border: 1px solid var(--lb-input-border, var(--lb-btn-group-border, var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, #d7e7d9))))) !important;
+  border-radius: var(--lb-btn-group-radius, var(--lb-btn-radius, var(--lb-radius-button, var(--lb-radius-sm, 10px)))) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: stretch !important;
+  background-clip: padding-box !important;
+  box-shadow: none !important;
 }
-body.theme-user-rose-calm .lb-table-hover tbody tr:hover td *, body.theme-user-rose-calm table.lb-table.lb-table-hover tbody tr:hover td *, body.theme-user-rose-calm .cfw-table-hover-enabled tbody tr:hover td *,
-.theme-user-rose-calm .lb-table-hover tbody tr:hover td *, .theme-user-rose-calm table.lb-table.lb-table-hover tbody tr:hover td *, .theme-user-rose-calm .cfw-table-hover-enabled tbody tr:hover td * {
-  color: inherit !important;
-}
-body.theme-user-rose-calm .lb-sidebar a:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-body.theme-user-rose-calm .lb-sidebar .lb-sidebar-link:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-body.theme-user-rose-calm .lb-sidebar .lb-nav-link:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-body.theme-user-rose-calm .lb-sidebar .ui-btn:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-body.theme-user-rose-calm .lb-sidebar li:not(.active):not(.ui-btn-active):not(.lb-active):hover > a,
-.theme-user-rose-calm .lb-sidebar a:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-.theme-user-rose-calm .lb-sidebar .lb-sidebar-link:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-.theme-user-rose-calm .lb-sidebar .lb-nav-link:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-.theme-user-rose-calm .lb-sidebar .ui-btn:not(.active):not(.ui-btn-active):not(.lb-active):hover,
-.theme-user-rose-calm .lb-sidebar li:not(.active):not(.ui-btn-active):not(.lb-active):hover > a {
-  background-color: var(--lb-sidebar-link-hover-bg, var(--lb-sidebar-hover-bg, var(--lb-nav-hover-bg, var(--lb-hover-bg, transparent)))) !important;
-  color: var(--lb-sidebar-link-hover-text, var(--lb-sidebar-hover-text, var(--lb-nav-hover-text, var(--lb-sidebar-text, inherit)))) !important;
-  border-radius: var(--lb-sidebar-link-radius, var(--lb-radius-sm, 10px)) !important;
-}
-body.theme-user-rose-calm .lb-sidebar a:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-body.theme-user-rose-calm .lb-sidebar .lb-sidebar-link:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-body.theme-user-rose-calm .lb-sidebar .lb-nav-link:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-body.theme-user-rose-calm .lb-sidebar .ui-btn:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-body.theme-user-rose-calm .lb-sidebar li:not(.active):not(.ui-btn-active):not(.lb-active):hover > a *,
-.theme-user-rose-calm .lb-sidebar a:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-.theme-user-rose-calm .lb-sidebar .lb-sidebar-link:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-.theme-user-rose-calm .lb-sidebar .lb-nav-link:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-.theme-user-rose-calm .lb-sidebar .ui-btn:not(.active):not(.ui-btn-active):not(.lb-active):hover *,
-.theme-user-rose-calm .lb-sidebar li:not(.active):not(.ui-btn-active):not(.lb-active):hover > a * {
-  color: inherit !important;
-}
-body.theme-user-rose-calm .lb-input, body.theme-user-rose-calm .lb-select, body.theme-user-rose-calm .lb-textarea,
-body.theme-user-rose-calm .lb-content input[type=text], body.theme-user-rose-calm .lb-content input[type=password], body.theme-user-rose-calm .lb-content input[type=email], body.theme-user-rose-calm .lb-content input[type=url], body.theme-user-rose-calm .lb-content input[type=number], body.theme-user-rose-calm .lb-content input[type=tel], body.theme-user-rose-calm .lb-content input[type=search], body.theme-user-rose-calm .lb-content input[type=time], body.theme-user-rose-calm .lb-content textarea, body.theme-user-rose-calm .lb-content select,
-body.theme-user-rose-calm .ui-input-text, body.theme-user-rose-calm .ui-input-search, body.theme-user-rose-calm .ui-select, body.theme-user-rose-calm .ui-select .ui-btn,
-.theme-user-rose-calm .lb-input, .theme-user-rose-calm .lb-select, .theme-user-rose-calm .lb-textarea,
-.theme-user-rose-calm .lb-content input[type=text], .theme-user-rose-calm .lb-content input[type=password], .theme-user-rose-calm .lb-content input[type=email], .theme-user-rose-calm .lb-content input[type=url], .theme-user-rose-calm .lb-content input[type=number], .theme-user-rose-calm .lb-content input[type=tel], .theme-user-rose-calm .lb-content input[type=search], .theme-user-rose-calm .lb-content input[type=time], .theme-user-rose-calm .lb-content textarea, .theme-user-rose-calm .lb-content select,
-.theme-user-rose-calm .ui-input-text, .theme-user-rose-calm .ui-input-search, .theme-user-rose-calm .ui-select, .theme-user-rose-calm .ui-select .ui-btn {
-  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px)))))) !important;
-}
-body.theme-user-rose-calm .lb-btn-group, body.theme-user-rose-calm .lb-btn-group .lb-btn, body.theme-user-rose-calm .lb-btn-group button, body.theme-user-rose-calm .lb-btn-group label, body.theme-user-rose-calm .lb-btn-group .ui-btn,
-.theme-user-rose-calm .lb-btn-group, .theme-user-rose-calm .lb-btn-group .lb-btn, .theme-user-rose-calm .lb-btn-group button, .theme-user-rose-calm .lb-btn-group label, .theme-user-rose-calm .lb-btn-group .ui-btn {
-  border-radius: var(--lb-btn-group-radius, var(--lb-btn-group-item-radius, var(--lb-btn-radius, var(--lb-radius-button, var(--lb-radius-sm, 10px))))) !important;
-}
-body.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active),
-body.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active),
-.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active),
-.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active) {
+body.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.is-active),
+body.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.is-active),
+.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.is-active),
+.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.is-active) {
   background-color: var(--lb-btn-group-inactive-bg, var(--lb-btn-group-active-text, #fff)) !important;
   color: var(--lb-btn-group-inactive-text, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
-  border-color: var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, #d7e7d9))) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;
 }
-body.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active):hover,
-body.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active):hover,
-.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.active):hover,
-.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.active):hover {
+body.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.is-active):hover,
+body.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.is-active):hover,
+.theme-user-rose-calm .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.is-active):hover,
+.theme-user-rose-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.is-active):hover {
   background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
   color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;
+}
+body.theme-user-rose-calm .lb-btn-group button.ui-btn-active,
+body.theme-user-rose-calm .lb-btn-group button.lb-active,
+body.theme-user-rose-calm .lb-btn-group button.is-active,
+body.theme-user-rose-calm .lb-btn-group .ui-btn.ui-btn-active,
+body.theme-user-rose-calm .lb-btn-group .ui-btn.lb-active,
+body.theme-user-rose-calm .lb-btn-group .ui-btn.is-active,
+.theme-user-rose-calm .lb-btn-group button.ui-btn-active,
+.theme-user-rose-calm .lb-btn-group button.lb-active,
+.theme-user-rose-calm .lb-btn-group button.is-active,
+.theme-user-rose-calm .lb-btn-group .ui-btn.ui-btn-active,
+.theme-user-rose-calm .lb-btn-group .ui-btn.lb-active,
+.theme-user-rose-calm .lb-btn-group .ui-btn.is-active {
+  background-color: var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)) !important;
+  color: var(--lb-btn-group-active-text, var(--lb-active-text, #fff)) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;
 }
 body.theme-user-rose-calm .lb-btn-group input:checked + label, .theme-user-rose-calm .lb-btn-group input:checked + label {
   background-color: var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)) !important;
   color: var(--lb-btn-group-active-text, var(--lb-active-text, #fff)) !important;
-  border-color: var(--lb-btn-group-active-border, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;
 }
 body.theme-user-rose-calm .lb-btn-group input:not(:checked) + label, .theme-user-rose-calm .lb-btn-group input:not(:checked) + label {
   background-color: var(--lb-btn-group-inactive-bg, var(--lb-btn-group-active-text, #fff)) !important;
   color: var(--lb-btn-group-inactive-text, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
-  border-color: var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, #d7e7d9))) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;
+}
+body.theme-user-rose-calm .lb-btn-group > a, body.theme-user-rose-calm .lb-btn-group > label, body.theme-user-rose-calm .lb-btn-group > button, body.theme-user-rose-calm .lb-btn-group > .ui-btn,
+.theme-user-rose-calm .lb-btn-group > a, .theme-user-rose-calm .lb-btn-group > label, .theme-user-rose-calm .lb-btn-group > button, .theme-user-rose-calm .lb-btn-group > .ui-btn {
+  border: 0 !important;
+  border-right: 1px solid var(--lb-input-border, var(--lb-btn-group-border, var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, #d7e7d9))))) !important;
+  box-shadow: none !important;
+}
+body.theme-user-rose-calm .lb-btn-group > a:last-child, body.theme-user-rose-calm .lb-btn-group > label:last-child, body.theme-user-rose-calm .lb-btn-group > button:last-child, body.theme-user-rose-calm .lb-btn-group > .ui-btn:last-child,
+.theme-user-rose-calm .lb-btn-group > a:last-child, .theme-user-rose-calm .lb-btn-group > label:last-child, .theme-user-rose-calm .lb-btn-group > button:last-child, .theme-user-rose-calm .lb-btn-group > .ui-btn:last-child {
+  border-right: 0 !important;
+}
+body.theme-user-rose-calm .lb-btn-group > a.ui-btn-active, body.theme-user-rose-calm .lb-btn-group > a.lb-active, body.theme-user-rose-calm .lb-btn-group > a.is-active,
+body.theme-user-rose-calm .lb-btn-group > label.ui-btn-active, body.theme-user-rose-calm .lb-btn-group > label.lb-active, body.theme-user-rose-calm .lb-btn-group > label.is-active,
+body.theme-user-rose-calm .lb-btn-group > button.ui-btn-active, body.theme-user-rose-calm .lb-btn-group > button.lb-active, body.theme-user-rose-calm .lb-btn-group > button.is-active,
+.theme-user-rose-calm .lb-btn-group > a.ui-btn-active, .theme-user-rose-calm .lb-btn-group > a.lb-active, .theme-user-rose-calm .lb-btn-group > a.is-active,
+.theme-user-rose-calm .lb-btn-group > label.ui-btn-active, .theme-user-rose-calm .lb-btn-group > label.lb-active, .theme-user-rose-calm .lb-btn-group > label.is-active,
+.theme-user-rose-calm .lb-btn-group > button.ui-btn-active, .theme-user-rose-calm .lb-btn-group > button.lb-active, .theme-user-rose-calm .lb-btn-group > button.is-active {
+  background-color: var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)) !important;
+  color: var(--lb-btn-group-active-text, var(--lb-active-text, #fff)) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;
 }
 body.theme-user-rose-calm .lb-btn-group input:not(:checked) + label:hover, .theme-user-rose-calm .lb-btn-group input:not(:checked) + label:hover {
   background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;

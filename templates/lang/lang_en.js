@@ -200,6 +200,9 @@ window.LBDesignStudioLangs.en = {
     "advancedView": "advanced view",
     "model": "AI model",
     "promptLabel": "Theme request",
+    "colorDirection": "Color direction",
+    "colorDirectionHint": "Clicking adds a readable color preference to the prompt, not a hex code.",
+    "colorDirectionPrompt": "Use this color direction: {color}.",
     "defaultPrompt": "Create a modern, calm LoxBerry theme with clear contrasts, rounded cards, subtle buttons and good readability.",
     "showRequest": "Show request",
     "generate": "Generate AI draft",
@@ -266,7 +269,7 @@ window.LBDesignStudioLangs.en = {
     "directEditorOpened": "Direct editor opened: {path}",
     "previewSelected": "Preview selection applied: {path}. Double-click or Ctrl-click opens the direct editor.",
     "coreRead": "Core read: {tokens} tokens, {themes} themes.",
-    "selectElementFirst": "Please select an element in the final live preview or in the properties area first.",
+    "selectElementFirst": "Please select an element in Workspace / Preview or in the properties area first.",
     "noRadiusForElement": "This element has no radius tokens.",
     "noBorderWidthForElement": "This element has no border-width tokens."
   }

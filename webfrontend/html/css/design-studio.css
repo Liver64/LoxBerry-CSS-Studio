@@ -182,52 +182,52 @@
 }
 
 /* V13 AI semantic preview and form-control coverage */
-.cfw-page.cfw-v18 .cfw-preview select.lb-input,
-.cfw-page.cfw-v18 .cfw-preview select.lb-input option {
+.cfw-page.cfw-design-studio .cfw-preview select.lb-input,
+.cfw-page.cfw-design-studio .cfw-preview select.lb-input option {
   background: var(--cfw-preview-select-bg, var(--lb-select-bg, var(--cfw-preview-input-bg, var(--lb-input-bg, #fff)))) !important;
   color: var(--cfw-preview-select-text, var(--lb-select-text, var(--lb-input-text, #111))) !important;
   border-color: var(--cfw-preview-select-border, var(--lb-select-border, var(--lb-input-border, rgba(0,0,0,.25)))) !important;
 }
-.cfw-page.cfw-v18 .cfw-preview textarea.lb-input {
+.cfw-page.cfw-design-studio .cfw-preview textarea.lb-input {
   background: var(--cfw-preview-textarea-bg, var(--lb-input-bg, #fff)) !important;
   color: var(--cfw-preview-textarea-text, var(--lb-input-text, #111)) !important;
   border-color: var(--cfw-preview-textarea-border, var(--lb-input-border, rgba(0,0,0,.25))) !important;
 }
-.cfw-page.cfw-v18 .cfw-ai-preview { color:#111827; background:rgba(255,255,255,.76); }
-.cfw-page.cfw-v18 .cfw-ai-preview .ai-token-heading { margin:14px 0 10px 0; font-size:1rem; color:#111827; }
-.cfw-page.cfw-v18 .ai-theme-preview {
+.cfw-page.cfw-design-studio .cfw-ai-preview { color:#111827; background:rgba(255,255,255,.76); }
+.cfw-page.cfw-design-studio .cfw-ai-preview .ai-token-heading { margin:14px 0 10px 0; font-size:1rem; color:#111827; }
+.cfw-page.cfw-design-studio .ai-theme-preview {
   display:grid; grid-template-columns:140px 1fr; min-height:360px; overflow:hidden;
   border:1px solid var(--ai-border, rgba(0,0,0,.16)); border-radius:18px;
   background:var(--ai-bg, #f6fbf5); color:var(--ai-text, #1f2d1f);
   box-shadow:var(--ai-shadow, 0 10px 28px rgba(0,0,0,.14));
 }
-.cfw-page.cfw-v18 .ai-theme-preview aside { background:var(--lb-sidebar-bg, rgba(0,0,0,.12)); color:var(--lb-sidebar-text, var(--ai-text)); padding:14px; display:flex; flex-direction:column; gap:10px; }
-.cfw-page.cfw-v18 .ai-theme-preview aside .dot { width:34px; height:34px; border-radius:50%; background:var(--ai-primary, #2e8b57); margin-bottom:8px; }
-.cfw-page.cfw-v18 .ai-theme-preview aside b { background:var(--ai-primary, #2e8b57); color:var(--lb-active-text, #fff); padding:8px 10px; border-radius:10px; }
-.cfw-page.cfw-v18 .ai-theme-preview main { padding:14px; display:grid; gap:12px; align-content:start; }
-.cfw-page.cfw-v18 .ai-theme-preview header,
-.cfw-page.cfw-v18 .ai-theme-preview .ai-card { background:var(--ai-surface, #fff); color:var(--ai-text, #111); border:1px solid var(--ai-border, #d7e7d9); border-radius:var(--ai-radius, 14px); padding:12px; box-shadow:var(--ai-shadow, none); }
-.cfw-page.cfw-v18 .ai-theme-preview header { display:flex; justify-content:space-between; align-items:center; }
-.cfw-page.cfw-v18 .ai-theme-preview .ai-form-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.cfw-page.cfw-v18 .ai-theme-preview .ai-form-grid { display:grid; grid-template-columns:repeat(3, minmax(110px,1fr)); gap:10px; }
-.cfw-page.cfw-v18 .ai-theme-preview input,
-.cfw-page.cfw-v18 .ai-theme-preview textarea { background:var(--ai-input-bg, #fff); color:var(--ai-input-text, #111); border:1px solid var(--ai-input-border, #cfd8d3); border-radius:var(--lb-radius-sm, 10px); padding:8px 10px; box-sizing:border-box; min-width:0; }
-.cfw-page.cfw-v18 .ai-theme-preview select { background:var(--ai-select-bg, var(--ai-input-bg, #fff)); color:var(--ai-select-text, var(--ai-input-text, #111)); border:1px solid var(--ai-select-border, var(--ai-input-border, #cfd8d3)); border-radius:var(--lb-radius-sm, 10px); padding:8px 10px; box-sizing:border-box; min-width:0; }
-.cfw-page.cfw-v18 .ai-theme-preview button { background:var(--ai-btn-bg, var(--ai-surface, #fff)); color:var(--ai-btn-text, var(--ai-text, #111)); border:1px solid var(--ai-btn-border, var(--ai-border, #cfd8d3)); border-radius:var(--lb-btn-radius, var(--ai-radius, 12px)); padding:8px 12px; }
-.cfw-page.cfw-v18 .ai-theme-preview button.active { background:var(--ai-primary, #2e8b57); color:var(--lb-active-text, #fff); border-color:var(--ai-primary, #2e8b57); }
-.cfw-page.cfw-v18 .ai-theme-preview table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:var(--lb-table-radius, var(--ai-radius, 12px)); }
-.cfw-page.cfw-v18 .ai-theme-preview th,
-.cfw-page.cfw-v18 .ai-theme-preview td { padding:9px; background:var(--ai-table-bg, var(--ai-surface, #fff)); color:var(--ai-table-text, var(--ai-text, #111)); border-bottom:1px solid var(--ai-border, #d7e7d9); }
-.cfw-page.cfw-v18 .ai-theme-preview th { background:var(--ai-table-header-bg, var(--ai-surface-alt, #eef5ee)); text-align:left; }
-.cfw-page.cfw-v18 .ai-theme-preview tbody tr:hover td { background:var(--ai-table-hover, rgba(46,139,87,.12)); }
-.cfw-page.cfw-v18 .cfw-ai-preview .ai-swatch { background:#fff; color:#111827; }
-.cfw-page.cfw-v18 .cfw-ai-preview .ai-swatch code { color:#111827; background:#f8fafc; }
-@media (max-width:760px) { .cfw-page.cfw-v18 .ai-theme-preview { grid-template-columns:1fr; } .cfw-page.cfw-v18 .ai-theme-preview aside { display:none; } .cfw-page.cfw-v18 .ai-theme-preview .ai-form-grid { grid-template-columns:1fr; } }
+.cfw-page.cfw-design-studio .ai-theme-preview aside { background:var(--lb-sidebar-bg, rgba(0,0,0,.12)); color:var(--lb-sidebar-text, var(--ai-text)); padding:14px; display:flex; flex-direction:column; gap:10px; }
+.cfw-page.cfw-design-studio .ai-theme-preview aside .dot { width:34px; height:34px; border-radius:50%; background:var(--ai-primary, #2e8b57); margin-bottom:8px; }
+.cfw-page.cfw-design-studio .ai-theme-preview aside b { background:var(--ai-primary, #2e8b57); color:var(--lb-active-text, #fff); padding:8px 10px; border-radius:10px; }
+.cfw-page.cfw-design-studio .ai-theme-preview main { padding:14px; display:grid; gap:12px; align-content:start; }
+.cfw-page.cfw-design-studio .ai-theme-preview header,
+.cfw-page.cfw-design-studio .ai-theme-preview .ai-card { background:var(--ai-surface, #fff); color:var(--ai-text, #111); border:1px solid var(--ai-border, #d7e7d9); border-radius:var(--ai-radius, 14px); padding:12px; box-shadow:var(--ai-shadow, none); }
+.cfw-page.cfw-design-studio .ai-theme-preview header { display:flex; justify-content:space-between; align-items:center; }
+.cfw-page.cfw-design-studio .ai-theme-preview .ai-form-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.cfw-page.cfw-design-studio .ai-theme-preview .ai-form-grid { display:grid; grid-template-columns:repeat(3, minmax(110px,1fr)); gap:10px; }
+.cfw-page.cfw-design-studio .ai-theme-preview input,
+.cfw-page.cfw-design-studio .ai-theme-preview textarea { background:var(--ai-input-bg, #fff); color:var(--ai-input-text, #111); border:1px solid var(--ai-input-border, #cfd8d3); border-radius:var(--lb-radius-sm, 10px); padding:8px 10px; box-sizing:border-box; min-width:0; }
+.cfw-page.cfw-design-studio .ai-theme-preview select { background:var(--ai-select-bg, var(--ai-input-bg, #fff)); color:var(--ai-select-text, var(--ai-input-text, #111)); border:1px solid var(--ai-select-border, var(--ai-input-border, #cfd8d3)); border-radius:var(--lb-radius-sm, 10px); padding:8px 10px; box-sizing:border-box; min-width:0; }
+.cfw-page.cfw-design-studio .ai-theme-preview button { background:var(--ai-btn-bg, var(--ai-surface, #fff)); color:var(--ai-btn-text, var(--ai-text, #111)); border:1px solid var(--ai-btn-border, var(--ai-border, #cfd8d3)); border-radius:var(--lb-btn-radius, var(--ai-radius, 12px)); padding:8px 12px; }
+.cfw-page.cfw-design-studio .ai-theme-preview button.active { background:var(--ai-primary, #2e8b57); color:var(--lb-active-text, #fff); border-color:var(--ai-primary, #2e8b57); }
+.cfw-page.cfw-design-studio .ai-theme-preview table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:var(--lb-table-radius, var(--ai-radius, 12px)); }
+.cfw-page.cfw-design-studio .ai-theme-preview th,
+.cfw-page.cfw-design-studio .ai-theme-preview td { padding:9px; background:var(--ai-table-bg, var(--ai-surface, #fff)); color:var(--ai-table-text, var(--ai-text, #111)); border-bottom:1px solid var(--ai-border, #d7e7d9); }
+.cfw-page.cfw-design-studio .ai-theme-preview th { background:var(--ai-table-header-bg, var(--ai-surface-alt, #eef5ee)); text-align:left; }
+.cfw-page.cfw-design-studio .ai-theme-preview tbody tr:hover td { background:var(--ai-table-hover, rgba(46,139,87,.12)); }
+.cfw-page.cfw-design-studio .cfw-ai-preview .ai-swatch { background:#fff; color:#111827; }
+.cfw-page.cfw-design-studio .cfw-ai-preview .ai-swatch code { color:#111827; background:#f8fafc; }
+@media (max-width:760px) { .cfw-page.cfw-design-studio .ai-theme-preview { grid-template-columns:1fr; } .cfw-page.cfw-design-studio .ai-theme-preview aside { display:none; } .cfw-page.cfw-design-studio .ai-theme-preview .ai-form-grid { grid-template-columns:1fr; } }
 
 /* V17 cautious mapping and click-to-edit additions */
-.cfw-page.cfw-v18 [data-cfw-area] { cursor: pointer; }
-.cfw-page.cfw-v18 [data-cfw-area]:hover { outline: 2px dashed rgba(0,122,255,.65); outline-offset: 3px; }
-.cfw-page.cfw-v18 .cfw-edit-highlight { outline: 3px solid #007aff !important; outline-offset: 4px; box-shadow: 0 0 0 6px rgba(0,122,255,.18) !important; }
+.cfw-page.cfw-design-studio [data-cfw-area] { cursor: pointer; }
+.cfw-page.cfw-design-studio [data-cfw-area]:hover { outline: 2px dashed rgba(0,122,255,.65); outline-offset: 3px; }
+.cfw-page.cfw-design-studio .cfw-edit-highlight { outline: 3px solid #007aff !important; outline-offset: 4px; box-shadow: 0 0 0 6px rgba(0,122,255,.18) !important; }
 .cfw-header-actions { display:flex; gap:8px; align-items:center; }
 .cfw-preview .cfw-header-btn {
   background: var(--lb-header-btn-bg, var(--cfw-preview-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06)))) !important;
@@ -237,18 +237,49 @@
   background: var(--lb-header-btn-hover-bg, var(--lb-btn-hover-bg, var(--lb-header-btn-bg, var(--lb-btn-bg, rgba(0,0,0,.08))))) !important;
   color: var(--lb-header-btn-hover-text, var(--lb-header-btn-text, var(--lb-btn-hover-text, inherit))) !important;
 }
-.cfw-preview-btn-group { display:inline-flex; align-items:center; margin-left:8px; border-radius:var(--lb-btn-radius, 12px); overflow:hidden; vertical-align:middle; }
-.cfw-preview-btn-group button { border:0; padding:8px 11px; background:var(--lb-btn-bg, rgba(0,0,0,.06)); color:var(--lb-btn-text, inherit); }
-.cfw-preview-btn-group button:hover { background:var(--lb-btn-group-hover-bg, var(--lb-btn-hover-bg, rgba(0,0,0,.08))); color:var(--lb-btn-group-hover-text, var(--lb-btn-hover-text, inherit)); }
-.cfw-preview-btn-group button.is-active { background:var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)); color:var(--lb-btn-group-active-text, var(--lb-active-text, #fff)); }
-.cfw-preview-btn-group button.is-active:hover { background:var(--lb-btn-group-active-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))); color:var(--lb-btn-group-active-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))); }
+.cfw-preview-btn-group,
+.cfw-preview .lb-btn-group {
+  display:inline-flex;
+  align-items:center;
+  margin-left:8px;
+  border:1px solid var(--lb-btn-group-border, var(--lb-btn-group-inactive-border, var(--cfw-preview-btn-group-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.25))))));
+  border-radius:var(--lb-btn-group-radius, var(--lb-btn-radius, var(--lb-radius-button, 12px)));
+  overflow:hidden;
+  vertical-align:middle;
+  background:var(--lb-btn-group-inactive-bg, var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-bg, rgba(0,0,0,.06))));
+  box-sizing:border-box;
+}
+.cfw-preview-btn-group button,
+.cfw-preview .lb-btn-group button {
+  border:0;
+  border-right:1px solid var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--cfw-preview-btn-group-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.25))))));
+  padding:8px 11px;
+  background:var(--lb-btn-group-inactive-bg, var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-bg, rgba(0,0,0,.06))));
+  color:var(--lb-btn-group-inactive-text, var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-text, inherit)));
+}
+.cfw-preview-btn-group button:last-child,
+.cfw-preview .lb-btn-group button:last-child { border-right:0; }
+.cfw-preview-btn-group button:hover,
+.cfw-preview .lb-btn-group button:hover { background:var(--lb-btn-group-hover-bg, var(--lb-btn-hover-bg, rgba(0,0,0,.08))); color:var(--lb-btn-group-hover-text, var(--lb-btn-hover-text, inherit)); }
+.cfw-preview-btn-group button.is-active,
+.cfw-preview-btn-group button.lb-active,
+.cfw-preview-btn-group button[aria-pressed="true"],
+.cfw-preview .lb-btn-group button.is-active,
+.cfw-preview .lb-btn-group button.lb-active,
+.cfw-preview .lb-btn-group button[aria-pressed="true"] { background:var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)); color:var(--lb-btn-group-active-text, var(--lb-active-text, #fff)); border-color:var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--cfw-preview-btn-group-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.25)))))); }
+.cfw-preview-btn-group button.is-active:hover,
+.cfw-preview-btn-group button.lb-active:hover,
+.cfw-preview-btn-group button[aria-pressed="true"]:hover,
+.cfw-preview .lb-btn-group button.is-active:hover,
+.cfw-preview .lb-btn-group button.lb-active:hover,
+.cfw-preview .lb-btn-group button[aria-pressed="true"]:hover { background:var(--lb-btn-group-active-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))); color:var(--lb-btn-group-active-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))); }
 
 
 /* V18: Click-to-edit is primary; Mono Preview removed. */
-.cfw-page.cfw-v18 .cfw-step-panel h2::after { content: '  · Klick in der Preview wählt automatisch'; font-size:.78rem; font-weight:500; opacity:.68; }
-.cfw-page.cfw-v18 .cfw-mono-panel { display:none !important; }
-.cfw-page.cfw-v18 .ai-theme-preview header button { background:var(--ai-header-btn-bg, var(--ai-btn-bg, var(--ai-primary, #2e8b57))); color:var(--ai-header-btn-text, var(--ai-btn-text, #fff)); }
-.cfw-page.cfw-v18 .cfw-header-actions .cfw-header-btn { border-color: var(--lb-header-btn-border, var(--lb-btn-border, transparent)) !important; }
+.cfw-page.cfw-design-studio .cfw-step-panel h2::after { content: '  · Klick in der Preview wählt automatisch'; font-size:.78rem; font-weight:500; opacity:.68; }
+.cfw-page.cfw-design-studio .cfw-mono-panel { display:none !important; }
+.cfw-page.cfw-design-studio .ai-theme-preview header button { background:var(--ai-header-btn-bg, var(--ai-btn-bg, var(--ai-primary, #2e8b57))); color:var(--ai-header-btn-text, var(--ai-btn-text, #fff)); }
+.cfw-page.cfw-design-studio .cfw-header-actions .cfw-header-btn { border-color: var(--lb-header-btn-border, var(--lb-btn-border, transparent)) !important; }
 
 
 /* V19: click-to-edit direct inspector */
@@ -317,77 +348,77 @@
 
 
 /* V22 - apply generated theme softly to Design Studio chrome; never inherit a single edited component token. */
-.cfw-page.cfw-v20.cfw-theme-applied-disabled {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled {
   background: var(--cfw-studio-bg, transparent);
   color: var(--cfw-studio-text, inherit);
   border-radius: var(--lb-radius-card, 16px);
   transition: background .18s ease, color .18s ease;
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-panel,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-modal-card {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-panel,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-modal-card {
   background: var(--cfw-studio-panel-bg, var(--lb-card-bg, rgba(255,255,255,.88)));
   color: var(--cfw-studio-panel-text, var(--lb-text, inherit));
   border-color: var(--cfw-studio-panel-border, var(--lb-border, rgba(0,0,0,.16)));
   box-shadow: var(--lb-card-shadow, none);
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-label input,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-label select,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-panel textarea,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-import-panel input[type=file],
-.cfw-page.cfw-v20.cfw-theme-applied-disabled #aiRequest,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled #aiResult,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled #customCss {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-label input,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-label select,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-panel textarea,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-import-panel input[type=file],
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled #aiRequest,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled #aiResult,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled #customCss {
   background: var(--cfw-studio-control-bg, var(--lb-input-bg, #fff)) !important;
   color: var(--cfw-studio-control-text, var(--lb-input-text, #111)) !important;
   border-color: var(--cfw-studio-control-border, var(--lb-input-border, rgba(0,0,0,.25))) !important;
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-button,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-tab,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-icon-button {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-button,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-tab,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-icon-button {
   background: var(--cfw-studio-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06)));
   color: var(--cfw-studio-button-text, var(--lb-btn-text, inherit));
   border-color: var(--cfw-studio-button-border, var(--lb-btn-border, rgba(0,0,0,.25)));
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-button-primary,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-tab.is-active {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-button-primary,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-tab.is-active {
   background: var(--cfw-studio-active-bg, var(--lb-active-bg, #007aff));
   color: var(--cfw-studio-active-text, var(--lb-active-text, #fff));
   border-color: var(--cfw-studio-active-bg, var(--lb-active-bg, #007aff));
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-hint,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-small-value,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-inspector-meta {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-hint,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-small-value,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-inspector-meta {
   color: var(--lb-text-muted, var(--lb-text-secondary, inherit));
   opacity: .92;
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-token-pill,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-consent,
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-direct-edit-hint {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-token-pill,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-consent,
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-direct-edit-hint {
   background: color-mix(in srgb, var(--cfw-studio-panel-bg, #fff) 86%, transparent);
   color: var(--cfw-studio-panel-text, inherit);
   border-color: var(--cfw-studio-panel-border, rgba(0,0,0,.16));
 }
 
 /* V24 - Studio sliders follow the selected theme accent, not the browser default. */
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range] {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-left input[type=range] {
   accent-color: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range]::-webkit-slider-thumb {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-left input[type=range]::-webkit-slider-thumb {
   background: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range]::-moz-range-thumb {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-left input[type=range]::-moz-range-thumb {
   background: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
   border-color: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
 }
-.cfw-page.cfw-v20.cfw-theme-applied-disabled .cfw-left input[type=range]::-moz-range-progress {
+.cfw-page.cfw-design-studio.cfw-theme-applied-disabled .cfw-left input[type=range]::-moz-range-progress {
   background: var(--cfw-studio-range-accent, var(--cfw-studio-active-bg, #777)) !important;
 }
 
 
 
 /* V26: Preview hover-to-edit and double-click UX. Studio remains LoxBerry themed; only preview canvas receives draft tokens. */
-.cfw-page.cfw-v26 .cfw-preview-editable:hover,
-.cfw-page.cfw-v26 .cfw-hover-highlight {
+.cfw-page.cfw-design-studio .cfw-preview-editable:hover,
+.cfw-page.cfw-design-studio .cfw-hover-highlight {
   outline: 2px dashed var(--lb-focus-ring, var(--lb-active-bg, #007aff)) !important;
   outline-offset: 4px !important;
   box-shadow: 0 0 0 5px color-mix(in srgb, var(--lb-focus-ring, var(--lb-active-bg, #007aff)) 18%, transparent) !important;
@@ -429,7 +460,7 @@
   font-size: 11px;
   opacity: .68;
 }
-.cfw-page.cfw-v26 .cfw-preview-head #previewCaption {
+.cfw-page.cfw-design-studio .cfw-preview-head #previewCaption {
   min-height: 1.2em;
 }
 
@@ -438,8 +469,6 @@
 .cfw-theme-actions { display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; }
 .cfw-theme-select-label { display:flex; flex-direction:column; gap:4px; font-size:.86rem; font-weight:600; min-width:220px; }
 .cfw-theme-select { min-height:36px; padding:7px 10px; border-radius:10px; }
-.cfw-preview-btn-group { border:1px solid var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent)))); }
-.cfw-preview-btn-group button { background:var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-bg, rgba(0,0,0,.06))); color:var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-text, inherit)); }
 
 
 /* V28: deterministic tooltip and button-group rules inside the final preview canvas */
@@ -449,25 +478,13 @@
   background: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;
   color: var(--lb-tooltip-text, var(--lb-sidebar-text, #fff)) !important;
 }
-.cfw-preview-btn-group button:not(.is-active) {
-  background: var(--lb-btn-group-inactive-bg, var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-group-active-text, #fff))) !important;
-  color: var(--lb-btn-group-inactive-text, var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)))) !important;
-  border-color: var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)))))) !important;
-}
-.cfw-preview-btn-group button:not(.is-active):hover {
-  background: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
-  color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;
-}
 
 
 /* V29: AI import is enabled only after successful validation. */
 .cfw-button.is-disabled, .cfw-button:disabled { opacity:.45; cursor:not-allowed; filter:grayscale(.35); }
-.cfw-preview-btn-group { border-color: var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, var(--cfw-preview-btn-group-inactive-border, transparent)))) !important; }
-.cfw-preview-btn-group button { border-right:1px solid var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, transparent))); }
-.cfw-preview-btn-group button:last-child { border-right:0; }
 
 /* V33: Component Inspector UX replaces the visible 1/2/3 dropdown workflow. */
-.cfw-page.cfw-v33 .cfw-legacy-selects {
+.cfw-page.cfw-design-studio .cfw-legacy-selects {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
@@ -477,37 +494,37 @@
   opacity: 0 !important;
   pointer-events: none !important;
 }
-.cfw-page.cfw-v33 .cfw-selection-inspector {
+.cfw-page.cfw-design-studio .cfw-selection-inspector {
   display: grid;
   gap: 12px;
 }
-.cfw-page.cfw-v33 .cfw-selected-component-card {
+.cfw-page.cfw-design-studio .cfw-selected-component-card {
   border: 1px solid var(--lb-border-color, var(--lb-border, rgba(120,130,150,.28)));
   background: var(--lb-card-bg, rgba(255,255,255,.72));
   color: var(--lb-card-text, var(--lb-text, inherit));
   border-radius: var(--lb-radius, 14px);
   padding: 12px;
 }
-.cfw-page.cfw-v33 .cfw-selected-eyebrow {
+.cfw-page.cfw-design-studio .cfw-selected-eyebrow {
   font-size: .78rem;
   opacity: .7;
   margin-bottom: 4px;
 }
-.cfw-page.cfw-v33 .cfw-selected-title {
+.cfw-page.cfw-design-studio .cfw-selected-title {
   font-size: 1.15rem;
   font-weight: 800;
   line-height: 1.2;
 }
-.cfw-page.cfw-v33 .cfw-selected-meta {
+.cfw-page.cfw-design-studio .cfw-selected-meta {
   margin-top: 4px;
   font-size: .88rem;
   opacity: .78;
 }
-.cfw-page.cfw-v33 .cfw-property-list {
+.cfw-page.cfw-design-studio .cfw-property-list {
   display: grid;
   gap: 8px;
 }
-.cfw-page.cfw-v33 .cfw-property-item {
+.cfw-page.cfw-design-studio .cfw-property-item {
   width: 100%;
   display: grid;
   grid-template-columns: 38px 1fr;
@@ -521,15 +538,15 @@
   color: var(--lb-text, inherit);
   cursor: pointer;
 }
-.cfw-page.cfw-v33 .cfw-property-item:hover,
-.cfw-page.cfw-v33 .cfw-property-item.is-active {
+.cfw-page.cfw-design-studio .cfw-property-item:hover,
+.cfw-page.cfw-design-studio .cfw-property-item.is-active {
   border-color: var(--lb-active-bg, var(--lb-primary, #007aff));
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--lb-active-bg, var(--lb-primary, #007aff)) 22%, transparent);
 }
-.cfw-page.cfw-v33 .cfw-property-item.is-active {
+.cfw-page.cfw-design-studio .cfw-property-item.is-active {
   background: var(--lb-active-soft-bg, color-mix(in srgb, var(--lb-active-bg, var(--lb-primary, #007aff)) 12%, var(--lb-card-bg, #fff)));
 }
-.cfw-page.cfw-v33 .cfw-property-icon {
+.cfw-page.cfw-design-studio .cfw-property-icon {
   width: 34px;
   height: 34px;
   display: inline-flex;
@@ -541,17 +558,17 @@
   font-weight: 800;
   font-size: .86rem;
 }
-.cfw-page.cfw-v33 .cfw-property-body {
+.cfw-page.cfw-design-studio .cfw-property-body {
   min-width: 0;
   display: grid;
   gap: 3px;
 }
-.cfw-page.cfw-v33 .cfw-property-body strong {
+.cfw-page.cfw-design-studio .cfw-property-body strong {
   font-size: .96rem;
   line-height: 1.1;
 }
-.cfw-page.cfw-v33 .cfw-property-body code,
-.cfw-page.cfw-v33 .cfw-token-list code {
+.cfw-page.cfw-design-studio .cfw-property-body code,
+.cfw-page.cfw-design-studio .cfw-token-list code {
   display: inline-block;
   width: fit-content;
   max-width: 100%;
@@ -564,14 +581,14 @@
   color: var(--lb-text, inherit);
   font-size: .78rem;
 }
-.cfw-page.cfw-v33 .cfw-property-more {
+.cfw-page.cfw-design-studio .cfw-property-more {
   font-size: .78rem;
   opacity: .72;
 }
-.cfw-page.cfw-v33 .cfw-token-details {
+.cfw-page.cfw-design-studio .cfw-token-details {
   margin-top: 2px;
 }
-.cfw-page.cfw-v33 .cfw-token-list {
+.cfw-page.cfw-design-studio .cfw-token-list {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
@@ -580,15 +597,15 @@
 
 
 /* V34: Selected element card can open the direct editor. */
-.cfw-page.cfw-v34 .cfw-selected-component-card {
+.cfw-page.cfw-design-studio .cfw-selected-component-card {
   cursor: pointer;
 }
-.cfw-page.cfw-v34 .cfw-selected-component-card:hover,
-.cfw-page.cfw-v34 .cfw-selected-component-card:focus {
+.cfw-page.cfw-design-studio .cfw-selected-component-card:hover,
+.cfw-page.cfw-design-studio .cfw-selected-component-card:focus {
   outline: 2px solid var(--lb-focus-ring, var(--lb-primary, #007aff));
   outline-offset: 2px;
 }
-.cfw-page.cfw-v34 .cfw-selected-component-card::after {
+.cfw-page.cfw-design-studio .cfw-selected-component-card::after {
   content: none;
   display: none;
 }
@@ -603,56 +620,56 @@
 
 
 /* V35: Property/token tiles are the primary entry point for the direct editor. */
-.cfw-page.cfw-v35 .cfw-property-item {
+.cfw-page.cfw-design-studio .cfw-property-item {
   cursor: pointer;
 }
-.cfw-page.cfw-v35 .cfw-property-item:hover code,
-.cfw-page.cfw-v35 .cfw-property-item:focus code {
+.cfw-page.cfw-design-studio .cfw-property-item:hover code,
+.cfw-page.cfw-design-studio .cfw-property-item:focus code {
   outline: 1px solid currentColor;
   outline-offset: 2px;
 }
-.cfw-page.cfw-v35 .cfw-property-item::after {
+.cfw-page.cfw-design-studio .cfw-property-item::after {
   content: none;
   display: none;
 }
 
 
 /* V36: cleaner inspector/direct-editor layout and theme-conform preview color cards. */
-.cfw-page.cfw-v36 .cfw-palette-tile {
+.cfw-page.cfw-design-studio .cfw-palette-tile {
   border-color: var(--lb-border-color, var(--lb-border, rgba(0,0,0,.18)));
   box-shadow: var(--lb-card-shadow, 0 6px 18px rgba(0,0,0,.10));
   border-radius: var(--lb-radius, 14px);
 }
-.cfw-page.cfw-v36 .cfw-palette-tile span,
-.cfw-page.cfw-v36 .cfw-palette-tile small {
+.cfw-page.cfw-design-studio .cfw-palette-tile span,
+.cfw-page.cfw-design-studio .cfw-palette-tile small {
   background: color-mix(in srgb, var(--lb-card-bg, #fff) 72%, transparent);
   color: var(--lb-text, #111);
   text-shadow: none;
   border: 1px solid color-mix(in srgb, var(--lb-border-color, #ccc) 55%, transparent);
 }
-.cfw-page.cfw-v36 .cfw-selected-eyebrow {
+.cfw-page.cfw-design-studio .cfw-selected-eyebrow {
   line-height: 1.35;
 }
-.cfw-page.cfw-v36 .cfw-component-inspector {
+.cfw-page.cfw-design-studio .cfw-component-inspector {
   order: 3;
 }
-.cfw-page.cfw-v36 .cfw-slider-panel {
+.cfw-page.cfw-design-studio .cfw-slider-panel {
   order: 4;
 }
-.cfw-page.cfw-v36 .cfw-import-panel {
+.cfw-page.cfw-design-studio .cfw-import-panel {
   order: 5;
 }
 
 
 /* V37: swap direct editor and settings positions in the two-column left workbench.
    Row 1: selection + palette. Row 2: settings + direct editor. */
-.cfw-page.cfw-v37 .cfw-slider-panel {
+.cfw-page.cfw-design-studio .cfw-slider-panel {
   order: 3;
 }
-.cfw-page.cfw-v37 .cfw-component-inspector {
+.cfw-page.cfw-design-studio .cfw-component-inspector {
   order: 4;
 }
-.cfw-page.cfw-v37 .cfw-import-panel {
+.cfw-page.cfw-design-studio .cfw-import-panel {
   order: 5;
 }
 
@@ -674,7 +691,7 @@
 /* ============================================================
    V49 Background & Wallpaper Editor
    ============================================================ */
-.cfw-page.cfw-v49 .cfw-wallpaper-controls {
+.cfw-page.cfw-design-studio .cfw-wallpaper-controls {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
@@ -683,17 +700,17 @@
   border-radius: var(--lb-radius, 10px);
   background: rgba(0,0,0,.025);
 }
-.cfw-page.cfw-v49 .cfw-wallpaper-controls[hidden] { display: none !important; }
-.cfw-page.cfw-v49 .cfw-wallpaper-controls input[type="text"],
-.cfw-page.cfw-v49 .cfw-wallpaper-controls select {
+.cfw-page.cfw-design-studio .cfw-wallpaper-controls[hidden] { display: none !important; }
+.cfw-page.cfw-design-studio .cfw-wallpaper-controls input[type="text"],
+.cfw-page.cfw-design-studio .cfw-wallpaper-controls select {
   width: 100%;
   box-sizing: border-box;
 }
-.cfw-page.cfw-v49 .cfw-preview {
+.cfw-page.cfw-design-studio .cfw-preview {
   position: relative;
   overflow: hidden;
 }
-.cfw-page.cfw-v49 .cfw-preview::before {
+.cfw-page.cfw-design-studio .cfw-preview::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -706,10 +723,10 @@
   opacity: var(--cfw-wallpaper-opacity, 1);
   filter: brightness(var(--cfw-wallpaper-brightness, 1));
 }
-.cfw-page.cfw-v49 .cfw-preview:not(.cfw-wallpaper-enabled)::before {
+.cfw-page.cfw-design-studio .cfw-preview:not(.cfw-wallpaper-enabled)::before {
   display: none;
 }
-.cfw-page.cfw-v49 .cfw-preview > * {
+.cfw-page.cfw-design-studio .cfw-preview > * {
   position: relative;
   z-index: 1;
 }
@@ -717,40 +734,40 @@
 /* ============================================================
    V50 Wallpaper Editor placement
    ============================================================ */
-.cfw-page.cfw-v50 .cfw-wallpaper-panel {
+.cfw-page.cfw-design-studio .cfw-wallpaper-panel {
   min-width: 0;
   grid-column: 1;
   order: 4;
 }
-.cfw-page.cfw-v50 .cfw-slider-panel {
+.cfw-page.cfw-design-studio .cfw-slider-panel {
   grid-column: 1;
   order: 3;
 }
-.cfw-page.cfw-v50 .cfw-component-inspector {
+.cfw-page.cfw-design-studio .cfw-component-inspector {
   grid-column: 2;
   order: 3;
 }
-.cfw-page.cfw-v50 .cfw-import-panel {
+.cfw-page.cfw-design-studio .cfw-import-panel {
   grid-column: 1 / -1;
   order: 6;
 }
-.cfw-page.cfw-v50 .cfw-wallpaper-panel[hidden] {
+.cfw-page.cfw-design-studio .cfw-wallpaper-panel[hidden] {
   display: none !important;
 }
-.cfw-page.cfw-v50 .cfw-wallpaper-grid {
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid {
   grid-template-columns: 1fr;
 }
-.cfw-page.cfw-v50 .cfw-wallpaper-grid input[type="text"],
-.cfw-page.cfw-v50 .cfw-wallpaper-grid input[type="file"],
-.cfw-page.cfw-v50 .cfw-wallpaper-grid select {
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid input[type="text"],
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid input[type="file"],
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid select {
   width: 100%;
   box-sizing: border-box;
 }
 @media (max-width:760px) {
-  .cfw-page.cfw-v50 .cfw-slider-panel,
-  .cfw-page.cfw-v50 .cfw-component-inspector,
-  .cfw-page.cfw-v50 .cfw-wallpaper-panel,
-  .cfw-page.cfw-v50 .cfw-import-panel {
+  .cfw-page.cfw-design-studio .cfw-slider-panel,
+  .cfw-page.cfw-design-studio .cfw-component-inspector,
+  .cfw-page.cfw-design-studio .cfw-wallpaper-panel,
+  .cfw-page.cfw-design-studio .cfw-import-panel {
     grid-column: auto;
   }
 }
@@ -759,7 +776,7 @@
 /* ============================================================
    V52 Wallpaper file picker + preview sync polish
    ============================================================ */
-.cfw-page.cfw-v52 .cfw-wallpaper-grid input[type="file"].cfw-file-native {
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid input[type="file"].cfw-file-native {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
@@ -770,7 +787,7 @@
   white-space: nowrap !important;
   border: 0 !important;
 }
-.cfw-page.cfw-v52 .cfw-file-picker {
+.cfw-page.cfw-design-studio .cfw-file-picker {
   display: flex;
   align-items: center;
   gap: var(--lb-space-sm, 8px);
@@ -778,11 +795,11 @@
   min-width: 0;
   box-sizing: border-box;
 }
-.cfw-page.cfw-v52 .cfw-file-button.lb-btn {
+.cfw-page.cfw-design-studio .cfw-file-button.lb-btn {
   flex: 0 0 auto;
   margin: 0;
 }
-.cfw-page.cfw-v52 .cfw-file-name {
+.cfw-page.cfw-design-studio .cfw-file-name {
   flex: 1 1 auto;
   min-width: 0;
   color: var(--lb-text-secondary, #404040);
@@ -796,26 +813,26 @@
 /* ============================================================
    V53 layout, DS file picker and calmer preview palette
    ============================================================ */
-.cfw-page.cfw-v53 .cfw-slider-panel {
+.cfw-page.cfw-design-studio .cfw-slider-panel {
   grid-column: 1;
   order: 3;
   align-self: start;
 }
-.cfw-page.cfw-v53 .cfw-component-inspector {
+.cfw-page.cfw-design-studio .cfw-component-inspector {
   grid-column: 2;
   order: 3;
   align-self: start;
 }
-.cfw-page.cfw-v53 .cfw-wallpaper-panel {
+.cfw-page.cfw-design-studio .cfw-wallpaper-panel {
   grid-column: 1;
   order: 4;
 }
-.cfw-page.cfw-v53 .cfw-import-panel {
+.cfw-page.cfw-design-studio .cfw-import-panel {
   grid-column: 1 / -1;
   order: 6;
 }
-.cfw-page.cfw-v53 .cfw-import-panel input[type="file"].cfw-file-native,
-.cfw-page.cfw-v53 input[type="file"].cfw-file-native {
+.cfw-page.cfw-design-studio .cfw-import-panel input[type="file"].cfw-file-native,
+.cfw-page.cfw-design-studio input[type="file"].cfw-file-native {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
@@ -826,7 +843,7 @@
   white-space: nowrap !important;
   border: 0 !important;
 }
-.cfw-page.cfw-v53 .cfw-file-picker {
+.cfw-page.cfw-design-studio .cfw-file-picker {
   display: flex;
   align-items: center;
   gap: var(--lb-space-sm, 8px);
@@ -840,11 +857,11 @@
   background: var(--lb-input-bg, #fff);
   color: var(--lb-input-text, #111);
 }
-.cfw-page.cfw-v53 .cfw-file-picker .cfw-file-button.lb-btn {
+.cfw-page.cfw-design-studio .cfw-file-picker .cfw-file-button.lb-btn {
   flex: 0 0 auto;
   margin: 0;
 }
-.cfw-page.cfw-v53 .cfw-file-picker .cfw-file-name {
+.cfw-page.cfw-design-studio .cfw-file-picker .cfw-file-name {
   flex: 1 1 auto;
   min-width: 0;
   color: var(--lb-text-secondary, #404040);
@@ -853,18 +870,18 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.cfw-page.cfw-v53 .cfw-app-main {
+.cfw-page.cfw-design-studio .cfw-app-main {
   background: var(--lb-bg, transparent);
   min-width: 0;
 }
-.cfw-page.cfw-v53 .cfw-app-main.cfw-preview-editable:hover {
+.cfw-page.cfw-design-studio .cfw-app-main.cfw-preview-editable:hover {
   outline-offset: -6px;
 }
 @media (max-width:760px) {
-  .cfw-page.cfw-v53 .cfw-slider-panel,
-  .cfw-page.cfw-v53 .cfw-component-inspector,
-  .cfw-page.cfw-v53 .cfw-wallpaper-panel,
-  .cfw-page.cfw-v53 .cfw-import-panel {
+  .cfw-page.cfw-design-studio .cfw-slider-panel,
+  .cfw-page.cfw-design-studio .cfw-component-inspector,
+  .cfw-page.cfw-design-studio .cfw-wallpaper-panel,
+  .cfw-page.cfw-design-studio .cfw-import-panel {
     grid-column: auto;
   }
 }
@@ -873,27 +890,27 @@
 /* ============================================================
    V54 layout stabilization, fixed wallpaper controls and file fields
    ============================================================ */
-.cfw-page.cfw-v54 .cfw-selection-inspector {
+.cfw-page.cfw-design-studio .cfw-selection-inspector {
   grid-column: 1;
   order: 1;
   align-self: start;
 }
-.cfw-page.cfw-v54 .cfw-palette-panel {
+.cfw-page.cfw-design-studio .cfw-palette-panel {
   grid-column: 2;
   order: 1;
   align-self: start;
 }
-.cfw-page.cfw-v54 .cfw-slider-panel {
+.cfw-page.cfw-design-studio .cfw-slider-panel {
   grid-column: 1;
   order: 2;
   align-self: start;
 }
-.cfw-page.cfw-v54 .cfw-component-inspector {
+.cfw-page.cfw-design-studio .cfw-component-inspector {
   grid-column: 2;
   order: 2;
   align-self: start;
 }
-.cfw-page.cfw-v54 .cfw-wallpaper-panel {
+.cfw-page.cfw-design-studio .cfw-wallpaper-panel {
   grid-column: 1;
   order: 3;
   align-self: start;
@@ -901,26 +918,26 @@
   max-width: 100%;
   overflow: hidden;
 }
-.cfw-page.cfw-v54 .cfw-import-panel {
+.cfw-page.cfw-design-studio .cfw-import-panel {
   grid-column: 1 / -1;
   order: 6;
 }
-.cfw-page.cfw-v54 .cfw-wallpaper-grid,
-.cfw-page.cfw-v54 .cfw-wallpaper-grid .cfw-label,
-.cfw-page.cfw-v54 .cfw-wallpaper-grid input,
-.cfw-page.cfw-v54 .cfw-wallpaper-grid select,
-.cfw-page.cfw-v54 .cfw-file-picker {
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid,
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid .cfw-label,
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid input,
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid select,
+.cfw-page.cfw-design-studio .cfw-file-picker {
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
 }
-.cfw-page.cfw-v54 .cfw-wallpaper-grid input[type="text"],
-.cfw-page.cfw-v54 .cfw-wallpaper-grid select {
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid input[type="text"],
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid select {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.cfw-page.cfw-v54 .cfw-file-picker .cfw-file-name {
+.cfw-page.cfw-design-studio .cfw-file-picker .cfw-file-name {
   flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
@@ -928,27 +945,27 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.cfw-page.cfw-v54 .cfw-file-picker .cfw-file-button.lb-btn {
+.cfw-page.cfw-design-studio .cfw-file-picker .cfw-file-button.lb-btn {
   max-width: 45%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 @media (max-width:760px) {
-  .cfw-page.cfw-v54 .cfw-selection-inspector,
-  .cfw-page.cfw-v54 .cfw-palette-panel,
-  .cfw-page.cfw-v54 .cfw-slider-panel,
-  .cfw-page.cfw-v54 .cfw-component-inspector,
-  .cfw-page.cfw-v54 .cfw-wallpaper-panel,
-  .cfw-page.cfw-v54 .cfw-import-panel {
+  .cfw-page.cfw-design-studio .cfw-selection-inspector,
+  .cfw-page.cfw-design-studio .cfw-palette-panel,
+  .cfw-page.cfw-design-studio .cfw-slider-panel,
+  .cfw-page.cfw-design-studio .cfw-component-inspector,
+  .cfw-page.cfw-design-studio .cfw-wallpaper-panel,
+  .cfw-page.cfw-design-studio .cfw-import-panel {
     grid-column: auto;
   }
 }
 
 /* V54 toggle state tokens: off/default and checked/on are separate. */
-.cfw-page.cfw-v54 .cfw-switch span {
+.cfw-page.cfw-design-studio .cfw-switch span {
   background: var(--lb-switch-off-bg, var(--lb-toggle-bg, rgba(0,0,0,.22)));
 }
-.cfw-page.cfw-v54 .cfw-switch input:checked + span {
+.cfw-page.cfw-design-studio .cfw-switch input:checked + span {
   background: var(--lb-switch-on-bg, var(--lb-active-bg, #007aff));
 }
 
@@ -957,14 +974,14 @@
    - palette tiles now show up to 12 effective theme colors
    - informational AI status must be blue, not error red
    ============================================================ */
-.cfw-page.cfw-v67 .cfw-palette-grid {
+.cfw-page.cfw-design-studio .cfw-palette-grid {
   grid-template-columns: repeat(2, minmax(120px, 1fr));
   gap: 10px;
 }
-.cfw-page.cfw-v67 .cfw-palette-tile {
+.cfw-page.cfw-design-studio .cfw-palette-tile {
   min-height: 82px;
 }
-.cfw-page.cfw-v67 .cfw-status-info {
+.cfw-page.cfw-design-studio .cfw-status-info {
   color: #1d4ed8;
   font-weight: 600;
 }
@@ -975,18 +992,18 @@
    - palette tiles show concrete theme token names and values
    - valid KI draft status uses success/green state via JS kind
    ============================================================ */
-.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-token,
-.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-value {
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-token,
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-value {
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-token {
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-token {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: .78rem;
 }
-.cfw-page.cfw-v68 .cfw-palette-tile .cfw-palette-value {
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-value {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: .82rem;
 }
@@ -1023,13 +1040,13 @@
    - Validate/Import are shown below the KI Designer block only after a valid draft exists
    - KI palette excludes semantic status colors by default
    ============================================================ */
-.cfw-page.cfw-v71 .cfw-ai-validated-actions[hidden] {
+.cfw-page.cfw-design-studio .cfw-ai-validated-actions[hidden] {
   display: none !important;
 }
-.cfw-page.cfw-v71 .cfw-ai-validated-actions {
+.cfw-page.cfw-design-studio .cfw-ai-validated-actions {
   border-color: var(--lb-success, #2e8b57);
 }
-.cfw-page.cfw-v71 .cfw-ai-validated-actions .cfw-ai-actions {
+.cfw-page.cfw-design-studio .cfw-ai-validated-actions .cfw-ai-actions {
   margin-top: 0;
 }
 
@@ -1041,12 +1058,12 @@
    - Direct editor opens dynamically below the Wallpaper Editor.
    - KI Validation panel uses the normal panel border, no green success frame.
    ============================================================ */
-.cfw-page.cfw-v75 .cfw-slider-panel {
+.cfw-page.cfw-design-studio .cfw-slider-panel {
   grid-column: 1;
   order: 2;
   align-self: start;
 }
-.cfw-page.cfw-v75 .cfw-wallpaper-panel {
+.cfw-page.cfw-design-studio .cfw-wallpaper-panel {
   grid-column: 2;
   order: 2;
   align-self: start;
@@ -1054,23 +1071,23 @@
   max-width: 100%;
   overflow: hidden;
 }
-.cfw-page.cfw-v75 .cfw-component-inspector {
+.cfw-page.cfw-design-studio .cfw-component-inspector {
   grid-column: 2;
   order: 3;
   align-self: start;
 }
-.cfw-page.cfw-v75 .cfw-import-panel {
+.cfw-page.cfw-design-studio .cfw-import-panel {
   grid-column: 1 / -1;
   order: 6;
 }
-.cfw-page.cfw-v75 .cfw-ai-validated-actions {
+.cfw-page.cfw-design-studio .cfw-ai-validated-actions {
   border-color: var(--lb-border, rgba(0,0,0,.16));
 }
 @media (max-width: 760px) {
-  .cfw-page.cfw-v75 .cfw-slider-panel,
-  .cfw-page.cfw-v75 .cfw-wallpaper-panel,
-  .cfw-page.cfw-v75 .cfw-component-inspector,
-  .cfw-page.cfw-v75 .cfw-import-panel {
+  .cfw-page.cfw-design-studio .cfw-slider-panel,
+  .cfw-page.cfw-design-studio .cfw-wallpaper-panel,
+  .cfw-page.cfw-design-studio .cfw-component-inspector,
+  .cfw-page.cfw-design-studio .cfw-import-panel {
     grid-column: auto;
   }
 }
@@ -1080,7 +1097,7 @@
    - The Wallpaper Editor keeps only the activation checkbox visible by default.
    - Path, file picker, display mode and sliders appear after enabling wallpaper.
    ============================================================ */
-.cfw-page.cfw-v77 .cfw-wallpaper-advanced {
+.cfw-page.cfw-design-studio .cfw-wallpaper-advanced {
   display: none;
   grid-template-columns: 1fr;
   gap: 10px 12px;
@@ -1088,17 +1105,17 @@
   max-width: 100%;
   box-sizing: border-box;
 }
-.cfw-page.cfw-v77 .cfw-wallpaper-panel.cfw-wallpaper-enabled .cfw-wallpaper-advanced,
-.cfw-page.cfw-v77 .cfw-wallpaper-grid:has(#wallpaperEnabled:checked) .cfw-wallpaper-advanced {
+.cfw-page.cfw-design-studio .cfw-wallpaper-panel.cfw-wallpaper-enabled .cfw-wallpaper-advanced,
+.cfw-page.cfw-design-studio .cfw-wallpaper-grid:has(#wallpaperEnabled:checked) .cfw-wallpaper-advanced {
   display: grid;
 }
-.cfw-page.cfw-v77 .cfw-wallpaper-advanced[hidden] {
+.cfw-page.cfw-design-studio .cfw-wallpaper-advanced[hidden] {
   display: none !important;
 }
-.cfw-page.cfw-v77 .cfw-wallpaper-advanced .cfw-label,
-.cfw-page.cfw-v77 .cfw-wallpaper-advanced input,
-.cfw-page.cfw-v77 .cfw-wallpaper-advanced select,
-.cfw-page.cfw-v77 .cfw-wallpaper-advanced .cfw-file-picker {
+.cfw-page.cfw-design-studio .cfw-wallpaper-advanced .cfw-label,
+.cfw-page.cfw-design-studio .cfw-wallpaper-advanced input,
+.cfw-page.cfw-design-studio .cfw-wallpaper-advanced select,
+.cfw-page.cfw-design-studio .cfw-wallpaper-advanced .cfw-file-picker {
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
@@ -1111,41 +1128,41 @@
    - AI model select gets a visible dropdown arrow.
    - Request/context and KI result fields are read-only output fields.
    ============================================================ */
-.cfw-page.cfw-v93 .cfw-toolbar-title {
+.cfw-page.cfw-design-studio .cfw-toolbar-title {
   min-width: 0;
 }
-.cfw-page.cfw-v93 .cfw-title-line {
+.cfw-page.cfw-design-studio .cfw-title-line {
   display: flex;
   align-items: baseline;
   gap: 14px;
   flex-wrap: wrap;
 }
-.cfw-page.cfw-v93 .cfw-title-line h1 {
+.cfw-page.cfw-design-studio .cfw-title-line h1 {
   margin: 0 0 4px 0;
 }
-.cfw-page.cfw-v93 .cfw-powered-by {
+.cfw-page.cfw-design-studio .cfw-powered-by {
   font-size: 0.82rem;
   font-weight: 600;
   opacity: 0.64;
   white-space: nowrap;
 }
-.cfw-page.cfw-v93 .cfw-consent {
+.cfw-page.cfw-design-studio .cfw-consent {
   background: var(--lb-bg, transparent);
 }
-.cfw-page.cfw-v93 .cfw-select-wrap {
+.cfw-page.cfw-design-studio .cfw-select-wrap {
   position: relative;
   display: block;
   width: 100%;
   margin-top: 5px;
 }
-.cfw-page.cfw-v93 .cfw-select-wrap select {
+.cfw-page.cfw-design-studio .cfw-select-wrap select {
   margin-top: 0;
   padding-right: 38px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
-.cfw-page.cfw-v93 .cfw-select-wrap::after {
+.cfw-page.cfw-design-studio .cfw-select-wrap::after {
   content: "";
   position: absolute;
   right: 14px;
@@ -1159,13 +1176,13 @@
   opacity: 0.72;
   pointer-events: none;
 }
-.cfw-page.cfw-v93 #aiRequest[readonly],
-.cfw-page.cfw-v93 #aiResult[readonly] {
+.cfw-page.cfw-design-studio #aiRequest[readonly],
+.cfw-page.cfw-design-studio #aiResult[readonly] {
   cursor: default;
   resize: vertical;
 }
-.cfw-page.cfw-v93 #aiRequest[readonly]:focus,
-.cfw-page.cfw-v93 #aiResult[readonly]:focus {
+.cfw-page.cfw-design-studio #aiRequest[readonly]:focus,
+.cfw-page.cfw-design-studio #aiResult[readonly]:focus {
   outline: none;
   border-color: var(--lb-input-focus-border, var(--lb-active-bg, rgba(0,122,255,.55)));
   box-shadow: var(--lb-input-focus-shadow, 0 0 0 3px rgba(0,122,255,.14));
@@ -1181,99 +1198,99 @@
    The internal preview keeps its own sidebar, but the main preview area
    must shrink/wrap instead of overflowing to the right.
    ============================================================ */
-.cfw-page.cfw-v101,
-.cfw-page.cfw-v101 .cfw-panel,
-.cfw-page.cfw-v101 .cfw-preview,
-.cfw-page.cfw-v101 .cfw-app-preview,
-.cfw-page.cfw-v101 .cfw-app-main,
-.cfw-page.cfw-v101 .cfw-hero-card,
-.cfw-page.cfw-v101 .cfw-form-card,
-.cfw-page.cfw-v101 .cfw-form-grid,
-.cfw-page.cfw-v101 .cfw-inline-controls,
-.cfw-page.cfw-v101 .cfw-preview-table {
+.cfw-page.cfw-design-studio,
+.cfw-page.cfw-design-studio .cfw-panel,
+.cfw-page.cfw-design-studio .cfw-preview,
+.cfw-page.cfw-design-studio .cfw-app-preview,
+.cfw-page.cfw-design-studio .cfw-app-main,
+.cfw-page.cfw-design-studio .cfw-hero-card,
+.cfw-page.cfw-design-studio .cfw-form-card,
+.cfw-page.cfw-design-studio .cfw-form-grid,
+.cfw-page.cfw-design-studio .cfw-inline-controls,
+.cfw-page.cfw-design-studio .cfw-preview-table {
   min-width: 0;
   box-sizing: border-box;
 }
 
-.cfw-page.cfw-v101 .cfw-preview {
+.cfw-page.cfw-design-studio .cfw-preview {
   overflow: hidden;
 }
 
-.cfw-page.cfw-v101 .cfw-app-preview {
+.cfw-page.cfw-design-studio .cfw-app-preview {
   grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
   max-width: 100%;
 }
 
-.cfw-page.cfw-v101 .cfw-app-main {
+.cfw-page.cfw-design-studio .cfw-app-main {
   overflow: hidden;
 }
 
-.cfw-page.cfw-v101 .cfw-app-header,
-.cfw-page.cfw-v101 .cfw-header-actions,
-.cfw-page.cfw-v101 .cfw-inline-controls,
-.cfw-page.cfw-v101 .cfw-feedback-row {
+.cfw-page.cfw-design-studio .cfw-app-header,
+.cfw-page.cfw-design-studio .cfw-header-actions,
+.cfw-page.cfw-design-studio .cfw-inline-controls,
+.cfw-page.cfw-design-studio .cfw-feedback-row {
   min-width: 0;
   max-width: 100%;
 }
 
-.cfw-page.cfw-v101 .cfw-app-header {
+.cfw-page.cfw-design-studio .cfw-app-header {
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.cfw-page.cfw-v101 .cfw-header-actions,
-.cfw-page.cfw-v101 .cfw-inline-controls {
+.cfw-page.cfw-design-studio .cfw-header-actions,
+.cfw-page.cfw-design-studio .cfw-inline-controls {
   flex-wrap: wrap;
 }
 
-.cfw-page.cfw-v101 .cfw-form-grid {
+.cfw-page.cfw-design-studio .cfw-form-grid {
   grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
 }
 
-.cfw-page.cfw-v101 .cfw-form-grid > label,
-.cfw-page.cfw-v101 .cfw-form-grid input,
-.cfw-page.cfw-v101 .cfw-form-grid select,
-.cfw-page.cfw-v101 .cfw-form-grid textarea,
-.cfw-page.cfw-v101 .cfw-inline-controls input,
-.cfw-page.cfw-v101 .cfw-inline-controls select,
-.cfw-page.cfw-v101 .cfw-inline-controls textarea,
-.cfw-page.cfw-v101 .cfw-inline-controls button,
-.cfw-page.cfw-v101 .cfw-preview-btn-group {
+.cfw-page.cfw-design-studio .cfw-form-grid > label,
+.cfw-page.cfw-design-studio .cfw-form-grid input,
+.cfw-page.cfw-design-studio .cfw-form-grid select,
+.cfw-page.cfw-design-studio .cfw-form-grid textarea,
+.cfw-page.cfw-design-studio .cfw-inline-controls input,
+.cfw-page.cfw-design-studio .cfw-inline-controls select,
+.cfw-page.cfw-design-studio .cfw-inline-controls textarea,
+.cfw-page.cfw-design-studio .cfw-inline-controls button,
+.cfw-page.cfw-design-studio .cfw-preview-btn-group {
   min-width: 0;
   max-width: 100%;
 }
 
-.cfw-page.cfw-v101 .cfw-form-grid textarea.lb-input {
+.cfw-page.cfw-design-studio .cfw-form-grid textarea.lb-input {
   width: 100%;
   resize: vertical;
 }
 
-.cfw-page.cfw-v101 .cfw-preview-table {
+.cfw-page.cfw-design-studio .cfw-preview-table {
   display: block;
   width: 100%;
   overflow-x: auto;
 }
 
 @media (max-width: 1180px) {
-  .cfw-page.cfw-v101 .cfw-app-preview {
+  .cfw-page.cfw-design-studio .cfw-app-preview {
     grid-template-columns: minmax(118px, 150px) minmax(0, 1fr);
   }
 
-  .cfw-page.cfw-v101 .cfw-app-sidebar {
+  .cfw-page.cfw-design-studio .cfw-app-sidebar {
     padding: 12px;
   }
 
-  .cfw-page.cfw-v101 .cfw-app-main {
+  .cfw-page.cfw-design-studio .cfw-app-main {
     padding: 12px;
   }
 }
 
 @media (max-width: 920px) {
-  .cfw-page.cfw-v101 .cfw-app-preview {
+  .cfw-page.cfw-design-studio .cfw-app-preview {
     grid-template-columns: 1fr;
   }
 
-  .cfw-page.cfw-v101 .cfw-app-sidebar {
+  .cfw-page.cfw-design-studio .cfw-app-sidebar {
     display: none;
   }
 }
@@ -1285,33 +1302,33 @@
    - preview slider editing is scoped to slider tokens
    - undo button disabled state
    ============================================================ */
-.cfw-page.cfw-v102 .cfw-property-body code,
-.cfw-page.cfw-v102 .cfw-token-list code,
-.cfw-page.cfw-v102 .cfw-palette-tile .cfw-palette-token {
+.cfw-page.cfw-design-studio .cfw-property-body code,
+.cfw-page.cfw-design-studio .cfw-token-list code,
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-token {
   background: #fef3c7 !important;
   color: #2d241a !important;
   text-shadow: none !important;
   border: 1px solid rgba(120, 83, 28, 0.26) !important;
 }
 
-.cfw-page.cfw-v102 .cfw-palette-tile .cfw-palette-value {
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-value {
   text-shadow: none;
 }
 
-.cfw-page.cfw-v102 .cfw-button:disabled,
-.cfw-page.cfw-v102 .cfw-button[disabled] {
+.cfw-page.cfw-design-studio .cfw-button:disabled,
+.cfw-page.cfw-design-studio .cfw-button[disabled] {
   opacity: .48;
   cursor: not-allowed;
 }
 
-.cfw-page.cfw-v102 .cfw-range {
+.cfw-page.cfw-design-studio .cfw-range {
   --cfw-range-active: var(--lb-slider-active-bg, var(--lb-primary, var(--lb-active-bg, #007aff)));
   --cfw-range-track: var(--lb-slider-bg, rgba(0,0,0,.20));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
   accent-color: var(--cfw-range-active);
 }
 
-.cfw-page.cfw-v102 .cfw-range::-webkit-slider-runnable-track {
+.cfw-page.cfw-design-studio .cfw-range::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 999px;
   background: linear-gradient(to right,
@@ -1321,24 +1338,24 @@
     var(--cfw-range-track) 100%);
 }
 
-.cfw-page.cfw-v102 .cfw-range::-webkit-slider-thumb {
+.cfw-page.cfw-design-studio .cfw-range::-webkit-slider-thumb {
   background: var(--cfw-range-thumb);
   border-color: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
 }
 
-.cfw-page.cfw-v102 .cfw-range::-moz-range-track {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-track {
   height: 6px;
   border-radius: 999px;
   background: var(--cfw-range-track);
 }
 
-.cfw-page.cfw-v102 .cfw-range::-moz-range-progress {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-progress {
   height: 6px;
   border-radius: 999px;
   background: var(--cfw-range-active);
 }
 
-.cfw-page.cfw-v102 .cfw-range::-moz-range-thumb {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-thumb {
   background: var(--cfw-range-thumb);
   border-color: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
 }
@@ -1351,7 +1368,7 @@
    The thumb uses dedicated slider tokens and is vertically centered
    on the custom 6px track in WebKit/Blink browsers.
    ============================================================ */
-.cfw-page.cfw-v103 .cfw-range {
+.cfw-page.cfw-design-studio .cfw-range {
   --cfw-range-active: var(--lb-slider-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)));
   --cfw-range-track: var(--lb-slider-bg, rgba(0,0,0,.22));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
@@ -1366,11 +1383,11 @@
   accent-color: var(--cfw-range-active);
 }
 
-.cfw-page.cfw-v103 .cfw-range:focus {
+.cfw-page.cfw-design-studio .cfw-range:focus {
   outline: none;
 }
 
-.cfw-page.cfw-v103 .cfw-range::-webkit-slider-runnable-track {
+.cfw-page.cfw-design-studio .cfw-range::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 999px;
   border: 1px solid var(--lb-slider-border, rgba(0,0,0,.18));
@@ -1382,7 +1399,7 @@
   box-sizing: border-box;
 }
 
-.cfw-page.cfw-v103 .cfw-range::-webkit-slider-thumb {
+.cfw-page.cfw-design-studio .cfw-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 18px;
@@ -1395,7 +1412,7 @@
   box-sizing: border-box;
 }
 
-.cfw-page.cfw-v103 .cfw-range::-moz-range-track {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-track {
   height: 6px;
   border-radius: 999px;
   border: 1px solid var(--lb-slider-border, rgba(0,0,0,.18));
@@ -1403,13 +1420,13 @@
   box-sizing: border-box;
 }
 
-.cfw-page.cfw-v103 .cfw-range::-moz-range-progress {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-progress {
   height: 6px;
   border-radius: 999px;
   background: var(--cfw-range-active);
 }
 
-.cfw-page.cfw-v103 .cfw-range::-moz-range-thumb {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -1419,8 +1436,8 @@
   box-sizing: border-box;
 }
 
-.cfw-page.cfw-v103 .cfw-range:focus::-webkit-slider-thumb,
-.cfw-page.cfw-v103 .cfw-range:focus::-moz-range-thumb {
+.cfw-page.cfw-design-studio .cfw-range:focus::-webkit-slider-thumb,
+.cfw-page.cfw-design-studio .cfw-range:focus::-moz-range-thumb {
   box-shadow: var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22)), 0 0 0 3px color-mix(in srgb, var(--cfw-range-active) 22%, transparent);
 }
 
@@ -1431,10 +1448,10 @@
   align-items: center;
   gap: 8px;
 }
-.cfw-page.cfw-v104 .cfw-switch span {
+.cfw-page.cfw-design-studio .cfw-switch span {
   background: var(--lb-switch-off-bg, var(--lb-toggle-bg, rgba(0,0,0,.22)));
 }
-.cfw-page.cfw-v104 .cfw-switch input:checked + span {
+.cfw-page.cfw-design-studio .cfw-switch input:checked + span {
   background: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff))));
 }
 
@@ -1446,14 +1463,14 @@
    remaining track. Keep this scoped to the Studio preview and
    slider-specific tokens only.
    ============================================================ */
-.cfw-page.cfw-v114 .cfw-range {
+.cfw-page.cfw-design-studio .cfw-range {
   --cfw-range-active: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))));
   --cfw-range-track: var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22))));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
   --cfw-range-thumb-border: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
 }
 
-.cfw-page.cfw-v114 .cfw-range::-webkit-slider-runnable-track {
+.cfw-page.cfw-design-studio .cfw-range::-webkit-slider-runnable-track {
   background: linear-gradient(to right,
     var(--cfw-range-active) 0%,
     var(--cfw-range-active) var(--lb-slider-fill, 60%),
@@ -1461,11 +1478,11 @@
     var(--cfw-range-track) 100%) !important;
 }
 
-.cfw-page.cfw-v114 .cfw-range::-moz-range-track {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-track {
   background: var(--cfw-range-track) !important;
 }
 
-.cfw-page.cfw-v114 .cfw-range::-moz-range-progress {
+.cfw-page.cfw-design-studio .cfw-range::-moz-range-progress {
   background: var(--cfw-range-active) !important;
 }
 
@@ -1478,14 +1495,14 @@
 
 
 /* V123: Studio preview checkbox/radio colors are token-driven and scoped to the preview only. */
-.cfw-page.cfw-v123 .cfw-check[data-cfw-area="Checkboxen"] {
+.cfw-page.cfw-design-studio .cfw-check[data-cfw-area="Checkboxen"] {
   color: var(--lb-checkbox-text, var(--lb-text)) !important;
 }
-.cfw-page.cfw-v123 .cfw-check[data-cfw-area="Radio"] {
+.cfw-page.cfw-design-studio .cfw-check[data-cfw-area="Radio"] {
   color: var(--lb-radio-text, var(--lb-text)) !important;
 }
-.cfw-page.cfw-v123 .cfw-check input[type="checkbox"],
-.cfw-page.cfw-v123 .cfw-check input[type="radio"] {
+.cfw-page.cfw-design-studio .cfw-check input[type="checkbox"],
+.cfw-page.cfw-design-studio .cfw-check input[type="radio"] {
   appearance: none !important;
   -webkit-appearance: none !important;
   width: 18px !important;
@@ -1499,16 +1516,16 @@
   cursor: pointer;
   vertical-align: middle;
 }
-.cfw-page.cfw-v123 .cfw-check input[type="checkbox"] {
+.cfw-page.cfw-design-studio .cfw-check input[type="checkbox"] {
   border: 2px solid var(--lb-checkbox-border, var(--lb-border-color, #cbd5e1)) !important;
   border-radius: var(--lb-checkbox-radius, 4px) !important;
   background: var(--lb-checkbox-bg, var(--lb-input-bg, #ffffff)) !important;
 }
-.cfw-page.cfw-v123 .cfw-check input[type="checkbox"]:checked {
+.cfw-page.cfw-design-studio .cfw-check input[type="checkbox"]:checked {
   border-color: var(--lb-checkbox-checked-border, var(--lb-checkbox-checked-bg, var(--lb-primary, #007aff))) !important;
   background: var(--lb-checkbox-checked-bg, var(--lb-primary, #007aff)) !important;
 }
-.cfw-page.cfw-v123 .cfw-check input[type="checkbox"]:checked::after {
+.cfw-page.cfw-design-studio .cfw-check input[type="checkbox"]:checked::after {
   content: "✓";
   color: var(--lb-checkbox-checkmark-text, #ffffff);
   font-size: 13px;
@@ -1516,12 +1533,12 @@
   line-height: 1;
   transform: translateY(-0.5px);
 }
-.cfw-page.cfw-v123 .cfw-check input[type="radio"] {
+.cfw-page.cfw-design-studio .cfw-check input[type="radio"] {
   border: 2px solid var(--lb-radio-border, var(--lb-border-color, #cbd5e1)) !important;
   border-radius: 50% !important;
   background: var(--lb-radio-bg, var(--lb-input-bg, #ffffff)) !important;
 }
-.cfw-page.cfw-v123 .cfw-check input[type="radio"]:checked {
+.cfw-page.cfw-design-studio .cfw-check input[type="radio"]:checked {
   border-color: var(--lb-radio-checked-border, var(--lb-radio-checked-bg, var(--lb-primary, #007aff))) !important;
   background:
     radial-gradient(circle at center,
@@ -1534,23 +1551,23 @@
 
 
 /* V125: Slider thumb is centered from track/thumb size instead of a fixed pixel guess. */
-.cfw-page.cfw-v125 .cfw-preview-slider {
+.cfw-page.cfw-design-studio .cfw-preview-slider {
   --lb-slider-track-height: var(--lb-slider-track-height, 6px);
   --lb-slider-thumb-size: var(--lb-slider-thumb-size, 20px);
 }
-.cfw-page.cfw-v125 .cfw-preview-slider::-webkit-slider-runnable-track {
+.cfw-page.cfw-design-studio .cfw-preview-slider::-webkit-slider-runnable-track {
   height: var(--lb-slider-track-height, 6px) !important;
 }
-.cfw-page.cfw-v125 .cfw-preview-slider::-webkit-slider-thumb {
+.cfw-page.cfw-design-studio .cfw-preview-slider::-webkit-slider-thumb {
   width: var(--lb-slider-thumb-size, 20px) !important;
   height: var(--lb-slider-thumb-size, 20px) !important;
   margin-top: calc((var(--lb-slider-track-height, 6px) - var(--lb-slider-thumb-size, 20px)) / 2) !important;
   box-sizing: border-box !important;
 }
-.cfw-page.cfw-v125 .cfw-preview-slider::-moz-range-track {
+.cfw-page.cfw-design-studio .cfw-preview-slider::-moz-range-track {
   height: var(--lb-slider-track-height, 6px) !important;
 }
-.cfw-page.cfw-v125 .cfw-preview-slider::-moz-range-thumb {
+.cfw-page.cfw-design-studio .cfw-preview-slider::-moz-range-thumb {
   width: var(--lb-slider-thumb-size, 20px) !important;
   height: var(--lb-slider-thumb-size, 20px) !important;
   box-sizing: border-box !important;
@@ -1719,28 +1736,27 @@
 
 
 /* V136: Toggle radius preview uses the same tokens that generated themes write. */
-.cfw-page.cfw-v136 .cfw-switch span {
+.cfw-page.cfw-design-studio .cfw-switch span {
   border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-toggle-slider-radius, 999px))) !important;
 }
-.cfw-page.cfw-v136 .cfw-switch span::after {
+.cfw-page.cfw-design-studio .cfw-switch span::after {
   border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, var(--lb-switch-radius, 999px))) !important;
 }
 
 
 /* V137: Radius preview bridges for inputs/selects and button groups. */
-.cfw-page.cfw-v137 .cfw-preview-card input,
-.cfw-page.cfw-v137 .cfw-preview-card select,
-.cfw-page.cfw-v137 .cfw-preview-card textarea {
+.cfw-page.cfw-design-studio .cfw-preview-card input,
+.cfw-page.cfw-design-studio .cfw-preview-card select,
+.cfw-page.cfw-design-studio .cfw-preview-card textarea {
   border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px))))) !important;
 }
-.cfw-page.cfw-v137 .cfw-preview-btn-group,
-.cfw-page.cfw-v137 .cfw-preview-btn-group button {
-  border-radius: var(--lb-btn-group-radius, var(--lb-btn-group-item-radius, var(--lb-btn-radius, var(--lb-radius-button, 10px)))) !important;
+.cfw-page.cfw-design-studio .cfw-preview-btn-group {
+  border-radius: var(--lb-btn-group-radius, var(--lb-btn-radius, var(--lb-radius-button, 10px))) !important;
 }
 
 
 /* V139: Wallpaper Editor is hidden until the background target is selected. */
-.cfw-page.cfw-v139 #wallpaperControls[hidden] {
+.cfw-page.cfw-design-studio #wallpaperControls[hidden] {
   display: none !important;
 }
 
@@ -1748,19 +1764,19 @@
 /* V140: Sidebar hover preview and hover text bridge.
    When a Sidebar hover property is selected, the Settings row is shown in hover state
    so Hover Textfarbe can be checked without physically hovering the item. */
-.cfw-page.cfw-v140 .cfw-preview.cfw-preview-show-sidebar-hover .cfw-nav-item:not(.active):nth-of-type(2) {
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-sidebar-hover .cfw-nav-item:not(.active):nth-of-type(2) {
   background: var(--lb-sidebar-link-hover-bg, var(--lb-sidebar-hover-bg, var(--lb-nav-hover-bg, var(--lb-hover-bg, rgba(0,0,0,.08))))) !important;
   color: var(--lb-sidebar-link-hover-text, var(--lb-sidebar-hover-text, var(--lb-nav-hover-text, var(--lb-sidebar-text, inherit)))) !important;
 }
-.cfw-page.cfw-v140 .cfw-preview.cfw-preview-show-sidebar-hover .cfw-nav-item:not(.active):nth-of-type(2) * {
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-sidebar-hover .cfw-nav-item:not(.active):nth-of-type(2) * {
   color: inherit !important;
 }
-.cfw-page.cfw-v140 .cfw-nav-item:hover,
-.cfw-page.cfw-v140 .cfw-nav-item:focus {
+.cfw-page.cfw-design-studio .cfw-nav-item:hover,
+.cfw-page.cfw-design-studio .cfw-nav-item:focus {
   color: var(--lb-sidebar-link-hover-text, var(--lb-sidebar-hover-text, var(--lb-nav-hover-text, var(--lb-sidebar-text, inherit)))) !important;
 }
-.cfw-page.cfw-v140 .cfw-nav-item:hover *,
-.cfw-page.cfw-v140 .cfw-nav-item:focus * {
+.cfw-page.cfw-design-studio .cfw-nav-item:hover *,
+.cfw-page.cfw-design-studio .cfw-nav-item:focus * {
   color: inherit !important;
 }
 
@@ -1768,25 +1784,25 @@
 
 
 /* V142: Table token preview bridge. */
-.cfw-page.cfw-v142 .cfw-preview-table thead,
-.cfw-page.cfw-v142 .cfw-preview-table th {
+.cfw-page.cfw-design-studio .cfw-preview-table thead,
+.cfw-page.cfw-design-studio .cfw-preview-table th {
   background: var(--lb-table-header-bg, rgba(0,0,0,.06)) !important;
   color: var(--lb-table-header-text, inherit) !important;
   border-color: var(--cfw-preview-table-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
 }
-.cfw-page.cfw-v142 .cfw-preview-table tbody td {
+.cfw-page.cfw-design-studio .cfw-preview-table tbody td {
   background: var(--cfw-preview-table-bg, var(--lb-table-bg, var(--lb-table-row-bg, rgba(255,255,255,.65)))) !important;
   color: var(--cfw-preview-table-text, var(--lb-table-row-text, var(--lb-table-text, inherit))) !important;
   border-color: var(--cfw-preview-table-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
 }
-.cfw-page.cfw-v142 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td {
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td {
   background: var(--cfw-preview-table-hover-bg, var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, rgba(0,0,0,.05)))) !important;
   color: var(--cfw-preview-table-hover-text, var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit)))) !important;
 }
-.cfw-page.cfw-v142 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td * {
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td * {
   color: inherit !important;
 }
-.cfw-page.cfw-v142 .cfw-preview-table tbody tr:last-child td {
+.cfw-page.cfw-design-studio .cfw-preview-table tbody tr:last-child td {
   border-bottom-width: 0;
 }
 
@@ -1794,38 +1810,38 @@
 /* V143: Final Live Preview table values are forced directly from table tokens.
    This avoids stale intermediate preview variables and makes each selected table
    property immediately visible in the Studio preview. */
-.cfw-page.cfw-v143 .cfw-preview-table {
+.cfw-page.cfw-design-studio .cfw-preview-table {
   background-color: var(--lb-table-bg, var(--lb-table-row-bg, var(--lb-table-body-bg, transparent))) !important;
   color: var(--lb-table-text, var(--lb-table-row-text, inherit)) !important;
   border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16))) !important;
   border-radius: var(--lb-table-radius, var(--lb-radius-table, 12px)) !important;
 }
-.cfw-page.cfw-v143 .cfw-preview-table thead,
-.cfw-page.cfw-v143 .cfw-preview-table thead tr,
-.cfw-page.cfw-v143 .cfw-preview-table thead th {
+.cfw-page.cfw-design-studio .cfw-preview-table thead,
+.cfw-page.cfw-design-studio .cfw-preview-table thead tr,
+.cfw-page.cfw-design-studio .cfw-preview-table thead th {
   background-color: var(--lb-table-header-bg, var(--lb-table-bg, transparent)) !important;
   color: var(--lb-table-header-text, var(--lb-table-text, inherit)) !important;
   border-color: var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
 }
-.cfw-page.cfw-v143 .cfw-preview-table tbody,
-.cfw-page.cfw-v143 .cfw-preview-table tbody tr,
-.cfw-page.cfw-v143 .cfw-preview-table tbody td {
+.cfw-page.cfw-design-studio .cfw-preview-table tbody,
+.cfw-page.cfw-design-studio .cfw-preview-table tbody tr,
+.cfw-page.cfw-design-studio .cfw-preview-table tbody td {
   background-color: var(--lb-table-row-bg, var(--lb-table-bg, var(--lb-table-body-bg, transparent))) !important;
   color: var(--lb-table-row-text, var(--lb-table-text, inherit)) !important;
   border-color: var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))) !important;
 }
-.cfw-page.cfw-v143 .cfw-preview-table tbody td * {
+.cfw-page.cfw-design-studio .cfw-preview-table tbody td * {
   color: inherit;
 }
-.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo,
-.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td {
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo,
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td {
   background-color: var(--lb-table-row-hover-bg, var(--lb-table-hover-bg, var(--lb-hover-bg, rgba(0,0,0,.05)))) !important;
   color: var(--lb-table-row-hover-text, var(--lb-table-hover-text, var(--lb-table-text, inherit))) !important;
 }
-.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td * {
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-table-hover .cfw-preview-table tbody tr.cfw-table-hover-demo td * {
   color: inherit !important;
 }
-.cfw-page.cfw-v143 .cfw-preview.cfw-preview-show-table-target .cfw-preview-table {
+.cfw-page.cfw-design-studio .cfw-preview.cfw-preview-show-table-target .cfw-preview-table {
   box-shadow: 0 0 0 1px var(--lb-focus-ring, var(--lb-primary, rgba(0,122,255,.45)));
 }
 
@@ -1836,21 +1852,21 @@
 
 
 /* V145: Table border color and border width support. */
-.cfw-page.cfw-v145 .cfw-border-width-setting[hidden] {
+.cfw-page.cfw-design-studio .cfw-border-width-setting[hidden] {
   display: none !important;
 }
-.cfw-page.cfw-v145 .cfw-preview-table {
+.cfw-page.cfw-design-studio .cfw-preview-table {
   border-style: solid !important;
   border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, var(--cfw-preview-table-border-width, 1px))) !important;
   border-color: var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16)))) !important;
 }
-.cfw-page.cfw-v145 .cfw-preview-table thead th,
-.cfw-page.cfw-v145 .cfw-preview-table tbody td {
+.cfw-page.cfw-design-studio .cfw-preview-table thead th,
+.cfw-page.cfw-design-studio .cfw-preview-table tbody td {
   border-style: solid !important;
   border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, var(--cfw-preview-table-border-width, 1px))) 0 !important;
   border-color: var(--lb-table-row-border-color, var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16))))) !important;
 }
-.cfw-page.cfw-v145 .cfw-preview-table thead th {
+.cfw-page.cfw-design-studio .cfw-preview-table thead th {
   border-color: var(--lb-table-header-border-color, var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16))))) !important;
 }
 
@@ -1859,59 +1875,22 @@
 
 /* V147: If a loaded theme has a wallpaper, show the Wallpaper Editor collapsed.
    The advanced controls open only when the background element is selected. */
-.cfw-page.cfw-v147 #wallpaperControls[hidden],
-.cfw-page.cfw-v147 #wallpaperAdvancedControls[hidden] {
+.cfw-page.cfw-design-studio #wallpaperControls[hidden],
+.cfw-page.cfw-design-studio #wallpaperAdvancedControls[hidden] {
   display: none !important;
 }
-.cfw-page.cfw-v147 #wallpaperControls.cfw-wallpaper-has-saved:not(.cfw-wallpaper-context-editable) {
+.cfw-page.cfw-design-studio #wallpaperControls.cfw-wallpaper-has-saved:not(.cfw-wallpaper-context-editable) {
   opacity: 0.98;
 }
 
 
 /* V148: Release UI polish.
    CSS import stays in code but is hidden for the first release.
-   Status messages move to a compact Studio-style bar below the workspace.
    Wallpaper select gets a visible dropdown chevron. */
-.cfw-page.cfw-v148 .cfw-import-panel[hidden] {
+.cfw-page.cfw-design-studio .cfw-import-panel[hidden] {
   display: none !important;
 }
-.cfw-page.cfw-v148 .cfw-main-status {
-  max-width: 760px;
-  margin: 12px auto 0 auto;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
-  border: 1px solid var(--lb-border-color, var(--lb-border, rgba(0,0,0,.16)));
-  border-radius: var(--lb-radius-card, var(--lb-radius, 14px));
-  background: var(--lb-card-bg, rgba(255,255,255,.78));
-  color: var(--lb-card-text, var(--lb-text, inherit));
-  box-shadow: var(--lb-card-shadow, 0 8px 24px rgba(0,0,0,.06));
-}
-.cfw-page.cfw-v148 .cfw-main-status .cfw-status-label {
-  font-weight: 800;
-  opacity: .76;
-  white-space: nowrap;
-  line-height: 1.35;
-}
-.cfw-page.cfw-v148 .cfw-main-status .cfw-status {
-  min-height: 0;
-  max-height: 2.8em;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  white-space: normal;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-.cfw-page.cfw-v148 .cfw-main-status .cfw-status:empty::after {
-  content: "\00a0";
-}
-.cfw-page.cfw-v148 #wallpaperMode {
+.cfw-page.cfw-design-studio #wallpaperMode {
   padding-right: 34px;
   appearance: none;
   -webkit-appearance: none;
@@ -1927,102 +1906,61 @@
 }
 
 
-/* V149: Static workspace hint plus standalone centered status window. */
-.cfw-page.cfw-v149 .cfw-preview-work-hint {
+/* V149: Static workspace hint. */
+.cfw-page.cfw-design-studio .cfw-preview-work-hint {
   margin: 2px 0 2px 0;
   color: var(--lb-text-secondary, #475569);
   font-size: 0.93rem;
   line-height: 1.35;
 }
-.cfw-page.cfw-v149 .cfw-preview-breadcrumb {
+.cfw-page.cfw-design-studio .cfw-preview-breadcrumb {
   margin-top: 4px;
 }
-.cfw-page.cfw-v149 .cfw-status-window {
-  width: 50vw;
-  max-width: calc(100% - 32px);
-  min-width: min(420px, calc(100% - 32px));
-  margin: 14px auto 0 auto;
-  padding: 0;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 132px minmax(0, 1fr);
-  border: 1px solid var(--lb-border-color, var(--lb-border, rgba(0,0,0,.16)));
-  border-radius: var(--lb-radius-card, var(--lb-radius, 14px));
-  background: var(--lb-card-bg, rgba(255,255,255,.82));
-  color: var(--lb-card-text, var(--lb-text, inherit));
-  box-shadow: var(--lb-card-shadow, 0 8px 24px rgba(0,0,0,.06));
-}
-.cfw-page.cfw-v149 .cfw-status-window .cfw-status-label {
-  padding: 9px 12px;
-  font-weight: 800;
-  line-height: 1.35;
-  border-right: 1px solid var(--lb-border-color, var(--lb-border, rgba(0,0,0,.12)));
-  background: color-mix(in srgb, var(--lb-card-bg, #fff) 82%, var(--lb-primary, #2563eb) 18%);
-}
-.cfw-page.cfw-v149 .cfw-status-window .cfw-status {
-  padding: 9px 12px;
-  min-height: 2.7em;
-  max-height: 2.7em;
-  margin: 0;
-  overflow: hidden;
-  white-space: normal;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-.cfw-page.cfw-v149 .cfw-status-window .cfw-status:empty::after {
-  content: "\00a0";
-}
-@media (max-width: 900px) {
-  .cfw-page.cfw-v149 .cfw-status-window {
-    width: calc(100% - 24px);
-    grid-template-columns: 96px minmax(0, 1fr);
-  }
-}
 
 
-/* V149 override for the V148 status layout. */
-.cfw-page.cfw-v149 .cfw-main-status.cfw-status-window {
-  width: 50vw;
-  max-width: calc(100% - 32px);
-  margin-left: auto;
-  margin-right: auto;
+/* V150/V163/V168: Workspace hint, selection breadcrumb and static status blocks.
+   Studio status geometry is kept identical to the confirmed V163 behavior.
+   AI status uses the same fixed HTML structure; JavaScript only writes messages. */
+.cfw-page.cfw-design-studio .cfw-preview-work-hint {
+  margin-bottom: 0 !important;
 }
-
-
-/* V150: Status messages are a real Studio block and the selection breadcrumb is bold. */
-.cfw-page.cfw-v150 #previewCaption,
-.cfw-page.cfw-v150 .cfw-preview-breadcrumb {
+.cfw-page.cfw-design-studio .cfw-preview-breadcrumb {
+  display: block !important;
+  margin: 0.9em 0 0 0 !important;
+}
+.cfw-page.cfw-design-studio #previewCaption {
   font-weight: 800 !important;
 }
 
-.cfw-page.cfw-v150 #studioStatusBar,
-#studioStatusBar.cfw-status-window {
-  width: 50vw !important;
-  max-width: calc(100% - 32px) !important;
-  min-width: min(420px, calc(100% - 32px)) !important;
-  margin: 16px auto 0 auto !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
+#studioStatusBar.cfw-status-window,
+#aiStatusBar.cfw-status-window {
   display: block !important;
+  position: relative !important;
+  float: none !important;
+  clear: both !important;
+  width: 50vw !important;
+  max-width: 50vw !important;
+  min-width: 0 !important;
+  margin: 2cm auto 0 auto !important;
+  box-sizing: border-box !important;
   border: 1px solid var(--lb-card-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.16)))) !important;
   border-radius: var(--lb-radius-card, var(--lb-radius, 14px)) !important;
   background: var(--lb-card-bg, rgba(255,255,255,.86)) !important;
   color: var(--lb-card-text, var(--lb-text, inherit)) !important;
   box-shadow: var(--lb-card-shadow, 0 8px 24px rgba(0,0,0,.08)) !important;
   overflow: hidden !important;
+  padding: 0 !important;
 }
 
-.cfw-page.cfw-v150 #studioStatusBar .cfw-status-table,
-#studioStatusBar.cfw-status-window .cfw-status-table {
+#studioStatusBar.cfw-status-window .cfw-status-table,
+#aiStatusBar.cfw-status-window .cfw-status-table {
   display: grid !important;
   grid-template-columns: 132px minmax(0, 1fr) !important;
   min-height: 46px !important;
 }
 
-.cfw-page.cfw-v150 #studioStatusBar .cfw-status-label,
-#studioStatusBar.cfw-status-window .cfw-status-label {
+#studioStatusBar.cfw-status-window .cfw-status-label,
+#aiStatusBar.cfw-status-window .cfw-status-label {
   padding: 10px 12px !important;
   font-weight: 800 !important;
   line-height: 1.35 !important;
@@ -2031,8 +1969,8 @@
   color: var(--lb-table-header-text, var(--lb-text, inherit)) !important;
 }
 
-.cfw-page.cfw-v150 #studioStatusBar .cfw-status,
-#studioStatusBar.cfw-status-window .cfw-status {
+#studioStatusBar.cfw-status-window .cfw-status,
+#aiStatusBar.cfw-status-window .cfw-status {
   padding: 10px 12px !important;
   min-height: 2.7em !important;
   max-height: 2.7em !important;
@@ -2042,23 +1980,243 @@
   overflow: hidden !important;
   white-space: normal !important;
   line-height: 1.35 !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
   display: -webkit-box !important;
   -webkit-line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
 }
 
-.cfw-page.cfw-v150 #studioStatusBar .cfw-status:empty::after,
-#studioStatusBar.cfw-status-window .cfw-status:empty::after {
+#studioStatusBar.cfw-status-window .cfw-status:empty::after,
+#aiStatusBar.cfw-status-window .cfw-status:empty::after {
   content: "\00a0";
 }
 
 @media (max-width: 900px) {
-  .cfw-page.cfw-v150 #studioStatusBar,
-  #studioStatusBar.cfw-status-window {
+  #studioStatusBar.cfw-status-window,
+  #aiStatusBar.cfw-status-window {
     width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
   }
-  .cfw-page.cfw-v150 #studioStatusBar .cfw-status-table,
-  #studioStatusBar.cfw-status-window .cfw-status-table {
+  #studioStatusBar.cfw-status-window .cfw-status-table,
+  #aiStatusBar.cfw-status-window .cfw-status-table {
     grid-template-columns: 96px minmax(0, 1fr) !important;
   }
+}
+
+/* V151: Table borders stay scoped to explicit table components; rounded outer
+   table corners are mirrored to the outer cells so th/td backgrounds cannot
+   visually overpaint the table radius. */
+.cfw-page.cfw-design-studio .cfw-preview-table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  overflow: hidden;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > th:first-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > td:first-child {
+  border-top-left-radius: var(--lb-table-radius, var(--lb-radius-table, 12px)) !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > th:last-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > td:last-child {
+  border-top-right-radius: var(--lb-table-radius, var(--lb-radius-table, 12px)) !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > td:first-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > th:first-child {
+  border-bottom-left-radius: var(--lb-table-radius, var(--lb-radius-table, 12px)) !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > td:last-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > th:last-child {
+  border-bottom-right-radius: var(--lb-table-radius, var(--lb-radius-table, 12px)) !important;
+}
+
+
+/* V152: Loaded-theme refresh bridge for the lower form preview block.
+   Scoped to the Studio preview only; generated runtime CSS stays untouched. */
+.cfw-page.cfw-design-studio .cfw-form-card {
+  background: var(--cfw-preview-card-bg, var(--lb-card-bg, var(--lb-note-bg, #ffffff))) !important;
+  color: var(--cfw-preview-card-text, var(--lb-card-text, var(--lb-text, #111111))) !important;
+  border-color: var(--cfw-preview-card-border, var(--lb-card-border, var(--lb-border, rgba(0,0,0,.12)))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card input.lb-input {
+  background: var(--cfw-preview-input-bg, var(--lb-input-bg, #ffffff)) !important;
+  color: var(--cfw-preview-input-text, var(--lb-input-text, var(--lb-text, #111111))) !important;
+  border-color: var(--cfw-preview-input-border, var(--lb-input-border, rgba(0,0,0,.25))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card select.lb-input {
+  background-color: var(--cfw-preview-select-bg, var(--lb-select-bg, var(--lb-input-bg, #ffffff))) !important;
+  color: var(--cfw-preview-select-text, var(--lb-select-text, var(--lb-input-text, var(--lb-text, #111111)))) !important;
+  border-color: var(--cfw-preview-select-border, var(--lb-select-border, var(--lb-input-border, rgba(0,0,0,.25)))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card textarea.lb-input {
+  background: var(--cfw-preview-textarea-bg, var(--lb-textarea-bg, var(--lb-input-bg, #ffffff))) !important;
+  color: var(--cfw-preview-textarea-text, var(--lb-textarea-text, var(--lb-input-text, var(--lb-text, #111111)))) !important;
+  border-color: var(--cfw-preview-textarea-border, var(--lb-textarea-border, var(--lb-input-border, rgba(0,0,0,.25)))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-range {
+  --cfw-range-active: var(--cfw-preview-slider-active, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, #007aff)))));
+  --cfw-range-track: var(--cfw-preview-slider-track, var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22)))));
+  --cfw-range-thumb: var(--cfw-preview-slider-thumb, var(--lb-slider-thumb-bg, var(--cfw-range-active)));
+  --cfw-range-thumb-border: var(--cfw-preview-slider-thumb-border, var(--lb-slider-thumb-border, var(--cfw-range-thumb)));
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-check input[type="checkbox"] {
+  background: var(--cfw-preview-checkbox-bg, var(--lb-checkbox-bg, var(--lb-input-bg, #ffffff))) !important;
+  border-color: var(--cfw-preview-checkbox-border, var(--lb-checkbox-border, var(--lb-border-color, #cbd5e1))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-check input[type="checkbox"]:checked {
+  background: var(--cfw-preview-checkbox-checked-bg, var(--lb-checkbox-checked-bg, var(--lb-primary, #007aff))) !important;
+  border-color: var(--lb-checkbox-checked-border, var(--cfw-preview-checkbox-checked-bg, var(--lb-checkbox-checked-bg, var(--lb-primary, #007aff)))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-check input[type="radio"] {
+  background: var(--cfw-preview-radio-bg, var(--lb-radio-bg, var(--lb-input-bg, #ffffff))) !important;
+  border-color: var(--cfw-preview-radio-border, var(--lb-radio-border, var(--lb-border-color, #cbd5e1))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-check input[type="radio"]:checked {
+  border-color: var(--lb-radio-checked-border, var(--cfw-preview-radio-checked-bg, var(--lb-radio-checked-bg, var(--lb-primary, #007aff)))) !important;
+  background:
+    radial-gradient(circle at center,
+      var(--lb-radio-dot-bg, #ffffff) 0 36%,
+      transparent 39% 100%),
+    var(--cfw-preview-radio-checked-bg, var(--lb-radio-checked-bg, var(--lb-primary, #007aff))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-switch span {
+  background: var(--cfw-preview-switch-off-bg, var(--lb-switch-off-bg, var(--lb-toggle-bg, rgba(0,0,0,.22)))) !important;
+  border-color: var(--cfw-preview-switch-border, var(--lb-switch-border, var(--lb-toggle-border, rgba(0,0,0,.18)))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-switch input:checked + span {
+  background: var(--cfw-preview-switch-on-bg, var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-primary, #007aff)))) !important;
+}
+.cfw-page.cfw-design-studio .cfw-form-card .cfw-switch span::after {
+  background: var(--cfw-preview-switch-thumb-bg, var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, #ffffff)))) !important;
+}
+
+
+/* V166/V168/V170: KI Farbrichtungsauswahl, sichtbar und mit 2 Reihen x 15 Farben. */
+.cfw-ai-color-direction {
+  margin: 8px 0 12px 0;
+}
+.cfw-ai-color-direction-title {
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+.cfw-ai-color-preset-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  max-width: calc(15 * 5mm + 14 * 6px);
+  min-height: calc(2 * 5mm + 1 * 6px);
+}
+.cfw-ai-color-swatch {
+  display: block !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 5mm !important;
+  height: 5mm !important;
+  min-width: 5mm !important;
+  min-height: 5mm !important;
+  max-width: 5mm !important;
+  max-height: 5mm !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 1px solid var(--lb-border-color, #d1d5db) !important;
+  border-radius: 4px !important;
+  background-color: var(--cfw-swatch-color, #007aff) !important;
+  background-image: none !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28) !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  cursor: pointer;
+}
+.cfw-ai-color-swatch:hover,
+.cfw-ai-color-swatch:focus {
+  outline: 2px solid var(--lb-focus-ring, var(--lb-primary, #007aff));
+  outline-offset: 2px;
+}
+.cfw-ai-color-swatch.is-active {
+  outline: 2px solid var(--lb-focus-ring-strong, var(--lb-primary, #007aff));
+  outline-offset: 2px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65), 0 0 0 1px rgba(0,0,0,0.2) !important;
+}
+.cfw-ai-color-direction-hint {
+  margin-top: 7px;
+}
+
+/* V178: ButtonGroup preview - only a thin input-like frame and thin separators. */
+.cfw-page.cfw-design-studio .cfw-preview-btn-group,
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group {
+  border: 1px solid var(--lb-input-border, var(--lb-btn-group-border, var(--lb-btn-group-inactive-border, var(--cfw-preview-btn-group-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.25))))))) !important;
+  border-radius: var(--lb-btn-group-radius, var(--lb-btn-radius, var(--lb-radius-button, 10px))) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-btn-group > button,
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button {
+  border: 0 !important;
+  border-right: 1px solid var(--lb-input-border, var(--lb-btn-group-border, var(--lb-btn-group-inactive-border, var(--cfw-preview-btn-group-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.25))))))) !important;
+  box-shadow: none !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-btn-group > button:last-child,
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button:last-child {
+  border-right: 0 !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-btn-group > button.is-active,
+.cfw-page.cfw-design-studio .cfw-preview-btn-group > button.lb-active,
+.cfw-page.cfw-design-studio .cfw-preview-btn-group > button[aria-pressed="true"],
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button.is-active,
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button.lb-active,
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button[aria-pressed="true"] {
+  background: var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)) !important;
+  color: var(--lb-btn-group-active-text, var(--lb-active-text, #fff)) !important;
+}
+
+/* V178: Restore fixed Logmanager/status cell colors exactly like Logmanager defaults.
+   Only the status cell is colored; the message cell keeps table/background styling. */
+.cfw-preview tr.lb-status-info > td:first-child,
+.cfw-preview td.lb-status-info,
+.cfw-preview tr.status-info > td:first-child,
+.cfw-preview td.status-info,
+.cfw-preview tr.loginf > td:first-child,
+.cfw-preview td.loginf {
+  background-color:#3333ff !important;
+  color:#ffffff !important;
+}
+.cfw-preview tr.lb-status-ok > td:first-child,
+.cfw-preview td.lb-status-ok,
+.cfw-preview tr.status-ok > td:first-child,
+.cfw-preview td.status-ok,
+.cfw-preview tr.logok > td:first-child,
+.cfw-preview td.logok {
+  background-color:#66b514 !important;
+  color:#ffffff !important;
+}
+.cfw-preview tr.lb-status-warning > td:first-child,
+.cfw-preview td.lb-status-warning,
+.cfw-preview tr.status-warning > td:first-child,
+.cfw-preview td.status-warning,
+.cfw-preview tr.logwarn > td:first-child,
+.cfw-preview td.logwarn {
+  background-color:#ffff00 !important;
+  color:#000000 !important;
+}
+.cfw-preview tr.lb-status-error > td:first-child,
+.cfw-preview td.lb-status-error,
+.cfw-preview tr.status-error > td:first-child,
+.cfw-preview td.status-error,
+.cfw-preview tr.logerr > td:first-child,
+.cfw-preview td.logerr {
+  background-color:#e32323 !important;
+  color:#ffffff !important;
+}
+.cfw-preview tr.lb-status-critical > td:first-child,
+.cfw-preview td.lb-status-critical,
+.cfw-preview tr.status-critical > td:first-child,
+.cfw-preview td.status-critical,
+.cfw-preview tr.logcrit > td:first-child,
+.cfw-preview td.logcrit {
+  background-color:#9b1515 !important;
+  color:#ffffff !important;
 }

@@ -1,11 +1,11 @@
-<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=<TMPL_VAR VERSION>">
+<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=<TMPL_VAR VERSION>-v181">
 <script>window.LBLANG = "<TMPL_VAR LBLANG>"; window.CFW_LANGUAGE = window.LBLANG;</script>
 <script><TMPL_VAR LANG_DE_JS ESCAPE=NONE></script>
 <script><TMPL_VAR LANG_EN_JS ESCAPE=NONE></script>
 <script><TMPL_VAR GUARD_DE_JS ESCAPE=NONE></script>
 <script><TMPL_VAR GUARD_EN_JS ESCAPE=NONE></script>
 
-<div class="cfw-page cfw-v20 cfw-v24 cfw-v26 cfw-v27 cfw-v29 cfw-v33 cfw-v34 cfw-v35 cfw-v36 cfw-v37 cfw-v41 cfw-v45 cfw-v46 cfw-v48 cfw-v49 cfw-v50 cfw-v52 cfw-v53 cfw-v54 cfw-v66 cfw-v67 cfw-v68 cfw-v70 cfw-v71 cfw-v72 cfw-v73 cfw-v74 cfw-v75 cfw-v77 cfw-v78 cfw-v79 cfw-v88 cfw-v93 cfw-v98 cfw-v99 cfw-v100 cfw-v101 cfw-v102 cfw-v103 cfw-v104 cfw-v114 cfw-v116 cfw-v121 cfw-v122 cfw-v123 cfw-v124 cfw-v125 cfw-v126 cfw-v127 cfw-v128 cfw-v129 cfw-v130 cfw-v131 cfw-v132 cfw-v133 cfw-v135 cfw-v136 cfw-v137 cfw-v139 cfw-v140 cfw-v141 cfw-v142 cfw-v143 cfw-v144 cfw-v145 cfw-v146 cfw-v147 cfw-v148 cfw-v149 cfw-v150">
+<div class="cfw-page cfw-design-studio">
   <div class="cfw-toolbar">
     <div class="cfw-toolbar-title">
       <div class="cfw-title-line">
@@ -171,7 +171,7 @@
         <div>
           <h2 data-i18n="preview.title"></h2>
           <p id="previewWorkHint" class="cfw-preview-work-hint" data-i18n="preview.workHint"></p>
-          <p id="previewCaption" class="cfw-preview-breadcrumb" data-i18n="preview.caption"></p>
+          <p class="cfw-preview-breadcrumb"><strong id="previewCaption" data-i18n="preview.caption"></strong></p>
         </div>
         <div class="cfw-token-pill"><strong id="mappedTokenCount">0</strong> <span data-i18n="preview.internalTokens"></span></div>
       </div>
@@ -198,7 +198,7 @@
                 <select class="lb-input" data-role="none" data-cfw-area="Selects" data-cfw-element="Standard Select" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.select"><option data-i18n="preview.form.select"></option><option data-i18n="preview.form.option"></option></select>
                 <button class="lb-button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Standard Button" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.button" data-i18n="preview.form.button"></button>
                 <button class="lb-button lb-button-active" data-role="none" data-cfw-area="Buttons" data-cfw-element="Active Button" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.activeButton" data-i18n="preview.form.active"></button>
-              <div class="cfw-preview-btn-group" data-i18n-attr="title:preview.edit.buttonGroup"><button type="button" class="is-active" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Active" data-i18n="main.common.yes"></button><button type="button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Grundfarbe" data-i18n="main.common.no"></button><button type="button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Grundfarbe" data-i18n="main.common.auto"></button></div></div>
+              <div class="lb-btn-group cfw-preview-btn-group" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Rahmen" data-i18n-attr="title:preview.edit.buttonGroup"><button type="button" class="is-active active lb-active" aria-pressed="true" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Active" data-i18n="main.common.yes"></button><button type="button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Grundfarbe" data-i18n="main.common.no"></button><button type="button" data-role="none" data-cfw-area="Buttons" data-cfw-element="Button Gruppe" data-cfw-group="Grundfarbe" data-i18n="main.common.auto"></button></div></div>
             </section>
 
             <section class="lb-card cfw-form-card">
@@ -228,10 +228,10 @@
     </main>
   </div>
 
-  <section id="studioStatusBar" class="cfw-panel cfw-main-status cfw-status-window" role="status" aria-live="polite">
+  <section id="studioStatusBar" class="cfw-panel cfw-main-status cfw-status-window" role="status" aria-live="polite" style="display:block;position:relative;float:none;clear:both;width:50vw;max-width:50vw;min-width:0;margin:2cm auto 0 auto;box-sizing:border-box;">
     <div class="cfw-status-table">
       <div class="cfw-status-label" data-i18n="main.status.title"></div>
-      <pre id="status" class="cfw-status" aria-live="polite"></pre>
+      <div id="status" class="cfw-status" aria-live="polite"></div>
     </div>
   </section>
   </section>
@@ -268,11 +268,16 @@
             <textarea id="aiPrompt" rows="8" spellcheck="true" data-role="none" data-i18n="ai.defaultPrompt"></textarea>
           </label>
 
+          <div class="cfw-ai-color-direction" aria-label="KI Farbrichtung">
+            <div class="cfw-ai-color-direction-title" data-i18n="ai.colorDirection"></div>
+            <div id="aiColorPresetPalette" class="cfw-ai-color-preset-palette"></div>
+            <p class="cfw-hint cfw-ai-color-direction-hint" data-i18n="ai.colorDirectionHint"></p>
+          </div>
+
           <div class="cfw-ai-actions">
             <button type="button" id="aiBuildContext" class="cfw-button" data-role="none" data-i18n="ai.showRequest" hidden aria-hidden="true"></button>
             <button type="button" id="aiRun" class="cfw-button cfw-button-primary" data-role="none" data-i18n="ai.generate"></button>
           </div>
-          <pre id="aiStatus" class="cfw-status" aria-live="polite"></pre>
         </section>
 
         <section id="aiValidatedActionsPanel" class="cfw-panel cfw-ai-validated-actions" hidden>
@@ -301,6 +306,13 @@
         </section>
       </main>
     </div>
+
+    <section id="aiStatusBar" class="cfw-panel cfw-main-status cfw-status-window" role="status" aria-live="polite" style="display:block;position:relative;float:none;clear:both;width:50vw;max-width:50vw;min-width:0;margin:2cm auto 0 auto;box-sizing:border-box;">
+      <div class="cfw-status-table">
+        <div class="cfw-status-label" data-i18n="main.status.title"></div>
+        <div id="aiStatus" class="cfw-status" aria-live="polite"></div>
+      </div>
+    </section>
   </section>
 
   <section id="cfwTabPreview" class="cfw-tab-panel cfw-embedded-panel" hidden>
@@ -371,4 +383,4 @@ window.CFW_COLOR_STYLE_MAP = <TMPL_VAR COLOR_STYLE_MAP_JSON ESCAPE=NONE>;
 <script src="/plugins/cssframework/js/ai-guard.js?v=<TMPL_VAR VERSION>"></script>
 <script src="/plugins/cssframework/js/ai-assistant.js?v=<TMPL_VAR VERSION>"></script>
 <script src="/plugins/cssframework/js/cfw-theme-state.js?v=<TMPL_VAR VERSION>"></script>
-<script src="/plugins/cssframework/js/design-studio.js?v=<TMPL_VAR VERSION>"></script>
+<script src="/plugins/cssframework/js/design-studio.js?v=<TMPL_VAR VERSION>-v181"></script>

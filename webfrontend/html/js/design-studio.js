@@ -70,6 +70,7 @@
   var themeVersion = document.getElementById('themeVersion');
   var mappedTokenCount = document.getElementById('mappedTokenCount');
   var previewCaption = document.getElementById('previewCaption');
+  var aiColorPresetPalette = document.getElementById('aiColorPresetPalette');
   var aiImportedTokens = {};
   var colorPresetValues = [
     // V141: 3 rows × 7 colors. Swatch size/spacing remains CSS-controlled.
@@ -77,7 +78,39 @@
     '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#a16207', '#78350f', '#6b7280',
     '#000000', '#f8fafc', '#fde68a', '#dc2626', '#16a34a', '#0891b2', '#7c3aed'
   ];
-  var aiImportedCss = '';
+  var aiColorPresetMeta = [
+    // V170: 2 rows × 15 visible color directions, based on the Studio coarse palette.
+    { color: '#ffffff', de: 'klares Weiß', en: 'clear white' },
+    { color: '#f5ead7', de: 'warmes Beige', en: 'warm beige' },
+    { color: '#111827', de: 'dunkles Anthrazit', en: 'dark anthracite' },
+    { color: '#ef4444', de: 'kräftiges Rot', en: 'strong red' },
+    { color: '#f97316', de: 'warmes Orange', en: 'warm orange' },
+    { color: '#facc15', de: 'sonniges Gelb', en: 'sunny yellow' },
+    { color: '#22c55e', de: 'frisches Grün', en: 'fresh green' },
+    { color: '#06b6d4', de: 'klares Cyan', en: 'clear cyan' },
+    { color: '#3b82f6', de: 'ruhiges Blau', en: 'calm blue' },
+    { color: '#8b5cf6', de: 'weiches Violett', en: 'soft violet' },
+    { color: '#ec4899', de: 'kräftiges Pink', en: 'strong pink' },
+    { color: '#a16207', de: 'warmes Ocker', en: 'warm ochre' },
+    { color: '#78350f', de: 'dunkles Braun', en: 'dark brown' },
+    { color: '#6b7280', de: 'neutrales Grau', en: 'neutral gray' },
+    { color: '#000000', de: 'tiefes Schwarz', en: 'deep black' },
+    { color: '#f8fafc', de: 'helles Eisgrau', en: 'light ice gray' },
+    { color: '#fde68a', de: 'sanftes Cremegelb', en: 'soft cream yellow' },
+    { color: '#dc2626', de: 'dunkles Rot', en: 'dark red' },
+    { color: '#16a34a', de: 'sattes Grün', en: 'rich green' },
+    { color: '#0891b2', de: 'tiefes Türkis', en: 'deep turquoise' },
+    { color: '#7c3aed', de: 'dunkles Violett', en: 'dark violet' },
+    { color: '#fbcfe8', de: 'helles Rosé', en: 'light rose' },
+    { color: '#bbf7d0', de: 'helles Mintgrün', en: 'light mint green' },
+    { color: '#bae6fd', de: 'helles Himmelblau', en: 'light sky blue' },
+    { color: '#e9d5ff', de: 'helles Lavendel', en: 'light lavender' },
+    { color: '#cbd5e1', de: 'kühles Grau', en: 'cool gray' },
+    { color: '#fef3c7', de: 'warmes Creme', en: 'warm cream' },
+    { color: '#991b1b', de: 'tiefes Weinrot', en: 'deep wine red' },
+    { color: '#166534', de: 'dunkles Waldgrün', en: 'dark forest green' },
+    { color: '#1e3a8a', de: 'dunkles Marineblau', en: 'dark navy blue' }
+  ];  var aiImportedCss = '';
   var lastImportMeta = null;
   // V129: Color swatches only edit an explicitly selected Preview/Inspector target.
   var hasActiveEditorSelection = false;
@@ -138,6 +171,7 @@
 
   var blockedTokenPatterns = [
     /^--lb-table-status-/,
+    /^--lb-(?:success|ok|warning|warn|danger|error|critical|info|notice|alert)(?:-|$)/,
     /^--lb-tooltip-/
   ];
 
@@ -272,7 +306,7 @@
       'Button Gruppe': {
         'Grundfarbe': ['--lb-btn-group-inactive-bg'],
         'Textfarbe': ['--lb-btn-group-inactive-text'],
-        'Rahmen': ['--lb-btn-group-inactive-border'],
+        'Rahmen': ['--lb-btn-group-border', '--lb-btn-group-inactive-border', '--lb-btn-group-active-border'],
         'Hover': ['--lb-btn-group-hover-bg'],
         'Hover Textfarbe': ['--lb-btn-group-hover-text'],
         'Active': ['--lb-btn-group-active-bg'],
@@ -752,7 +786,7 @@
 
   function requireColorEditTarget() {
     if (canEditCurrentColorTarget()) return true;
-    setStatus(t('messages.selectElementFirst', 'Bitte zuerst ein Element in der finalen Live Vorschau oder im Eigenschaftenbereich auswählen.'), false, 'info', { modal: 'manual' });
+    setStatus(t('messages.selectElementFirst', 'Bitte zuerst ein Element im Arbeitsbereich / Vorschau oder im Eigenschaftenbereich auswählen.'), false, 'info', { modal: 'manual' });
     return false;
   }
 
@@ -808,6 +842,51 @@
       colorPresetPalette.appendChild(button);
     });
     updateColorPresetSelection();
+  }
+
+  function aiColorDirectionLabel(item) {
+    if (!item) return '';
+    return i18nLanguage === 'de' ? item.de : item.en;
+  }
+
+  function appendAiColorDirection(item) {
+    var prompt = document.getElementById('aiPrompt');
+    if (!prompt || !item) return;
+    var label = aiColorDirectionLabel(item);
+    if (!label) return;
+    var line = t('ai.colorDirectionPrompt', 'Verwende als Farbrichtung: {color}.', { color: label });
+    var text = String(prompt.value || '').trim();
+    var deRe = /^Verwende als Farbrichtung: .+\.$/im;
+    var enRe = /^Use this color direction: .+\.$/im;
+    if (deRe.test(text)) {
+      prompt.value = text.replace(deRe, line);
+    } else if (enRe.test(text)) {
+      prompt.value = text.replace(enRe, line);
+    } else {
+      prompt.value = (text ? text + '\n\n' : '') + line;
+    }
+    aiColorPresetPalette && aiColorPresetPalette.querySelectorAll('.cfw-ai-color-swatch').forEach(function (button) {
+      button.classList.toggle('is-active', button.getAttribute('data-color') === item.color);
+    });
+    prompt.focus();
+  }
+
+  function renderAiColorPresetPalette() {
+    if (!aiColorPresetPalette) return;
+    aiColorPresetPalette.innerHTML = '';
+    aiColorPresetMeta.forEach(function (item) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'cfw-ai-color-swatch';
+      button.setAttribute('data-color', item.color);
+      button.style.setProperty('--cfw-swatch-color', item.color);
+      button.style.backgroundColor = item.color;
+      var label = aiColorDirectionLabel(item);
+      button.setAttribute('aria-label', label);
+      button.title = label;
+      button.addEventListener('click', function () { appendAiColorDirection(item); });
+      aiColorPresetPalette.appendChild(button);
+    });
   }
 
   function pushColorUnique(out, value) {
@@ -868,12 +947,68 @@
     return /^(#|rgb\(|rgba\(|hsl\(|hsla\()/i.test(value);
   }
 
+  function paletteRoleLabel(name) {
+    name = String(name || '');
+    if (/text/.test(name)) return 'Text';
+    if (/border/.test(name)) return 'Rahmen';
+    if (/hover/.test(name)) return 'Hover';
+    if (/active/.test(name)) return 'Aktiv';
+    if (/primary/.test(name)) return 'Primär';
+    if (/button|btn/.test(name)) return 'Button';
+    if (/input|select|textarea/.test(name)) return 'Eingabe';
+    if (/card|panel|surface/.test(name)) return 'Fläche';
+    if (/bg|background/.test(name)) return 'Hintergrund';
+    if (/table/.test(name)) return 'Tabelle';
+    if (/sidebar/.test(name)) return 'Sidebar';
+    if (/slider|range/.test(name)) return 'Slider';
+    if (/switch|toggle|checkbox|radio/.test(name)) return 'Formular';
+    return '';
+  }
+
+  function isSemanticPaletteToken(name) {
+    var key = String(name || '').toLowerCase();
+    return /(^|-)success($|-)|(^|-)warning($|-)|(^|-)error($|-)|(^|-)danger($|-)|(^|-)info($|-)|(^|-)notice($|-)|(^|-)alert($|-)/.test(key);
+  }
+
+  function isPreviewPaletteHelperToken(name) {
+    var key = String(name || '').toLowerCase();
+    // V169: Vorschaufarben zeigen nur echte Theme-/UI-Farben.
+    // Hilfsfarben aus Editor, Tooltip, Badge, Label, Code, Help/Hinweis usw.
+    // werden direkt an der Quelle ausgeschlossen, damit z. B. das alte
+    // gelbe Hinweis-Label (#ffffc0) nicht als Themefarbe erscheint.
+    return /(^|-)tooltip($|-)|(^|-)badge($|-)|(^|-)tag($|-)|(^|-)label($|-)|(^|-)code($|-)|(^|-)kbd($|-)|(^|-)mono($|-)|(^|-)help($|-)|(^|-)hint($|-)|(^|-)note($|-)|(^|-)message($|-)|(^|-)modal($|-)|(^|-)status($|-)|(^|-)editor($|-)|(^|-)inspector($|-)|(^|-)chip($|-)|(^|-)pill($|-)/.test(key);
+  }
+
+  function isPreviewPaletteHelperColor(value) {
+    var normalized = normalizeHexColor(value);
+    if (!normalized) return false;
+    return {
+      '#ffffc0': true,
+      '#fffec0': true,
+      '#fff8c5': true,
+      '#fff7bf': true
+    }[normalized] === true;
+  }
+
   function addPaletteSample(out, seen, sourceTokens, name, label) {
-    if (!sourceTokens || !name || seen[name]) return;
+    if (!sourceTokens || !name) return;
+    // V165: Reine Status-/Semantikfarben gehören nicht in die Vorschaufarben.
+    // Der Block dient der nutzerorientierten Farbzuordnung, nicht der Anzeige
+    // von OK-/Warn-/Fehlerfarben. Direkt an der Datenquelle filtern, damit
+    // keine leeren Kacheln oder CSS-Ausblendungen entstehen.
+    if (isSemanticPaletteToken(name) || isPreviewPaletteHelperToken(name)) return;
     var value = sourceTokens[name];
-    if (!isColorLikeValue(value)) return;
-    seen[name] = true;
-    out.push({ token: name, label: label || name, color: String(value).trim() });
+    if (!isColorLikeValue(value) || isPreviewPaletteHelperColor(value)) return;
+    var normalized = normalizeHexColor(value) || String(value).trim().toLowerCase();
+    if (!normalized) return;
+    var role = label || paletteRoleLabel(name) || name;
+    if (seen[normalized]) {
+      if (role && seen[normalized].roles.indexOf(role) < 0) seen[normalized].roles.push(role);
+      return;
+    }
+    var sample = { token: '', label: role, roles: role ? [role] : [], color: String(value).trim() };
+    seen[normalized] = sample;
+    out.push(sample);
   }
 
   function themePaletteSamples(group, mappedTokens) {
@@ -881,27 +1016,34 @@
     var samples = [];
     var seen = {};
 
-    // V69: Vorschaufarben immer aus dem aktuellen Working-State aufbauen.
-    // Nach KI-Übernahme ist aiImportedTokens Bestandteil von collectTokens(),
-    // nach manuellen Änderungen ergänzen dirty Studio-Einträge den Working-State.
-    // Dadurch bleiben keine alten initialen Theme-Farben in der Palette hängen.
-    // Current selection first, but only if it exists in the same Working-State.
+    // V163: Vorschaufarben sind farbzentriert. Gleiche Farbcodes werden
+    // zusammengefasst, weil der Nutzer hier Farben zuordnet, nicht Tokens prüft.
     (mappedTokens || []).forEach(function (name) { addPaletteSample(samples, seen, source, name); });
     preferredPaletteTokens.forEach(function (name) { addPaletteSample(samples, seen, source, name); });
     Object.keys(source || {}).forEach(function (name) {
       if (samples.length < 12) addPaletteSample(samples, seen, source, name);
     });
 
+    samples.forEach(function (sample) {
+      if (sample.roles && sample.roles.length) sample.label = sample.roles.slice(0, 3).join(' / ');
+    });
+
     // Fallback only when no real theme colors are available.
     var fallback = propertyPaletteDefaults[group] || propertyPaletteDefaults.Grundfarbe;
     var fallbackIndex = 0;
     while (samples.length < 12 && fallback.length) {
-      samples.push({
-        token: '',
-        label: t('preview.sampleColor', 'Beispielfarbe') + ' ' + (samples.length + 1),
-        color: fallback[fallbackIndex % fallback.length]
-      });
+      var fallbackColor = fallback[fallbackIndex % fallback.length];
+      var fallbackKey = normalizeHexColor(fallbackColor) || String(fallbackColor).trim().toLowerCase();
+      if (!seen[fallbackKey]) {
+        samples.push({
+          token: '',
+          label: t('preview.sampleColor', 'Beispielfarbe') + ' ' + (samples.length + 1),
+          color: fallbackColor
+        });
+        seen[fallbackKey] = true;
+      }
       fallbackIndex += 1;
+      if (fallbackIndex > fallback.length * 2) break;
     }
     return samples.slice(0, 12);
   }
@@ -1547,30 +1689,92 @@
     return tokens;
   }
 
-  function applyPreviewFallbacks(tokens) {
-    var root = previewRoot;
-    if (!root) return;
-    [
+  function previewBridgeVarNames() {
+    return [
+      '--cfw-preview-button-bg',
+      '--cfw-preview-button-text',
+      '--cfw-preview-card-bg',
+      '--cfw-preview-card-text',
+      '--cfw-preview-card-border',
+      '--cfw-preview-input-bg',
+      '--cfw-preview-input-text',
+      '--cfw-preview-input-border',
+      '--cfw-preview-select-bg',
+      '--cfw-preview-select-text',
+      '--cfw-preview-select-border',
+      '--cfw-preview-textarea-bg',
+      '--cfw-preview-textarea-text',
+      '--cfw-preview-textarea-border',
+      '--cfw-preview-slider-active',
+      '--cfw-preview-slider-track',
+      '--cfw-preview-slider-thumb',
+      '--cfw-preview-slider-thumb-border',
+      '--cfw-preview-checkbox-bg',
+      '--cfw-preview-checkbox-border',
+      '--cfw-preview-checkbox-checked-bg',
+      '--cfw-preview-radio-bg',
+      '--cfw-preview-radio-border',
+      '--cfw-preview-radio-checked-bg',
+      '--cfw-preview-switch-on-bg',
+      '--cfw-preview-switch-off-bg',
+      '--cfw-preview-switch-border',
+      '--cfw-preview-switch-thumb-bg',
       '--cfw-preview-table-bg',
       '--cfw-preview-table-text',
       '--cfw-preview-table-border',
+      '--cfw-preview-table-border-width',
       '--cfw-preview-table-hover-bg',
-      '--cfw-preview-table-hover-text'
-    ].forEach(function (name) { root.style.removeProperty(name); });
+      '--cfw-preview-table-hover-text',
+      '--cfw-preview-notify-bg',
+      '--cfw-preview-validation-bg'
+    ];
+  }
 
+  function clearPreviewBridgeVars(root) {
+    if (!root) return;
+    previewBridgeVarNames().forEach(function (name) { root.style.removeProperty(name); });
+  }
+
+  function applyPreviewFallbacks(tokens) {
+    var root = previewRoot;
+    if (!root) return;
+    clearPreviewBridgeVars(root);
+
+    // V155: Rebuild preview bridge variables after every theme load from the
+    // same effective token set that is applied to the preview root. This avoids
+    // stale values from the initial Current Preview state.
     var fallbackMap = {
       '--cfw-preview-button-bg': tokens['--lb-btn-bg'] || tokens['--lb-active-bg'] || tokens['--lb-btn-primary-bg'],
       '--cfw-preview-button-text': tokens['--lb-btn-text'] || tokens['--lb-active-text'],
+      '--cfw-preview-btn-group-border': tokens['--lb-btn-group-border'] || tokens['--lb-btn-group-inactive-border'] || tokens['--lb-btn-group-active-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
+      '--cfw-preview-btn-group-inactive-bg': tokens['--lb-btn-group-inactive-bg'] || tokens['--lb-btn-bg'],
+      '--cfw-preview-btn-group-inactive-text': tokens['--lb-btn-group-inactive-text'] || tokens['--lb-btn-text'],
       '--cfw-preview-card-bg': tokens['--lb-card-bg'] || tokens['--lb-note-bg'] || tokens['--lb-glass-bg'],
+      '--cfw-preview-card-text': tokens['--lb-card-text'] || tokens['--lb-text'],
+      '--cfw-preview-card-border': tokens['--lb-card-border'] || tokens['--lb-border'] || tokens['--lb-border-color'],
       '--cfw-preview-input-bg': tokens['--lb-input-bg'] || tokens['--lb-select-bg'],
       '--cfw-preview-input-text': tokens['--lb-input-text'] || tokens['--lb-text'],
       '--cfw-preview-input-border': tokens['--lb-input-border'] || tokens['--lb-border'] || tokens['--lb-border-color'],
       '--cfw-preview-select-bg': tokens['--lb-select-bg'] || tokens['--lb-input-bg'],
       '--cfw-preview-select-text': tokens['--lb-select-text'] || tokens['--lb-input-text'] || tokens['--lb-text'],
       '--cfw-preview-select-border': tokens['--lb-select-border'] || tokens['--lb-input-border'] || tokens['--lb-border'],
-      '--cfw-preview-textarea-bg': tokens['--lb-input-bg'] || tokens['--lb-card-bg'],
-      '--cfw-preview-textarea-text': tokens['--lb-input-text'] || tokens['--lb-text'],
-      '--cfw-preview-textarea-border': tokens['--lb-input-border'] || tokens['--lb-border'],
+      '--cfw-preview-textarea-bg': tokens['--lb-textarea-bg'] || tokens['--lb-input-bg'] || tokens['--lb-card-bg'],
+      '--cfw-preview-textarea-text': tokens['--lb-textarea-text'] || tokens['--lb-input-text'] || tokens['--lb-text'],
+      '--cfw-preview-textarea-border': tokens['--lb-textarea-border'] || tokens['--lb-input-border'] || tokens['--lb-border'],
+      '--cfw-preview-slider-active': tokens['--lb-slider-fill-bg'] || tokens['--lb-slider-active-bg'] || tokens['--lb-range-active-bg'] || tokens['--lb-primary'] || tokens['--lb-active-bg'],
+      '--cfw-preview-slider-track': tokens['--lb-slider-track-bg'] || tokens['--lb-slider-bg'] || tokens['--lb-range-track-bg'],
+      '--cfw-preview-slider-thumb': tokens['--lb-slider-thumb-bg'] || tokens['--lb-slider-fill-bg'] || tokens['--lb-slider-active-bg'] || tokens['--lb-primary'],
+      '--cfw-preview-slider-thumb-border': tokens['--lb-slider-thumb-border'] || tokens['--lb-slider-thumb-bg'] || tokens['--lb-slider-active-bg'],
+      '--cfw-preview-checkbox-bg': tokens['--lb-checkbox-bg'] || tokens['--lb-input-bg'],
+      '--cfw-preview-checkbox-border': tokens['--lb-checkbox-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
+      '--cfw-preview-checkbox-checked-bg': tokens['--lb-checkbox-checked-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'],
+      '--cfw-preview-radio-bg': tokens['--lb-radio-bg'] || tokens['--lb-input-bg'],
+      '--cfw-preview-radio-border': tokens['--lb-radio-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
+      '--cfw-preview-radio-checked-bg': tokens['--lb-radio-checked-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'],
+      '--cfw-preview-switch-on-bg': tokens['--lb-switch-on-bg'] || tokens['--lb-toggle-active-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'],
+      '--cfw-preview-switch-off-bg': tokens['--lb-switch-off-bg'] || tokens['--lb-toggle-bg'] || tokens['--lb-input-bg'],
+      '--cfw-preview-switch-border': tokens['--lb-switch-border'] || tokens['--lb-toggle-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
+      '--cfw-preview-switch-thumb-bg': tokens['--lb-switch-thumb-bg'] || tokens['--lb-toggle-thumb-bg'] || tokens['--lb-toggle-knob-bg'],
       '--cfw-preview-table-bg': tokens['--lb-table-bg'] || tokens['--lb-table-row-bg'] || tokens['--lb-table-body-bg'],
       '--cfw-preview-table-text': tokens['--lb-table-text'] || tokens['--lb-table-row-text'],
       '--cfw-preview-table-border': tokens['--lb-table-border-color'] || tokens['--lb-table-border'],
@@ -1610,7 +1814,8 @@
       // Inactive, hover and active-text states are independent editor targets.
       var inactiveBg = tokens['--lb-btn-group-inactive-bg'] || activeText;
       var inactiveText = tokens['--lb-btn-group-inactive-text'] || activeBg;
-      var inactiveBorder = tokens['--lb-btn-group-inactive-border'] || tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
+      var groupBorder = tokens['--lb-btn-group-border'] || tokens['--lb-btn-group-inactive-border'] || tokens['--lb-btn-group-active-border'] || tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
+      var inactiveBorder = tokens['--lb-btn-group-inactive-border'] || groupBorder;
       var hoverBg = tokens['--lb-btn-group-hover-bg'] || activeBg;
       var hoverText = tokens['--lb-btn-group-hover-text'] || activeText;
       var activeHoverText = tokens['--lb-btn-group-active-hover-text'] || activeText;
@@ -1619,11 +1824,13 @@
       setRuleToken(tokens, '--lb-btn-group-active-hover-text', activeHoverText);
       tokens['--lb-btn-group-inactive-bg'] = inactiveBg;
       tokens['--lb-btn-group-inactive-text'] = inactiveText;
+      tokens['--lb-btn-group-border'] = groupBorder;
       tokens['--lb-btn-group-inactive-border'] = inactiveBorder;
       setRuleToken(tokens, '--lb-btn-group-hover-bg', hoverBg);
       setRuleToken(tokens, '--lb-btn-group-hover-text', hoverText);
       tokens['--cfw-preview-btn-group-inactive-bg'] = inactiveBg;
       tokens['--cfw-preview-btn-group-inactive-text'] = inactiveText;
+      tokens['--cfw-preview-btn-group-border'] = groupBorder;
       tokens['--cfw-preview-btn-group-inactive-border'] = inactiveBorder;
     }
 
@@ -1738,15 +1945,22 @@
     });
   }
 
-  function updatePreview() {
+  function applyTokensToPreviewRoot(tokens) {
     if (!previewRoot) return;
-    var tokens = effectivePreviewTokens();
+    tokens = tokens || {};
     appliedPreviewVars.forEach(function (name) { previewRoot.style.removeProperty(name); });
+    clearPreviewBridgeVars(previewRoot);
     appliedPreviewVars = Object.keys(tokens);
     appliedPreviewVars.forEach(function (name) { previewRoot.style.setProperty(name, tokens[name]); });
     applyWallpaperPreview();
     applyPreviewFallbacks(tokens);
     updatePreviewRangeFills();
+  }
+
+  function updatePreview() {
+    if (!previewRoot) return;
+    var tokens = effectivePreviewTokens();
+    applyTokensToPreviewRoot(tokens);
     broadcastEmbeddedFrameTokens(tokens);
     applyStudioTheme(tokens);
     mappedTokenCount.textContent = Object.keys(tokens).filter(function (name) { return /^--lb-/.test(name); }).length;
@@ -2022,6 +2236,7 @@
     // frame refresh catches browser-computed token values after the DOM update.
     studioModel = {};
     aiImportedTokens = enforceForcedOpaqueTokens(themeTokensFromJson(theme));
+    var loadedPreviewTokens = applyDesignRules(Object.assign({}, coreTokens || {}, aiImportedTokens || {}));
     aiImportedCss = normalizeCustomCssValue(theme.custom_css || theme.css || '');
     lastImportMeta = importMetaHasVisibleContent(theme.import_meta) ? theme.import_meta : null;
     setWallpaperFromTheme(theme);
@@ -2039,6 +2254,8 @@
     }
 
     syncCurrentControlsFromAiTokens(aiImportedTokens);
+    applyTokensToPreviewRoot(loadedPreviewTokens);
+    broadcastEmbeddedFrameTokens(loadedPreviewTokens);
     updateAll(false);
     if (lastImportMeta) {
       renderImportSummary(lastImportMeta);
@@ -2048,13 +2265,15 @@
 
     if (window.requestAnimationFrame) {
       window.requestAnimationFrame(function () {
+        applyTokensToPreviewRoot(loadedPreviewTokens);
+        broadcastEmbeddedFrameTokens(loadedPreviewTokens);
         updateAll(false);
-        broadcastEmbeddedFrameTokens(effectivePreviewTokens());
       });
     } else {
       setTimeout(function () {
+        applyTokensToPreviewRoot(loadedPreviewTokens);
+        broadcastEmbeddedFrameTokens(loadedPreviewTokens);
         updateAll(false);
-        broadcastEmbeddedFrameTokens(effectivePreviewTokens());
       }, 0);
     }
 
@@ -2213,7 +2432,7 @@
         'Wähle Textfarben kontrastabhängig: dunkler Background/Surface braucht helle Textfarbe, heller Background/Surface braucht dunkle Textfarbe.',
         'Achte besonders bei background, surface, card, input, select, table und button auf ausreichenden Kontrast der jeweiligen text/on_* Werte.',
         'Kein JavaScript, kein HTML, keine externen URLs, keine Imports.',
-        'Logmanager-/Status-Zeilen sind geschützt und sollen nicht gestaltet werden.',
+        'Logmanager-/Status-Farben sind kein Bestandteil von User-Themes und bleiben LoxBerry-Standard.',
         'Tooltip-Farben werden vom Design Studio fest abgeleitet: Hintergrund = primary_hover, Text = sidebar_text.',
         'Antwortformat exakt als JSON:',
         '{"theme":{"id":"theme-user-...","name":"...","description":"..."},"design":{"colors":{"primary":"#...","primary_hover":"#...","background":"#...","surface":"#...","surface_alt":"#...","text":"#...","muted_text":"#...","border":"#...","success":"#...","warning":"#...","danger":"#..."},"components":{"button":{"background":"#...","text":"#...","hover":"#...","radius":"...","shadow":"soft|none|strong"},"input":{"background":"#...","text":"#...","border":"#...","focus":"#...","radius":"..."},"select":{"background":"#...","text":"#...","border":"#...","hover":"#...","radius":"..."},"dropdown":{"background":"#...","text":"#...","hover":"#...","border":"#...","shadow":"soft|none|strong"},"card":{"background":"#...","text":"#...","border":"#...","radius":"...","shadow":"soft|none|strong"},"table":{"background":"#...","header":"#...","text":"#...","hover":"#...","border":"#...","density":"comfortable|compact"},"button_group":{"active":"#...","text":"#...","hover":"#..."},"header_button":{"background":"#...","text":"#...","hover":"#..."}}},"meta":{"style_type":"...","primary_color":"#...","warnings":[]}}'
@@ -2690,6 +2909,8 @@
     put(['--lb-header-btn-hover-text'], componentValue(headerButton, ['hover_text'], componentValue(headerButton, ['text'], colorValue(colors.on_primary, readableTextFor(primary)))));
 
     var buttonGroup = componentsDesign.button_group || componentsDesign.buttonGroup || {};
+    put(['--lb-btn-group-border', '--lb-btn-group-inactive-border'], componentValue(buttonGroup, ['border'], componentValue(button, ['border'], border)));
+    put(['--lb-btn-group-active-border'], componentValue(buttonGroup, ['active_border', 'border'], componentValue(button, ['border'], primary)));
     put(['--lb-btn-group-hover-bg'], componentValue(buttonGroup, ['hover', 'hover_background'], componentValue(button, ['hover'], primaryHover)));
     put(['--lb-btn-group-hover-text'], componentValue(buttonGroup, ['hover_text'], componentValue(buttonGroup, ['text'], componentValue(button, ['text'], text))));
     put(['--lb-btn-group-active-bg'], componentValue(buttonGroup, ['active', 'background', 'bg'], primary));
@@ -2975,7 +3196,7 @@
         'Wichtig:',
         '- Erzeuge weiterhin nur semantisches Design-JSON.',
         '- Achte auf Kontrast: dunkler Hintergrund benötigt helle Textfarbe, heller Hintergrund dunkle Textfarbe.',
-        '- Logmanager/Status-Zeilen nicht verändern.',
+        '- Logmanager/Status-Farben nicht verändern; sie bleiben LoxBerry-Standard.',
           '- Tooltip-Farben nicht frei gestalten; sie werden vom Studio abgeleitet: Hintergrund primary_hover, Text sidebar_text.',
         '- Explizite Farbwünsche aus diesem Prompt haben höchste Priorität und dürfen nicht durch eine andere Akzentfarbe ersetzt werden.',
         '- Wenn ein anderer Zustand desselben Elements genannt wird, z. B. Toggle off, Hover oder Disabled, nutze den passenden verwandten Token dieses Elements.',
@@ -3336,6 +3557,7 @@
   if (inspectorEdit) inspectorEdit.addEventListener('click', focusSelectedComponent);
   if (inspectorAi) inspectorAi.addEventListener('click', function () { (window.CFW_AI_ASSISTANT && window.CFW_AI_ASSISTANT.prepareElementPrompt ? window.CFW_AI_ASSISTANT.prepareElementPrompt : prepareElementAiPrompt)(); });
   populateUserThemeSelect();
+  renderAiColorPresetPalette();
   buildComponentRegistry();
   renderAreas();
   renderElements();
