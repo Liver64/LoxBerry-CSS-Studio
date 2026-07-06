@@ -1,5 +1,5 @@
 /* LoxBerry CSS Framework User Theme: Liquid Glass
-   Version: V209_2026_07_06
+   Version: V216_2026_07_06
    Adapter theme for LoxBerry Design System and selected jQuery Mobile wrappers.
    Based on the visual idea from liquid-glass/src/liquid-glass.css, but rewritten
    to use the standard LoxBerry CSS variables/components instead of demo classes.
@@ -58,13 +58,17 @@
 	--lb-glass-shadow-alpha: 0.090;      /* Dark drop shadow intensity */
 	--lb-glass-text-input-alpha: 0.200;  /* Text Input */
 
-	/* Table component colors
+	/* Table component colors/geometry
 	   Keep .lb-table header/footer transparent in Liquid Glass.
-	   Body/cell colors remain controlled by Core/table rules. */
+	   The thicker border is limited to the outer table frame; cell lines stay controlled by Core. */
 	--lb-table-header-bg: transparent;
 	--lb-table-header-text: var(--lb-text);
 	--lb-table-footer-bg: transparent;
 	--lb-table-footer-text: var(--lb-text);
+	--lb-table-border-width: 3px;
+	--lb-table-outer-border-width: 3px;
+	--lb-table-radius: 22px;
+	--lb-radius-table: var(--lb-table-radius);
 
 	/* Blur control
 	   Alpha alone is not enough: backdrop-filter blur creates a milky panel.
@@ -123,6 +127,12 @@
 	--lb-input-bg: rgba(255, 255, 255, var(--lb-glass-input-alpha));
 	--lb-input-border: rgba(255, 255, 255, var(--lb-glass-border-alpha));
 	--lb-input-text: #cccccc;
+	/* jQuery Mobile widgets need slightly brighter text on glass backgrounds. */
+	--lb-jqm-text: var(--lb-text);
+	--lb-jqm-muted-text: var(--lb-text-secondary);
+	--lb-jqm-disabled-text: var(--lb-text-secondary);
+	--lb-light-surface-text: var(--lb-gray-900, #111827);
+	--lb-light-surface-muted-text: var(--lb-gray-700, #374151);
 	--lb-highlight-bg: rgba(255, 235, 120, 0.18);
 
 	/* Toggles */
@@ -288,10 +298,6 @@
    ========================================================= */
 
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-card,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-body-a,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-body-c,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-body-inherit,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-corner-all.ui-body-inherit,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-collapsible-content {
 	position: relative;
 	overflow: hidden;
@@ -454,11 +460,7 @@
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) button.lb-btn,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) input[type="submit"].lb-btn,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) input[type="button"].lb-btn,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn.lb-btn,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="submit"],
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="button"],
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content button:not(.lb-tab-bar-item):not(.lb-header-btn):not(.lb-helppanel-close):not(.lb-toggle):not([data-role="none"]) {
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn.lb-btn {
 	background: var(--lb-btn-bg) !important;
 	background-color: rgba(255, 255, 255, var(--lb-glass-button-alpha)) !important;
 	background-image: none !important;
@@ -480,9 +482,7 @@
 
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-btn:hover,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) a.lb-btn:hover,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) button.lb-btn:hover,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn:hover,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content button:not(.lb-tab-bar-item):not(.lb-header-btn):not(.lb-helppanel-close):not(.lb-toggle):not([data-role="none"]):hover {
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) button.lb-btn:hover {
 	background: var(--lb-btn-hover-bg) !important;
 	background-color: var(--lb-btn-hover-bg) !important;
 
@@ -501,9 +501,7 @@
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) a.lb-btn-primary:link,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) button.lb-btn-primary,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) input[type="submit"].lb-btn-primary,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-link.lb-btn-primary,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn.ui-btn-active {
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-link.lb-btn-primary {
 	background: var(--lb-btn-primary-bg) !important;
 	color: var(--lb-btn-primary-text) !important;
 	border-color: var(--lb-btn-primary-border) !important;
@@ -513,14 +511,9 @@
 		inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
 }
 
-/* Legacy LoxBerry/jQuery Mobile active and hover states: keep Liquid Glass blue.
-   This only affects button-like controls and avoids global .active selectors. */
+/* LoxBerry button active states: keep Liquid Glass blue without touching all jQuery Mobile .ui-btn elements. */
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-btn.lb-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-btn.is-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn.ui-btn-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) a.ui-btn.ui-btn-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-btn.ui-btn-hover-a,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) a.ui-btn.ui-btn-hover-a {
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-btn.is-active {
 	background: var(--lb-btn-primary-bg) !important;
 	background-color: var(--lb-active-bg) !important;
 	background-image: none !important;
@@ -706,8 +699,8 @@
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-input-search input,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-select .ui-btn span,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-select .ui-selectmenu-text {
-	color: var(--lb-input-text) !important;
-	-webkit-text-fill-color: var(--lb-input-text) !important;
+	color: var(--lb-jqm-text) !important;
+	-webkit-text-fill-color: var(--lb-jqm-text) !important;
 	text-shadow: none !important;
 }
 
@@ -715,6 +708,80 @@
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) select option {
 	color: #172033 !important;
 	background: #ffffff !important;
+}
+
+/* jQuery Mobile compatibility: only the widget contexts, never global .ui-btn. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-radio .ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-checkbox .ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup .ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup-controls .ui-btn {
+	background: var(--lb-btn-bg) !important;
+	background-color: var(--lb-btn-bg) !important;
+	background-image: none !important;
+	color: var(--lb-jqm-text) !important;
+	-webkit-text-fill-color: var(--lb-jqm-text) !important;
+	border-color: var(--lb-btn-border) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-radio .ui-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-checkbox .ui-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup .ui-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup-controls .ui-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-radio .ui-btn.ui-btn-hover-a,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-checkbox .ui-btn.ui-btn-hover-a,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup .ui-btn.ui-btn-hover-a,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup-controls .ui-btn.ui-btn-hover-a {
+	background: var(--lb-btn-hover-bg) !important;
+	background-color: var(--lb-btn-hover-bg) !important;
+	background-image: none !important;
+	color: var(--lb-hover-text) !important;
+	-webkit-text-fill-color: var(--lb-hover-text) !important;
+	border-color: var(--lb-primary-hover) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-radio .ui-btn.ui-radio-on,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-checkbox .ui-btn.ui-checkbox-on,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup .ui-btn.ui-btn-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-controlgroup-controls .ui-btn.ui-btn-active {
+	background: var(--lb-active-bg) !important;
+	background-color: var(--lb-active-bg) !important;
+	background-image: none !important;
+	color: var(--lb-active-text) !important;
+	-webkit-text-fill-color: var(--lb-active-text) !important;
+	border-color: var(--lb-active-border) !important;
+	text-shadow: none !important;
+}
+
+/* jQuery Mobile flipswitch: color compatibility only; leave its geometry to jQM/Core. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-flipswitch {
+	background: var(--lb-btn-bg) !important;
+	background-color: var(--lb-btn-bg) !important;
+	background-image: none !important;
+	border-color: var(--lb-input-border) !important;
+	color: var(--lb-jqm-text) !important;
+	-webkit-text-fill-color: var(--lb-jqm-text) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-flipswitch.ui-flipswitch-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on {
+	background: var(--lb-active-bg) !important;
+	background-color: var(--lb-active-bg) !important;
+	background-image: none !important;
+	border-color: var(--lb-active-border) !important;
+	color: var(--lb-active-text) !important;
+	-webkit-text-fill-color: var(--lb-active-text) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .ui-flipswitch .ui-btn {
+	background: var(--lb-input-bg) !important;
+	background-color: var(--lb-input-bg) !important;
+	background-image: none !important;
+	border-color: var(--lb-input-border) !important;
+	box-shadow: none !important;
 }
 
 
@@ -758,6 +825,38 @@
 
 	backdrop-filter: var(--lb-glass-table-blur) !important;
 	-webkit-backdrop-filter: var(--lb-glass-table-blur) !important;
+}
+
+/* .lb-table: Liquid Glass outer frame only.
+   Cell separator widths remain untouched. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table {
+	border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, 3px)) !important;
+	border-style: var(--lb-table-border-style, solid) !important;
+	border-color: var(--lb-primary) !important;
+	border-radius: var(--lb-table-radius, var(--lb-radius-table, 22px)) !important;
+	border-collapse: separate !important;
+	border-spacing: 0 !important;
+	overflow: hidden !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > thead:first-child > tr:first-child > :first-child,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > tbody:first-child > tr:first-child > :first-child {
+	border-top-left-radius: var(--lb-table-radius, var(--lb-radius-table, 22px)) !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > thead:first-child > tr:first-child > :last-child,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > tbody:first-child > tr:first-child > :last-child {
+	border-top-right-radius: var(--lb-table-radius, var(--lb-radius-table, 22px)) !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > tfoot:last-child > tr:last-child > :first-child,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > tbody:last-child > tr:last-child > :first-child {
+	border-bottom-left-radius: var(--lb-table-radius, var(--lb-radius-table, 22px)) !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > tfoot:last-child > tr:last-child > :last-child,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table > tbody:last-child > tr:last-child > :last-child {
+	border-bottom-right-radius: var(--lb-table-radius, var(--lb-radius-table, 22px)) !important;
 }
 
 /* =========================================================
@@ -1334,7 +1433,66 @@
 
 
 /* =========================================================
-   14. Liquid Glass - Modal text colors
+   14. Legacy plugin light-card compatibility
+   ---------------------------------------------------------
+   Some older plugins ship local cards with hardcoded white backgrounds.
+   In Liquid Glass these cards must either become glass surfaces or their
+   light background would hide theme text. This block is scoped to known
+   legacy card classes and does not change global div/card behavior.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-device-config,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-pre {
+	background: var(--lb-card-bg) !important;
+	background-color: var(--lb-card-bg) !important;
+	background-image: none !important;
+	color: var(--lb-text) !important;
+	-webkit-text-fill-color: var(--lb-text) !important;
+	border-color: var(--lb-border-color) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h1,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h2,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h3,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h4,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card th,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card strong,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card label {
+	color: var(--lb-text) !important;
+	-webkit-text-fill-color: var(--lb-text) !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card p,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card td,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card small,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-muted,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card code {
+	color: var(--lb-text-secondary) !important;
+	-webkit-text-fill-color: var(--lb-text-secondary) !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card input,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card select,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card textarea {
+	background: var(--lb-input-bg) !important;
+	background-color: var(--lb-input-bg) !important;
+	color: var(--lb-input-text) !important;
+	-webkit-text-fill-color: var(--lb-input-text) !important;
+	border-color: var(--lb-input-border) !important;
+}
+
+/* Keep explicit state/pairing badges readable; these use plugin-local semantic colors. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-state-badge,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-small-badge,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-pair-status,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-tag {
+	-webkit-text-fill-color: currentColor !important;
+}
+
+/* =========================================================
+   15. Liquid Glass - Modal text colors
    ========================================================= */
 
 /* Modal body text */
@@ -1356,7 +1514,7 @@
 }
 
 /* =========================================================
-   15. Liquid Glass - Log Viewer base only
+   16. Liquid Glass - Log Viewer base only
    ---------------------------------------------------------
    Do not restyle LoxBerry log classes here.
    main.css owns .loginf/.logdeb/.logok/.logwarn/.logerr.
@@ -1467,3 +1625,101 @@ body.theme-liquid-glass input[type="radio"][data-role="none"]:checked + label:ho
 	text-shadow: none !important;
 }
 
+
+/* =========================================================
+   16. Liquid Glass - legacy light status/notification boxes
+   ---------------------------------------------------------
+   Some legacy pages write pale inline backgrounds without an explicit text color.
+   Keep those boxes readable without changing the original status background.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) #pstatus,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) #pstatus *,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) #ajaxstatus,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) #ajaxstatus *,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) #savemessages,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) #savemessages *,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) div[style*="background-color:#ffff"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) div[style*="background-color: #ffff"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) div[style*="background-color:#FFFF"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) div[style*="background-color: #FFFF"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) td[style*="background-color:#ffff"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) td[style*="background-color: #ffff"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) td[style*="background-color:#FFFF"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) td[style*="background-color: #FFFF"] {
+	color: var(--lb-light-surface-text) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text) !important;
+	text-shadow: none !important;
+}
+
+/* =========================================================
+   17. Liquid Glass - jQuery Mobile standalone buttons
+   ---------------------------------------------------------
+   Keep classic jQM/plugin buttons readable without touching
+   select buttons, radio/checkbox labels, controlgroups or flipswitch handles.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content a.ui-btn:not(.ui-select .ui-btn):not(.ui-radio .ui-btn):not(.ui-checkbox .ui-btn):not(.ui-controlgroup .ui-btn):not(.ui-controlgroup-controls .ui-btn):not(.ui-flipswitch .ui-btn),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content button.ui-btn:not(.ui-select .ui-btn):not(.ui-radio .ui-btn):not(.ui-checkbox .ui-btn):not(.ui-controlgroup .ui-btn):not(.ui-controlgroup-controls .ui-btn):not(.ui-flipswitch .ui-btn),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="button"].ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="submit"].ui-btn {
+	background: var(--lb-btn-bg) !important;
+	background-color: var(--lb-btn-bg) !important;
+	background-image: none !important;
+	color: var(--lb-btn-text) !important;
+	-webkit-text-fill-color: var(--lb-btn-text) !important;
+	border-color: var(--lb-btn-border) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content a.ui-btn:not(.ui-select .ui-btn):not(.ui-radio .ui-btn):not(.ui-checkbox .ui-btn):not(.ui-controlgroup .ui-btn):not(.ui-controlgroup-controls .ui-btn):not(.ui-flipswitch .ui-btn):hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content button.ui-btn:not(.ui-select .ui-btn):not(.ui-radio .ui-btn):not(.ui-checkbox .ui-btn):not(.ui-controlgroup .ui-btn):not(.ui-controlgroup-controls .ui-btn):not(.ui-flipswitch .ui-btn):hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="button"].ui-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="submit"].ui-btn:hover {
+	background: var(--lb-btn-hover-bg) !important;
+	background-color: var(--lb-btn-hover-bg) !important;
+	background-image: none !important;
+	color: var(--lb-hover-text) !important;
+	-webkit-text-fill-color: var(--lb-hover-text) !important;
+	border-color: var(--lb-primary-hover) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .ui-state-disabled,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .ui-disabled {
+	opacity: 0.82 !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .ui-state-disabled .ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .ui-disabled .ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content button:disabled,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="button"]:disabled,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content input[type="submit"]:disabled {
+	background: var(--lb-btn-bg) !important;
+	background-color: var(--lb-btn-bg) !important;
+	background-image: none !important;
+	color: var(--lb-jqm-disabled-text) !important;
+	-webkit-text-fill-color: var(--lb-jqm-disabled-text) !important;
+	border-color: var(--lb-btn-border) !important;
+	text-shadow: none !important;
+}
+
+/* Samsung Frame TV uses plain plugin-local buttons. Preserve layout and make them readable in Liquid Glass. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-btn {
+	background: var(--lb-btn-bg) !important;
+	background-color: var(--lb-btn-bg) !important;
+	background-image: none !important;
+	color: var(--lb-btn-text) !important;
+	-webkit-text-fill-color: var(--lb-btn-text) !important;
+	border: 1px solid var(--lb-btn-border) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-btn:hover {
+	background: var(--lb-btn-hover-bg) !important;
+	background-color: var(--lb-btn-hover-bg) !important;
+	background-image: none !important;
+	color: var(--lb-hover-text) !important;
+	-webkit-text-fill-color: var(--lb-hover-text) !important;
+	border-color: var(--lb-primary-hover) !important;
+}
