@@ -109,6 +109,7 @@ body.theme-user-horror,
   --lb-table-bg: #ffffff;
   --lb-table-border: #155e75;
   --lb-table-border-color: #155e75;
+  --lb-table-border-width: 2px;
   --lb-table-cell-border-color: #a5f3fc;
   --lb-table-cell-text: #103038;
   --lb-table-footer-bg: #cffafe;
@@ -116,6 +117,7 @@ body.theme-user-horror,
   --lb-table-header-bg: #c4b8e0;
   --lb-table-header-border: #155e75;
   --lb-table-header-text: #ecfeff;
+  --lb-table-outer-border-width: 2px;
   --lb-table-radius: 28px;
   --lb-table-row-alt-bg: #cffafe;
   --lb-table-row-bg: #ffffff;
