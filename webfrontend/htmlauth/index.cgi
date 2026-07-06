@@ -112,6 +112,16 @@ sub _copy_if_newer {
     return copy($src, $dst) ? (chmod(0664, $dst), 1) : 0;
 }
 
+my $do = param('do') || '';
+
+if ($do eq 'cleanup_bak') {
+    my $deleted = cleanup_bak_files();
+
+    print "Content-Type: text/plain; charset=utf-8\n\n";
+    print "Deleted .bak files: $deleted\n";
+    exit;
+}
+
 sub _migrate_legacy_theme_json {
     # V76 temporarily stored JSON next to CSS in data/themes.
     # Move these files back to config/themes and remove the misplaced copies.
@@ -143,6 +153,34 @@ sub _extract_theme_tokens_from_css_file {
         $tokens{$name} = $value;
     }
     return \%tokens;
+}
+
+sub cleanup_bak_files {
+    my @dirs = (
+        $theme_json_dir,
+        $theme_dir,
+    );
+
+    my $deleted = 0;
+
+    foreach my $dir (@dirs) {
+        next if (!$dir || !-d $dir);
+
+        opendir(my $dh, $dir) or next;
+        while (my $file = readdir($dh)) {
+            next if ($file !~ /\.bak$/i);
+
+            my $path = "$dir/$file";
+            next if (!-f $path);
+
+            if (unlink($path)) {
+                $deleted++;
+            }
+        }
+        closedir($dh);
+    }
+
+    return $deleted;
 }
 
 sub _theme_name_from_css_file {

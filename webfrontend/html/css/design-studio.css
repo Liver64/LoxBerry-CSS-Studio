@@ -1863,11 +1863,20 @@
 .cfw-page.cfw-design-studio .cfw-preview-table thead th,
 .cfw-page.cfw-design-studio .cfw-preview-table tbody td {
   border-style: solid !important;
-  border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, var(--cfw-preview-table-border-width, 1px))) 0 !important;
+  border-width: 0 var(--lb-table-cell-border-width, 1px) var(--lb-table-cell-border-width, 1px) 0 !important;
   border-color: var(--lb-table-row-border-color, var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16))))) !important;
 }
 .cfw-page.cfw-design-studio .cfw-preview-table thead th {
   border-color: var(--lb-table-header-border-color, var(--lb-table-border-color, var(--lb-table-border, var(--cfw-preview-table-border, rgba(0,0,0,.16))))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-table tr > th:last-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr > td:last-child {
+  border-right-width: 0 !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tbody tr:last-child > td,
+.cfw-page.cfw-design-studio .cfw-preview-table tfoot tr:last-child > td {
+  border-bottom-width: 0 !important;
 }
 
 /* V146: Wallpaper uploads are stored as real assets under data/plugins/cssframework/themes/assets/images/<theme-id>/. */
@@ -2171,4 +2180,52 @@
 .cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button[aria-pressed="true"] {
   background: var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)) !important;
   color: var(--lb-btn-group-active-text, var(--lb-active-text, #fff)) !important;
+}
+
+/* V178: Restore fixed Logmanager/status cell colors exactly like Logmanager defaults.
+   Only the status cell is colored; the message cell keeps table/background styling. */
+.cfw-preview tr.lb-status-info > td:first-child,
+.cfw-preview td.lb-status-info,
+.cfw-preview tr.status-info > td:first-child,
+.cfw-preview td.status-info,
+.cfw-preview tr.loginf > td:first-child,
+.cfw-preview td.loginf {
+  background-color:#3333ff !important;
+  color:#ffffff !important;
+}
+.cfw-preview tr.lb-status-ok > td:first-child,
+.cfw-preview td.lb-status-ok,
+.cfw-preview tr.status-ok > td:first-child,
+.cfw-preview td.status-ok,
+.cfw-preview tr.logok > td:first-child,
+.cfw-preview td.logok {
+  background-color:#66b514 !important;
+  color:#ffffff !important;
+}
+.cfw-preview tr.lb-status-warning > td:first-child,
+.cfw-preview td.lb-status-warning,
+.cfw-preview tr.status-warning > td:first-child,
+.cfw-preview td.status-warning,
+.cfw-preview tr.logwarn > td:first-child,
+.cfw-preview td.logwarn {
+  background-color:#ffff00 !important;
+  color:#000000 !important;
+}
+.cfw-preview tr.lb-status-error > td:first-child,
+.cfw-preview td.lb-status-error,
+.cfw-preview tr.status-error > td:first-child,
+.cfw-preview td.status-error,
+.cfw-preview tr.logerr > td:first-child,
+.cfw-preview td.logerr {
+  background-color:#e32323 !important;
+  color:#ffffff !important;
+}
+.cfw-preview tr.lb-status-critical > td:first-child,
+.cfw-preview td.lb-status-critical,
+.cfw-preview tr.status-critical > td:first-child,
+.cfw-preview td.status-critical,
+.cfw-preview tr.logcrit > td:first-child,
+.cfw-preview td.logcrit {
+  background-color:#9b1515 !important;
+  color:#ffffff !important;
 }

@@ -453,12 +453,12 @@ if ($wallpaper->{enabled}) {
 # Design Studio generated compatibility helpers. These are scoped to the user
 # theme and keep protected/compound components consistent without touching Core.
 $css .= "\n/* DESIGN STUDIO RULES START */\n";
-$css .= "/* V181: Table theme rules intentionally avoid !important on bg/text/border so LoxBerry inline Logmanager status colors remain untouched. */\n";
+$css .= "/* V188: Table border width/color apply to the complete outer frame. Cell separators remain thin and do not cover the outer frame. */\n";
 $css .= "body.$id table.lb-table, body.$id .lb-table,\n";
 $css .= ".$id table.lb-table, .$id .lb-table {\n";
 $css .= "  background-color: var(--lb-table-bg, var(--lb-table-row-bg, transparent));\n";
 $css .= "  color: var(--lb-table-text, var(--lb-table-row-text, inherit));\n";
-$css .= "  border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)));\n";
+$css .= "  border-color: var(--lb-table-border-color, var(--lb-table-border, var(--lb-border-color, rgba(0,0,0,.16)))) !important;\n";
 $css .= "  border-style: solid !important;\n";
 $css .= "  border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, 1px)) !important;\n";
 $css .= "  border-radius: var(--lb-table-radius, var(--lb-radius-table, 0px)) !important;\n";
@@ -472,24 +472,24 @@ $css .= "  background-color: var(--lb-table-header-bg, var(--lb-table-bg, transp
 $css .= "  color: var(--lb-table-header-text, var(--lb-table-text, inherit));\n";
 $css .= "  border-color: var(--lb-table-header-border-color, var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))));\n";
 $css .= "  border-style: solid !important;\n";
-$css .= "  border-width: var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) !important;\n";
+$css .= "  border-width: 0 var(--lb-table-cell-border-width, 1px) var(--lb-table-cell-border-width, 1px) 0 !important;\n";
 $css .= "}\n";
-$css .= "body.$id table.lb-table td, body.$id .lb-table td,
-";
-$css .= ".$id table.lb-table td, .$id .lb-table td {
-";
-$css .= "  background-color: var(--lb-table-row-bg, var(--lb-table-bg, transparent));
-";
-$css .= "  color: var(--lb-table-row-text, var(--lb-table-text, inherit));
-";
-$css .= "  border-color: var(--lb-table-row-border-color, var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))));
-";
-$css .= "  border-style: solid !important;
-";
-$css .= "  border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) 0 !important;
-";
-$css .= "}
-";
+$css .= "body.$id table.lb-table td, body.$id .lb-table td,\n";
+$css .= ".$id table.lb-table td, .$id .lb-table td {\n";
+$css .= "  background-color: var(--lb-table-row-bg, var(--lb-table-bg, transparent));\n";
+$css .= "  color: var(--lb-table-row-text, var(--lb-table-text, inherit));\n";
+$css .= "  border-color: var(--lb-table-row-border-color, var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))));\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 0 var(--lb-table-cell-border-width, 1px) var(--lb-table-cell-border-width, 1px) 0 !important;\n";
+$css .= "}\n";
+$css .= "body.$id table.lb-table tr > th:last-child, body.$id table.lb-table tr > td:last-child, body.$id .lb-table tr > th:last-child, body.$id .lb-table tr > td:last-child,\n";
+$css .= ".$id table.lb-table tr > th:last-child, .$id table.lb-table tr > td:last-child, .$id .lb-table tr > th:last-child, .$id .lb-table tr > td:last-child {\n";
+$css .= "  border-right-width: 0 !important;\n";
+$css .= "}\n";
+$css .= "body.$id table.lb-table tbody tr:last-child > td, body.$id table.lb-table tfoot tr:last-child > td, body.$id .lb-table tbody tr:last-child > td, body.$id .lb-table tfoot tr:last-child > td,\n";
+$css .= ".$id table.lb-table tbody tr:last-child > td, .$id table.lb-table tfoot tr:last-child > td, .$id .lb-table tbody tr:last-child > td, .$id .lb-table tfoot tr:last-child > td {\n";
+$css .= "  border-bottom-width: 0 !important;\n";
+$css .= "}\n";
 $css .= "body.$id .lb-btn-group, .$id .lb-btn-group {\n";
 $css .= "  border: 1px solid var(--lb-input-border, var(--lb-btn-group-border, var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, #d7e7d9))))) !important;\n";
 $css .= "  border-radius: var(--lb-btn-group-radius, var(--lb-btn-radius, var(--lb-radius-button, var(--lb-radius-sm, 10px)))) !important;\n";

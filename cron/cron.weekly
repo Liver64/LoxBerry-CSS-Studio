@@ -6,3 +6,5 @@
 # Runs as user "loxberry".
 
 # Add your weekly task here.
+
+/usr/bin/perl /opt/loxberry/webfrontend/htmlauth/plugins/cssframework/index.cgi do=cleanup_bak

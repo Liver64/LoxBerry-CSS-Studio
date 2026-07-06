@@ -67,6 +67,7 @@ body.theme-user-loxgreen-calm-light,
   --lb-primary-hover: #15803d;
   --lb-radius: 14px;
   --lb-radius-sm: 10px;
+  --lb-radius-table: 18px;
   --lb-select-bg: #ffffff;
   --lb-select-border: #bbf7d0;
   --lb-select-hover-bg: #f2f2f2;
@@ -83,16 +84,21 @@ body.theme-user-loxgreen-calm-light,
   --lb-sidebar-text: #f0fdf4;
   --lb-tab-popup-item-hover-bg: #15803d;
   --lb-table-bg: #ffffff;
-  --lb-table-border-color: #bbf7d0;
+  --lb-table-border: #16a34a;
+  --lb-table-border-color: #16a34a;
+  --lb-table-border-width: 2px;
   --lb-table-cell-border-color: #bbf7d0;
   --lb-table-cell-text: #13291c;
   --lb-table-footer-bg: #dcfce7;
   --lb-table-footer-text: #516b58;
   --lb-table-header-bg: #dcfce7;
+  --lb-table-header-border-color: #16a34a;
   --lb-table-header-text: #13291c;
-  --lb-table-radius: 12px;
+  --lb-table-outer-border-width: 2px;
+  --lb-table-radius: 18px;
   --lb-table-row-alt-bg: #dcfce7;
   --lb-table-row-bg: #ffffff;
+  --lb-table-row-border-color: #16a34a;
   --lb-table-row-hover-bg: #b9e3c9;
   --lb-text: #13291c;
   --lb-text-muted: #516b58;
@@ -108,12 +114,12 @@ body.theme-user-loxgreen-calm-light,
 /* USER CUSTOM CSS END */
 
 /* DESIGN STUDIO RULES START */
-/* V181: Table theme rules intentionally avoid !important on bg/text/border so LoxBerry inline Logmanager status colors remain untouched. */
+/* V188: Table border width/color apply to the complete outer frame. Cell separators remain thin and do not cover the outer frame. */
 body.theme-user-loxgreen-calm-light table.lb-table, body.theme-user-loxgreen-calm-light .lb-table,
 .theme-user-loxgreen-calm-light table.lb-table, .theme-user-loxgreen-calm-light .lb-table {
   background-color: var(--lb-table-bg, var(--lb-table-row-bg, transparent));
   color: var(--lb-table-text, var(--lb-table-row-text, inherit));
-  border-color: var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)));
+  border-color: var(--lb-table-border-color, var(--lb-table-border, var(--lb-border-color, rgba(0,0,0,.16)))) !important;
   border-style: solid !important;
   border-width: var(--lb-table-outer-border-width, var(--lb-table-border-width, 1px)) !important;
   border-radius: var(--lb-table-radius, var(--lb-radius-table, 0px)) !important;
@@ -127,7 +133,7 @@ body.theme-user-loxgreen-calm-light table.lb-table thead, body.theme-user-loxgre
   color: var(--lb-table-header-text, var(--lb-table-text, inherit));
   border-color: var(--lb-table-header-border-color, var(--lb-table-header-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))));
   border-style: solid !important;
-  border-width: var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) !important;
+  border-width: 0 var(--lb-table-cell-border-width, 1px) var(--lb-table-cell-border-width, 1px) 0 !important;
 }
 body.theme-user-loxgreen-calm-light table.lb-table td, body.theme-user-loxgreen-calm-light .lb-table td,
 .theme-user-loxgreen-calm-light table.lb-table td, .theme-user-loxgreen-calm-light .lb-table td {
@@ -135,7 +141,15 @@ body.theme-user-loxgreen-calm-light table.lb-table td, body.theme-user-loxgreen-
   color: var(--lb-table-row-text, var(--lb-table-text, inherit));
   border-color: var(--lb-table-row-border-color, var(--lb-table-row-border, var(--lb-table-border-color, var(--lb-table-border, rgba(0,0,0,.16)))));
   border-style: solid !important;
-  border-width: 0 0 var(--lb-table-cell-border-width, var(--lb-table-border-width, 1px)) 0 !important;
+  border-width: 0 var(--lb-table-cell-border-width, 1px) var(--lb-table-cell-border-width, 1px) 0 !important;
+}
+body.theme-user-loxgreen-calm-light table.lb-table tr > th:last-child, body.theme-user-loxgreen-calm-light table.lb-table tr > td:last-child, body.theme-user-loxgreen-calm-light .lb-table tr > th:last-child, body.theme-user-loxgreen-calm-light .lb-table tr > td:last-child,
+.theme-user-loxgreen-calm-light table.lb-table tr > th:last-child, .theme-user-loxgreen-calm-light table.lb-table tr > td:last-child, .theme-user-loxgreen-calm-light .lb-table tr > th:last-child, .theme-user-loxgreen-calm-light .lb-table tr > td:last-child {
+  border-right-width: 0 !important;
+}
+body.theme-user-loxgreen-calm-light table.lb-table tbody tr:last-child > td, body.theme-user-loxgreen-calm-light table.lb-table tfoot tr:last-child > td, body.theme-user-loxgreen-calm-light .lb-table tbody tr:last-child > td, body.theme-user-loxgreen-calm-light .lb-table tfoot tr:last-child > td,
+.theme-user-loxgreen-calm-light table.lb-table tbody tr:last-child > td, .theme-user-loxgreen-calm-light table.lb-table tfoot tr:last-child > td, .theme-user-loxgreen-calm-light .lb-table tbody tr:last-child > td, .theme-user-loxgreen-calm-light .lb-table tfoot tr:last-child > td {
+  border-bottom-width: 0 !important;
 }
 body.theme-user-loxgreen-calm-light .lb-btn-group, .theme-user-loxgreen-calm-light .lb-btn-group {
   border: 1px solid var(--lb-input-border, var(--lb-btn-group-border, var(--lb-btn-group-inactive-border, var(--lb-border-color, var(--lb-border, #d7e7d9))))) !important;

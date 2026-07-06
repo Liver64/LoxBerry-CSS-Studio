@@ -7,9 +7,9 @@
       "generator" : "CSS-Studio"
    },
    "studio_model" : {
-      "Input|Input Text|Grundfarbe" : {
+      "tabellen|Standard Tabelle|Rahmenstärke" : {
          "alpha" : 100,
-         "borderWidth" : 1,
+         "borderWidth" : 3,
          "brightness" : 0,
          "color" : "#ffffff",
          "dirty" : false,
@@ -77,6 +77,7 @@
       "--lb-primary-hover" : "#15803d",
       "--lb-radius" : "14px",
       "--lb-radius-sm" : "10px",
+      "--lb-radius-table" : "18px",
       "--lb-select-bg" : "#ffffff",
       "--lb-select-border" : "#bbf7d0",
       "--lb-select-hover-bg" : "#f2f2f2",
@@ -93,16 +94,21 @@
       "--lb-sidebar-text" : "#f0fdf4",
       "--lb-tab-popup-item-hover-bg" : "#15803d",
       "--lb-table-bg" : "#ffffff",
-      "--lb-table-border-color" : "#bbf7d0",
+      "--lb-table-border" : "#16a34a",
+      "--lb-table-border-color" : "#16a34a",
+      "--lb-table-border-width" : "2px",
       "--lb-table-cell-border-color" : "#bbf7d0",
       "--lb-table-cell-text" : "#13291c",
       "--lb-table-footer-bg" : "#dcfce7",
       "--lb-table-footer-text" : "#516b58",
       "--lb-table-header-bg" : "#dcfce7",
+      "--lb-table-header-border-color" : "#16a34a",
       "--lb-table-header-text" : "#13291c",
-      "--lb-table-radius" : "12px",
+      "--lb-table-outer-border-width" : "2px",
+      "--lb-table-radius" : "18px",
       "--lb-table-row-alt-bg" : "#dcfce7",
       "--lb-table-row-bg" : "#ffffff",
+      "--lb-table-row-border-color" : "#16a34a",
       "--lb-table-row-hover-bg" : "#b9e3c9",
       "--lb-text" : "#13291c",
       "--lb-text-muted" : "#516b58",
@@ -112,7 +118,7 @@
       "--lb-tooltip-bg" : "#15803d",
       "--lb-tooltip-text" : "#f0fdf4"
    },
-   "version" : "0.1.12",
+   "version" : "0.1.17",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

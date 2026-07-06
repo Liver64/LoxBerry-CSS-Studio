@@ -1,5 +1,5 @@
 {
-   "custom_css" : "/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */",
+   "custom_css" : "/* Eigene Ergänzungen bleiben beim Speichern erhalten. */",
    "id" : "theme-user-rose-calm",
    "import_meta" : {},
    "name" : "Rose Calm",
@@ -13,6 +13,33 @@
          "brightness" : 0,
          "color" : "#ffffff",
          "dirty" : false,
+         "radius" : 12,
+         "shadow" : 1
+      },
+      "tabellen|Standard Tabelle|Grundfarbe" : {
+         "alpha" : 100,
+         "borderWidth" : 1,
+         "brightness" : 0,
+         "color" : "#ffffff",
+         "dirty" : false,
+         "radius" : 12,
+         "shadow" : 1
+      },
+      "tabellen|Standard Tabelle|Header" : {
+         "alpha" : 100,
+         "borderWidth" : 1,
+         "brightness" : 0,
+         "color" : "#ffffff",
+         "dirty" : false,
+         "radius" : 12,
+         "shadow" : 1
+      },
+      "tabellen|Standard Tabelle|Rahmenstärke" : {
+         "alpha" : 100,
+         "borderWidth" : 3,
+         "brightness" : 0,
+         "color" : "#ffffff",
+         "dirty" : true,
          "radius" : 12,
          "shadow" : 1
       }
@@ -32,7 +59,7 @@
       "--lb-btn-group-active-text" : "#f8fafc",
       "--lb-btn-group-border" : "#f3c7d4",
       "--lb-btn-group-hover-bg" : "#a94363",
-      "--lb-btn-group-hover-text" : "#fff7fa",
+      "--lb-btn-group-hover-text" : "#2f1a22",
       "--lb-btn-group-inactive-bg" : "#f8fafc",
       "--lb-btn-group-inactive-border" : "#f3c7d4",
       "--lb-btn-group-inactive-text" : "#c75b7a",
@@ -93,14 +120,15 @@
       "--lb-sidebar-text" : "#fff7fa",
       "--lb-tab-popup-item-hover-bg" : "#a94363",
       "--lb-table-bg" : "#ffffff",
-      "--lb-table-border" : "#f2d7e3",
       "--lb-table-border-color" : "#f3c7d4",
+      "--lb-table-border-width" : "3px",
       "--lb-table-cell-border-color" : "#f3c7d4",
       "--lb-table-cell-text" : "#2f1a22",
       "--lb-table-footer-bg" : "#fdf2f6",
       "--lb-table-footer-text" : "#75515e",
       "--lb-table-header-bg" : "#fdf2f6",
       "--lb-table-header-text" : "#2f1a22",
+      "--lb-table-outer-border-width" : "3px",
       "--lb-table-radius" : "12px",
       "--lb-table-row-alt-bg" : "#fdf2f6",
       "--lb-table-row-bg" : "#ffffff",
@@ -113,7 +141,7 @@
       "--lb-tooltip-bg" : "#a94363",
       "--lb-tooltip-text" : "#fff7fa"
    },
-   "version" : "0.1.8",
+   "version" : "0.1.19",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,
