@@ -266,12 +266,19 @@
       'Standard Slider': {
         'Grundfarbe': ['--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg'],
         'Hintergrund': ['--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg'],
-        'Knopf': ['--lb-slider-thumb-bg', '--lb-slider-thumb-border']
+        'Knopf Farbe': ['--lb-slider-thumb-bg'],
+        'Knopf Rahmenfarbe': ['--lb-slider-thumb-border-color', '--lb-slider-thumb-border'],
+        'Knopf Rahmenstärke': ['--lb-slider-thumb-border-width'],
+        'Knopf Schatten': ['--lb-slider-thumb-shadow'],
+        'Knopf Hover-Ring': ['--lb-slider-thumb-hover-shadow'],
+        'Focus-Ring': ['--lb-slider-focus-shadow']
       },
       'Compact Slider': {
         'Grundfarbe': ['--lb-slider-compact-active-bg', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg'],
         'Hintergrund': ['--lb-slider-compact-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg'],
-        'Knopf': ['--lb-slider-compact-thumb-bg', '--lb-slider-compact-thumb-border', '--lb-slider-thumb-bg', '--lb-slider-thumb-border']
+        'Knopf Farbe': ['--lb-slider-compact-thumb-bg', '--lb-slider-thumb-bg'],
+        'Knopf Rahmenfarbe': ['--lb-slider-compact-thumb-border', '--lb-slider-thumb-border-color', '--lb-slider-thumb-border'],
+        'Knopf Rahmenstärke': ['--lb-slider-thumb-border-width']
       }
     },
     'Toggle': {
@@ -899,7 +906,7 @@
     '--lb-active-bg', '--lb-active-text', '--lb-btn-primary-bg', '--lb-btn-primary-text', '--lb-btn-bg', '--lb-btn-text',
     '--lb-sidebar-bg', '--lb-sidebar-text', '--lb-sidebar-active-bg', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-bg', '--lb-sidebar-link-hover-text', '--lb-text', '--lb-text-secondary', '--lb-text-muted', '--lb-border-color',
     '--lb-border', '--lb-card-border', '--lb-input-bg', '--lb-input-text', '--lb-input-border', '--lb-table-header-bg',
-    '--lb-table-header-text', '--lb-table-bg', '--lb-table-border-color', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg', '--lb-slider-thumb-bg', '--lb-slider-thumb-border', '--lb-slider-compact-active-bg', '--lb-slider-compact-bg', '--lb-slider-compact-thumb-bg', '--lb-slider-compact-thumb-border', '--lb-success', '--lb-warning', '--lb-danger'
+    '--lb-table-header-text', '--lb-table-bg', '--lb-table-border-color', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg', '--lb-slider-thumb-bg', '--lb-slider-thumb-border-color', '--lb-slider-thumb-border-width', '--lb-slider-thumb-border', '--lb-slider-thumb-shadow', '--lb-slider-thumb-hover-shadow', '--lb-slider-focus-shadow', '--lb-slider-compact-active-bg', '--lb-slider-compact-bg', '--lb-slider-compact-thumb-bg', '--lb-slider-compact-thumb-border', '--lb-success', '--lb-warning', '--lb-danger'
   ];
 
   function uniqueTokenNames(extraNames) {
@@ -1709,6 +1716,10 @@
       '--cfw-preview-slider-track',
       '--cfw-preview-slider-thumb',
       '--cfw-preview-slider-thumb-border',
+      '--cfw-preview-slider-thumb-border-width',
+      '--cfw-preview-slider-thumb-shadow',
+      '--cfw-preview-slider-thumb-hover-shadow',
+      '--cfw-preview-slider-focus-shadow',
       '--cfw-preview-checkbox-bg',
       '--cfw-preview-checkbox-border',
       '--cfw-preview-checkbox-checked-bg',
@@ -1764,7 +1775,11 @@
       '--cfw-preview-slider-active': tokens['--lb-slider-fill-bg'] || tokens['--lb-slider-active-bg'] || tokens['--lb-range-active-bg'] || tokens['--lb-primary'] || tokens['--lb-active-bg'],
       '--cfw-preview-slider-track': tokens['--lb-slider-track-bg'] || tokens['--lb-slider-bg'] || tokens['--lb-range-track-bg'],
       '--cfw-preview-slider-thumb': tokens['--lb-slider-thumb-bg'] || tokens['--lb-slider-fill-bg'] || tokens['--lb-slider-active-bg'] || tokens['--lb-primary'],
-      '--cfw-preview-slider-thumb-border': tokens['--lb-slider-thumb-border'] || tokens['--lb-slider-thumb-bg'] || tokens['--lb-slider-active-bg'],
+      '--cfw-preview-slider-thumb-border': tokens['--lb-slider-thumb-border-color'] || tokens['--lb-slider-thumb-border'] || '#ffffff',
+      '--cfw-preview-slider-thumb-border-width': tokens['--lb-slider-thumb-border-width'] || '3px',
+      '--cfw-preview-slider-thumb-shadow': tokens['--lb-slider-thumb-shadow'],
+      '--cfw-preview-slider-thumb-hover-shadow': tokens['--lb-slider-thumb-hover-shadow'],
+      '--cfw-preview-slider-focus-shadow': tokens['--lb-slider-focus-shadow'],
       '--cfw-preview-checkbox-bg': tokens['--lb-checkbox-bg'] || tokens['--lb-input-bg'],
       '--cfw-preview-checkbox-border': tokens['--lb-checkbox-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
       '--cfw-preview-checkbox-checked-bg': tokens['--lb-checkbox-checked-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'],
@@ -1847,10 +1862,16 @@
       setRuleToken(tokens, '--lb-slider-track-bg', tokens['--lb-slider-track-bg'] || sliderTrack);
       setRuleToken(tokens, '--lb-range-track-bg', tokens['--lb-range-track-bg'] || tokens['--lb-slider-track-bg'] || sliderTrack);
       setRuleToken(tokens, '--lb-slider-thumb-bg', tokens['--lb-slider-thumb-bg'] || sliderActive);
-      setRuleToken(tokens, '--lb-slider-thumb-border', tokens['--lb-slider-thumb-border'] || sliderActive);
+      var sliderThumbBorder = tokens['--lb-slider-thumb-border-color'] || tokens['--lb-slider-thumb-border'];
+      if (sliderThumbBorder) {
+        setRuleToken(tokens, '--lb-slider-thumb-border-color', sliderThumbBorder);
+        setRuleToken(tokens, '--lb-slider-thumb-border', sliderThumbBorder);
+      }
       setRuleToken(tokens, '--lb-slider-compact-active-bg', tokens['--lb-slider-compact-active-bg'] || sliderActive);
       setRuleToken(tokens, '--lb-slider-compact-thumb-bg', tokens['--lb-slider-compact-thumb-bg'] || tokens['--lb-slider-thumb-bg'] || sliderActive);
-      setRuleToken(tokens, '--lb-slider-compact-thumb-border', tokens['--lb-slider-compact-thumb-border'] || tokens['--lb-slider-thumb-border'] || tokens['--lb-slider-compact-thumb-bg'] || tokens['--lb-slider-thumb-bg'] || sliderActive);
+      if (sliderThumbBorder) {
+        setRuleToken(tokens, '--lb-slider-compact-thumb-border', tokens['--lb-slider-compact-thumb-border'] || sliderThumbBorder);
+      }
     }
 
     // Header buttons derive from primary/active when no dedicated values are present.
@@ -1901,7 +1922,7 @@
       '--lb-header-btn-bg','--lb-header-btn-text','--lb-header-btn-hover-bg','--lb-header-btn-hover-text',
       '--lb-table-bg','--lb-table-row-bg','--lb-table-header-bg','--lb-table-header-text','--lb-table-border','--lb-table-border-color','--lb-table-cell-text','--lb-table-row-hover-bg','--lb-table-row-hover-text',
       '--lb-sidebar-bg','--lb-sidebar-text','--lb-sidebar-link-radius','--lb-sidebar-active-bg','--lb-sidebar-active-text','--lb-sidebar-link-hover-bg','--lb-sidebar-link-hover-text',
-      '--lb-slider-active-bg','--lb-slider-fill-bg','--lb-range-active-bg','--lb-slider-bg','--lb-slider-track-bg','--lb-range-track-bg','--lb-slider-thumb-bg','--lb-slider-thumb-border','--lb-slider-compact-active-bg','--lb-slider-compact-bg','--lb-slider-compact-thumb-bg','--lb-slider-compact-thumb-border',
+      '--lb-slider-active-bg','--lb-slider-fill-bg','--lb-range-active-bg','--lb-slider-bg','--lb-slider-track-bg','--lb-range-track-bg','--lb-slider-thumb-bg','--lb-slider-thumb-border-color','--lb-slider-thumb-border-width','--lb-slider-thumb-border','--lb-slider-thumb-shadow','--lb-slider-thumb-hover-shadow','--lb-slider-focus-shadow','--lb-slider-compact-active-bg','--lb-slider-compact-bg','--lb-slider-compact-thumb-bg','--lb-slider-compact-thumb-border',
       '--lb-radius','--lb-radius-sm','--lb-btn-radius','--lb-card-radius','--lb-radius-card','--lb-table-radius','--lb-focus-ring','--lb-focus-ring-strong'
     ];
     rawVars.forEach(function (name) { page.style.removeProperty(name); });

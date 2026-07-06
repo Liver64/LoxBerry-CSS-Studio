@@ -1340,7 +1340,7 @@
 
 .cfw-page.cfw-design-studio .cfw-range::-webkit-slider-thumb {
   background: var(--cfw-range-thumb);
-  border-color: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff));
 }
 
 .cfw-page.cfw-design-studio .cfw-range::-moz-range-track {
@@ -1357,7 +1357,7 @@
 
 .cfw-page.cfw-design-studio .cfw-range::-moz-range-thumb {
   background: var(--cfw-range-thumb);
-  border-color: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff));
 }
 
 
@@ -1372,7 +1372,8 @@
   --cfw-range-active: var(--lb-slider-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)));
   --cfw-range-track: var(--lb-slider-bg, rgba(0,0,0,.22));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
-  --cfw-range-thumb-border: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+  --cfw-range-thumb-border: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff));
+  --cfw-range-thumb-border-width: var(--lb-slider-thumb-border-width, 2px);
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -1407,8 +1408,8 @@
   margin-top: -7px;
   border-radius: 50%;
   background: var(--cfw-range-thumb) !important;
-  border: 2px solid var(--cfw-range-thumb-border) !important;
-  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22));
+  border: var(--cfw-range-thumb-border-width, 2px) solid var(--cfw-range-thumb-border) !important;
+  box-shadow: var(--cfw-preview-slider-thumb-shadow, var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22)));
   box-sizing: border-box;
 }
 
@@ -1431,14 +1432,14 @@
   height: 18px;
   border-radius: 50%;
   background: var(--cfw-range-thumb) !important;
-  border: 2px solid var(--cfw-range-thumb-border) !important;
-  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22));
+  border: var(--cfw-range-thumb-border-width, 2px) solid var(--cfw-range-thumb-border) !important;
+  box-shadow: var(--cfw-preview-slider-thumb-shadow, var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22)));
   box-sizing: border-box;
 }
 
 .cfw-page.cfw-design-studio .cfw-range:focus::-webkit-slider-thumb,
 .cfw-page.cfw-design-studio .cfw-range:focus::-moz-range-thumb {
-  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22)), 0 0 0 3px color-mix(in srgb, var(--cfw-range-active) 22%, transparent);
+  box-shadow: var(--cfw-preview-slider-focus-shadow, var(--lb-slider-focus-shadow, var(--cfw-preview-slider-thumb-shadow, var(--lb-slider-thumb-shadow, 0 1px 4px rgba(0,0,0,.22))), 0 0 0 3px color-mix(in srgb, var(--cfw-range-active) 22%, transparent)));
 }
 
 /* V104: Toggle editing is strictly scoped to toggle/switch tokens.
@@ -1467,7 +1468,7 @@
   --cfw-range-active: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))));
   --cfw-range-track: var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22))));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
-  --cfw-range-thumb-border: var(--lb-slider-thumb-border, var(--cfw-range-thumb));
+  --cfw-range-thumb-border: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff));
 }
 
 .cfw-page.cfw-design-studio .cfw-range::-webkit-slider-runnable-track {
@@ -2066,7 +2067,8 @@
   --cfw-range-active: var(--cfw-preview-slider-active, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, #007aff)))));
   --cfw-range-track: var(--cfw-preview-slider-track, var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22)))));
   --cfw-range-thumb: var(--cfw-preview-slider-thumb, var(--lb-slider-thumb-bg, var(--cfw-range-active)));
-  --cfw-range-thumb-border: var(--cfw-preview-slider-thumb-border, var(--lb-slider-thumb-border, var(--cfw-range-thumb)));
+  --cfw-range-thumb-border: var(--cfw-preview-slider-thumb-border, var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)));
+  --cfw-range-thumb-border-width: var(--cfw-preview-slider-thumb-border-width, var(--lb-slider-thumb-border-width, 2px));
 }
 .cfw-page.cfw-design-studio .cfw-form-card .cfw-check input[type="checkbox"] {
   background: var(--cfw-preview-checkbox-bg, var(--lb-checkbox-bg, var(--lb-input-bg, #ffffff))) !important;
