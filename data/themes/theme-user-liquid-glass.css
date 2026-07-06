@@ -1780,3 +1780,55 @@ body.theme-liquid-glass input[type="radio"][data-role="none"]:checked + label:ho
 	text-shadow: none !important;
 }
 
+
+/* =========================================================
+   20. Liquid Glass - table embedded dropdowns/tooltips
+   ---------------------------------------------------------
+   Tables use overflow hidden for the rounded outer frame.
+   Core tables that explicitly opt in with lb-table-dropdowns-visible
+   or lb-table-frame-dropdowns must keep dropdowns/tooltips visible.
+   Scope only to these opt-in classes; no normal table layout changes.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame.lb-table-frame-dropdowns,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame.lb-table-frame-dropdowns.lb-table-frame-mask-corners,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame-dropdowns {
+	overflow: visible !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) table.lb-table.lb-table-dropdowns-visible,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table.lb-table-dropdowns-visible,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible {
+	overflow: visible !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible th,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible td,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible tr,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible thead,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible tbody,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible tfoot {
+	overflow: visible !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible .lb-tooltip-anchor,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible .lb-dropdown-layer,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame-dropdowns .lb-tooltip-anchor,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame-dropdowns .lb-dropdown-layer {
+	position: relative;
+	z-index: 20;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible .lb-tooltip-anchor:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible .lb-tooltip-anchor:focus-within,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible .lb-tooltip-anchor.is-open,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame-dropdowns .lb-tooltip-anchor:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame-dropdowns .lb-tooltip-anchor:focus-within,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame-dropdowns .lb-tooltip-anchor.is-open {
+	z-index: 3000 !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-dropdowns-visible .lb-tooltip,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-table-frame-dropdowns .lb-tooltip {
+	z-index: 3001 !important;
+}
