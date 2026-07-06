@@ -1,5 +1,5 @@
 {
-   "custom_css" : "/* Eigene Ergänzungen bleiben beim Speichern erhalten. */",
+   "custom_css" : "/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */",
    "id" : "theme-user-rose-calm",
    "import_meta" : {},
    "name" : "Rose Calm",
@@ -13,33 +13,6 @@
          "brightness" : 0,
          "color" : "#ffffff",
          "dirty" : false,
-         "radius" : 12,
-         "shadow" : 1
-      },
-      "tabellen|Standard Tabelle|Grundfarbe" : {
-         "alpha" : 100,
-         "borderWidth" : 1,
-         "brightness" : 0,
-         "color" : "#ffffff",
-         "dirty" : false,
-         "radius" : 12,
-         "shadow" : 1
-      },
-      "tabellen|Standard Tabelle|Header" : {
-         "alpha" : 100,
-         "borderWidth" : 1,
-         "brightness" : 0,
-         "color" : "#ffffff",
-         "dirty" : false,
-         "radius" : 12,
-         "shadow" : 1
-      },
-      "tabellen|Standard Tabelle|Rahmenstärke" : {
-         "alpha" : 100,
-         "borderWidth" : 3,
-         "brightness" : 0,
-         "color" : "#ffffff",
-         "dirty" : true,
          "radius" : 12,
          "shadow" : 1
       }
@@ -104,6 +77,8 @@
       "--lb-primary-hover" : "#a94363",
       "--lb-radius" : "14px",
       "--lb-radius-sm" : "10px",
+      "--lb-range-active-bg" : "#c75b7a",
+      "--lb-range-track-bg" : "#f3c7d4",
       "--lb-select-bg" : "#ffffff",
       "--lb-select-border" : "#f3c7d4",
       "--lb-select-hover-bg" : "#f2f2f2",
@@ -118,6 +93,15 @@
       "--lb-sidebar-link-hover-bg" : "#a94363",
       "--lb-sidebar-link-hover-text" : "#fff7fa",
       "--lb-sidebar-text" : "#fff7fa",
+      "--lb-slider-active-bg" : "#c75b7a",
+      "--lb-slider-bg" : "#f3c7d4",
+      "--lb-slider-compact-active-bg" : "#c75b7a",
+      "--lb-slider-compact-thumb-bg" : "#c75b7a",
+      "--lb-slider-fill-bg" : "#c75b7a",
+      "--lb-slider-thumb-bg" : "#c75b7a",
+      "--lb-slider-thumb-border-width" : "4px",
+      "--lb-slider-track-bg" : "#f3c7d4",
+      "--lb-slider-value-text" : "var(--lb-primary)",
       "--lb-tab-popup-item-hover-bg" : "#a94363",
       "--lb-table-bg" : "#ffffff",
       "--lb-table-border-color" : "#f3c7d4",
@@ -141,7 +125,7 @@
       "--lb-tooltip-bg" : "#a94363",
       "--lb-tooltip-text" : "#fff7fa"
    },
-   "version" : "0.1.19",
+   "version" : "0.1.26",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

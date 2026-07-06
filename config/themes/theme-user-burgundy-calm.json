@@ -1,5 +1,5 @@
 {
-   "custom_css" : "/* Eigene ErgÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */",
+   "custom_css" : "/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */",
    "id" : "theme-user-burgundy-calm",
    "import_meta" : {},
    "name" : "Burgundy Calm",
@@ -100,6 +100,7 @@
       "--lb-slider-fill-bg" : "#800000",
       "--lb-slider-thumb-bg" : "#800000",
       "--lb-slider-track-bg" : "#f5bcbc",
+      "--lb-slider-value-text" : "var(--lb-primary)",
       "--lb-tab-popup-item-hover-bg" : "#6b0000",
       "--lb-table-bg" : "#ffffff",
       "--lb-table-border" : "var(--lb-border-color)",
@@ -122,7 +123,7 @@
       "--lb-tooltip-bg" : "#6b0000",
       "--lb-tooltip-text" : "#fff5f5"
    },
-   "version" : "0.1.4",
+   "version" : "0.1.6",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

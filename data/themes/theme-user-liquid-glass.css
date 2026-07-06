@@ -1,5 +1,5 @@
 /* LoxBerry CSS Framework User Theme: Liquid Glass
-   Version: V218_2026_07_06
+   Version: V228_2026_07_06
    Adapter theme for LoxBerry Design System and selected jQuery Mobile wrappers.
    Based on the visual idea from liquid-glass/src/liquid-glass.css, but rewritten
    to use the standard LoxBerry CSS variables/components instead of demo classes.
@@ -92,6 +92,16 @@
 		0 12px 28px rgba(0, 0, 0, var(--lb-glass-shadow-alpha)),
 		inset 0 1px 1px rgba(255, 255, 255, var(--lb-glass-highlight-alpha));
 
+	/* Modals need a stronger surface than cards; otherwise save/confirm dialogs
+	   become unreadable on wallpaper backgrounds. */
+	--lb-glass-modal-alpha: 0.72;
+	--lb-modal-bg: rgba(255, 255, 255, var(--lb-glass-modal-alpha));
+	--lb-modal-text: var(--lb-light-surface-text, #111827);
+	--lb-modal-muted-text: var(--lb-light-surface-muted-text, #374151);
+	--lb-modal-border: rgba(255, 255, 255, 0.48);
+	--lb-modal-shadow: 0 22px 70px rgba(0, 0, 0, 0.36), inset 0 1px 1px rgba(255, 255, 255, 0.68);
+	--lb-modal-overlay-bg: rgba(0, 0, 0, 0.56);
+
 	/* Buttons */
 	--lb-btn-bg: rgba(255, 255, 255, var(--lb-glass-button-alpha));
 	--lb-btn-hover-bg: var(--lb-primary);
@@ -101,6 +111,47 @@
 	--lb-btn-primary-bg: var(--lb-primary);
 	--lb-btn-primary-text: #ffffff;
 	--lb-btn-primary-border: var(--lb-primary-hover);
+
+	/* Button group tokens
+	   Explicit Liquid Glass values prevent Core/Studio defaults from falling back
+	   to the classic LoxBerry green before a user theme is loaded. */
+	--lb-btn-group-bg: var(--lb-btn-bg);
+	--lb-btn-group-border: var(--lb-btn-border);
+	--lb-btn-group-inactive-bg: var(--lb-btn-bg);
+	--lb-btn-group-inactive-text: var(--lb-btn-text);
+	--lb-btn-group-inactive-border: var(--lb-btn-border);
+	--lb-btn-group-hover-bg: rgba(143, 199, 255, 0.22);
+	--lb-btn-group-hover-text: #ffffff;
+	--lb-btn-group-active-bg: var(--lb-primary);
+	--lb-btn-group-active-text: #ffffff;
+	--lb-btn-group-active-border: var(--lb-primary-hover);
+	--lb-btn-group-active-hover-bg: var(--lb-primary-hover);
+	--lb-btn-group-active-hover-text: #111827;
+
+	/* Slider tokens
+	   V220 Core exposes dedicated slider tokens. Define them here for Liquid
+	   Glass so Plugin/Studio startup never inherits the green Core defaults. */
+	--lb-slider-active-bg: var(--lb-primary);
+	--lb-slider-fill-bg: var(--lb-slider-active-bg);
+	--lb-range-active-bg: var(--lb-slider-fill-bg);
+	--lb-slider-bg: rgba(255, 255, 255, 0.30);
+	--lb-slider-track-bg: var(--lb-slider-bg);
+	--lb-range-track-bg: var(--lb-slider-track-bg);
+	--lb-slider-border: rgba(255, 255, 255, 0.28);
+	--lb-slider-thumb-bg: var(--lb-slider-active-bg);
+	--lb-slider-thumb-border-color: rgba(255, 255, 255, 0.94);
+	--lb-slider-thumb-border-width: 3px;
+	--lb-slider-thumb-border: var(--lb-slider-thumb-border-color);
+	--lb-slider-thumb-shadow: 0 1px 5px rgba(0, 0, 0, 0.32);
+	--lb-slider-thumb-hover-shadow: 0 0 0 7px rgba(143, 199, 255, 0.22), var(--lb-slider-thumb-shadow);
+	--lb-slider-focus-shadow: 0 0 0 3px rgba(143, 199, 255, 0.24);
+	--lb-slider-value-bg: rgba(143, 199, 255, 0.12);
+	--lb-slider-value-border: rgba(143, 199, 255, 0.28);
+	--lb-slider-value-text: var(--lb-primary);
+	--lb-slider-compact-active-bg: var(--lb-slider-active-bg);
+	--lb-slider-compact-bg: var(--lb-slider-bg);
+	--lb-slider-compact-thumb-bg: var(--lb-slider-thumb-bg);
+	--lb-slider-compact-thumb-border: var(--lb-slider-thumb-border-color);
 
 	/* Hover / active tokens: Liquid Glass uses light blue, not the LoxBerry green fallback. */
 	--lb-hover-bg: var(--lb-primary);
@@ -587,8 +638,8 @@
 	background-color: var(--lb-primary) !important;
 	background-image: none !important;
 
-	color: #000000 !important;
-	-webkit-text-fill-color: #000000 !important;
+	color: var(--lb-btn-group-active-text, var(--lb-active-text, #ffffff)) !important;
+	-webkit-text-fill-color: var(--lb-btn-group-active-text, var(--lb-active-text, #ffffff)) !important;
 
 	box-shadow: none !important;
 }
@@ -1492,25 +1543,64 @@
 }
 
 /* =========================================================
-   15. Liquid Glass - Modal text colors
+   15. Liquid Glass - Modal surfaces
    ========================================================= */
 
-/* Modal body text */
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal-content,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal-content p,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal-content div,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal-content span {
-	color: #111827 !important;
-	-webkit-text-fill-color: #111827 !important;
+/* Native Core dialogs and Design Studio custom modals need a stronger
+   glass surface than normal cards. Keep this scoped to real modal shells. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-modal-card,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-status-modal-card {
+	background: var(--lb-modal-bg) !important;
+	background-color: var(--lb-modal-bg) !important;
+	color: var(--lb-modal-text) !important;
+	-webkit-text-fill-color: var(--lb-modal-text) !important;
+	border: 1px solid var(--lb-modal-border) !important;
+	box-shadow: var(--lb-modal-shadow) !important;
+	backdrop-filter: blur(14px) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(14px) saturate(160%) !important;
 	text-shadow: none !important;
 }
 
-/* Modal header/title without dedicated class */
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) div:has(> .lb-modal-content) > div:first-child,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) div:has(> .lb-modal-content) > div:first-child span {
-	color: #111827 !important;
-	-webkit-text-fill-color: #111827 !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal::backdrop {
+	background: var(--lb-modal-overlay-bg) !important;
+	backdrop-filter: blur(2px) !important;
+	-webkit-backdrop-filter: blur(2px) !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-modal,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-status-modal {
+	background: var(--lb-modal-overlay-bg) !important;
+	backdrop-filter: blur(2px) !important;
+	-webkit-backdrop-filter: blur(2px) !important;
+}
+
+/* Modal text */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal *,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-modal-card,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-modal-card *,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-status-modal-card,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-status-modal-card * {
+	color: var(--lb-modal-text) !important;
+	-webkit-text-fill-color: var(--lb-modal-text) !important;
 	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal-content p,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal-content div,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-modal-card p,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-modal-card div:not(.cfw-modal-actions),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-status-modal-hint {
+	color: var(--lb-modal-muted-text) !important;
+	-webkit-text-fill-color: var(--lb-modal-muted-text) !important;
+}
+
+/* Preserve button text colors inside modal action rows. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-modal .lb-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-modal-card .lb-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-status-modal-card .lb-btn {
+	-webkit-text-fill-color: currentColor !important;
 }
 
 /* =========================================================
@@ -1744,40 +1834,31 @@ body.theme-liquid-glass input[type="radio"][data-role="none"]:checked + label:ho
 /* =========================================================
    19. Liquid Glass - CSS Framework Design Studio status windows
    ---------------------------------------------------------
-   Keep the static Studio and AI status blocks readable on the
-   wallpaper. Color/background only; no geometry changes.
+   Keep the static Studio and AI status blocks on the same
+   modal glass background as the save dialog. Only the Liquid
+   Glass label text is forced dark for readability; no geometry,
+   border or shadow changes.
    ========================================================= */
 
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window {
-	background: var(--lb-input-bg) !important;
-	background-color: var(--lb-input-bg) !important;
+	background: var(--lb-modal-bg) !important;
+	background-color: var(--lb-modal-bg) !important;
 	background-image: none !important;
-	border-color: var(--lb-input-border) !important;
-	color: var(--lb-text) !important;
-	-webkit-text-fill-color: var(--lb-text) !important;
-	box-shadow: var(--lb-card-shadow) !important;
-	text-shadow: none !important;
 }
 
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status-label,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label {
-	background: var(--lb-btn-bg) !important;
-	background-color: var(--lb-btn-bg) !important;
-	background-image: none !important;
-	border-color: var(--lb-input-border) !important;
-	color: var(--lb-text) !important;
-	-webkit-text-fill-color: var(--lb-text) !important;
-	text-shadow: none !important;
-}
-
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status,
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status {
 	background: transparent !important;
 	background-color: transparent !important;
-	color: inherit;
-	-webkit-text-fill-color: currentColor;
-	text-shadow: none !important;
+	background-image: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status-label,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label {
+	color: #000000 !important;
 }
 
 

@@ -48,16 +48,27 @@ sub _respond {
     exit;
 }
 
+sub _error_payload {
+    my ($key, $fallback, $values) = @_;
+    $values = {} if ref($values) ne 'HASH';
+    return {
+        ok           => JSON::PP::false,
+        error_key    => $key,
+        error        => $fallback,
+        error_values => $values,
+    };
+}
+
 for my $dir ($theme_json_dir, $theme_dir, $manifest_dir) {
     if (!-d $dir) {
         eval { make_path($dir, { mode => 0775 }); 1 }
-            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot create directory: $dir" });
+            or _respond('500 Internal Server Error', _error_payload('cannotCreateDirectory', 'cannotCreateDirectory', { path => $dir }));
     }
 }
 
 my $raw = do { local $/; <STDIN> };
 my $data = eval { decode_json($raw || '{}') };
-_respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid JSON payload' }) if $@ || ref($data) ne 'HASH';
+_respond('400 Bad Request', _error_payload('invalidJsonPayload', 'invalidJsonPayload', {})) if $@ || ref($data) ne 'HASH';
 
 sub _normalize_name {
     my ($name) = @_;
@@ -91,6 +102,16 @@ sub _inc_patch {
 my $name = _normalize_name($data->{name});
 my $id = _theme_id_from_name($name);
 
+sub _is_protected_studio_theme_id {
+    my ($theme_id) = @_;
+    $theme_id = defined $theme_id ? lc("$theme_id") : '';
+    return $theme_id eq 'theme-user-liquid-glass';
+}
+
+if (_is_protected_studio_theme_id($id)) {
+    _respond('403 Forbidden', _error_payload('protectedPackageTheme', 'protectedPackageTheme', { theme => 'Liquid Glass', id => $id }));
+}
+
 my $version = $data->{version} || '0.1.0';
 $version =~ s/^\s+|\s+$//g;
 $version = '0.1.0' if $version !~ /^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9_.-]+)?$/;
@@ -123,7 +144,7 @@ if (-f $json_path) {
     my $stamp = strftime('%Y%m%d-%H%M%S', localtime);
     my $bak = "$theme_json_dir/$id.$stamp.v$version.json.bak";
     if (!move($json_path, $bak)) {
-        _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot backup previous JSON: $json_path" });
+        _respond('500 Internal Server Error', _error_payload('cannotBackupPreviousJson', 'cannotBackupPreviousJson', { path => $json_path }));
     }
     chmod 0664, $bak;
     $previous_backup = $bak;
@@ -186,6 +207,65 @@ sub _force_opaque_theme_tokens {
     my ($token, $value) = @_;
     return _make_css_color_opaque($value) if defined $token && $token eq '--lb-sidebar-bg';
     return $value;
+}
+
+sub _normalize_hex_color {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/^\s+|\s+$//g;
+    if ($value =~ /^#([0-9a-fA-F]{3})$/) {
+        my @c = split(//, lc($1));
+        return '#' . $c[0] . $c[0] . $c[1] . $c[1] . $c[2] . $c[2];
+    }
+    if ($value =~ /^#([0-9a-fA-F]{6})$/) {
+        return '#' . lc($1);
+    }
+    if ($value =~ /^rgba?\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i) {
+        my ($r, $g, $b) = (int($1), int($2), int($3));
+        $r = 0 if $r < 0; $r = 255 if $r > 255;
+        $g = 0 if $g < 0; $g = 255 if $g > 255;
+        $b = 0 if $b < 0; $b = 255 if $b > 255;
+        return sprintf('#%02x%02x%02x', $r, $g, $b);
+    }
+    return '';
+}
+
+sub _is_classic_loxberry_green {
+    my ($value) = @_;
+    my $hex = _normalize_hex_color($value);
+    return $hex eq '#6dac20' || $hex eq '#5a9418' || $hex eq '#4a7a12';
+}
+
+sub _first_clean_token_value {
+    my ($tokens, @names) = @_;
+    for my $name (@names) {
+        next if !defined $tokens->{$name};
+        my $value = "$tokens->{$name}";
+        $value =~ s/^\s+|\s+$//g;
+        return $value if $value ne '';
+    }
+    return '';
+}
+
+sub _sync_primary_slider_value_tokens {
+    my ($tokens) = @_;
+    return if ref($tokens) ne 'HASH';
+    my $candidate = _first_clean_token_value($tokens,
+        '--lb-btn-primary-bg',
+        '--lb-active-bg',
+        '--lb-btn-group-active-bg',
+        '--lb-slider-fill-bg',
+        '--lb-slider-active-bg',
+        '--lb-range-active-bg'
+    );
+    my $primary = _first_clean_token_value($tokens, '--lb-primary');
+    if ($candidate ne '' && ($primary eq '' || (_is_classic_loxberry_green($primary) && !_is_classic_loxberry_green($candidate)))) {
+        $tokens->{'--lb-primary'} = $candidate;
+        $primary = $candidate;
+    }
+    if ($primary ne '') {
+        $tokens->{'--lb-slider-value-text'} = 'var(--lb-primary)';
+    }
 }
 
 my $custom_css = _normalize_custom_css_value($data->{custom_css});
@@ -275,16 +355,16 @@ sub _write_wallpaper_asset {
         $b64 =~ s/\s+//g;
         my $raw = eval { decode_base64($b64) };
         if ($@ || !defined $raw || length($raw) < 16) {
-            _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid wallpaper image data.' });
+            _respond('400 Bad Request', _error_payload('invalidWallpaperImageData', 'invalidWallpaperImageData', {}));
         }
 
         # Guard against accidentally storing huge JSON uploads.
         if (length($raw) > 8 * 1024 * 1024) {
-            _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Wallpaper image is too large. Maximum is 8 MB.' });
+            _respond('400 Bad Request', _error_payload('wallpaperTooLarge', 'wallpaperTooLarge', {}));
         }
 
         eval { make_path($dir, { mode => 0775 }) if !-d $dir; 1 }
-            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot create wallpaper asset directory: $dir" });
+            or _respond('500 Internal Server Error', _error_payload('cannotCreateWallpaperAssetDirectory', 'cannotCreateWallpaperAssetDirectory', { path => $dir }));
 
         # Remove old wallpaper files with a different extension to avoid stale assets.
         for my $old_ext (qw(png jpg jpeg webp gif)) {
@@ -293,13 +373,13 @@ sub _write_wallpaper_asset {
         }
 
         open(my $fh, '>', $tmp)
-            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot write wallpaper asset: $path" });
+            or _respond('500 Internal Server Error', _error_payload('cannotWriteWallpaperAsset', 'cannotWriteWallpaperAsset', { path => $path }));
         binmode $fh;
         print {$fh} $raw;
         close($fh);
         chmod 0664, $tmp;
         move($tmp, $path)
-            or _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot finalize wallpaper asset: $path" });
+            or _respond('500 Internal Server Error', _error_payload('cannotFinalizeWallpaperAsset', 'cannotFinalizeWallpaperAsset', { path => $path }));
         chmod 0664, $path;
 
         return $rel;
@@ -354,15 +434,13 @@ for my $token (sort keys %{$tokens}) {
     $value = _force_opaque_theme_tokens($token, $value);
     $clean_tokens{$token} = $value;
 }
+_sync_primary_slider_value_tokens(\%clean_tokens) if keys(%clean_tokens);
 
 my $meaningful_custom_css = $custom_css;
 $meaningful_custom_css =~ s{/\*[\s\S]*?\*/}{}g;
 $meaningful_custom_css =~ s/^\s+|\s+$//g;
 if (!keys(%clean_tokens) && $meaningful_custom_css eq '' && !$wallpaper->{enabled}) {
-    _respond('400 Bad Request', {
-        ok => JSON::PP::false,
-        error => 'No theme tokens or usable custom CSS received. CSS would be empty.'
-    });
+    _respond('400 Bad Request', _error_payload('emptyTheme', 'emptyTheme', {}));
 }
 
 my $css_file = "$id.css";
@@ -589,16 +667,15 @@ $css .= "body.$id input[type=radio], .$id input[type=radio] {\n";
 $css .= "  accent-color: var(--lb-radio-checked-bg, var(--lb-primary, var(--lb-active-bg, #007aff))) !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-slider, .$id .lb-slider {\n";
-$css .= "  --lb-slider-fill-bg: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))));\n";
-$css .= "  --lb-slider-track-bg: var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22))));\n";
-$css .= "  accent-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))) !important;\n";
+$css .= "  /* V225: prefer explicit slider tokens; older themes fall back to their own active/button/primary color. */\n";
+$css .= "  accent-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-slider::-webkit-slider-runnable-track, .$id .lb-slider::-webkit-slider-runnable-track {\n";
 $css .= "  height: var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) !important;\n";
 $css .= "  min-height: 0 !important;\n";
 $css .= "  border-radius: var(--lb-slider-track-radius, 999px) !important;\n";
 $css .= "  box-sizing: border-box !important;\n";
-$css .= "  background: linear-gradient(to right, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) 0%, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) 100%) !important;\n";
+$css .= "  background: linear-gradient(to right, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) 0%, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) 100%) !important;\n";
 $css .= "  border-color: var(--lb-slider-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-slider::-moz-range-track, .$id .lb-slider::-moz-range-track {\n";
@@ -613,13 +690,13 @@ $css .= "body.$id .lb-slider::-moz-range-progress, .$id .lb-slider::-moz-range-p
 $css .= "  height: var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) !important;\n";
 $css .= "  min-height: 0 !important;\n";
 $css .= "  border-radius: var(--lb-slider-track-radius, 999px) !important;\n";
-$css .= "  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-slider::-webkit-slider-thumb, .$id .lb-slider::-webkit-slider-thumb {\n";
 $css .= "  margin-top: var(--lb-slider-thumb-offset, calc((var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) - var(--lb-slider-thumb-size, 20px)) / 2)) !important;\n";
 $css .= "  width: var(--lb-slider-thumb-size, 20px) !important;\n";
 $css .= "  height: var(--lb-slider-thumb-size, 20px) !important;\n";
-$css .= "  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))))))) !important;\n";
 $css .= "  border-width: var(--lb-slider-thumb-border-width, 3px) !important;\n";
 $css .= "  border-style: solid !important;\n";
 $css .= "  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)) !important;\n";
@@ -629,7 +706,7 @@ $css .= "}\n";
 $css .= "body.$id .lb-slider::-moz-range-thumb, .$id .lb-slider::-moz-range-thumb {\n";
 $css .= "  width: var(--lb-slider-thumb-size, 20px) !important;\n";
 $css .= "  height: var(--lb-slider-thumb-size, 20px) !important;\n";
-$css .= "  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))))))) !important;\n";
 $css .= "  border-width: var(--lb-slider-thumb-border-width, 3px) !important;\n";
 $css .= "  border-style: solid !important;\n";
 $css .= "  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)) !important;\n";
@@ -637,7 +714,7 @@ $css .= "  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25)) 
 $css .= "  box-sizing: border-box !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-slider::-webkit-slider-thumb:hover, .$id .lb-slider::-webkit-slider-thumb:hover, body.$id .lb-slider::-moz-range-thumb:hover, .$id .lb-slider::-moz-range-thumb:hover {\n";
-$css .= "  box-shadow: var(--lb-slider-thumb-hover-shadow, 0 0 0 7px var(--lb-focus-ring-strong, rgba(109,172,32,.18)), var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25))) !important;\n";
+$css .= "  box-shadow: var(--lb-slider-thumb-hover-shadow, 0 0 0 7px var(--lb-focus-ring-strong, rgba(37,99,235,.18)), var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25))) !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-tooltip, body.$id [role=tooltip], .$id .lb-tooltip, .$id [role=tooltip] {\n";
 $css .= "  background-color: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;\n";
@@ -675,11 +752,11 @@ for my $item (@writes) {
     my ($file, $content) = @{$item};
     my $fh;
     if (!open($fh, '>:encoding(UTF-8)', $file)) {
-        _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot write file: $file" });
+        _respond('500 Internal Server Error', _error_payload('cannotWriteFile', 'cannotWriteFile', { path => $file }));
     }
     print {$fh} $content;
     if (!close($fh)) {
-        _respond('500 Internal Server Error', { ok => JSON::PP::false, error => "Cannot close/write file: $file" });
+        _respond('500 Internal Server Error', _error_payload('cannotCloseWriteFile', 'cannotCloseWriteFile', { path => $file }));
     }
     chmod 0664, $file;
 }
@@ -687,10 +764,7 @@ for my $item (@writes) {
 my $orphan_css_deleted = _cleanup_orphan_studio_css();
 
 if (!-f "$theme_dir/$css_file" || -s "$theme_dir/$css_file" <= 0) {
-    _respond('500 Internal Server Error', {
-        ok => JSON::PP::false,
-        error => "CSS was not created or is empty: $theme_dir/$css_file"
-    });
+    _respond('500 Internal Server Error', _error_payload('cssNotCreatedOrEmpty', 'cssNotCreatedOrEmpty', { path => "$theme_dir/$css_file" }));
 }
 
 

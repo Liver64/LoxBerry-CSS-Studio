@@ -61,11 +61,11 @@
 .cfw-preview .lb-button { background:var(--cfw-preview-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06))); color:var(--cfw-preview-button-text, var(--lb-btn-text, inherit)); border:1px solid var(--lb-btn-border, rgba(0,0,0,.25)); border-radius:var(--lb-radius-button, 12px); box-shadow:var(--lb-btn-shadow, none); padding:8px 12px; }
 .cfw-preview .lb-button:hover { background:var(--lb-btn-hover-bg, var(--cfw-preview-button-bg, var(--lb-btn-bg, rgba(0,0,0,.06)))); border-color:var(--lb-btn-hover-border, var(--lb-btn-border, rgba(0,0,0,.25))); }
 .cfw-preview .lb-button-active { background:var(--lb-active-bg, #007aff); color:var(--lb-active-text, #fff); border-color:var(--lb-active-border, var(--lb-btn-border, rgba(0,0,0,.25))); }
-.cfw-range { width:100%; accent-color:var(--cfw-preview-range-accent, var(--lb-primary, var(--lb-active-bg, #007aff))); }
-.cfw-left input[type=range] { accent-color:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
-.cfw-left input[type=range]::-webkit-slider-thumb { background:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
-.cfw-left input[type=range]::-moz-range-thumb { background:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); border-color:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
-.cfw-left input[type=range]::-moz-range-progress { background:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
+.cfw-range { width:100%; accent-color:var(--cfw-preview-slider-active, var(--cfw-preview-range-accent, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, #007aff))))); }
+.cfw-left input[type=range] { accent-color:var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, #007aff))); }
+.cfw-left input[type=range]::-webkit-slider-thumb { background:var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-slider-fill-bg, #007aff))); }
+.cfw-left input[type=range]::-moz-range-thumb { background:var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, #007aff))); border-color:var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)); }
+.cfw-left input[type=range]::-moz-range-progress { background:var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, #007aff))); }
 .cfw-left input[type=color] { accent-color:var(--lb-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, Highlight))); }
 .cfw-check { display:flex; gap:8px; align-items:center; }
 .cfw-switch-row { display:flex; gap:10px; align-items:center; justify-content:space-between; }
@@ -266,13 +266,13 @@
 .cfw-preview-btn-group button[aria-pressed="true"],
 .cfw-preview .lb-btn-group button.is-active,
 .cfw-preview .lb-btn-group button.lb-active,
-.cfw-preview .lb-btn-group button[aria-pressed="true"] { background:var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)); color:var(--lb-btn-group-active-text, var(--lb-active-text, #fff)); border-color:var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--cfw-preview-btn-group-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.25)))))); }
+.cfw-preview .lb-btn-group button[aria-pressed="true"] { background:var(--cfw-preview-btn-group-active-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))); color:var(--cfw-preview-btn-group-active-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))); border-color:var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--cfw-preview-btn-group-border, var(--lb-border-color, var(--lb-border, rgba(0,0,0,.25)))))); }
 .cfw-preview-btn-group button.is-active:hover,
 .cfw-preview-btn-group button.lb-active:hover,
 .cfw-preview-btn-group button[aria-pressed="true"]:hover,
 .cfw-preview .lb-btn-group button.is-active:hover,
 .cfw-preview .lb-btn-group button.lb-active:hover,
-.cfw-preview .lb-btn-group button[aria-pressed="true"]:hover { background:var(--lb-btn-group-active-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))); color:var(--lb-btn-group-active-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))); }
+.cfw-preview .lb-btn-group button[aria-pressed="true"]:hover { background:var(--cfw-preview-btn-group-active-hover-bg, var(--lb-btn-group-active-hover-bg, var(--cfw-preview-btn-group-active-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))))); color:var(--cfw-preview-btn-group-active-hover-text, var(--lb-btn-group-active-hover-text, var(--cfw-preview-btn-group-active-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))))); }
 
 
 /* V18: Click-to-edit is primary; Mono Preview removed. */
@@ -1322,7 +1322,7 @@
 }
 
 .cfw-page.cfw-design-studio .cfw-range {
-  --cfw-range-active: var(--lb-slider-active-bg, var(--lb-primary, var(--lb-active-bg, #007aff)));
+  --cfw-range-active: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, #007aff)));
   --cfw-range-track: var(--lb-slider-bg, rgba(0,0,0,.20));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
   accent-color: var(--cfw-range-active);
@@ -1369,7 +1369,7 @@
    on the custom 6px track in WebKit/Blink browsers.
    ============================================================ */
 .cfw-page.cfw-design-studio .cfw-range {
-  --cfw-range-active: var(--lb-slider-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)));
+  --cfw-range-active: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, #007aff)));
   --cfw-range-track: var(--lb-slider-bg, rgba(0,0,0,.22));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
   --cfw-range-thumb-border: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff));
@@ -1465,7 +1465,7 @@
    slider-specific tokens only.
    ============================================================ */
 .cfw-page.cfw-design-studio .cfw-range {
-  --cfw-range-active: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))));
+  --cfw-range-active: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, #007aff)));
   --cfw-range-track: var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22))));
   --cfw-range-thumb: var(--lb-slider-thumb-bg, var(--cfw-range-active));
   --cfw-range-thumb-border: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff));
@@ -1928,9 +1928,10 @@
 }
 
 
-/* V150/V163/V168: Workspace hint, selection breadcrumb and static status blocks.
+/* V150/V163/V168/V225: Workspace hint, selection breadcrumb and static status blocks.
    Studio status geometry is kept identical to the confirmed V163 behavior.
-   AI status uses the same fixed HTML structure; JavaScript only writes messages. */
+   AI status uses the same fixed HTML structure; JavaScript only writes messages.
+   Liquid Glass-specific status backgrounds are handled by the Liquid Glass theme. */
 .cfw-page.cfw-design-studio .cfw-preview-work-hint {
   margin-bottom: 0 !important;
 }
@@ -1961,6 +1962,7 @@
   overflow: hidden !important;
   padding: 0 !important;
 }
+
 
 #studioStatusBar.cfw-status-window .cfw-status-table,
 #aiStatusBar.cfw-status-window .cfw-status-table {
@@ -2064,7 +2066,7 @@
   border-color: var(--cfw-preview-textarea-border, var(--lb-textarea-border, var(--lb-input-border, rgba(0,0,0,.25)))) !important;
 }
 .cfw-page.cfw-design-studio .cfw-form-card .cfw-range {
-  --cfw-range-active: var(--cfw-preview-slider-active, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, #007aff)))));
+  --cfw-range-active: var(--cfw-preview-slider-active, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, #007aff))));
   --cfw-range-track: var(--cfw-preview-slider-track, var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22)))));
   --cfw-range-thumb: var(--cfw-preview-slider-thumb, var(--lb-slider-thumb-bg, var(--cfw-range-active)));
   --cfw-range-thumb-border: var(--cfw-preview-slider-thumb-border, var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)));
@@ -2180,8 +2182,8 @@
 .cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button.is-active,
 .cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button.lb-active,
 .cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button[aria-pressed="true"] {
-  background: var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff)) !important;
-  color: var(--lb-btn-group-active-text, var(--lb-active-text, #fff)) !important;
+  background: var(--cfw-preview-btn-group-active-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
+  color: var(--cfw-preview-btn-group-active-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;
 }
 
 /* V178: Restore fixed Logmanager/status cell colors exactly like Logmanager defaults.

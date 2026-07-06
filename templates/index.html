@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=<TMPL_VAR VERSION>-v181">
+<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=<TMPL_VAR VERSION>-v233">
 <script>window.LBLANG = "<TMPL_VAR LBLANG>"; window.CFW_LANGUAGE = window.LBLANG;</script>
 <script><TMPL_VAR LANG_DE_JS ESCAPE=NONE></script>
 <script><TMPL_VAR LANG_EN_JS ESCAPE=NONE></script>
@@ -10,7 +10,7 @@
     <div class="cfw-toolbar-title">
       <div class="cfw-title-line">
         <h1 data-i18n="studio.title"></h1>
-        <span class="cfw-powered-by">Powered by Puter.js</span>
+        <span class="cfw-powered-by" data-i18n="ai.poweredBy"></span>
       </div>
       <p data-i18n="studio.subtitle"></p>
     </div>
@@ -20,7 +20,7 @@
           <option value="" data-i18n="toolbar.currentPreviewNewTheme"></option>
         </select>
       </label>
-      <button type="button" id="undoTheme" class="cfw-button" data-role="none" disabled title="Letzte Änderung rückgängig machen" data-i18n="main.buttons.undo">↶ Rückgängig</button>
+      <button type="button" id="undoTheme" class="cfw-button" data-role="none" disabled title="" data-i18n="main.buttons.undo" data-i18n-attr="title:undo.availableTitle">↶ Rückgängig</button>
       <button type="button" id="saveTheme" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.save"></button>
       <button type="button" id="deleteTheme" class="cfw-button" data-role="none" data-i18n="main.buttons.delete"></button>
     </div>
@@ -73,8 +73,8 @@
         <h2 data-i18n="settings.title"></h2>
         <div class="cfw-control-grid cfw-control-grid-simple">
           <div class="cfw-label cfw-color-setting"><span data-i18n="settings.color"></span>
-            <div id="colorPresetPalette" class="cfw-color-preset-palette" aria-label="Farbpalette"></div>
-            <input id="colorPicker" class="cfw-native-color-input" type="color" value="#007aff" data-role="none" aria-label="Eigene Farbe wählen">
+            <div id="colorPresetPalette" class="cfw-color-preset-palette" aria-label="" data-i18n-attr="aria-label:palette.ariaLabel"></div>
+            <input id="colorPicker" class="cfw-native-color-input" type="color" value="#007aff" data-role="none" aria-label="" data-i18n-attr="aria-label:palette.customColorAria">
           </div>
           <label class="cfw-label"><span data-i18n="settings.radius"></span>
             <input id="radiusRange" type="range" min="0" max="36" value="12" data-role="none">
@@ -159,9 +159,7 @@
         <div id="importSummary" class="cfw-status cfw-import-summary" hidden></div>
         <details class="cfw-advanced">
           <summary data-i18n="import.showCustomCss"></summary>
-          <textarea id="customCss" rows="8" spellcheck="false" data-role="none">/* USER CUSTOM CSS START */
-/* Eigene Ergänzungen bleiben beim Speichern erhalten. */
-/* USER CUSTOM CSS END */</textarea>
+          <textarea id="customCss" rows="8" spellcheck="false" data-role="none" data-i18n="customCss.defaultText"></textarea>
         </details>
       </section>
     </aside>
@@ -210,7 +208,7 @@
                 <label data-cfw-area="Slider" data-cfw-element="Standard Slider" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.slider"><span data-i18n="preview.forms.slider"></span> <input class="cfw-range" type="range" value="60" data-role="none"></label>
                 <label class="cfw-check" data-cfw-area="Checkboxen" data-cfw-element="Standard Checkbox" data-cfw-group="Active" data-i18n-attr="title:preview.edit.checkbox"><input type="checkbox" checked> <span data-i18n="preview.forms.checkbox"></span></label>
                 <label class="cfw-check" data-cfw-area="Radio" data-cfw-element="Standard Radio" data-cfw-group="Active" data-i18n-attr="title:preview.edit.radio"><input type="radio" checked> <span data-i18n="preview.forms.radio"></span></label>
-                <label class="cfw-switch-row" data-cfw-area="Toggle" data-cfw-element="Standard Toggle" data-cfw-group="Active" data-i18n-attr="title:preview.edit.toggle"><span data-i18n="preview.forms.toggle"></span> <span class="cfw-toggle-demo-pair"><span class="cfw-switch" title="Off / Hintergrund"><input type="checkbox"><span></span></span><span class="cfw-switch" title="On / Active"><input type="checkbox" checked><span></span></span></span></label>
+                <label class="cfw-switch-row" data-cfw-area="Toggle" data-cfw-element="Standard Toggle" data-cfw-group="Active" data-i18n-attr="title:preview.edit.toggle"><span data-i18n="preview.forms.toggle"></span> <span class="cfw-toggle-demo-pair"><span class="cfw-switch" title="" data-i18n-attr="title:preview.toggleOffTitle"><input type="checkbox"><span></span></span><span class="cfw-switch" title="" data-i18n-attr="title:preview.toggleOnTitle"><input type="checkbox" checked><span></span></span></span></label>
               </div>
             </section>
             <table class="lb-table cfw-preview-table" data-cfw-area="tabellen" data-cfw-element="Standard Tabelle" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.table">
@@ -268,7 +266,7 @@
             <textarea id="aiPrompt" rows="8" spellcheck="true" data-role="none" data-i18n="ai.defaultPrompt"></textarea>
           </label>
 
-          <div class="cfw-ai-color-direction" aria-label="KI Farbrichtung">
+          <div class="cfw-ai-color-direction" aria-label="" data-i18n-attr="aria-label:ai.colorDirectionAria">
             <div class="cfw-ai-color-direction-title" data-i18n="ai.colorDirection"></div>
             <div id="aiColorPresetPalette" class="cfw-ai-color-preset-palette"></div>
             <p class="cfw-hint cfw-ai-color-direction-hint" data-i18n="ai.colorDirectionHint"></p>
@@ -383,4 +381,4 @@ window.CFW_COLOR_STYLE_MAP = <TMPL_VAR COLOR_STYLE_MAP_JSON ESCAPE=NONE>;
 <script src="/plugins/cssframework/js/ai-guard.js?v=<TMPL_VAR VERSION>"></script>
 <script src="/plugins/cssframework/js/ai-assistant.js?v=<TMPL_VAR VERSION>"></script>
 <script src="/plugins/cssframework/js/cfw-theme-state.js?v=<TMPL_VAR VERSION>"></script>
-<script src="/plugins/cssframework/js/design-studio.js?v=<TMPL_VAR VERSION>-v181"></script>
+<script src="/plugins/cssframework/js/design-studio.js?v=<TMPL_VAR VERSION>-v233"></script>

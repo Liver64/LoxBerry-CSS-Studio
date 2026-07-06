@@ -90,6 +90,7 @@ body.theme-user-burgundy-calm,
   --lb-slider-fill-bg: #800000;
   --lb-slider-thumb-bg: #800000;
   --lb-slider-track-bg: #f5bcbc;
+  --lb-slider-value-text: var(--lb-primary);
   --lb-tab-popup-item-hover-bg: #6b0000;
   --lb-table-bg: #ffffff;
   --lb-table-border: var(--lb-border-color);
@@ -114,7 +115,7 @@ body.theme-user-burgundy-calm,
 }
 
 /* USER CUSTOM CSS START */
-/* Eigene ErgÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
+/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
 /* USER CUSTOM CSS END */
 
 /* DESIGN STUDIO RULES START */
@@ -254,16 +255,15 @@ body.theme-user-burgundy-calm input[type=radio], .theme-user-burgundy-calm input
   accent-color: var(--lb-radio-checked-bg, var(--lb-primary, var(--lb-active-bg, #007aff))) !important;
 }
 body.theme-user-burgundy-calm .lb-slider, .theme-user-burgundy-calm .lb-slider {
-  --lb-slider-fill-bg: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))));
-  --lb-slider-track-bg: var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22))));
-  accent-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))) !important;
+  /* V225: prefer explicit slider tokens; older themes fall back to their own active/button/primary color. */
+  accent-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) !important;
 }
 body.theme-user-burgundy-calm .lb-slider::-webkit-slider-runnable-track, .theme-user-burgundy-calm .lb-slider::-webkit-slider-runnable-track {
   height: var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) !important;
   min-height: 0 !important;
   border-radius: var(--lb-slider-track-radius, 999px) !important;
   box-sizing: border-box !important;
-  background: linear-gradient(to right, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) 0%, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) 100%) !important;
+  background: linear-gradient(to right, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) 0%, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) 100%) !important;
   border-color: var(--lb-slider-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;
 }
 body.theme-user-burgundy-calm .lb-slider::-moz-range-track, .theme-user-burgundy-calm .lb-slider::-moz-range-track {
@@ -278,13 +278,13 @@ body.theme-user-burgundy-calm .lb-slider::-moz-range-progress, .theme-user-burgu
   height: var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) !important;
   min-height: 0 !important;
   border-radius: var(--lb-slider-track-radius, 999px) !important;
-  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;
+  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) !important;
 }
 body.theme-user-burgundy-calm .lb-slider::-webkit-slider-thumb, .theme-user-burgundy-calm .lb-slider::-webkit-slider-thumb {
   margin-top: var(--lb-slider-thumb-offset, calc((var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) - var(--lb-slider-thumb-size, 20px)) / 2)) !important;
   width: var(--lb-slider-thumb-size, 20px) !important;
   height: var(--lb-slider-thumb-size, 20px) !important;
-  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;
+  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))))))) !important;
   border-width: var(--lb-slider-thumb-border-width, 3px) !important;
   border-style: solid !important;
   border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)) !important;
@@ -294,7 +294,7 @@ body.theme-user-burgundy-calm .lb-slider::-webkit-slider-thumb, .theme-user-burg
 body.theme-user-burgundy-calm .lb-slider::-moz-range-thumb, .theme-user-burgundy-calm .lb-slider::-moz-range-thumb {
   width: var(--lb-slider-thumb-size, 20px) !important;
   height: var(--lb-slider-thumb-size, 20px) !important;
-  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;
+  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))))))) !important;
   border-width: var(--lb-slider-thumb-border-width, 3px) !important;
   border-style: solid !important;
   border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)) !important;
@@ -302,7 +302,7 @@ body.theme-user-burgundy-calm .lb-slider::-moz-range-thumb, .theme-user-burgundy
   box-sizing: border-box !important;
 }
 body.theme-user-burgundy-calm .lb-slider::-webkit-slider-thumb:hover, .theme-user-burgundy-calm .lb-slider::-webkit-slider-thumb:hover, body.theme-user-burgundy-calm .lb-slider::-moz-range-thumb:hover, .theme-user-burgundy-calm .lb-slider::-moz-range-thumb:hover {
-  box-shadow: var(--lb-slider-thumb-hover-shadow, 0 0 0 7px var(--lb-focus-ring-strong, rgba(109,172,32,.18)), var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25))) !important;
+  box-shadow: var(--lb-slider-thumb-hover-shadow, 0 0 0 7px var(--lb-focus-ring-strong, rgba(37,99,235,.18)), var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25))) !important;
 }
 body.theme-user-burgundy-calm .lb-tooltip, body.theme-user-burgundy-calm [role=tooltip], .theme-user-burgundy-calm .lb-tooltip, .theme-user-burgundy-calm [role=tooltip] {
   background-color: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;

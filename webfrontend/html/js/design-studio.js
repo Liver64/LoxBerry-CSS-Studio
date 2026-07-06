@@ -148,6 +148,19 @@
     return text;
   }
 
+
+  function tx(path, values) {
+    return t(path, path, values);
+  }
+
+  function localizedServerError(json, fallbackKey, values) {
+    var key = fallbackKey || 'serverErrors.generic';
+    if (json && json.error_key) {
+      return t('serverErrors.' + json.error_key, key, json.error_values || values || {});
+    }
+    return t(key, key, values || {});
+  }
+
   function applyI18n(root) {
     root = root || document;
     root.querySelectorAll('[data-i18n]').forEach(function (node) {
@@ -497,22 +510,24 @@
   };
 
   var propertyPaletteDefaults = {
-    'Grundfarbe': ['#f7f7f7', '#ffffff', '#e5e5e5', '#6dac20', '#3d3d3d', '#171717'],
+    // V223: Neutral emergency fallbacks only. The Vorschaufarben block must never
+    // inject the old LoxBerry green when a loaded/generated theme lacks samples.
+    'Grundfarbe': ['#f7f7f7', '#ffffff', '#e5e5e5', '#2563eb', '#3d3d3d', '#171717'],
     'Textfarbe': ['#171717', '#404040', '#737373', '#ffffff', '#f5f5f5', '#000000'],
     'Hintergrund': ['#ffffff', '#f7f7f7', '#f5f5f5', '#e5e5e5', '#3d3d3d', '#171717'],
-    'Rahmen': ['#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373', '#6dac20', '#404040'],
-    'Hover': ['#f5f5f5', '#e5e5e5', '#edf6e7', '#d4d4d4', '#5a9418', '#404040'],
-    'Active': ['#6dac20', '#5a9418', '#4a7a12', '#3d3d3d', '#ffffff', '#171717'],
-    'Buttonfarbe': ['#6dac20', '#5a9418', '#4a7a12', '#8b5e34', '#3d3d3d', '#171717'],
+    'Rahmen': ['#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373', '#2563eb', '#404040'],
+    'Hover': ['#f5f5f5', '#e5e5e5', '#dbeafe', '#d4d4d4', '#1d4ed8', '#404040'],
+    'Active': ['#2563eb', '#1d4ed8', '#1e40af', '#3d3d3d', '#ffffff', '#171717'],
+    'Buttonfarbe': ['#2563eb', '#1d4ed8', '#1e40af', '#8b5e34', '#3d3d3d', '#171717'],
     'Button-Textfarbe': ['#ffffff', '#f5f5f5', '#171717', '#000000', '#3d3d3d', '#737373'],
     'Hover Textfarbe': ['#ffffff', '#f5f5f5', '#171717', '#000000', '#3d3d3d', '#737373'],
-    'Header': ['#ffffff', '#f7f7f7', '#e5e5e5', '#6dac20', '#3d3d3d', '#171717'],
+    'Header': ['#ffffff', '#f7f7f7', '#e5e5e5', '#2563eb', '#3d3d3d', '#171717'],
     'Disabled': ['#f5f5f5', '#eeeeee', '#d4d4d4', '#a3a3a3', '#737373', '#404040'],
-    'Focus': ['#6dac20', '#5a9418', '#4a7a12', '#737373', '#404040', '#171717'],
-    'Schatten': ['#000000', '#171717', '#404040', '#737373', '#3d3d3d', '#6dac20'],
-    'Radius': ['#6dac20', '#5a9418', '#737373', '#404040', '#171717', '#ffffff'],
+    'Focus': ['#2563eb', '#1d4ed8', '#1e40af', '#737373', '#404040', '#171717'],
+    'Schatten': ['#000000', '#171717', '#404040', '#737373', '#3d3d3d', '#2563eb'],
+    'Radius': ['#2563eb', '#1d4ed8', '#737373', '#404040', '#171717', '#ffffff'],
     'Transparenz': ['#ffffff', '#f7f7f7', '#e5e5e5', '#737373', '#404040', '#171717'],
-    'Knopf': ['#e6e6e6', '#d4d4d4', '#6dac20', '#5a9418', '#ffffff', '#171717'],
+    'Knopf': ['#e6e6e6', '#d4d4d4', '#2563eb', '#1d4ed8', '#ffffff', '#171717'],
     'Abdunklung': ['#000000', '#171717', '#3d3d3d', '#404040', '#737373', '#a3a3a3'],
     'Unschärfe': ['#ffffff', '#f7f7f7', '#f5f5f5', '#e5e5e5', '#d4d4d4', '#737373']
   };
@@ -566,10 +581,7 @@
   }
 
   function statusModalTitleFallback(kind) {
-    if (kind === 'error') return 'Fehler';
-    if (kind === 'success') return 'OK';
-    if (kind === 'warning') return 'Hinweis';
-    return 'Hinweis';
+    return statusModalTitleKey(kind);
   }
 
   function statusModalIconValue(kind) {
@@ -600,12 +612,12 @@
 
     if (statusModalActions) statusModalActions.hidden = timeout > 0;
     if (statusModalBack) {
-      statusModalBack.textContent = t(kind === 'error' ? 'main.buttons.back' : 'main.buttons.ok', kind === 'error' ? 'Zurück' : 'OK');
+      statusModalBack.textContent = tx(kind === 'error' ? 'main.buttons.back' : 'main.buttons.ok');
     }
     if (statusModalHint) {
       statusModalHint.textContent = timeout > 0
-        ? t('statusModal.autoCloseHint', 'Diese Meldung schließt automatisch.')
-        : t('statusModal.manualCloseHint', 'Bitte bestätigen.');
+        ? tx('statusModal.autoCloseHint')
+        : tx('statusModal.manualCloseHint');
     }
 
     statusModal.hidden = false;
@@ -652,6 +664,19 @@
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
     return 'theme-user-' + (slug || 'theme');
+  }
+
+  function isProtectedStudioThemeId(id) {
+    id = String(id || '').trim().toLowerCase();
+    return id === 'theme-user-liquid-glass';
+  }
+
+  function protectedStudioThemeMessage(id) {
+    return t(
+      'messages.protectedPackageTheme',
+      'messages.protectedPackageTheme',
+      { theme: tx('saveModal.baseLiquidGlass'), id: id || 'theme-user-liquid-glass' }
+    );
   }
 
   function semverPatchPlus(version) {
@@ -793,7 +818,7 @@
 
   function requireColorEditTarget() {
     if (canEditCurrentColorTarget()) return true;
-    setStatus(t('messages.selectElementFirst', 'Bitte zuerst ein Element im Arbeitsbereich / Vorschau oder im Eigenschaftenbereich auswählen.'), false, 'info', { modal: 'manual' });
+    setStatus(tx('messages.selectElementFirst'), false, 'info', { modal: 'manual' });
     return false;
   }
 
@@ -861,7 +886,7 @@
     if (!prompt || !item) return;
     var label = aiColorDirectionLabel(item);
     if (!label) return;
-    var line = t('ai.colorDirectionPrompt', 'Verwende als Farbrichtung: {color}.', { color: label });
+    var line = t('ai.colorDirectionPrompt', 'ai.colorDirectionPrompt', { color: label });
     var text = String(prompt.value || '').trim();
     var deRe = /^Verwende als Farbrichtung: .+\.$/im;
     var enRe = /^Use this color direction: .+\.$/im;
@@ -938,13 +963,21 @@
     return tokens;
   }
 
+  function hasExplicitPreviewThemeTokens() {
+    return Object.keys(aiImportedTokens || {}).some(function (name) {
+      return /^--lb-[a-z0-9-]+$/i.test(name) && !isBlockedToken(name);
+    });
+  }
+
   function effectivePreviewTokens(extraNames) {
     var tokens = {};
-    // V75: Initial Working-State colors come from the currently active LoxBerry
-    // theme at runtime, not from the historical demo/fallback palette. User/AI
-    // tokens and dirty workbench edits override that base afterwards.
-    Object.assign(tokens, coreTokens || {});
-    Object.assign(tokens, readRuntimeThemeTokens(extraNames) || {});
+    // V224: Runtime/Core default colors are only the initial empty-workbench base.
+    // Once a JSON/AI/imported theme is loaded, missing values must not pull the
+    // current LoxBerry green back into slider tokens or the preview palette.
+    if (!hasExplicitPreviewThemeTokens()) {
+      Object.assign(tokens, coreTokens || {});
+      Object.assign(tokens, readRuntimeThemeTokens(extraNames) || {});
+    }
     Object.assign(tokens, collectTokens() || {});
     return applyDesignRules(tokens);
   }
@@ -956,19 +989,19 @@
 
   function paletteRoleLabel(name) {
     name = String(name || '');
-    if (/text/.test(name)) return 'Text';
-    if (/border/.test(name)) return 'Rahmen';
-    if (/hover/.test(name)) return 'Hover';
-    if (/active/.test(name)) return 'Aktiv';
-    if (/primary/.test(name)) return 'Primär';
-    if (/button|btn/.test(name)) return 'Button';
-    if (/input|select|textarea/.test(name)) return 'Eingabe';
-    if (/card|panel|surface/.test(name)) return 'Fläche';
-    if (/bg|background/.test(name)) return 'Hintergrund';
-    if (/table/.test(name)) return 'Tabelle';
-    if (/sidebar/.test(name)) return 'Sidebar';
-    if (/slider|range/.test(name)) return 'Slider';
-    if (/switch|toggle|checkbox|radio/.test(name)) return 'Formular';
+    if (/text/.test(name)) return tx('palette.roles.text');
+    if (/border/.test(name)) return tx('palette.roles.border');
+    if (/hover/.test(name)) return tx('palette.roles.hover');
+    if (/active/.test(name)) return tx('palette.roles.active');
+    if (/primary/.test(name)) return tx('palette.roles.primary');
+    if (/button|btn/.test(name)) return tx('palette.roles.button');
+    if (/input|select|textarea/.test(name)) return tx('palette.roles.input');
+    if (/card|panel|surface/.test(name)) return tx('palette.roles.surface');
+    if (/bg|background/.test(name)) return tx('palette.roles.background');
+    if (/table/.test(name)) return tx('palette.roles.table');
+    if (/sidebar/.test(name)) return tx('palette.roles.sidebar');
+    if (/slider|range/.test(name)) return tx('palette.roles.slider');
+    if (/switch|toggle|checkbox|radio/.test(name)) return tx('palette.roles.form');
     return '';
   }
 
@@ -1035,22 +1068,26 @@
       if (sample.roles && sample.roles.length) sample.label = sample.roles.slice(0, 3).join(' / ');
     });
 
-    // Fallback only when no real theme colors are available.
-    var fallback = propertyPaletteDefaults[group] || propertyPaletteDefaults.Grundfarbe;
-    var fallbackIndex = 0;
-    while (samples.length < 12 && fallback.length) {
-      var fallbackColor = fallback[fallbackIndex % fallback.length];
-      var fallbackKey = normalizeHexColor(fallbackColor) || String(fallbackColor).trim().toLowerCase();
-      if (!seen[fallbackKey]) {
-        samples.push({
-          token: '',
-          label: t('preview.sampleColor', 'Beispielfarbe') + ' ' + (samples.length + 1),
-          color: fallbackColor
-        });
-        seen[fallbackKey] = true;
+    // V223: Fallback only when no real theme colors are available.
+    // Do not pad real theme palettes with historical sample colors; that made
+    // the old LoxBerry green appear in Vorschaufarben even for non-green themes.
+    if (!samples.length) {
+      var fallback = propertyPaletteDefaults[group] || propertyPaletteDefaults.Grundfarbe;
+      var fallbackIndex = 0;
+      while (samples.length < 12 && fallback.length) {
+        var fallbackColor = fallback[fallbackIndex % fallback.length];
+        var fallbackKey = normalizeHexColor(fallbackColor) || String(fallbackColor).trim().toLowerCase();
+        if (!seen[fallbackKey]) {
+          samples.push({
+            token: '',
+            label: tx('preview.sampleColor') + ' ' + (samples.length + 1),
+            color: fallbackColor
+          });
+          seen[fallbackKey] = true;
+        }
+        fallbackIndex += 1;
+        if (fallbackIndex > fallback.length * 2) break;
       }
-      fallbackIndex += 1;
-      if (fallbackIndex > fallback.length * 2) break;
     }
     return samples.slice(0, 12);
   }
@@ -1113,7 +1150,17 @@
   }
 
   function isBorderWidthGroup(group) {
-    return group === 'Rahmenstärke' || group === 'Border Width';
+    var lower = String(group || '').toLowerCase();
+    return lower === 'rahmenstärke' ||
+      lower === 'border width' ||
+      lower.indexOf('rahmenstärke') >= 0 ||
+      lower.indexOf('rahmenstaerke') >= 0 ||
+      lower.indexOf('border width') >= 0 ||
+      lower.indexOf('border-width') >= 0;
+  }
+
+  function hasBorderWidthTokens(tokens) {
+    return (tokens || []).some(function (token) { return /border-width/.test(token); });
   }
 
   function resolveBorderWidthGroupForCurrentElement() {
@@ -1130,7 +1177,7 @@
   }
 
   function updateConditionalSettingVisibility() {
-    var showBorderWidth = isBorderWidthGroup(currentGroup());
+    var showBorderWidth = isBorderWidthGroup(currentGroup()) || hasBorderWidthTokens(currentMapping());
     if (borderWidthSetting) borderWidthSetting.hidden = !showBorderWidth;
   }
 
@@ -1140,7 +1187,7 @@
     if (field === 'radius') {
       var radiusGroup = resolveRadiusGroupForCurrentElement();
       if (!radiusGroup) {
-        setStatus(t('messages.noRadiusForElement', 'Dieses Element besitzt keine Radius-Tokens.'), false, 'info', { modal: 'manual' });
+        setStatus(tx('messages.noRadiusForElement'), false, 'info', { modal: 'manual' });
         return false;
       }
 
@@ -1161,7 +1208,7 @@
     if (field === 'borderWidth') {
       var borderWidthGroup = resolveBorderWidthGroupForCurrentElement();
       if (!borderWidthGroup) {
-        setStatus(t('messages.noBorderWidthForElement', 'Dieses Element besitzt keine Rahmenstärke-Tokens.'), false, 'info', { modal: 'manual' });
+        setStatus(tx('messages.noBorderWidthForElement'), false, 'info', { modal: 'manual' });
         return false;
       }
 
@@ -1240,14 +1287,14 @@
 
   function updateWallpaperFileName(file) {
     if (!wallpaperFileName) return;
-    var fallback = t('wallpaper.noFile', 'No file selected');
+    var fallback = tx('wallpaper.noFile');
     wallpaperFileName.textContent = file && file.name ? file.name : fallback;
     wallpaperFileName.title = wallpaperFileName.textContent;
   }
 
   function updateCssImportFileName(file) {
     if (!cssImportFileName) return;
-    var fallback = t('wallpaper.noFile', 'No file selected');
+    var fallback = tx('wallpaper.noFile');
     cssImportFileName.textContent = file && file.name ? file.name : fallback;
     cssImportFileName.title = cssImportFileName.textContent;
   }
@@ -1360,6 +1407,7 @@
       alpha: 100,
       brightness: 0,
       radius: radiusRange ? parseInt(radiusRange.value || '12', 10) : 12,
+      borderWidth: borderWidthRange ? parseInt(borderWidthRange.value || '1', 10) : 1,
       shadow: 1,
       dirty: false
     };
@@ -1385,7 +1433,7 @@
   function updateUndoButton() {
     if (!undoThemeButton) return;
     undoThemeButton.disabled = undoStack.length === 0;
-    undoThemeButton.title = undoStack.length ? 'Letzte Änderung rückgängig machen' : 'Keine Änderung zum Rückgängigmachen';
+    undoThemeButton.title = undoStack.length ? tx('undo.availableTitle') : tx('undo.emptyTitle');
   }
 
   function pushUndoSnapshot(label) {
@@ -1429,7 +1477,7 @@
     refreshPreviewAndPalette();
     undoRestoring = false;
     updateUndoButton();
-    setStatus('Letzte Änderung rückgängig gemacht.', false);
+    setStatus(tx('messages.undoDone'), false);
   }
 
   function undoLastChange() {
@@ -1555,12 +1603,12 @@
     var props = Object.keys(element);
     var variantTokens = tokensForVariant(areaName, variantName);
 
-    if (selectedElementTitle) selectedElementTitle.textContent = variantName || t('directEditor.noElement', 'Kein Element gewählt');
-    if (selectedElementMeta) selectedElementMeta.textContent = props.length + ' ' + t('properties.property', 'Eigenschaften') + ' · ' + variantTokens.length + ' ' + t('tokens.tokens', 'Tokens');
+    if (selectedElementTitle) selectedElementTitle.textContent = variantName || tx('directEditor.noElement');
+    if (selectedElementMeta) selectedElementMeta.textContent = props.length + ' ' + tx('properties.property') + ' · ' + variantTokens.length + ' ' + tx('tokens.tokens');
     if (selectedTokenList) {
       selectedTokenList.innerHTML = variantTokens.length
         ? variantTokens.map(function (token) { return '<code>' + token + '</code>'; }).join(' ')
-        : '<em>' + t('inspector.noMapping', 'Keine Tokens im Mapping') + '</em>';
+        : '<em>' + tx('inspector.noMapping') + '</em>';
     }
 
     propertyInspector.innerHTML = '';
@@ -1573,10 +1621,10 @@
       item.setAttribute('data-role', 'none');
       item.setAttribute('title', tokens.join('\n'));
       var first = primaryToken(tokens);
-      var more = tokens.length > 1 ? '<span class="cfw-property-more">+' + (tokens.length - 1) + ' ' + t('inspector.moreTokens', 'weitere') + '</span>' : '';
+      var more = tokens.length > 1 ? '<span class="cfw-property-more">+' + (tokens.length - 1) + ' ' + tx('inspector.moreTokens') + '</span>' : '';
       item.innerHTML = '' +
         '<span class="cfw-property-icon">' + propertyIcon(prop) + '</span>' +
-        '<span class="cfw-property-body"><strong>' + prop + '</strong><code>' + (first || t('inspector.noToken', 'kein Token')) + '</code>' + more + '</span>';
+        '<span class="cfw-property-body"><strong>' + prop + '</strong><code>' + (first || tx('inspector.noToken')) + '</code>' + more + '</span>';
       item.addEventListener('click', function () {
         hasActiveEditorSelection = true;
         colorGroupSelect.value = prop;
@@ -1594,7 +1642,7 @@
         previewCaption.textContent = areaName + ' → ' + variantName + ' → ' + prop + ' (Direkteditor)';
         openInspectorForCurrentSelection();
       });
-      item.setAttribute('title', t('inspector.propertyTitlePrefix', 'Klick: Eigenschaft wählen · Doppelklick: Direkteditor für diese Eigenschaft öffnen') + '\n' + tokens.join('\n'));
+      item.setAttribute('title', tx('inspector.propertyTitlePrefix') + '\n' + tokens.join('\n'));
       propertyInspector.appendChild(item);
     });
   }
@@ -1700,6 +1748,16 @@
     return [
       '--cfw-preview-button-bg',
       '--cfw-preview-button-text',
+      '--cfw-preview-btn-group-border',
+      '--cfw-preview-btn-group-inactive-bg',
+      '--cfw-preview-btn-group-inactive-text',
+      '--cfw-preview-btn-group-inactive-border',
+      '--cfw-preview-btn-group-hover-bg',
+      '--cfw-preview-btn-group-hover-text',
+      '--cfw-preview-btn-group-active-bg',
+      '--cfw-preview-btn-group-active-text',
+      '--cfw-preview-btn-group-active-hover-bg',
+      '--cfw-preview-btn-group-active-hover-text',
       '--cfw-preview-card-bg',
       '--cfw-preview-card-text',
       '--cfw-preview-card-border',
@@ -1746,6 +1804,64 @@
     previewBridgeVarNames().forEach(function (name) { root.style.removeProperty(name); });
   }
 
+  function tokenAliasFallback(value) {
+    var text = String(value || '').trim();
+    var m = text.match(/^var\(\s*(--[A-Za-z0-9_-]+)\s*(?:,\s*([^)]+))?\)$/);
+    if (!m) return null;
+    return { name: m[1], fallback: m[2] ? String(m[2]).trim() : '' };
+  }
+
+  function resolvedTokenValue(tokens, name, depth) {
+    tokens = tokens || {};
+    depth = depth || 0;
+    if (!name || depth > 8) return '';
+    var value = String(tokens[name] || '').trim();
+    if (!value) return '';
+    var alias = tokenAliasFallback(value);
+    if (!alias) return value;
+    return resolvedTokenValue(tokens, alias.name, depth + 1) || alias.fallback || '';
+  }
+
+  function firstResolvedToken(tokens, names) {
+    for (var i = 0; i < names.length; i += 1) {
+      var value = resolvedTokenValue(tokens, names[i], 0);
+      if (value) return value;
+    }
+    return '';
+  }
+
+  function derivedSliderActiveColor(tokens) {
+    tokens = tokens || {};
+    // V225/V228: Slider fallbacks are derived from the loaded/generated theme
+    // itself. V228 resolves simple var(--token) aliases first so Core aliases
+    // such as --lb-slider-fill-bg: var(--lb-slider-active-bg) do not keep the
+    // old LoxBerry green when Liquid Glass is the active runtime theme.
+    return firstResolvedToken(tokens, [
+      '--lb-slider-fill-bg',
+      '--lb-slider-active-bg',
+      '--lb-range-active-bg',
+      '--lb-active-bg',
+      '--lb-btn-primary-bg',
+      '--lb-primary'
+    ]) || '#007aff';
+  }
+
+  function isClassicLoxBerryGreen(value) {
+    var hex = normalizeHexColor(value);
+    return hex === '#6dac20' || hex === '#5a9418' || hex === '#4a7a12';
+  }
+
+  function themePrimaryCandidate(tokens) {
+    return firstResolvedToken(tokens, [
+      '--lb-btn-primary-bg',
+      '--lb-active-bg',
+      '--lb-btn-group-active-bg',
+      '--lb-slider-fill-bg',
+      '--lb-slider-active-bg',
+      '--lb-range-active-bg'
+    ]);
+  }
+
   function applyPreviewFallbacks(tokens) {
     var root = previewRoot;
     if (!root) return;
@@ -1754,12 +1870,19 @@
     // V155: Rebuild preview bridge variables after every theme load from the
     // same effective token set that is applied to the preview root. This avoids
     // stale values from the initial Current Preview state.
+    var sliderPreviewActive = derivedSliderActiveColor(tokens);
     var fallbackMap = {
       '--cfw-preview-button-bg': tokens['--lb-btn-bg'] || tokens['--lb-active-bg'] || tokens['--lb-btn-primary-bg'],
       '--cfw-preview-button-text': tokens['--lb-btn-text'] || tokens['--lb-active-text'],
-      '--cfw-preview-btn-group-border': tokens['--lb-btn-group-border'] || tokens['--lb-btn-group-inactive-border'] || tokens['--lb-btn-group-active-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
-      '--cfw-preview-btn-group-inactive-bg': tokens['--lb-btn-group-inactive-bg'] || tokens['--lb-btn-bg'],
-      '--cfw-preview-btn-group-inactive-text': tokens['--lb-btn-group-inactive-text'] || tokens['--lb-btn-text'],
+      '--cfw-preview-btn-group-border': resolvedTokenValue(tokens, '--lb-btn-group-border') || resolvedTokenValue(tokens, '--lb-btn-group-inactive-border') || resolvedTokenValue(tokens, '--lb-btn-group-active-border') || resolvedTokenValue(tokens, '--lb-border-color') || resolvedTokenValue(tokens, '--lb-border'),
+      '--cfw-preview-btn-group-inactive-bg': resolvedTokenValue(tokens, '--lb-btn-group-inactive-bg') || resolvedTokenValue(tokens, '--lb-btn-bg'),
+      '--cfw-preview-btn-group-inactive-text': resolvedTokenValue(tokens, '--lb-btn-group-inactive-text') || resolvedTokenValue(tokens, '--lb-btn-text'),
+      '--cfw-preview-btn-group-hover-bg': resolvedTokenValue(tokens, '--lb-btn-group-hover-bg') || resolvedTokenValue(tokens, '--lb-btn-hover-bg'),
+      '--cfw-preview-btn-group-hover-text': resolvedTokenValue(tokens, '--lb-btn-group-hover-text') || resolvedTokenValue(tokens, '--lb-btn-hover-text'),
+      '--cfw-preview-btn-group-active-bg': resolvedTokenValue(tokens, '--lb-btn-group-active-bg') || resolvedTokenValue(tokens, '--lb-active-bg') || resolvedTokenValue(tokens, '--lb-primary') || resolvedTokenValue(tokens, '--lb-btn-primary-bg'),
+      '--cfw-preview-btn-group-active-text': resolvedTokenValue(tokens, '--lb-btn-group-active-text') || resolvedTokenValue(tokens, '--lb-active-text') || resolvedTokenValue(tokens, '--lb-btn-primary-text'),
+      '--cfw-preview-btn-group-active-hover-bg': resolvedTokenValue(tokens, '--lb-btn-group-active-hover-bg') || resolvedTokenValue(tokens, '--lb-primary-hover') || resolvedTokenValue(tokens, '--lb-btn-primary-hover-bg'),
+      '--cfw-preview-btn-group-active-hover-text': resolvedTokenValue(tokens, '--lb-btn-group-active-hover-text') || resolvedTokenValue(tokens, '--lb-btn-group-active-text') || resolvedTokenValue(tokens, '--lb-active-text'),
       '--cfw-preview-card-bg': tokens['--lb-card-bg'] || tokens['--lb-note-bg'] || tokens['--lb-glass-bg'],
       '--cfw-preview-card-text': tokens['--lb-card-text'] || tokens['--lb-text'],
       '--cfw-preview-card-border': tokens['--lb-card-border'] || tokens['--lb-border'] || tokens['--lb-border-color'],
@@ -1772,10 +1895,10 @@
       '--cfw-preview-textarea-bg': tokens['--lb-textarea-bg'] || tokens['--lb-input-bg'] || tokens['--lb-card-bg'],
       '--cfw-preview-textarea-text': tokens['--lb-textarea-text'] || tokens['--lb-input-text'] || tokens['--lb-text'],
       '--cfw-preview-textarea-border': tokens['--lb-textarea-border'] || tokens['--lb-input-border'] || tokens['--lb-border'],
-      '--cfw-preview-slider-active': tokens['--lb-slider-fill-bg'] || tokens['--lb-slider-active-bg'] || tokens['--lb-range-active-bg'] || tokens['--lb-primary'] || tokens['--lb-active-bg'],
-      '--cfw-preview-slider-track': tokens['--lb-slider-track-bg'] || tokens['--lb-slider-bg'] || tokens['--lb-range-track-bg'],
-      '--cfw-preview-slider-thumb': tokens['--lb-slider-thumb-bg'] || tokens['--lb-slider-fill-bg'] || tokens['--lb-slider-active-bg'] || tokens['--lb-primary'],
-      '--cfw-preview-slider-thumb-border': tokens['--lb-slider-thumb-border-color'] || tokens['--lb-slider-thumb-border'] || '#ffffff',
+      '--cfw-preview-slider-active': sliderPreviewActive,
+      '--cfw-preview-slider-track': firstResolvedToken(tokens, ['--lb-slider-track-bg', '--lb-slider-bg', '--lb-range-track-bg']),
+      '--cfw-preview-slider-thumb': resolvedTokenValue(tokens, '--lb-slider-thumb-bg') || sliderPreviewActive,
+      '--cfw-preview-slider-thumb-border': firstResolvedToken(tokens, ['--lb-slider-thumb-border-color', '--lb-slider-thumb-border']) || '#ffffff',
       '--cfw-preview-slider-thumb-border-width': tokens['--lb-slider-thumb-border-width'] || '3px',
       '--cfw-preview-slider-thumb-shadow': tokens['--lb-slider-thumb-shadow'],
       '--cfw-preview-slider-thumb-hover-shadow': tokens['--lb-slider-thumb-hover-shadow'],
@@ -1818,12 +1941,12 @@
     // Button groups should be self-consistent. Active uses primary/active
     // colors; inactive preview swaps active background/text. This rule is
     // deterministic and independent from the AI provider.
-    var activeBg = tokens['--lb-btn-group-active-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'] || tokens['--lb-btn-primary-bg'];
-    var activeText = tokens['--lb-btn-group-active-text'] || tokens['--lb-active-text'] || tokens['--lb-btn-primary-text'] || (activeBg ? readableTextFor(activeBg) : '');
+    var activeBg = firstResolvedToken(tokens, ['--lb-btn-group-active-bg', '--lb-active-bg', '--lb-primary', '--lb-btn-primary-bg']);
+    var activeText = firstResolvedToken(tokens, ['--lb-btn-group-active-text', '--lb-active-text', '--lb-btn-primary-text']) || (activeBg ? readableTextFor(activeBg) : '');
     if (activeBg && activeText) {
       setRuleToken(tokens, '--lb-btn-group-active-bg', activeBg);
       setRuleToken(tokens, '--lb-btn-group-active-text', activeText);
-      var activeHoverBg = tokens['--lb-btn-group-active-hover-bg'] || tokens['--lb-primary-hover'] || tokens['--lb-btn-primary-hover-bg'] || mixColor(activeBg, 8);
+      var activeHoverBg = firstResolvedToken(tokens, ['--lb-btn-group-active-hover-bg', '--lb-primary-hover', '--lb-btn-primary-hover-bg']) || mixColor(activeBg, 8);
 
       // V124: Button-group derivation must not overwrite explicit Studio edits.
       // Inactive, hover and active-text states are independent editor targets.
@@ -1837,6 +1960,10 @@
 
       setRuleToken(tokens, '--lb-btn-group-active-hover-bg', activeHoverBg);
       setRuleToken(tokens, '--lb-btn-group-active-hover-text', activeHoverText);
+      tokens['--cfw-preview-btn-group-active-bg'] = activeBg;
+      tokens['--cfw-preview-btn-group-active-text'] = activeText;
+      tokens['--cfw-preview-btn-group-active-hover-bg'] = activeHoverBg;
+      tokens['--cfw-preview-btn-group-active-hover-text'] = activeHoverText;
       tokens['--lb-btn-group-inactive-bg'] = inactiveBg;
       tokens['--lb-btn-group-inactive-text'] = inactiveText;
       tokens['--lb-btn-group-border'] = groupBorder;
@@ -1849,10 +1976,25 @@
       tokens['--cfw-preview-btn-group-inactive-border'] = inactiveBorder;
     }
 
-    // V102: Slider colors are scoped to slider tokens. Do not derive slider
-    // editing from --lb-active-bg, because that also drives toggles and active
-    // buttons in many themes.
-    var sliderActive = tokens['--lb-slider-active-bg'] || tokens['--lb-primary'] || tokens['--lb-btn-primary-bg'];
+    // V233: .lb-slider-value must follow the theme primary. Older saved Studio
+    // themes may have carried the LoxBerry default green as --lb-primary, while
+    // their real theme color lived in --lb-active-bg / --lb-btn-primary-bg.
+    // Correct only that legacy-green case and write a compatibility token for
+    // systems that already installed the temporary V230 Core slider-value rule.
+    var currentPrimary = resolvedTokenValue(tokens, '--lb-primary');
+    var derivedPrimary = themePrimaryCandidate(tokens);
+    if (derivedPrimary && (!currentPrimary || (isClassicLoxBerryGreen(currentPrimary) && !isClassicLoxBerryGreen(derivedPrimary)))) {
+      setRuleToken(tokens, '--lb-primary', derivedPrimary);
+    }
+    if (resolvedTokenValue(tokens, '--lb-primary')) {
+      setRuleToken(tokens, '--lb-slider-value-text', 'var(--lb-primary)');
+    }
+
+    // V102/V224/V225: Slider colors stay scoped to slider tokens, but older
+    // stored themes may not have the V220 slider tokens yet. In that case,
+    // derive them from the loaded theme's own active/button/primary color, not
+    // from the current Core/runtime theme.
+    var sliderActive = derivedSliderActiveColor(tokens);
     if (sliderActive) {
       setRuleToken(tokens, '--lb-slider-active-bg', sliderActive);
       setRuleToken(tokens, '--lb-slider-fill-bg', tokens['--lb-slider-fill-bg'] || sliderActive);
@@ -2013,7 +2155,14 @@
     refreshPreviewAndPalette();
   }
 
-  function openSaveModal() { updateThemeIdentityFromName(); saveModal.hidden = false; }
+  function openSaveModal() {
+    updateThemeIdentityFromName();
+    if (themeId && isProtectedStudioThemeId(themeId.value)) {
+      setStatus(protectedStudioThemeMessage(themeId.value), true);
+      return;
+    }
+    saveModal.hidden = false;
+  }
   function closeSaveModal() { saveModal.hidden = true; }
 
   function normalizeCustomCssValue(value) {
@@ -2044,13 +2193,17 @@
 
   function saveTheme() {
     updateThemeIdentityFromName();
+    if (themeId && isProtectedStudioThemeId(themeId.value)) {
+      setStatus(protectedStudioThemeMessage(themeId.value), true);
+      return;
+    }
     // V31: Save the same effective token set that is visible in the final preview,
     // including Design Rules Engine output. This prevents empty CSS files when the
     // preview was based on AI/imported tokens or rule-derived values.
     var effectiveTokens = applyDesignRules(collectTokens());
     var wallpaperPayload = buildWallpaperPayload();
     if (!Object.keys(effectiveTokens).filter(function (name) { return /^--lb-/.test(name); }).length && !meaningfulCustomCss(normalizeCustomCssValue(customCss && customCss.value)) && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
-      setStatus(t('messages.noSaveableContent', 'Nicht gespeichert: Es sind keine Theme-Tokens oder nutzbaren Custom-CSS-Regeln vorhanden. Bitte erst KI-Entwurf laden, CSS importieren oder einen Wert ändern.'), true);
+      setStatus(tx('messages.noSaveableContent'), true);
       return;
     }
     var payload = {
@@ -2062,9 +2215,10 @@
       studio_model: studioModel,
       import_meta: lastImportMeta,
       wallpaper: wallpaperPayload,
-      studio_version: 'V39_HybridImportTokensPlusCustomCss'
+      studio_version: 'V39_HybridImportTokensPlusCustomCss',
+      lang: i18nLanguage
     };
-    setStatus(t('messages.savingTheme', 'Speichere Theme und erzeuge CSS ...'), false);
+    setStatus(tx('messages.savingTheme'), false);
     fetch('theme-save.cgi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -2072,14 +2226,18 @@
     })
       .then(function (response) { return response.json(); })
       .then(function (json) {
-        if (!json.ok) throw new Error(json.error || 'Speichern fehlgeschlagen');
+        if (!json.ok) throw new Error(localizedServerError(json, 'messages.saveFailed'));
         closeSaveModal();
         payload.id = json.id || payload.id;
         payload.name = json.name || payload.name;
         payload.version = json.version || payload.version;
         rememberSavedTheme(payload);
-        var msg = 'Gespeichert: ' + (json.name || payload.name) + ' ' + (json.version || payload.version) + '. CSS: ' + (json.css || 'nicht gemeldet');
-        if (json.previous_backup) msg += ' Vorherige JSON: ' + json.previous_backup;
+        var msg = t('messages.themeSaved', 'messages.themeSaved', {
+          theme: (json.name || payload.name),
+          version: (json.version || payload.version),
+          css: (json.css || tx('messages.cssNotReported'))
+        });
+        if (json.previous_backup) msg += ' ' + t('messages.previousJsonBackup', 'messages.previousJsonBackup', { backup: json.previous_backup });
         setStatus(msg, false);
       })
       .catch(function (error) { setStatus(error.message, true); });
@@ -2176,17 +2334,17 @@
       return;
     }
     var effectLabels = [];
-    if (meta.effects && meta.effects.backdropFilter) effectLabels.push(t('import.effects.backdropFilter', 'Backdrop Filter'));
-    if (meta.effects && meta.effects.blur && meta.effects.blur.length) effectLabels.push(t('import.effects.blur', 'Blur') + ' ' + meta.effects.blur.slice(0, 3).join(', '));
-    if (meta.effects && meta.effects.transparency && meta.effects.transparency.length) effectLabels.push(t('import.effects.transparency', 'Transparenz') + ' ' + meta.effects.transparency.slice(0, 3).join(', '));
-    if (meta.effects && meta.effects.wallpaper) effectLabels.push(t('import.effects.wallpaper', 'Wallpaper'));
-    if (meta.effects && meta.effects.shadows) effectLabels.push(t('import.effects.shadows', 'Schatten'));
+    if (meta.effects && meta.effects.backdropFilter) effectLabels.push(tx('import.effects.backdropFilter'));
+    if (meta.effects && meta.effects.blur && meta.effects.blur.length) effectLabels.push(tx('import.effects.blur') + ' ' + meta.effects.blur.slice(0, 3).join(', '));
+    if (meta.effects && meta.effects.transparency && meta.effects.transparency.length) effectLabels.push(tx('import.effects.transparency') + ' ' + meta.effects.transparency.slice(0, 3).join(', '));
+    if (meta.effects && meta.effects.wallpaper) effectLabels.push(tx('import.effects.wallpaper'));
+    if (meta.effects && meta.effects.shadows) effectLabels.push(tx('import.effects.shadows'));
     importSummary.hidden = false;
     importSummary.innerHTML =
-      '<strong>' + t('import.summaryTitle', 'Hybrid-Import') + '</strong><br>' +
-      t('import.summaryTokens', '{count} Core-Tokens erkannt', { count: meta.tokenCount }) + '<br>' +
-      t('import.summaryCustom', '{count} individuelle CSS-Regeln erhalten', { count: meta.customRuleCount }) + '<br>' +
-      (effectLabels.length ? t('import.summaryEffects', 'Erkannte Effekte: {effects}', { effects: effectLabels.join(', ') }) : t('import.summaryNoEffects', 'Keine speziellen Effekte erkannt'));
+      '<strong>' + tx('import.summaryTitle') + '</strong><br>' +
+      t('import.summaryTokens', 'import.summaryTokens', { count: meta.tokenCount }) + '<br>' +
+      t('import.summaryCustom', 'import.summaryCustom', { count: meta.customRuleCount }) + '<br>' +
+      (effectLabels.length ? t('import.summaryEffects', 'import.summaryEffects', { effects: effectLabels.join(', ') }) : tx('import.summaryNoEffects'));
   }
 
   function importCss(file) {
@@ -2209,13 +2367,13 @@
         aiImportedTokens = Object.assign({}, aiImportedTokens || {}, meta.tokens);
         syncCurrentControlsFromAiTokens(aiImportedTokens);
         refreshPreviewAndPalette();
-        setStatus(t('messages.hybridCssImported', 'Hybrid-CSS importiert: {file}. {tokens} Core-Tokens erkannt, {rules} individuelle CSS-Regeln erhalten.', { file: file.name, tokens: count, rules: meta.customRuleCount }), false);
+        setStatus(t('messages.hybridCssImported', 'messages.hybridCssImported', { file: file.name, tokens: count, rules: meta.customRuleCount }), false);
       } else {
-        setStatus(t('messages.cssImportedNoTokens', 'CSS importiert: {file}. Keine bekannten --lb-* Tokens gefunden; CSS bleibt als Custom CSS erhalten.', { file: file.name }), false);
+        setStatus(t('messages.cssImportedNoTokens', 'messages.cssImportedNoTokens', { file: file.name }), false);
       }
       renderImportSummary(meta);
     };
-    reader.onerror = function () { setStatus(t('messages.cssReadError', 'CSS konnte nicht gelesen werden.'), true); };
+    reader.onerror = function () { setStatus(tx('messages.cssReadError'), true); };
     reader.readAsText(file, 'utf-8');
   }
 
@@ -2257,11 +2415,11 @@
     // frame refresh catches browser-computed token values after the DOM update.
     studioModel = {};
     aiImportedTokens = enforceForcedOpaqueTokens(themeTokensFromJson(theme));
-    var loadedPreviewTokens = applyDesignRules(Object.assign({}, coreTokens || {}, aiImportedTokens || {}));
+    var loadedPreviewTokens = applyDesignRules(Object.assign({}, aiImportedTokens || {}));
     aiImportedCss = normalizeCustomCssValue(theme.custom_css || theme.css || '');
     lastImportMeta = importMetaHasVisibleContent(theme.import_meta) ? theme.import_meta : null;
     setWallpaperFromTheme(theme);
-    if (customCss) customCss.value = aiImportedCss || '/* USER CUSTOM CSS START */\n/* Eigene Ergänzungen bleiben beim Speichern erhalten. */\n/* USER CUSTOM CSS END */';
+    if (customCss) customCss.value = aiImportedCss || tx('customCss.defaultText');
     if (themeId) themeId.value = theme.id || 'theme-user-loaded';
     if (themeName) themeName.value = normalizeThemeDisplayName(theme.name || theme.id || 'User Theme');
     if (themeVersion) themeVersion.value = theme.version || '0.1.0';
@@ -2298,7 +2456,7 @@
       }, 0);
     }
 
-    setStatus(t('messages.userThemeLoaded', 'User Theme geladen: {theme}. Preview und Tokens wurden aktualisiert.', { theme: (theme.name || theme.id) }), false);
+    setStatus(t('messages.userThemeLoaded', 'messages.userThemeLoaded', { theme: (theme.name || theme.id) }), false);
   }
 
   function rememberSavedTheme(payload) {
@@ -2340,11 +2498,11 @@
   function openDeleteModal() {
     var selected = selectedUserThemeInfo();
     if (!selected || !selected.theme || !selected.theme.id) {
-      setStatus(t('messages.deleteNoThemeSelected', 'Kein User Theme zum Löschen ausgewählt.'), true);
+      setStatus(tx('messages.deleteNoThemeSelected'), true);
       return;
     }
     if (selected.theme.readonly_css_only) {
-      setStatus(t('messages.deleteReadonlyTheme', 'Dieses CSS-only Paket-Theme kann nicht direkt gelöscht werden.'), true);
+      setStatus(tx('messages.deleteReadonlyTheme'), true);
       return;
     }
     pendingDeleteTheme = selected;
@@ -2360,12 +2518,12 @@
     var selected = pendingDeleteTheme || selectedUserThemeInfo();
     if (!selected || !selected.theme || !selected.theme.id) {
       closeDeleteModal();
-      setStatus(t('messages.deleteNoThemeSelected', 'Kein User Theme zum Löschen ausgewählt.'), true);
+      setStatus(tx('messages.deleteNoThemeSelected'), true);
       return;
     }
     var name = selected.theme.name || selected.theme.id;
     closeDeleteModal();
-    setStatus(t('messages.deletingTheme', 'Lösche User Theme ...'), false);
+    setStatus(tx('messages.deletingTheme'), false);
     fetch('theme-delete.cgi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -2373,12 +2531,12 @@
     })
       .then(function (response) { return response.json(); })
       .then(function (json) {
-        if (!json.ok) throw new Error(json.error || 'Löschen fehlgeschlagen');
+        if (!json.ok) throw new Error(localizedServerError(json, 'messages.deleteFailed'));
         userThemes.splice(selected.index, 1);
         populateUserThemeSelect();
         if (userThemeSelect) userThemeSelect.value = '';
         updateDeleteThemeButton();
-        setStatus(t('messages.themeDeleted', 'Gelöscht: {theme}. Entfernt: JSON {json}, CSS {css}, Manifest {manifest}.', {
+        setStatus(t('messages.themeDeleted', 'messages.themeDeleted', {
           theme: name,
           json: json.deleted_json ? 'ja' : 'nein',
           css: json.deleted_css ? 'ja' : 'nein',
@@ -2443,21 +2601,7 @@
     });
     var userPromptEl = document.getElementById('aiPrompt');
     return {
-      system: [
-        'Du bist Designer, nicht CSS-Compiler.',
-        'Erzeuge ausschließlich ein semantisches LoxBerry Theme-Draft-JSON. Kein Markdown, kein Fließtext.',
-        'Core-Dateien sind read-only und dürfen niemals verändert werden.',
-        'Der Benutzer beschreibt sein gewünschtes Theme frei in natürlicher Sprache.',
-        'Arbeite mit Komponenten und Design-Begriffen, nicht mit CSS-Implementierungsdetails.',
-        'Gib möglichst harmonische, gut lesbare Farben als Hex- oder rgba-Werte zurück.',
-        'Wähle Textfarben kontrastabhängig: dunkler Background/Surface braucht helle Textfarbe, heller Background/Surface braucht dunkle Textfarbe.',
-        'Achte besonders bei background, surface, card, input, select, table und button auf ausreichenden Kontrast der jeweiligen text/on_* Werte.',
-        'Kein JavaScript, kein HTML, keine externen URLs, keine Imports.',
-        'Logmanager-/Status-Farben sind kein Bestandteil von User-Themes und bleiben LoxBerry-Standard.',
-        'Tooltip-Farben werden vom Design Studio fest abgeleitet: Hintergrund = primary_hover, Text = sidebar_text.',
-        'Antwortformat exakt als JSON:',
-        '{"theme":{"id":"theme-user-...","name":"...","description":"..."},"design":{"colors":{"primary":"#...","primary_hover":"#...","background":"#...","surface":"#...","surface_alt":"#...","text":"#...","muted_text":"#...","border":"#...","success":"#...","warning":"#...","danger":"#..."},"components":{"button":{"background":"#...","text":"#...","hover":"#...","radius":"...","shadow":"soft|none|strong"},"input":{"background":"#...","text":"#...","border":"#...","focus":"#...","radius":"..."},"select":{"background":"#...","text":"#...","border":"#...","hover":"#...","radius":"..."},"dropdown":{"background":"#...","text":"#...","hover":"#...","border":"#...","shadow":"soft|none|strong"},"card":{"background":"#...","text":"#...","border":"#...","radius":"...","shadow":"soft|none|strong"},"table":{"background":"#...","header":"#...","text":"#...","hover":"#...","border":"#...","density":"comfortable|compact"},"button_group":{"active":"#...","text":"#...","hover":"#..."},"header_button":{"background":"#...","text":"#...","hover":"#..."}}},"meta":{"style_type":"...","primary_color":"#...","warnings":[]}}'
-      ].join('\n'),
+      system: tx('ai.requestSystem'),
       user_request: userPromptEl ? userPromptEl.value : '',
       current_selection: {
         area: currentArea(),
@@ -2466,11 +2610,7 @@
         tokens: currentMapping(),
         related_tokens: relatedTokensForVariant(currentArea(), currentElement())
       },
-      explicit_user_constraints: [
-        'Respect explicit color requests from the user. Do not replace requested blue/dark gray/etc. with a different accent color.',
-        'For Direct Editor tasks, change only selected or related element tokens.',
-        'If the user mentions an off/disabled/hover state, use the matching related token of the selected element, not only the currently active property.'
-      ],
+      explicit_user_constraints: tx('ai.explicitConstraints').split('\n').filter(Boolean),
       current_theme_tokens: collectTokens(),
       available_core_tokens: tokenNames,
       components: componentSummary
@@ -2481,7 +2621,7 @@
     var result = document.getElementById('aiResult');
     var preview = document.getElementById('aiPreview');
     if (result) result.value = '';
-    if (preview) preview.textContent = t('ai.noDraft', 'Noch kein Entwurf.');
+    if (preview) preview.textContent = tx('ai.noDraft');
     invalidateAiValidation();
   }
 
@@ -2489,7 +2629,7 @@
     clearAiDraftResultUi();
     var target = document.getElementById('aiRequest');
     if (target) target.value = JSON.stringify(buildAiRequest(), null, 2);
-    setAiStatus(t('messages.requestBuilt', 'Request-Paket lokal erzeugt. Noch nichts extern übertragen.'), false);
+    setAiStatus(tx('messages.requestBuilt'), false);
   }
 
   function loadPuterScript() {
@@ -2498,7 +2638,7 @@
       var existing = document.querySelector('script[data-cfw-puter]');
       if (existing) {
         existing.addEventListener('load', resolve, { once: true });
-        existing.addEventListener('error', function () { reject(new Error('Puter.js konnte nicht geladen werden.')); }, { once: true });
+        existing.addEventListener('error', function () { reject(new Error(tx('messages.puterLoadError'))); }, { once: true });
         return;
       }
       var script = document.createElement('script');
@@ -2506,7 +2646,7 @@
       script.async = true;
       script.setAttribute('data-cfw-puter', '1');
       script.onload = resolve;
-      script.onerror = function () { reject(new Error('Puter.js konnte nicht geladen werden.')); };
+      script.onerror = function () { reject(new Error(tx('messages.puterLoadError'))); };
       document.head.appendChild(script);
     });
   }
@@ -2546,7 +2686,7 @@
     if (start >= 0 && end > start) {
       try { return JSON.parse(text.slice(start, end + 1)); } catch (ignore2) {}
     }
-    throw new Error('Antwort enthält kein gültiges JSON.');
+    throw new Error(tx('messages.invalidJsonResponse'));
   }
 
 
@@ -2991,13 +3131,13 @@
 
   function validateAiDraftObject(draft) {
     var errors = [];
-    if (!draft || typeof draft !== 'object') errors.push(t('messages.jsonNoObject', 'Kein JSON-Objekt.'));
+    if (!draft || typeof draft !== 'object') errors.push(tx('messages.jsonNoObject'));
     var tokens = compileSemanticDraftToTokens(draft);
     Object.keys(tokens).forEach(function (name) {
-      if (!/^--lb-[a-z0-9-]+$/.test(name)) errors.push(t('messages.invalidToken', 'Ungültiger Token: {token}', { token: name }));
+      if (!/^--lb-[a-z0-9-]+$/.test(name)) errors.push(t('messages.invalidToken', 'messages.invalidToken', { token: name }));
     });
     if (draft && draft.css && /<script|javascript:|@import|url\s*\(/i.test(String(draft.css))) {
-      errors.push(t('messages.forbiddenCss', 'CSS enthält verbotene externe/aktive Inhalte.'));
+      errors.push(tx('messages.forbiddenCss'));
     }
     return errors;
   }
@@ -3013,7 +3153,7 @@
     };
     var names = Object.keys(tokens).filter(function (name) { return !excludedAiPaletteTokens[name]; });
     if (!names.length) {
-      box.textContent = t('ai.validNoValues', 'JSON gültig, aber keine anwendbaren Designwerte enthalten.');
+      box.textContent = tx('ai.validNoValues');
       return;
     }
     box.innerHTML = '' +
@@ -3082,7 +3222,7 @@
       aiValidatedDraft = draft;
       aiResultSignature = raw;
       setAiImportEnabled(true);
-      setAiStatus(t('messages.aiValid', 'KI-Entwurf ist formal gültig und kann geladen werden.'), false, 'success');
+      setAiStatus(tx('messages.aiValid'), false, 'success');
       return draft;
     } catch (error) {
       aiValidatedDraft = null;
@@ -3097,7 +3237,7 @@
     var result = document.getElementById('aiResult');
     if (!aiValidatedDraft || !result || result.value !== aiResultSignature) {
       setAiImportEnabled(false);
-      setAiStatus(t('messages.aiValidateFirst', 'Bitte den KI-Entwurf zuerst erfolgreich validieren.'), true);
+      setAiStatus(tx('messages.aiValidateFirst'), true);
       return;
     }
     var draft = aiValidatedDraft;
@@ -3119,7 +3259,7 @@
     }
     refreshPreviewAndPalette();
     switchTab('workbench');
-    setStatus(t('messages.aiLoaded', 'KI-Entwurf in die Preview geladen. Bitte prüfen und final speichern.'), false);
+    setStatus(tx('messages.aiLoaded'), false);
   }
 
   function runAiDesigner() {
@@ -3128,14 +3268,14 @@
     var model = document.getElementById('aiModel');
     var result = document.getElementById('aiResult');
     if (!consent || !consent.checked) {
-      setAiStatus(t('messages.aiConsentRequired', 'Bitte zuerst der externen Verarbeitung über Puter.js zustimmen.'), true);
+      setAiStatus(tx('messages.aiConsentRequired'), true);
       return;
     }
     var request = buildAiRequest();
     var prompt = request.system + '\n\nREQUEST JSON:\n' + JSON.stringify(request, null, 2);
     var reqBox = document.getElementById('aiRequest');
     if (reqBox) reqBox.value = JSON.stringify(request, null, 2);
-    setAiStatus(t('messages.aiLoading', 'Lade Puter.js und frage KI an ...'), false);
+    setAiStatus(tx('messages.aiLoading'), false);
     loadPuterScript()
       .then(function () {
         // Some Puter/OpenAI-backed models reject custom temperature values.
@@ -3146,7 +3286,7 @@
         var text = extractTextFromAiResponse(response);
         if (result) result.value = text;
         setAiImportEnabled(false);
-        setAiStatus(t('messages.aiReceived', 'KI-Antwort erhalten. Bitte validieren und erst danach ins Design Studio laden.'), false);
+        setAiStatus(tx('messages.aiReceived'), false);
       })
       .catch(function (error) { setAiStatus(error.message || String(error), true); });
   }
@@ -3154,7 +3294,7 @@
 
 
   function formatTokenList(tokens) {
-    if (!tokens || !tokens.length) return '<em>' + t('inspector.noMapping', 'Keine Tokens im Mapping') + '</em>';
+    if (!tokens || !tokens.length) return '<em>' + tx('inspector.noMapping') + '</em>';
     return tokens.map(function (token) { return '<code>' + token + '</code>'; }).join(' ');
   }
 
@@ -3193,7 +3333,7 @@
   function focusSelectedComponent() {
     if (!selectedComponentTarget) return;
     selectEditorTarget(selectedComponentTarget.area, selectedComponentTarget.variant, selectedComponentTarget.property);
-    setStatus(t('messages.directEditorFocused', 'Direkteditor-Auswahl fokussiert: {path}', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
+    setStatus(t('messages.directEditorFocused', 'messages.directEditorFocused', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
   }
 
   function prepareElementAiPrompt() {
@@ -3205,28 +3345,17 @@
     var relatedTokens = relatedTokensForVariant(selectedComponentTarget.area, selectedComponentTarget.variant);
     relatedTokens.forEach(function (token) { if (values[token]) tokenState[token] = values[token]; });
     if (prompt) {
-      prompt.value = [
-        'Ändere gezielt dieses LoxBerry-Design-Element. Explizite Farbwünsche und genannte Zustände haben Vorrang vor der bestehenden Palette:',
-        '',
-        'Element: ' + selectedComponentTarget.area + ' → ' + selectedComponentTarget.variant,
-        'Eigenschaft: ' + selectedComponentTarget.property,
-        'Aktuelle zugeordnete Tokens: ' + tokens.join(', '),
-        'Weitere Tokens desselben Elements: ' + relatedTokens.join(', '),
-        'Aktuelle Werte der Element-Tokens: ' + JSON.stringify(tokenState),
-        '',
-        'Wichtig:',
-        '- Erzeuge weiterhin nur semantisches Design-JSON.',
-        '- Achte auf Kontrast: dunkler Hintergrund benötigt helle Textfarbe, heller Hintergrund dunkle Textfarbe.',
-        '- Logmanager/Status-Farben nicht verändern; sie bleiben LoxBerry-Standard.',
-          '- Tooltip-Farben nicht frei gestalten; sie werden vom Studio abgeleitet: Hintergrund primary_hover, Text sidebar_text.',
-        '- Explizite Farbwünsche aus diesem Prompt haben höchste Priorität und dürfen nicht durch eine andere Akzentfarbe ersetzt werden.',
-        '- Wenn ein anderer Zustand desselben Elements genannt wird, z. B. Toggle off, Hover oder Disabled, nutze den passenden verwandten Token dieses Elements.',
-        '- Das bestehende Theme ist nur nachrangige Orientierung. Es darf einen konkreten Farbwunsch nicht überschreiben.'
-      ].join('\n');
+      prompt.value = t('ai.elementPromptTemplate', 'ai.elementPromptTemplate', {
+        element: selectedComponentTarget.area + ' → ' + selectedComponentTarget.variant,
+        property: selectedComponentTarget.property,
+        tokens: tokens.join(', '),
+        relatedTokens: relatedTokens.join(', '),
+        tokenState: JSON.stringify(tokenState)
+      });
     }
     switchTab('ai');
     renderAiRequest();
-    setAiStatus(t('messages.aiFocusPrepared', 'KI-Fokus für {path} vorbereitet. Bei Bedarf Prompt anpassen und KI Entwurf erzeugen.', { path: selectedComponentTarget.area + ' → ' + selectedComponentTarget.variant }), false);
+    setAiStatus(t('messages.aiFocusPrepared', 'messages.aiFocusPrepared', { path: selectedComponentTarget.area + ' → ' + selectedComponentTarget.variant }), false);
   }
 
 
@@ -3278,7 +3407,7 @@
     if (!definition) return false;
     selectEditorTarget(definition.area, definition.variant, definition.property);
     openComponentInspector(definition, target);
-    setStatus(t('messages.directEditorOpened', 'Direkteditor geöffnet: {path}', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
+    setStatus(t('messages.directEditorOpened', 'messages.directEditorOpened', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
     return true;
   }
 
@@ -3299,7 +3428,7 @@
       componentInspector.classList.add('cfw-direct-focus');
       setTimeout(function () { componentInspector.classList.remove('cfw-direct-focus'); }, 1600);
     }
-    setStatus(t('messages.directEditorOpened', 'Direkteditor geöffnet: {path}', { path: definition.area + ' → ' + definition.variant + ' → ' + definition.property }), false);
+    setStatus(t('messages.directEditorOpened', 'messages.directEditorOpened', { path: definition.area + ' → ' + definition.variant + ' → ' + definition.property }), false);
     return true;
   }
 
@@ -3308,7 +3437,7 @@
     previewRoot.querySelectorAll('[data-cfw-area]').forEach(function (node) {
       node.classList.add('cfw-preview-editable');
       if (node.getAttribute('title')) { node.setAttribute('data-cfw-title', node.getAttribute('title')); node.removeAttribute('title'); }
-      node.setAttribute('aria-label', 'Klicken zum Bearbeiten, Doppelklick oder CTRL-/Strg-Klick für Direkteditor');
+      node.setAttribute('aria-label', tx('preview.editAria'));
     });
   }
 
@@ -3371,7 +3500,7 @@
       if (event.ctrlKey || event.metaKey) {
         openInspectorForTarget(target);
       } else {
-        setStatus(t('messages.previewSelected', 'Preview-Auswahl übernommen: {path}. Doppelklick oder CTRL-/Strg-Klick öffnet den Direkteditor.', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
+        setStatus(t('messages.previewSelected', 'messages.previewSelected', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
       }
     });
   }
@@ -3449,7 +3578,7 @@
     undoThemeButton.addEventListener('click', function () { undoLastChange(); });
     updateUndoButton();
   }
-  [colorPicker, alphaRange, brightnessRange, radiusRange, shadowRange, customCss, wallpaperEnabled, wallpaperImage, wallpaperMode, wallpaperBrightness, wallpaperOpacity].forEach(bindUndoControl);
+  [colorPicker, alphaRange, brightnessRange, radiusRange, borderWidthRange, shadowRange, customCss, wallpaperEnabled, wallpaperImage, wallpaperMode, wallpaperBrightness, wallpaperOpacity].forEach(bindUndoControl);
 
   document.getElementById('saveTheme').addEventListener('click', openSaveModal);
   if (deleteThemeButton) deleteThemeButton.addEventListener('click', openDeleteModal);
@@ -3552,7 +3681,7 @@
     loadUserThemeByIndex(userThemeSelect.value);
   });
   if (selectedComponentCard) {
-    selectedComponentCard.setAttribute('title', t('inspector.selectedCardTitle', 'Doppelklick öffnet den Direkteditor für das aktuell ausgewählte Element'));
+    selectedComponentCard.setAttribute('title', tx('inspector.selectedCardTitle'));
     selectedComponentCard.setAttribute('tabindex', '0');
     selectedComponentCard.addEventListener('dblclick', function (event) {
       event.preventDefault();
@@ -3582,5 +3711,5 @@
   buildComponentRegistry();
   renderAreas();
   renderElements();
-  setStatus(t('messages.coreRead', 'Core gelesen: {tokens} Tokens, {themes} Themes.', { tokens: Object.keys(coreTokens).length, themes: ((coreData.themes || []).length) }), false);
+  setStatus(t('messages.coreRead', 'messages.coreRead', { tokens: Object.keys(coreTokens).length, themes: ((coreData.themes || []).length) }), false);
 }());

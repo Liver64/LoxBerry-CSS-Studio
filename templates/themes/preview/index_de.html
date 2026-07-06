@@ -412,11 +412,16 @@
 				border-color: var(--lb-input-border) !important;
 			}
 
-			.lb-slider-value,
+			.lb-slider-value {
+				background: var(--lb-btn-bg, var(--lb-card-bg)) !important;
+				border-color: var(--lb-btn-border, var(--lb-border-color)) !important;
+				color: var(--lb-primary) !important;
+			}
+
 			.lb-preview-code {
 				background: var(--lb-btn-bg) !important;
 				border-color: var(--lb-border-color) !important;
-				color: var(--lb-primary) !important;
+				color: var(--lb-text-secondary) !important;
 			}
 
 			.lb-preview-mini-sidebar {
@@ -804,33 +809,33 @@
 				<div class="lb-section-title">Slider</div>
 				<div class="lb-card">
 					<div class="lb-form-row">
-						<label class="lb-form-label" for="slider_level">Level:</label>
+						<label class="lb-form-label" for="slider_level">__LB_PREVIEW_SLIDER_LEVEL_LABEL__</label>
 						<div class="lb-form-field">
 							<div class="lb-slider-wrap">
 								<input type="range" class="lb-slider" id="slider_level" name="slider_level" min="0" max="100" step="5" value="50" data-role="none">
-								<span class="lb-slider-value" id="slider_level_val">50 %</span>
+								<span class="lb-slider-value" id="slider_level_val">__LB_PREVIEW_SLIDER_LEVEL_VALUE__</span>
 							</div>
-							<div class="lb-slider-labels"><span>0 %</span><span>100 %</span></div>
+							<div class="lb-slider-labels"><span>__LB_PREVIEW_SLIDER_PERCENT_MIN__</span><span>__LB_PREVIEW_SLIDER_PERCENT_MAX__</span></div>
 						</div>
 					</div>
 					<div class="lb-form-row">
-						<label class="lb-form-label" for="slider_cache">Cache:</label>
+						<label class="lb-form-label" for="slider_cache">__LB_PREVIEW_SLIDER_CACHE_LABEL__</label>
 						<div class="lb-form-field">
 							<div class="lb-slider-wrap">
 								<input type="range" class="lb-slider" id="slider_cache" name="slider_cache" min="100" max="3000" step="100" value="500" data-role="none">
-								<span class="lb-slider-value" id="slider_cache_val">500 MB</span>
+								<span class="lb-slider-value" id="slider_cache_val">__LB_PREVIEW_SLIDER_CACHE_VALUE__</span>
 							</div>
-							<div class="lb-slider-labels"><span>100 MB</span><span>3000 MB</span></div>
+							<div class="lb-slider-labels"><span>__LB_PREVIEW_SLIDER_CACHE_MIN__</span><span>__LB_PREVIEW_SLIDER_CACHE_MAX__</span></div>
 						</div>
 					</div>
 					<div class="lb-form-row">
-						<label class="lb-form-label" for="slider_disabled">Disabled:</label>
+						<label class="lb-form-label" for="slider_disabled">__LB_PREVIEW_SLIDER_DISABLED_LABEL__</label>
 						<div class="lb-form-field">
 							<div class="lb-slider-wrap">
 								<input type="range" class="lb-slider" id="slider_disabled" min="0" max="100" step="10" value="40" data-role="none" disabled>
-								<span class="lb-slider-value" id="slider_disabled_val">40 %</span>
+								<span class="lb-slider-value" id="slider_disabled_val">__LB_PREVIEW_SLIDER_DISABLED_VALUE__</span>
 							</div>
-							<div class="lb-slider-labels"><span>0 %</span><span>100 %</span></div>
+							<div class="lb-slider-labels"><span>__LB_PREVIEW_SLIDER_PERCENT_MIN__</span><span>__LB_PREVIEW_SLIDER_PERCENT_MAX__</span></div>
 						</div>
 					</div>
 					<div class="lb-preview-help-text">Der weiße Ring am Sliderpunkt ist jetzt separat tokenisiert: <span class="lb-preview-code">--lb-slider-thumb-border-color</span> und <span class="lb-preview-code">--lb-slider-thumb-border-width</span>.</div>
@@ -1431,9 +1436,9 @@ __LB_THEME_CLASSES_JS__
 			}
 		});
 
-		initLbCoreSlider({ id: 'slider_level', valueId: 'slider_level_val', fallback: 50, suffix: ' %' });
-		initLbCoreSlider({ id: 'slider_cache', valueId: 'slider_cache_val', fallback: 500, suffix: ' MB' });
-		initLbCoreSlider({ id: 'slider_disabled', valueId: 'slider_disabled_val', fallback: 40, suffix: ' %' });
+		initLbCoreSlider({ id: 'slider_level', valueId: 'slider_level_val', fallback: 50, suffix: '__LB_PREVIEW_SLIDER_SUFFIX_PERCENT_JS__' });
+		initLbCoreSlider({ id: 'slider_cache', valueId: 'slider_cache_val', fallback: 500, suffix: '__LB_PREVIEW_SLIDER_SUFFIX_MB_JS__' });
+		initLbCoreSlider({ id: 'slider_disabled', valueId: 'slider_disabled_val', fallback: 40, suffix: '__LB_PREVIEW_SLIDER_SUFFIX_PERCENT_JS__' });
 
 		var navToggle = document.getElementById('preview_nav_toggle');
 		if (navToggle) {
@@ -1493,13 +1498,13 @@ __LB_THEME_CLASSES_JS__
 				if (row && row.querySelector('input.lb-slider[disabled]')) {
 					return previewSnippet(`
 <div class="lb-form-row">
-  <label class="lb-form-label" for="slider_disabled">Disabled:</label>
+  <label class="lb-form-label" for="slider_disabled">__LB_PREVIEW_SLIDER_DISABLED_LABEL__</label>
   <div class="lb-form-field">
     <div class="lb-slider-wrap">
       <input type="range" class="lb-slider" id="slider_disabled" min="0" max="100" step="10" value="40" data-role="none" disabled>
-      <span class="lb-slider-value" id="slider_disabled_val">40 %</span>
+      <span class="lb-slider-value" id="slider_disabled_val">__LB_PREVIEW_SLIDER_DISABLED_VALUE__</span>
     </div>
-    <div class="lb-slider-labels"><span>0 %</span><span>100 %</span></div>
+    <div class="lb-slider-labels"><span>__LB_PREVIEW_SLIDER_PERCENT_MIN__</span><span>__LB_PREVIEW_SLIDER_PERCENT_MAX__</span></div>
   </div>
 </div>`);
 				}
@@ -1739,24 +1744,24 @@ __LB_THEME_CLASSES_JS__
 </div>`),
 				'level': previewSnippet(`
 <div class="lb-form-row">
-  <label class="lb-form-label" for="slider_level">Level:</label>
+  <label class="lb-form-label" for="slider_level">__LB_PREVIEW_SLIDER_LEVEL_LABEL__</label>
   <div class="lb-form-field">
     <div class="lb-slider-wrap">
       <input type="range" class="lb-slider" id="slider_level" name="slider_level" min="0" max="100" step="5" value="50" data-role="none">
-      <span class="lb-slider-value" id="slider_level_val">50 %</span>
+      <span class="lb-slider-value" id="slider_level_val">__LB_PREVIEW_SLIDER_LEVEL_VALUE__</span>
     </div>
-    <div class="lb-slider-labels"><span>0 %</span><span>100 %</span></div>
+    <div class="lb-slider-labels"><span>__LB_PREVIEW_SLIDER_PERCENT_MIN__</span><span>__LB_PREVIEW_SLIDER_PERCENT_MAX__</span></div>
   </div>
 </div>`),
 				'cache': previewSnippet(`
 <div class="lb-form-row">
-  <label class="lb-form-label" for="slider_cache">Cache:</label>
+  <label class="lb-form-label" for="slider_cache">__LB_PREVIEW_SLIDER_CACHE_LABEL__</label>
   <div class="lb-form-field">
     <div class="lb-slider-wrap">
       <input type="range" class="lb-slider" id="slider_cache" name="slider_cache" min="100" max="3000" step="100" value="500" data-role="none">
-      <span class="lb-slider-value" id="slider_cache_val">500 MB</span>
+      <span class="lb-slider-value" id="slider_cache_val">__LB_PREVIEW_SLIDER_CACHE_VALUE__</span>
     </div>
-    <div class="lb-slider-labels"><span>100 MB</span><span>3000 MB</span></div>
+    <div class="lb-slider-labels"><span>__LB_PREVIEW_SLIDER_CACHE_MIN__</span><span>__LB_PREVIEW_SLIDER_CACHE_MAX__</span></div>
   </div>
 </div>`),
 				'input hover': previewSnippet(`

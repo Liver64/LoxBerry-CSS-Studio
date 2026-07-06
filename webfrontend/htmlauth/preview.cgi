@@ -68,6 +68,70 @@ sub _url_escape {
     return $value;
 }
 
+sub _js_unescape {
+    my ($value) = @_;
+    $value = '' if !defined $value;
+    $value =~ s/\\u([0-9A-Fa-f]{4})/chr(hex($1))/ge;
+    $value =~ s/\\n/\n/g;
+    $value =~ s/\\r/\r/g;
+    $value =~ s/\\t/\t/g;
+    $value =~ s/\\"/"/g;
+    $value =~ s/\\\\/\\/g;
+    return $value;
+}
+
+sub _js_escape {
+    my ($value) = @_;
+    $value = '' if !defined $value;
+    $value =~ s/\\/\\\\/g;
+    $value =~ s/'/\\'/g;
+    $value =~ s/`/\\`/g;
+    $value =~ s/\r/\\r/g;
+    $value =~ s/\n/\\n/g;
+    return $value;
+}
+
+sub _lang_string {
+    my ($lang_js, $key, $fallback) = @_;
+    $fallback = '' if !defined $fallback;
+    return $fallback if !defined $lang_js || $lang_js eq '' || !defined $key || $key eq '';
+    if ($lang_js =~ /"\Q$key\E"\s*:\s*"((?:\\.|[^"\\])*)"/s) {
+        return _js_unescape($1);
+    }
+    return $fallback;
+}
+
+sub _apply_preview_language_placeholders {
+    my ($html, $lang_js) = @_;
+    $html = '' if !defined $html;
+    my %html_values = (
+        LB_PREVIEW_SLIDER_LEVEL_LABEL    => _lang_string($lang_js, 'previewSliderLevelLabel',    'Level:'),
+        LB_PREVIEW_SLIDER_LEVEL_VALUE    => _lang_string($lang_js, 'previewSliderLevelValue',    '50 %'),
+        LB_PREVIEW_SLIDER_PERCENT_MIN    => _lang_string($lang_js, 'previewSliderPercentMin',    '0 %'),
+        LB_PREVIEW_SLIDER_PERCENT_MAX    => _lang_string($lang_js, 'previewSliderPercentMax',    '100 %'),
+        LB_PREVIEW_SLIDER_CACHE_LABEL    => _lang_string($lang_js, 'previewSliderCacheLabel',    'Cache:'),
+        LB_PREVIEW_SLIDER_CACHE_VALUE    => _lang_string($lang_js, 'previewSliderCacheValue',    '500 MB'),
+        LB_PREVIEW_SLIDER_CACHE_MIN      => _lang_string($lang_js, 'previewSliderCacheMin',      '100 MB'),
+        LB_PREVIEW_SLIDER_CACHE_MAX      => _lang_string($lang_js, 'previewSliderCacheMax',      '3000 MB'),
+        LB_PREVIEW_SLIDER_DISABLED_LABEL => _lang_string($lang_js, 'previewSliderDisabledLabel', 'Disabled:'),
+        LB_PREVIEW_SLIDER_DISABLED_VALUE => _lang_string($lang_js, 'previewSliderDisabledValue', '40 %'),
+    );
+    for my $key (keys %html_values) {
+        my $value = _html_escape($html_values{$key});
+        $html =~ s/__\Q$key\E__/$value/g;
+    }
+
+    my %js_values = (
+        LB_PREVIEW_SLIDER_SUFFIX_PERCENT_JS => _lang_string($lang_js, 'previewSliderPercentSuffix',  ' %'),
+        LB_PREVIEW_SLIDER_SUFFIX_MB_JS      => _lang_string($lang_js, 'previewSliderMegabyteSuffix', ' MB'),
+    );
+    for my $key (keys %js_values) {
+        my $value = _js_escape($js_values{$key});
+        $html =~ s/__\Q$key\E__/$value/g;
+    }
+    return $html;
+}
+
 sub _ensure_dir {
     my ($dir) = @_;
     return 1 if -d $dir;
@@ -155,6 +219,8 @@ my $template_file = "$tpldir/themes/$page/index_$lblang.html";
 $template_file = "$tpldir/themes/$page/index_en.html" if !-f $template_file;
 
 my $html = _read_text_file($template_file);
+my $lang_js = _read_text_file("$tpldir/lang/lang_$lblang.js");
+$html = _apply_preview_language_placeholders($html, $lang_js);
 $html =~ s/__LB_CORE_THEME_LINKS__/_build_theme_links()/ge;
 $html =~ s/__LB_PLUGIN_THEME_LINKS__//g;
 $html =~ s/__LB_CORE_THEME_OPTIONS__//g;

@@ -67,6 +67,8 @@ body.theme-user-rose-calm,
   --lb-primary-hover: #a94363;
   --lb-radius: 14px;
   --lb-radius-sm: 10px;
+  --lb-range-active-bg: #c75b7a;
+  --lb-range-track-bg: #f3c7d4;
   --lb-select-bg: #ffffff;
   --lb-select-border: #f3c7d4;
   --lb-select-hover-bg: #f2f2f2;
@@ -81,6 +83,15 @@ body.theme-user-rose-calm,
   --lb-sidebar-link-hover-bg: #a94363;
   --lb-sidebar-link-hover-text: #fff7fa;
   --lb-sidebar-text: #fff7fa;
+  --lb-slider-active-bg: #c75b7a;
+  --lb-slider-bg: #f3c7d4;
+  --lb-slider-compact-active-bg: #c75b7a;
+  --lb-slider-compact-thumb-bg: #c75b7a;
+  --lb-slider-fill-bg: #c75b7a;
+  --lb-slider-thumb-bg: #c75b7a;
+  --lb-slider-thumb-border-width: 4px;
+  --lb-slider-track-bg: #f3c7d4;
+  --lb-slider-value-text: var(--lb-primary);
   --lb-tab-popup-item-hover-bg: #a94363;
   --lb-table-bg: #ffffff;
   --lb-table-border-color: #f3c7d4;
@@ -106,7 +117,7 @@ body.theme-user-rose-calm,
 }
 
 /* USER CUSTOM CSS START */
-/* Eigene Ergänzungen bleiben beim Speichern erhalten. */
+/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
 /* USER CUSTOM CSS END */
 
 /* DESIGN STUDIO RULES START */
@@ -246,16 +257,15 @@ body.theme-user-rose-calm input[type=radio], .theme-user-rose-calm input[type=ra
   accent-color: var(--lb-radio-checked-bg, var(--lb-primary, var(--lb-active-bg, #007aff))) !important;
 }
 body.theme-user-rose-calm .lb-slider, .theme-user-rose-calm .lb-slider {
-  --lb-slider-fill-bg: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))));
-  --lb-slider-track-bg: var(--lb-slider-track-bg, var(--lb-slider-bg, var(--lb-range-track-bg, rgba(0,0,0,.22))));
-  accent-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, var(--lb-btn-primary-bg, #007aff)))) !important;
+  /* V225: prefer explicit slider tokens; older themes fall back to their own active/button/primary color. */
+  accent-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) !important;
 }
 body.theme-user-rose-calm .lb-slider::-webkit-slider-runnable-track, .theme-user-rose-calm .lb-slider::-webkit-slider-runnable-track {
   height: var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) !important;
   min-height: 0 !important;
   border-radius: var(--lb-slider-track-radius, 999px) !important;
   box-sizing: border-box !important;
-  background: linear-gradient(to right, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) 0%, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) 100%) !important;
+  background: linear-gradient(to right, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) 0%, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) var(--lb-slider-fill, 50%), var(--lb-slider-track-bg, var(--lb-slider-bg, rgba(0,0,0,.22))) 100%) !important;
   border-color: var(--lb-slider-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;
 }
 body.theme-user-rose-calm .lb-slider::-moz-range-track, .theme-user-rose-calm .lb-slider::-moz-range-track {
@@ -270,17 +280,31 @@ body.theme-user-rose-calm .lb-slider::-moz-range-progress, .theme-user-rose-calm
   height: var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) !important;
   min-height: 0 !important;
   border-radius: var(--lb-slider-track-radius, 999px) !important;
-  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;
+  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff)))))) !important;
 }
 body.theme-user-rose-calm .lb-slider::-webkit-slider-thumb, .theme-user-rose-calm .lb-slider::-webkit-slider-thumb {
   margin-top: var(--lb-slider-thumb-offset, calc((var(--lb-slider-track-height, var(--lb-range-track-height, 6px)) - var(--lb-slider-thumb-size, 20px)) / 2)) !important;
-  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;
-  border-color: var(--lb-slider-thumb-border, var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff)))) !important;
+  width: var(--lb-slider-thumb-size, 20px) !important;
+  height: var(--lb-slider-thumb-size, 20px) !important;
+  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))))))) !important;
+  border-width: var(--lb-slider-thumb-border-width, 3px) !important;
+  border-style: solid !important;
+  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)) !important;
+  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25)) !important;
   box-sizing: border-box !important;
 }
 body.theme-user-rose-calm .lb-slider::-moz-range-thumb, .theme-user-rose-calm .lb-slider::-moz-range-thumb {
-  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff))) !important;
-  border-color: var(--lb-slider-thumb-border, var(--lb-slider-thumb-bg, var(--lb-slider-active-bg, var(--lb-primary, #007aff)))) !important;
+  width: var(--lb-slider-thumb-size, 20px) !important;
+  height: var(--lb-slider-thumb-size, 20px) !important;
+  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-range-active-bg, var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))))))) !important;
+  border-width: var(--lb-slider-thumb-border-width, 3px) !important;
+  border-style: solid !important;
+  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #ffffff)) !important;
+  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25)) !important;
+  box-sizing: border-box !important;
+}
+body.theme-user-rose-calm .lb-slider::-webkit-slider-thumb:hover, .theme-user-rose-calm .lb-slider::-webkit-slider-thumb:hover, body.theme-user-rose-calm .lb-slider::-moz-range-thumb:hover, .theme-user-rose-calm .lb-slider::-moz-range-thumb:hover {
+  box-shadow: var(--lb-slider-thumb-hover-shadow, 0 0 0 7px var(--lb-focus-ring-strong, rgba(37,99,235,.18)), var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25))) !important;
 }
 body.theme-user-rose-calm .lb-tooltip, body.theme-user-rose-calm [role=tooltip], .theme-user-rose-calm .lb-tooltip, .theme-user-rose-calm [role=tooltip] {
   background-color: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;

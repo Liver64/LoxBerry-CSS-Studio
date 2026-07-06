@@ -66,7 +66,24 @@ window.LBDesignStudioLangs.de = {
     "inputText": "Input Text"
   },
   "palette": {
-    "title": "4. Vorschaufarben"
+    "title": "4. Vorschaufarben",
+    "ariaLabel": "Farbpalette",
+    "customColorAria": "Eigene Farbe wählen",
+    "roles": {
+      "text": "Text",
+      "border": "Rahmen",
+      "hover": "Hover",
+      "active": "Aktiv",
+      "primary": "Primär",
+      "button": "Button",
+      "input": "Eingabe",
+      "surface": "Fläche",
+      "background": "Hintergrund",
+      "table": "Tabelle",
+      "sidebar": "Sidebar",
+      "slider": "Slider",
+      "form": "Formular"
+    }
   },
   "directEditor": {
     "title": "Direkteditor",
@@ -175,7 +192,25 @@ window.LBDesignStudioLangs.de = {
       "hover": "Hover",
       "offline": "Offline",
       "value": "Wert"
-    }
+    },
+    "toggleOffTitle": "Aus / Hintergrund",
+    "toggleOnTitle": "Ein / Aktiv",
+    "editAria": "Klicken zum Bearbeiten, Doppelklick oder CTRL-/Strg-Klick für Direkteditor",
+    "sampleColor": "Beispielfarbe"
+  },
+  "previewPage": {
+    "previewSliderLevelLabel": "Level:",
+    "previewSliderLevelValue": "50 %",
+    "previewSliderPercentMin": "0 %",
+    "previewSliderPercentMax": "100 %",
+    "previewSliderCacheLabel": "Cache:",
+    "previewSliderCacheValue": "500 MB",
+    "previewSliderCacheMin": "100 MB",
+    "previewSliderCacheMax": "3000 MB",
+    "previewSliderDisabledLabel": "Disabled:",
+    "previewSliderDisabledValue": "40 %",
+    "previewSliderPercentSuffix": " %",
+    "previewSliderMegabyteSuffix": " MB"
   },
   "wallpaper": {
     "title": "Wallpaper Editor",
@@ -213,7 +248,9 @@ window.LBDesignStudioLangs.de = {
     "previewTitle": "KI Farbpalette",
     "noDraft": "Noch kein KI-Entwurf geladen.",
     "validNoValues": "JSON gültig, aber keine anwendbaren Designwerte enthalten.",
-    "adoptedValues": "Übernommene Designwerte"
+    "adoptedValues": "Übernommene Designwerte",
+    "poweredBy": "Powered by Puter.js",
+    "colorDirectionAria": "KI Farbrichtung"
   },
   "statusModal": {
     "successTitle": "OK",
@@ -223,12 +260,10 @@ window.LBDesignStudioLangs.de = {
     "autoCloseHint": "Diese Meldung schließt automatisch nach 5 Sekunden.",
     "manualCloseHint": "Bitte bestätigen."
   },
-
   "deleteModal": {
     "title": "User Theme löschen",
     "help": "User Theme wirklich löschen? JSON und zugehörige CSS-Datei werden gelöscht, wenn sie vom CSS-Studio erzeugt wurden."
   },
-
   "saveModal": {
     "title": "Theme speichern",
     "help": "Der Dateiname wird automatisch aus dem Anzeigenamen erzeugt. Ein führendes „LoxBerry“ wird entfernt.",
@@ -243,7 +278,6 @@ window.LBDesignStudioLangs.de = {
   },
   "messages": {
     "noSaveableContent": "Nicht gespeichert: Es sind keine Theme-Tokens oder nutzbaren Custom-CSS-Regeln vorhanden. Bitte erst KI-Entwurf laden, CSS importieren oder einen Wert ändern.",
-
     "deleteNoThemeSelected": "Kein User Theme zum Löschen ausgewählt.",
     "deleteConfirm": "User Theme wirklich löschen? JSON und zugehörige CSS-Datei werden gelöscht, wenn sie vom CSS-Studio erzeugt wurden.",
     "deletingTheme": "Lösche User Theme ...",
@@ -271,6 +305,39 @@ window.LBDesignStudioLangs.de = {
     "LoxBerryRead": "LoxBerry gelesen: {tokens} Tokens, {themes} Themes.",
     "selectElementFirst": "Bitte zuerst ein Element im Arbeitsbereich / Vorschau oder im Eigenschaftenbereich auswählen.",
     "noRadiusForElement": "Dieses Element besitzt keine Radius-Tokens.",
-    "noBorderWidthForElement": "Dieses Element besitzt keine Rahmenstärke-Tokens."
+    "noBorderWidthForElement": "Dieses Element besitzt keine Rahmenstärke-Tokens.",
+    "protectedPackageTheme": "Nicht gespeichert: {theme} ist ein geschütztes Paket-Theme. Bitte einen anderen Anzeigenamen verwenden, damit keine Liquid-Glass-CSS oder JSON versehentlich überschrieben wird.",
+    "saveFailed": "Speichern fehlgeschlagen.",
+    "themeSaved": "Gespeichert: {theme} {version}. CSS: {css}",
+    "previousJsonBackup": "Vorherige JSON: {backup}",
+    "cssNotReported": "nicht gemeldet",
+    "deleteReadonlyTheme": "Dieses CSS-only Paket-Theme kann nicht direkt gelöscht werden.",
+    "deleteFailed": "Löschen fehlgeschlagen.",
+    "undoDone": "Letzte Änderung rückgängig gemacht.",
+    "puterLoadError": "Puter.js konnte nicht geladen werden.",
+    "invalidJsonResponse": "Antwort enthält kein gültiges JSON."
+  },
+  "undo": {
+    "availableTitle": "Letzte Änderung rückgängig machen",
+    "emptyTitle": "Keine Änderung zum Rückgängigmachen"
+  },
+  "customCss": {
+    "defaultText": "/* USER CUSTOM CSS START */\n/* Eigene Ergänzungen bleiben beim Speichern erhalten. */\n/* USER CUSTOM CSS END */"
+  },
+  "serverErrors": {
+    "generic": "Ein unbekannter Serverfehler ist aufgetreten.",
+    "cannotCreateDirectory": "Verzeichnis kann nicht erstellt werden: {path}",
+    "invalidJsonPayload": "Ungültige JSON-Nutzlast.",
+    "protectedPackageTheme": "Nicht gespeichert: {theme} ist ein geschütztes Paket-Theme. Bitte einen anderen Anzeigenamen verwenden, damit keine Liquid-Glass-CSS oder JSON versehentlich überschrieben wird.",
+    "cannotBackupPreviousJson": "Vorherige JSON kann nicht gesichert werden: {path}",
+    "invalidWallpaperImageData": "Ungültige Wallpaper-Bilddaten.",
+    "wallpaperTooLarge": "Wallpaper-Bild ist zu groß. Maximum ist 8 MB.",
+    "cannotCreateWallpaperAssetDirectory": "Wallpaper-Asset-Verzeichnis kann nicht erstellt werden: {path}",
+    "cannotWriteWallpaperAsset": "Wallpaper-Asset kann nicht geschrieben werden: {path}",
+    "cannotFinalizeWallpaperAsset": "Wallpaper-Asset kann nicht finalisiert werden: {path}",
+    "emptyTheme": "Keine Theme-Tokens oder nutzbaren Custom-CSS-Regeln empfangen. CSS wäre leer.",
+    "cannotWriteFile": "Datei kann nicht geschrieben werden: {path}",
+    "cannotCloseWriteFile": "Datei kann nicht abgeschlossen/geschrieben werden: {path}",
+    "cssNotCreatedOrEmpty": "CSS wurde nicht erstellt oder ist leer: {path}"
   }
 };
