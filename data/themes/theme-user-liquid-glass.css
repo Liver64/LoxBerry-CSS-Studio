@@ -1,5 +1,5 @@
 /* LoxBerry CSS Framework User Theme: Liquid Glass
-   Version: V216_2026_07_06
+   Version: V218_2026_07_06
    Adapter theme for LoxBerry Design System and selected jQuery Mobile wrappers.
    Based on the visual idea from liquid-glass/src/liquid-glass.css, but rewritten
    to use the standard LoxBerry CSS variables/components instead of demo classes.
@@ -1723,3 +1723,60 @@ body.theme-liquid-glass input[type="radio"][data-role="none"]:checked + label:ho
 	-webkit-text-fill-color: var(--lb-hover-text) !important;
 	border-color: var(--lb-primary-hover) !important;
 }
+
+/* =========================================================
+   18. Liquid Glass - CSS Framework Design Studio tab text
+   ---------------------------------------------------------
+   Scope only to the Design Studio tabs. The active tab uses a
+   light surface in Liquid Glass, so its text must be dark.
+   Color only; no layout changes.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab.is-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab.cfw-tab-is-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab.is-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab.cfw-tab-is-active {
+	color: var(--lb-light-surface-text) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text) !important;
+	text-shadow: none !important;
+}
+
+/* =========================================================
+   19. Liquid Glass - CSS Framework Design Studio status windows
+   ---------------------------------------------------------
+   Keep the static Studio and AI status blocks readable on the
+   wallpaper. Color/background only; no geometry changes.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window {
+	background: var(--lb-input-bg) !important;
+	background-color: var(--lb-input-bg) !important;
+	background-image: none !important;
+	border-color: var(--lb-input-border) !important;
+	color: var(--lb-text) !important;
+	-webkit-text-fill-color: var(--lb-text) !important;
+	box-shadow: var(--lb-card-shadow) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status-label,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label {
+	background: var(--lb-btn-bg) !important;
+	background-color: var(--lb-btn-bg) !important;
+	background-image: none !important;
+	border-color: var(--lb-input-border) !important;
+	color: var(--lb-text) !important;
+	-webkit-text-fill-color: var(--lb-text) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status {
+	background: transparent !important;
+	background-color: transparent !important;
+	color: inherit;
+	-webkit-text-fill-color: currentColor;
+	text-shadow: none !important;
+}
+
