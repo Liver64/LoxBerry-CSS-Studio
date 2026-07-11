@@ -1,5 +1,5 @@
 /* LoxBerry CSS Framework User Theme: Liquid Glass
-   Version: V271_2026_07_11_JQM_TOGGLE_INPUT_SURFACE
+   Version: V282_2026_07_11_DESIGN_STUDIO_MODAL_SURFACE_RESTORE
    Adapter theme for LoxBerry Design System and selected jQuery Mobile wrappers.
    Based on the visual idea from liquid-glass/src/liquid-glass.css, but rewritten
    to use the standard LoxBerry CSS variables/components instead of demo classes.
@@ -38,10 +38,10 @@
 	--lb-text-muted: #8fa0b7;
 	--lb-border-color: rgba(255, 255, 255, 0.12);
 
-	/* Sonos4Lox custom wallpaper dimming.
-	   These variables can be overridden from the plugin UI at runtime. */
-	--s4lox-liquid-glass-wallpaper-dim-primary: 0.68;
-	--s4lox-liquid-glass-wallpaper-dim-secondary: 0.58;
+	/* Liquid Glass wallpaper dimming.
+	   Kept generic so plugin-specific runtime bridges can live in plugin CSS. */
+	--lb-liquid-wallpaper-dim-primary: 0.68;
+	--lb-liquid-wallpaper-dim-secondary: 0.58;
 
 	/* Transparency control
 	   Lower alpha = more transparent.
@@ -180,14 +180,6 @@
 	--lb-input-border: rgba(255, 255, 255, var(--lb-glass-border-alpha));
 	--lb-input-text: #ffffff;
 
-	/* Sonos4Lox status fields on Liquid Glass:
-	   Online player/zone badges use a light active surface, so text must be dark.
-	   Keep this as the local Sonos status token; do not derive it from generic
-	   input/text tokens because later input rules may otherwise resolve to white. */
-	--s4lox-zone-online-bg: var(--lb-active-bg, var(--lb-primary, rgba(143, 199, 255, 0.78)));
-	--s4lox-zone-online-border: var(--lb-active-border, var(--lb-primary-hover, rgba(143, 199, 255, 0.95)));
-	--s4lox-zone-online-text: #263238;
-	--s4lox-zone-online-hover-text: #263238;
 	/* jQuery Mobile widgets need bright text on glass input backgrounds. */
 	--lb-jqm-text: #ffffff;
 	--lb-jqm-muted-text: var(--lb-text-secondary);
@@ -252,8 +244,8 @@
 	background:
 		linear-gradient(
 			135deg,
-			rgba(3, 8, 16, var(--s4lox-liquid-glass-wallpaper-dim-primary, 0.68)),
-			rgba(10, 24, 38, var(--s4lox-liquid-glass-wallpaper-dim-secondary, 0.58))
+			rgba(3, 8, 16, var(--lb-liquid-wallpaper-dim-primary, 0.68)),
+			rgba(10, 24, 38, var(--lb-liquid-wallpaper-dim-secondary, 0.58))
 		),
 		radial-gradient(
 			900px 500px at 15% 10%,
@@ -1556,65 +1548,6 @@
 
 
 /* =========================================================
-   14. Legacy plugin light-card compatibility
-   ---------------------------------------------------------
-   Some older plugins ship local cards with hardcoded white backgrounds.
-   In Liquid Glass these cards must either become glass surfaces or their
-   light background would hide theme text. This block is scoped to known
-   legacy card classes and does not change global div/card behavior.
-   ========================================================= */
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-device-config,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-pre {
-	background: var(--lb-card-bg) !important;
-	background-color: var(--lb-card-bg) !important;
-	background-image: none !important;
-	color: var(--lb-text) !important;
-	-webkit-text-fill-color: var(--lb-text) !important;
-	border-color: var(--lb-border-color) !important;
-	text-shadow: none !important;
-}
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h1,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h2,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h3,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card h4,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card th,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card strong,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card label {
-	color: var(--lb-text) !important;
-	-webkit-text-fill-color: var(--lb-text) !important;
-}
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card p,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card td,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card small,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-muted,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card code {
-	color: var(--lb-text-secondary) !important;
-	-webkit-text-fill-color: var(--lb-text-secondary) !important;
-}
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card input,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card select,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-card textarea {
-	background: var(--lb-input-bg) !important;
-	background-color: var(--lb-input-bg) !important;
-	color: var(--lb-input-text) !important;
-	-webkit-text-fill-color: var(--lb-input-text) !important;
-	border-color: var(--lb-input-border) !important;
-}
-
-/* Keep explicit state/pairing badges readable; these use plugin-local semantic colors. */
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-state-badge,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-small-badge,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-pair-status,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-tag {
-	-webkit-text-fill-color: currentColor !important;
-}
-
-/* =========================================================
    15. Liquid Glass - Modal surfaces
    ========================================================= */
 
@@ -1864,73 +1797,6 @@ body.theme-liquid-glass input[type="radio"][data-role="none"]:checked + label:ho
 	-webkit-text-fill-color: var(--lb-jqm-disabled-text) !important;
 	border-color: var(--lb-btn-border) !important;
 	text-shadow: none !important;
-}
-
-/* Samsung Frame TV uses plain plugin-local buttons. Preserve layout and make them readable in Liquid Glass. */
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-btn {
-	background: var(--lb-btn-bg) !important;
-	background-color: var(--lb-btn-bg) !important;
-	background-image: none !important;
-	color: var(--lb-btn-text) !important;
-	-webkit-text-fill-color: var(--lb-btn-text) !important;
-	border: 1px solid var(--lb-btn-border) !important;
-	text-shadow: none !important;
-}
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .sf-btn:hover {
-	background: var(--lb-btn-hover-bg) !important;
-	background-color: var(--lb-btn-hover-bg) !important;
-	background-image: none !important;
-	color: var(--lb-hover-text) !important;
-	-webkit-text-fill-color: var(--lb-hover-text) !important;
-	border-color: var(--lb-primary-hover) !important;
-}
-
-/* =========================================================
-   18. Liquid Glass - CSS Framework Design Studio tab text
-   ---------------------------------------------------------
-   Scope only to the Design Studio tabs. The active tab uses a
-   light surface in Liquid Glass, so its text must be dark.
-   Color only; no layout changes.
-   ========================================================= */
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab.is-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab.cfw-tab-is-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab.is-active,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab.cfw-tab-is-active {
-	color: var(--lb-light-surface-text) !important;
-	-webkit-text-fill-color: var(--lb-light-surface-text) !important;
-	text-shadow: none !important;
-}
-
-/* =========================================================
-   19. Liquid Glass - CSS Framework Design Studio status windows
-   ---------------------------------------------------------
-   Keep the static Studio and AI status blocks on the same
-   modal glass background as the save dialog. Only the Liquid
-   Glass label text is forced dark for readability; no geometry,
-   border or shadow changes.
-   ========================================================= */
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window {
-	background: var(--lb-modal-bg) !important;
-	background-color: var(--lb-modal-bg) !important;
-	background-image: none !important;
-}
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status-label,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status {
-	background: transparent !important;
-	background-color: transparent !important;
-	background-image: none !important;
-}
-
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status-label,
-:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label {
-	color: #000000 !important;
 }
 
 
@@ -2250,55 +2116,108 @@ body.theme-liquid-glass input[type="radio"][data-role="none"]:checked + label:ho
 
 
 /* =========================================================
-   Liquid Glass V243 - Sonos online status text
+   20. Liquid Glass - light plugin surface text guard
    ---------------------------------------------------------
-   sonos_lbv4.css owns the status background via --s4lox-zone-online-*.
-   Liquid Glass only overrides the status text to anthracite on the light
-   online/active surface.
+   Some third-party plugins ship their own light card surfaces with
+   hardcoded white backgrounds, but inherit Liquid Glass bright text.
+   Keep this intentionally minimal and text-only: do not change those
+   plugin backgrounds, layouts or semantic status/button colors.
    ========================================================= */
 
-html body.theme-user-liquid-glass input[type="text"].zone-online,
-html body.theme-liquid-glass input[type="text"].zone-online,
-html body.theme-user-liquid-glass input[type="text"].player-zone-input.zone-online,
-html body.theme-liquid-glass input[type="text"].player-zone-input.zone-online,
-html body.theme-user-liquid-glass input[type="text"].volume-zone-input.zone-online,
-html body.theme-liquid-glass input[type="text"].volume-zone-input.zone-online,
-html body.theme-user-liquid-glass input[type="text"].sb_topline_input_online,
-html body.theme-liquid-glass input[type="text"].sb_topline_input_online,
-html body.theme-user-liquid-glass input[type="text"].lb-input.zone-online,
-html body.theme-liquid-glass input[type="text"].lb-input.zone-online,
-html body.theme-user-liquid-glass input[type="text"].lb-input.player-zone-online,
-html body.theme-liquid-glass input[type="text"].lb-input.player-zone-online,
-html body.theme-user-liquid-glass input[type="text"].lb-input.volume-zone-online,
-html body.theme-liquid-glass input[type="text"].lb-input.volume-zone-online,
-html body.theme-user-liquid-glass .ui-input-text input[type="text"].zone-online,
-html body.theme-liquid-glass .ui-input-text input[type="text"].zone-online,
-html body.theme-user-liquid-glass .ui-input-text input[type="text"].player-zone-online,
-html body.theme-liquid-glass .ui-input-text input[type="text"].player-zone-online,
-html body.theme-user-liquid-glass .ui-input-text input[type="text"].volume-zone-online,
-html body.theme-liquid-glass .ui-input-text input[type="text"].volume-zone-online {
-	--lb-input-text: var(--s4lox-zone-online-text, #263238) !important;
-	--lb-text: var(--s4lox-zone-online-text, #263238) !important;
-	--lb-jqm-text: var(--s4lox-zone-online-text, #263238) !important;
-	--lb-active-text: var(--s4lox-zone-online-text, #263238) !important;
-	--lb-hover-text: var(--s4lox-zone-online-hover-text, var(--s4lox-zone-online-text, #263238)) !important;
-	color: var(--s4lox-zone-online-text, #263238) !important;
-	-webkit-text-fill-color: var(--s4lox-zone-online-text, #263238) !important;
-	caret-color: var(--s4lox-zone-online-text, #263238) !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-summary-table,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-pre {
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
 	text-shadow: none !important;
 }
 
-html body.theme-user-liquid-glass input[type="text"].player-zone-input.zone-online:hover,
-html body.theme-liquid-glass input[type="text"].player-zone-input.zone-online:hover,
-html body.theme-user-liquid-glass input[type="text"].player-zone-input.zone-online:focus,
-html body.theme-liquid-glass input[type="text"].player-zone-input.zone-online:focus,
-html body.theme-user-liquid-glass table.sonos-player-table tbody tr:hover input[type="text"].player-zone-input.zone-online,
-html body.theme-liquid-glass table.sonos-player-table tbody tr:hover input[type="text"].player-zone-input.zone-online,
-html body.theme-user-liquid-glass table.sonos-player-table tbody tr:hover input[type="text"].lb-input.player-zone-input.zone-online,
-html body.theme-liquid-glass table.sonos-player-table tbody tr:hover input[type="text"].lb-input.player-zone-input.zone-online {
-	color: var(--s4lox-zone-online-hover-text, var(--s4lox-zone-online-text, #263238)) !important;
-	-webkit-text-fill-color: var(--s4lox-zone-online-hover-text, var(--s4lox-zone-online-text, #263238)) !important;
-	caret-color: var(--s4lox-zone-online-hover-text, var(--s4lox-zone-online-text, #263238)) !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card :is(h1, h2, h3, h4, h5, h6, th, td, p, label, strong, code),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config :is(h1, h2, h3, h4, h5, h6, th, td, p, label, strong, code),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-summary-table :is(th, td, label, strong, code),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-pre,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-pre code {
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-muted,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-muted *,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card small,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config small {
+	color: var(--lb-light-surface-muted-text, #374151) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-muted-text, #374151) !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card input[type="text"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card input[type="number"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card input[type="password"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card input[type="email"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card input[type="url"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card input:not([type]),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card select,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card textarea,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config input[type="text"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config input[type="number"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config input[type="password"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config input[type="email"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config input[type="url"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config input:not([type]),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config select,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config textarea {
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
+	caret-color: var(--lb-light-surface-text, #111827) !important;
+	text-shadow: none !important;
+}
+
+/* Preserve semantic colors from the plugin itself. */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-state-badge,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-small-badge,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-btn-success,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-btn-warning,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-btn-danger,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-btn-purple,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-btn-grey,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-btn-primary {
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+	text-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-msg.success,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-msg.success *,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-pair-status.paired,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-pair-status.paired * {
+	color: #1e8449 !important;
+	-webkit-text-fill-color: #1e8449 !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-msg.error,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-msg.error * {
+	color: #922b21 !important;
+	-webkit-text-fill-color: #922b21 !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-msg.info,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-msg.info * {
+	color: #1a5276 !important;
+	-webkit-text-fill-color: #1a5276 !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-pair-status.unpaired,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-pair-status.unpaired * {
+	color: #a04000 !important;
+	-webkit-text-fill-color: #a04000 !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-tag,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-tag * {
+	color: #47606d !important;
+	-webkit-text-fill-color: #47606d !important;
 }
 
 /* ==========================================================================
@@ -2651,158 +2570,236 @@ body.theme-user-liquid-glass .lb-lg-native-glass.lb-lg-is-disabled > select {
   cursor: not-allowed !important;
 }
 
+/* =========================================================
+   21. Liquid Glass - light plugin surface JQM button/select guard
+   ---------------------------------------------------------
+   V279: Some light-surface plugins use their own .sf-* classes while
+   jQuery Mobile still enhances native buttons/selects to .ui-btn/.ui-select.
+   The generic Liquid Glass/JQM mapping then paints those controls like dark
+   glass controls, which makes them unreadable on the plugin's white cards.
+   Keep this scoped to the known light surface only and preserve the plugin's
+   own semantic button colors. No layout outside these .sf-* surfaces changes.
+   ========================================================= */
 
-/* ============================================================
-   Liquid Glass V242 - Sonos status fields win over glass wrappers
-   ------------------------------------------------------------
-   Player/zone status fields are owned by sonos_lbv4.css. This is
-   a CSS safety net in case a stale/late wrapper still exists while
-   JavaScript is cleaning it up.
-   ============================================================ */
-
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input),
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input),
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input),
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input),
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input),
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input),
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.zone-online),
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.zone-online),
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.player-zone-online),
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.player-zone-online),
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-online),
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-online),
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input_online),
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input_online) {
-  overflow: visible !important;
-  isolation: auto !important;
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config {
+	--lb-input-text: var(--lb-light-surface-text, #111827);
+	--lb-jqm-text: var(--lb-light-surface-text, #111827);
+	--lb-select-text: var(--lb-light-surface-text, #111827);
+	--lb-select-option-text: var(--lb-light-surface-text, #111827);
+	--lb-btn-text: var(--lb-light-surface-text, #111827);
 }
 
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input) .lb-lg-glass-filter,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input) .lb-lg-glass-filter,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input) .lb-lg-glass-overlay,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input) .lb-lg-glass-overlay,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input) .lb-lg-glass-specular,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.player-zone-input) .lb-lg-glass-specular,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input) .lb-lg-glass-filter,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input) .lb-lg-glass-filter,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input) .lb-lg-glass-overlay,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input) .lb-lg-glass-overlay,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input) .lb-lg-glass-specular,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.volume-zone-input) .lb-lg-glass-specular,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input) .lb-lg-glass-filter,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input) .lb-lg-glass-filter,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input) .lb-lg-glass-overlay,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input) .lb-lg-glass-overlay,
-body.theme-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input) .lb-lg-glass-specular,
-body.theme-user-liquid-glass .lb-lg-native-glass:has(> input.sb_topline_input) .lb-lg-glass-specular {
-  display: none !important;
-  opacity: 0 !important;
-  filter: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  animation: none !important;
-  transform: none !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-select,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-select .ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-select,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-select .ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .lb-lg-native-glass:has(> select),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .lb-lg-native-glass:has(> select) {
+	background: #ffffff !important;
+	background-color: #ffffff !important;
+	background-image: none !important;
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
+	border-color: #cccccc !important;
+	text-shadow: none !important;
+	box-shadow: none !important;
 }
 
-/* Re-apply the Sonos status surface with equal/later priority than the
-   generic native glass child reset. */
-body.theme-liquid-glass input.player-zone-input,
-body.theme-user-liquid-glass input.player-zone-input,
-body.theme-liquid-glass input.volume-zone-input,
-body.theme-user-liquid-glass input.volume-zone-input,
-body.theme-liquid-glass input.sb_topline_input,
-body.theme-user-liquid-glass input.sb_topline_input {
-  background-clip: padding-box !important;
-  text-shadow: none !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-select .ui-btn span,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-select .ui-selectmenu-text,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-select .ui-btn span,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-select .ui-selectmenu-text,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .lb-lg-native-glass > select,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .lb-lg-native-glass > select {
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
+	text-shadow: none !important;
 }
 
-body.theme-liquid-glass input.player-zone-input.zone-online,
-body.theme-user-liquid-glass input.player-zone-input.zone-online,
-body.theme-liquid-glass input.volume-zone-input.zone-online,
-body.theme-user-liquid-glass input.volume-zone-input.zone-online,
-body.theme-liquid-glass input.zone-online,
-body.theme-user-liquid-glass input.zone-online,
-body.theme-liquid-glass input.player-zone-online,
-body.theme-user-liquid-glass input.player-zone-online,
-body.theme-liquid-glass input.volume-zone-online,
-body.theme-user-liquid-glass input.volume-zone-online,
-body.theme-liquid-glass input.sb_topline_input_online,
-body.theme-user-liquid-glass input.sb_topline_input_online {
-  --lb-input-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-jqm-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-active-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-hover-text: var(--s4lox-zone-online-hover-text, var(--s4lox-zone-online-text, #263238)) !important;
-  background: var(--s4lox-zone-online-bg, var(--lb-active-bg, var(--lb-success, var(--lb-input-bg, #ffffff)))) !important;
-  background-color: var(--s4lox-zone-online-bg, var(--lb-active-bg, var(--lb-success, var(--lb-input-bg, #ffffff)))) !important;
-  background-image: none !important;
-  color: var(--s4lox-zone-online-text, #263238) !important;
-  -webkit-text-fill-color: var(--s4lox-zone-online-text, #263238) !important;
-  caret-color: var(--s4lox-zone-online-text, #263238) !important;
-  border-color: var(--s4lox-zone-online-border, var(--lb-active-border, var(--lb-active-bg, #6db33f))) !important;
-  box-shadow: none !important;
-  opacity: 1 !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-input-text,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-input-search,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-input-text,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-input-search,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .lb-lg-native-glass:has(> input),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .lb-lg-native-glass:has(> textarea),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .lb-lg-native-glass:has(> input),
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .lb-lg-native-glass:has(> textarea) {
+	background: #ffffff !important;
+	background-color: #ffffff !important;
+	background-image: none !important;
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
+	border-color: #cccccc !important;
+	text-shadow: none !important;
+	box-shadow: none !important;
 }
 
-/* V251: Sonos online fields are light active surfaces in Liquid Glass.
-   This also covers the Audio Profile tables. profiles.js marks online profile
-   room fields as .volume-zone-input.zone-online; the status surface must be
-   identical to the normal Zone Player online fields and must win after the
-   generic native input rules. */
-body.theme-liquid-glass .lb-content input[type="text"].zone-online,
-body.theme-user-liquid-glass .lb-content input[type="text"].zone-online,
-body.theme-liquid-glass .lb-content input[type="text"].player-zone-input.zone-online,
-body.theme-user-liquid-glass .lb-content input[type="text"].player-zone-input.zone-online,
-body.theme-liquid-glass .lb-content input[type="text"].volume-zone-input.zone-online,
-body.theme-user-liquid-glass .lb-content input[type="text"].volume-zone-input.zone-online,
-body.theme-liquid-glass .lb-content input[type="text"].volume-zone-online,
-body.theme-user-liquid-glass .lb-content input[type="text"].volume-zone-online,
-body.theme-liquid-glass table[id^="tblvol_prof"] input[type="text"].zone-online,
-body.theme-user-liquid-glass table[id^="tblvol_prof"] input[type="text"].zone-online,
-body.theme-liquid-glass table[id^="tblvol_prof"] input[type="text"].volume-zone-input.zone-online,
-body.theme-user-liquid-glass table[id^="tblvol_prof"] input[type="text"].volume-zone-input.zone-online,
-body.theme-liquid-glass table[id^="tblvol_prof"] input[type="text"].volume-zone-online,
-body.theme-user-liquid-glass table[id^="tblvol_prof"] input[type="text"].volume-zone-online,
-body.theme-liquid-glass table.sonos-volume-profile-table input[type="text"].zone-online,
-body.theme-user-liquid-glass table.sonos-volume-profile-table input[type="text"].zone-online,
-body.theme-liquid-glass table.sonos-volume-profile-table input[type="text"].volume-zone-input.zone-online,
-body.theme-user-liquid-glass table.sonos-volume-profile-table input[type="text"].volume-zone-input.zone-online,
-body.theme-liquid-glass table.sonos-volume-profile-table input[type="text"].volume-zone-online,
-body.theme-user-liquid-glass table.sonos-volume-profile-table input[type="text"].volume-zone-online,
-body.theme-liquid-glass table.sonos-player-table input[type="text"].player-zone-input.zone-online,
-body.theme-user-liquid-glass table.sonos-player-table input[type="text"].player-zone-input.zone-online,
-body.theme-liquid-glass .lb-lg-native-glass > input[type="text"].zone-online,
-body.theme-user-liquid-glass .lb-lg-native-glass > input[type="text"].zone-online,
-body.theme-liquid-glass .lb-lg-native-glass > input[type="text"].volume-zone-input.zone-online,
-body.theme-user-liquid-glass .lb-lg-native-glass > input[type="text"].volume-zone-input.zone-online,
-body.theme-liquid-glass .lb-lg-native-glass > input[type="text"].volume-zone-online,
-body.theme-user-liquid-glass .lb-lg-native-glass > input[type="text"].volume-zone-online,
-body.theme-liquid-glass .lb-lg-native-glass > input[type="text"].player-zone-input.zone-online,
-body.theme-user-liquid-glass .lb-lg-native-glass > input[type="text"].player-zone-input.zone-online {
-  --lb-input-bg: var(--s4lox-zone-online-bg, var(--lb-active-bg, var(--lb-primary, rgba(143, 199, 255, 0.78)))) !important;
-  --lb-input-border: var(--s4lox-zone-online-border, var(--lb-active-border, var(--lb-primary-hover, rgba(143, 199, 255, 0.95)))) !important;
-  --lb-input-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-jqm-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-active-text: var(--s4lox-zone-online-text, #263238) !important;
-  --lb-hover-text: var(--s4lox-zone-online-hover-text, var(--s4lox-zone-online-text, #263238)) !important;
-  background: var(--s4lox-zone-online-bg, var(--lb-active-bg, var(--lb-primary, rgba(143, 199, 255, 0.78)))) !important;
-  background-color: var(--s4lox-zone-online-bg, var(--lb-active-bg, var(--lb-primary, rgba(143, 199, 255, 0.78)))) !important;
-  background-image: none !important;
-  background-clip: padding-box !important;
-  color: var(--s4lox-zone-online-text, #263238) !important;
-  -webkit-text-fill-color: var(--s4lox-zone-online-text, #263238) !important;
-  caret-color: var(--s4lox-zone-online-text, #263238) !important;
-  border-color: var(--s4lox-zone-online-border, var(--lb-active-border, var(--lb-primary-hover, rgba(143, 199, 255, 0.95)))) !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-  font-weight: 600 !important;
-  opacity: 1 !important;
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-input-text input,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .ui-input-search input,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-input-text input,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .ui-input-search input,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .lb-lg-native-glass > input,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .lb-lg-native-glass > textarea,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .lb-lg-native-glass > input,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .lb-lg-native-glass > textarea {
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
+	caret-color: var(--lb-light-surface-text, #111827) !important;
+	text-shadow: none !important;
 }
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card button.sf-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card button.sf-btn.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config button.sf-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config button.sf-btn.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn.ui-btn {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: auto !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 7px 16px !important;
+	border-radius: 4px !important;
+	font-size: 0.9em !important;
+	font-weight: 500 !important;
+	line-height: 1.2 !important;
+	text-shadow: none !important;
+	box-shadow: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-primary,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-primary.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-primary,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-primary.ui-btn {
+	background: #2980b9 !important;
+	background-color: #2980b9 !important;
+	background-image: none !important;
+	border-color: #2980b9 !important;
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-success,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-success.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-success,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-success.ui-btn {
+	background: #27ae60 !important;
+	background-color: #27ae60 !important;
+	background-image: none !important;
+	border-color: #27ae60 !important;
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-warning,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-warning.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-warning,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-warning.ui-btn {
+	background: #e67e22 !important;
+	background-color: #e67e22 !important;
+	background-image: none !important;
+	border-color: #e67e22 !important;
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-danger,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-danger.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-danger,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-danger.ui-btn {
+	background: #c0392b !important;
+	background-color: #c0392b !important;
+	background-image: none !important;
+	border-color: #c0392b !important;
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-purple,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-purple.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-purple,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-purple.ui-btn {
+	background: #8e44ad !important;
+	background-color: #8e44ad !important;
+	background-image: none !important;
+	border-color: #8e44ad !important;
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-grey,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn-grey.ui-btn,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-grey,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn-grey.ui-btn {
+	background: #7f8c8d !important;
+	background-color: #7f8c8d !important;
+	background-image: none !important;
+	border-color: #7f8c8d !important;
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-card .sf-btn.ui-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn:hover,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .lb-content .sf-device-config .sf-btn.ui-btn:hover {
+	opacity: 0.87 !important;
+}
+
+/* =========================================================
+   22. Liquid Glass - CSS Framework Design Studio active tab text
+   ---------------------------------------------------------
+   V280: Restore the Design Studio active-tab text guard that was removed
+   during the plugin-specific cleanup. The active tab uses a light surface in
+   Liquid Glass, so only its text needs to be dark. No layout, background,
+   Core or generated-theme rules are changed.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab.is-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab.cfw-tab-is-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab.active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab.is-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab.cfw-tab-is-active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab.active,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio .cfw-tab[aria-selected="true"],
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio button.cfw-tab[aria-selected="true"] {
+	color: var(--lb-light-surface-text, #111827) !important;
+	-webkit-text-fill-color: var(--lb-light-surface-text, #111827) !important;
+	text-shadow: none !important;
+}
+
+/* =========================================================
+   23. Liquid Glass - CSS Framework Design Studio status windows
+   ---------------------------------------------------------
+   V281: Restore the already confirmed milky status-window surface that was
+   removed during plugin-specific cleanup. This is the original Design Studio
+   status guard: background/text only, no layout, border, shadow, Core or
+   generated-theme changes.
+   ========================================================= */
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window {
+	background: var(--lb-modal-bg) !important;
+	background-color: var(--lb-modal-bg) !important;
+	background-image: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status-label,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status {
+	background: transparent !important;
+	background-color: transparent !important;	
+	background-image: none !important;
+}
+
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #studioStatusBar.cfw-status-window .cfw-status-label,
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass) .cfw-design-studio #aiStatusBar.cfw-status-window .cfw-status-label {
+	color: #000000 !important;
+	-webkit-text-fill-color: #000000 !important;
+}
+
