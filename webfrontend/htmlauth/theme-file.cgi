@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use lib "/opt/loxberry/libs/perllib";
+use lib "REPLACELBHOMEDIR/libs/perllib";
 use CGI qw(:standard);
 use Cwd qw(abs_path);
 use File::Basename qw(dirname);
@@ -32,7 +32,7 @@ sub _plugin_dir {
 }
 
 my $plugin  = 'cssframework';
-my $datadir = _plugin_dir($lbpdatadir || $ENV{LBPDATA}, '/opt/loxberry/data/plugins', $plugin);
+my $datadir = _plugin_dir($lbpdatadir || $ENV{LBPDATA}, 'REPLACELBHOMEDIR/data/plugins', $plugin);
 my $theme_dir = "$datadir/themes";
 
 sub _respond_text {

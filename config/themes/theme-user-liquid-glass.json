@@ -1,0 +1,19 @@
+{
+   "custom_css" : "",
+   "id" : "theme-user-liquid-glass",
+   "import_meta" : null,
+   "name" : "Liquid Glass",
+   "protected_wallpaper_only" : true,
+   "studio_model" : {},
+   "studio_version" : "V263_LiquidGlassWallpaperCanonicalPath",
+   "tokens" : {},
+   "updated_at" : "2026-07-11T10:57:47+0200",
+   "version" : "0.1.4",
+   "wallpaper" : {
+      "brightness" : 65,
+      "enabled" : true,
+      "image" : "assets/images/theme-user-liquid-glass/wallpaper.png",
+      "mode" : "cover",
+      "opacity" : 63
+   }
+}

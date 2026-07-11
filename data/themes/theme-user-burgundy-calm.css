@@ -22,7 +22,7 @@ body.theme-user-burgundy-calm,
   --lb-btn-group-active-text: #f8fafc;
   --lb-btn-group-border: #f5bcbc;
   --lb-btn-group-hover-bg: #6b0000;
-  --lb-btn-group-hover-text: #2b1515;
+  --lb-btn-group-hover-text: #f8fafc;
   --lb-btn-group-inactive-bg: #f8fafc;
   --lb-btn-group-inactive-border: #f5bcbc;
   --lb-btn-group-inactive-text: #800000;
@@ -35,10 +35,10 @@ body.theme-user-burgundy-calm,
   --lb-btn-primary-text: #fff5f5;
   --lb-btn-radius: 12px;
   --lb-btn-text: #2b1515;
-  --lb-card-bg: #ffffff;
+  --lb-card-bg: #fff5f5;
   --lb-card-border: #f5bcbc;
   --lb-card-shadow: 0 10px 28px rgba(0,0,0,0.16);
-  --lb-dropdown-menu-bg: #ffffff;
+  --lb-dropdown-menu-bg: #fff5f5;
   --lb-dropdown-menu-text: #2b1515;
   --lb-focus-ring: #800000;
   --lb-focus-ring-strong: #800000;
@@ -46,21 +46,21 @@ body.theme-user-burgundy-calm,
   --lb-header-btn-hover-bg: #6b0000;
   --lb-header-btn-hover-text: #fff5f5;
   --lb-header-btn-text: #fff5f5;
-  --lb-input-bg: #ffffff;
+  --lb-input-bg: #fff5f5;
   --lb-input-border: #f5bcbc;
-  --lb-input-disabled-bg: #ffffff;
+  --lb-input-disabled-bg: #fff5f5;
   --lb-input-disabled-opacity: 0.60;
   --lb-input-disabled-text: #755353;
   --lb-input-hover-bg: #fafafa;
   --lb-input-hover-border: #f5bcbc;
   --lb-input-placeholder-text: #755353;
   --lb-input-text: #2b1515;
-  --lb-multiselect-bg: #ffffff;
+  --lb-multiselect-bg: #fff5f5;
   --lb-multiselect-border: #f5bcbc;
   --lb-multiselect-menu-border: #f5bcbc;
   --lb-multiselect-option-hover-bg: #6b0000;
   --lb-multiselect-shadow: 0 10px 28px rgba(0,0,0,0.16);
-  --lb-multiselect-summary-bg: #ffffff;
+  --lb-multiselect-summary-bg: #fff5f5;
   --lb-multiselect-text: #2b1515;
   --lb-primary: #800000;
   --lb-primary-dark: #4f0000;
@@ -69,7 +69,7 @@ body.theme-user-burgundy-calm,
   --lb-radius-sm: 10px;
   --lb-range-active-bg: #800000;
   --lb-range-track-bg: #f5bcbc;
-  --lb-select-bg: #ffffff;
+  --lb-select-bg: #fff5f5;
   --lb-select-border: #f5bcbc;
   --lb-select-hover-bg: #f2f2f2;
   --lb-select-hover-border: #f5bcbc;
@@ -92,10 +92,11 @@ body.theme-user-burgundy-calm,
   --lb-slider-track-bg: #f5bcbc;
   --lb-slider-value-text: var(--lb-primary);
   --lb-tab-popup-item-hover-bg: #6b0000;
-  --lb-table-bg: #ffffff;
+  --lb-table-bg: #fff5f5;
   --lb-table-border: var(--lb-border-color);
   --lb-table-border-color: #f5bcbc;
   --lb-table-cell-border-color: #f5bcbc;
+  --lb-table-cell-border-width: 0px;
   --lb-table-cell-text: #2b1515;
   --lb-table-footer-bg: #fde2e2;
   --lb-table-footer-text: #755353;
@@ -103,7 +104,7 @@ body.theme-user-burgundy-calm,
   --lb-table-header-text: #2b1515;
   --lb-table-radius: 12px;
   --lb-table-row-alt-bg: #fde2e2;
-  --lb-table-row-bg: #ffffff;
+  --lb-table-row-bg: #fff5f5;
   --lb-table-row-hover-bg: #d9b3b3;
   --lb-text: #2b1515;
   --lb-text-muted: #755353;
@@ -115,8 +116,197 @@ body.theme-user-burgundy-calm,
 }
 
 /* USER CUSTOM CSS START */
-/* Eigene ErgÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤nzungen bleiben beim Speichern erhalten. */
+
 /* USER CUSTOM CSS END */
+
+/* DESIGN STUDIO JQM COMPAT START */
+/* V250: Token based jQuery Mobile compatibility for generated user themes. */
+body.theme-user-burgundy-calm .ui-page, body.theme-user-burgundy-calm .ui-content, body.theme-user-burgundy-calm .ui-body-a, body.theme-user-burgundy-calm .ui-body-b, body.theme-user-burgundy-calm .ui-body-c, body.theme-user-burgundy-calm .ui-body-d, body.theme-user-burgundy-calm .ui-body-e, body.theme-user-burgundy-calm .ui-overlay-a,
+.theme-user-burgundy-calm .ui-page, .theme-user-burgundy-calm .ui-content, .theme-user-burgundy-calm .ui-body-a, .theme-user-burgundy-calm .ui-body-b, .theme-user-burgundy-calm .ui-body-c, .theme-user-burgundy-calm .ui-body-d, .theme-user-burgundy-calm .ui-body-e, .theme-user-burgundy-calm .ui-overlay-a {
+  background: var(--lb-bg, transparent) !important;
+  color: var(--lb-text, inherit) !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-btn, body.theme-user-burgundy-calm .ui-btn:visited, body.theme-user-burgundy-calm .ui-btn:link, body.theme-user-burgundy-calm a.ui-btn, body.theme-user-burgundy-calm button.ui-btn,
+.theme-user-burgundy-calm .ui-btn, .theme-user-burgundy-calm .ui-btn:visited, .theme-user-burgundy-calm .ui-btn:link, .theme-user-burgundy-calm a.ui-btn, .theme-user-burgundy-calm button.ui-btn {
+  background-image: none !important;
+  background-color: var(--lb-btn-bg, var(--lb-card-bg, #fff)) !important;
+  color: var(--lb-btn-text, var(--lb-text, inherit)) !important;
+  border-color: var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-btn:hover, body.theme-user-burgundy-calm a.ui-btn:hover, body.theme-user-burgundy-calm button.ui-btn:hover,
+.theme-user-burgundy-calm .ui-btn:hover, .theme-user-burgundy-calm a.ui-btn:hover, .theme-user-burgundy-calm button.ui-btn:hover {
+  background-image: none !important;
+  background-color: var(--lb-btn-hover-bg, var(--lb-btn-bg, var(--lb-card-bg, #fff))) !important;
+  color: var(--lb-btn-hover-text, var(--lb-btn-text, var(--lb-text, inherit))) !important;
+  border-color: var(--lb-btn-hover-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-btn.ui-btn-active, body.theme-user-burgundy-calm .ui-btn.ui-state-persist, body.theme-user-burgundy-calm .ui-btn-active,
+.theme-user-burgundy-calm .ui-btn.ui-btn-active, .theme-user-burgundy-calm .ui-btn.ui-state-persist, .theme-user-burgundy-calm .ui-btn-active {
+  background-image: none !important;
+  background-color: var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))) !important;
+  color: var(--lb-active-text, var(--lb-btn-primary-text, #fff)) !important;
+  border-color: var(--lb-active-border, var(--lb-btn-primary-border, var(--lb-primary, #007aff))) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-input-text, body.theme-user-burgundy-calm .ui-input-search, body.theme-user-burgundy-calm .ui-textinput, body.theme-user-burgundy-calm .ui-select .ui-btn,
+.theme-user-burgundy-calm .ui-input-text, .theme-user-burgundy-calm .ui-input-search, .theme-user-burgundy-calm .ui-textinput, .theme-user-burgundy-calm .ui-select .ui-btn {
+  background-image: none !important;
+  background-color: var(--lb-input-bg, var(--lb-card-bg, #fff)) !important;
+  color: var(--lb-input-text, var(--lb-text, inherit)) !important;
+  border-color: var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-radius: var(--lb-radius, var(--lb-btn-radius, 4px)) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-input-text input, body.theme-user-burgundy-calm .ui-input-search input, body.theme-user-burgundy-calm .ui-textinput input, body.theme-user-burgundy-calm textarea, body.theme-user-burgundy-calm select,
+.theme-user-burgundy-calm .ui-input-text input, .theme-user-burgundy-calm .ui-input-search input, .theme-user-burgundy-calm .ui-textinput input, .theme-user-burgundy-calm textarea, .theme-user-burgundy-calm select {
+  color: var(--lb-input-text, var(--lb-text, inherit)) !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-input-text:focus-within, body.theme-user-burgundy-calm .ui-input-search:focus-within, body.theme-user-burgundy-calm .ui-select .ui-btn:focus,
+.theme-user-burgundy-calm .ui-input-text:focus-within, .theme-user-burgundy-calm .ui-input-search:focus-within, .theme-user-burgundy-calm .ui-select .ui-btn:focus {
+  border-color: var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff))) !important;
+  box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;
+}
+body.theme-user-burgundy-calm .ui-checkbox .ui-btn, body.theme-user-burgundy-calm .ui-radio .ui-btn, .theme-user-burgundy-calm .ui-checkbox .ui-btn, .theme-user-burgundy-calm .ui-radio .ui-btn {
+  background-image: none !important;
+  background-color: var(--lb-input-bg, var(--lb-btn-bg, var(--lb-card-bg, #fff))) !important;
+  color: var(--lb-input-text, var(--lb-btn-text, var(--lb-text, inherit))) !important;
+  border-color: var(--lb-input-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-checkbox .ui-btn.ui-checkbox-on, body.theme-user-burgundy-calm .ui-radio .ui-btn.ui-radio-on,
+.theme-user-burgundy-calm .ui-checkbox .ui-btn.ui-checkbox-on, .theme-user-burgundy-calm .ui-radio .ui-btn.ui-radio-on {
+  background-color: var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))) !important;
+  color: var(--lb-active-text, var(--lb-btn-primary-text, #fff)) !important;
+  border-color: var(--lb-active-border, var(--lb-btn-primary-border, var(--lb-primary, #007aff))) !important;
+}
+/* V252: JQM checkbox/radio icon compatibility. Keep icons in the active theme color and remove old jQM icon shadows. */
+body.theme-user-burgundy-calm .ui-checkbox .ui-btn::after, body.theme-user-burgundy-calm .ui-radio .ui-btn::after,
+.theme-user-burgundy-calm .ui-checkbox .ui-btn::after, .theme-user-burgundy-calm .ui-radio .ui-btn::after {
+  background-color: var(--lb-checkbox-bg, var(--lb-radio-bg, var(--lb-input-bg, #fff))) !important;
+  border: 2px solid var(--lb-checkbox-border, var(--lb-radio-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.25))))) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-checkbox .ui-btn::after, .theme-user-burgundy-calm .ui-checkbox .ui-btn::after {
+  border-radius: var(--lb-checkbox-radius, 3px) !important;
+}
+body.theme-user-burgundy-calm .ui-radio .ui-btn::after, .theme-user-burgundy-calm .ui-radio .ui-btn::after {
+  border-radius: 999px !important;
+}
+body.theme-user-burgundy-calm .ui-checkbox .ui-btn.ui-checkbox-on::after, body.theme-user-burgundy-calm .ui-radio .ui-btn.ui-radio-on::after,
+.theme-user-burgundy-calm .ui-checkbox .ui-btn.ui-checkbox-on::after, .theme-user-burgundy-calm .ui-radio .ui-btn.ui-radio-on::after {
+  background-color: var(--lb-checkbox-checked-bg, var(--lb-radio-checked-bg, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;
+  border-color: var(--lb-checkbox-checked-border, var(--lb-radio-checked-border, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-checkbox .ui-btn.ui-checkbox-on::after, .theme-user-burgundy-calm .ui-checkbox .ui-btn.ui-checkbox-on::after {
+  background-image: var(--lb-checkbox-check-icon, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23000000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' d='M2 6.5L4.5 9.5L10 3'/%3E%3C/svg%3E")) !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 12px 12px !important;
+}
+body.theme-user-burgundy-calm .ui-radio .ui-btn.ui-radio-on::after, .theme-user-burgundy-calm .ui-radio .ui-btn.ui-radio-on::after {
+  background-image: none !important;
+  box-shadow: inset 0 0 0 4px var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))) !important;
+}
+body.theme-user-burgundy-calm .ui-controlgroup-controls .ui-btn, .theme-user-burgundy-calm .ui-controlgroup-controls .ui-btn {
+  border-radius: 0 !important;
+}
+body.theme-user-burgundy-calm .ui-controlgroup-controls .ui-btn:first-child, .theme-user-burgundy-calm .ui-controlgroup-controls .ui-btn:first-child {
+  border-top-left-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;
+  border-bottom-left-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;
+}
+body.theme-user-burgundy-calm .ui-controlgroup-controls .ui-btn:last-child, .theme-user-burgundy-calm .ui-controlgroup-controls .ui-btn:last-child {
+  border-top-right-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;
+  border-bottom-right-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;
+}
+body.theme-user-burgundy-calm .ui-slider-track, .theme-user-burgundy-calm .ui-slider-track {
+  background-image: none !important;
+  background-color: var(--lb-slider-track-bg, var(--lb-border-color, rgba(0,0,0,.18))) !important;
+  border-color: var(--lb-slider-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;
+  box-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-slider-bg, .theme-user-burgundy-calm .ui-slider-bg {
+  background-image: none !important;
+  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;
+}
+body.theme-user-burgundy-calm .ui-slider-handle, body.theme-user-burgundy-calm .ui-slider-track .ui-btn.ui-slider-handle,
+.theme-user-burgundy-calm .ui-slider-handle, .theme-user-burgundy-calm .ui-slider-track .ui-btn.ui-slider-handle {
+  background-image: none !important;
+  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff))))) !important;
+  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #fff)) !important;
+  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25)) !important;
+}
+/* V251/V252: JQM switch/flipswitch compatibility. Keep old data-role=slider toggles token based. */
+body.theme-user-burgundy-calm .ui-slider-switch.ui-slider-track, body.theme-user-burgundy-calm .ui-slider-switch,
+.theme-user-burgundy-calm .ui-slider-switch.ui-slider-track, .theme-user-burgundy-calm .ui-slider-switch {
+  background-image: none !important;
+  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;
+  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))))) !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-btn-radius, var(--lb-radius, 999px)))) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-slider-switch .ui-slider-label, .theme-user-burgundy-calm .ui-slider-switch .ui-slider-label {
+  background-image: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  font-family: var(--lb-font) !important;
+}
+body.theme-user-burgundy-calm .ui-slider-switch .ui-slider-label-a, .theme-user-burgundy-calm .ui-slider-switch .ui-slider-label-a {
+  background-color: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;
+  color: var(--lb-switch-on-text, var(--lb-toggle-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;
+}
+body.theme-user-burgundy-calm .ui-slider-switch .ui-slider-label-b, .theme-user-burgundy-calm .ui-slider-switch .ui-slider-label-b {
+  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;
+  color: var(--lb-switch-off-text, var(--lb-toggle-text, var(--lb-btn-text, var(--lb-text, inherit)))) !important;
+}
+body.theme-user-burgundy-calm .ui-slider-switch .ui-slider-handle, body.theme-user-burgundy-calm .ui-slider-switch .ui-btn.ui-slider-handle,
+.theme-user-burgundy-calm .ui-slider-switch .ui-slider-handle, .theme-user-burgundy-calm .ui-slider-switch .ui-btn.ui-slider-handle {
+  background-image: none !important;
+  background-color: var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, var(--lb-slider-thumb-bg, #fff)))) !important;
+  border-color: var(--lb-switch-thumb-border, var(--lb-toggle-thumb-border, var(--lb-slider-thumb-border-color, rgba(0,0,0,.18)))) !important;
+  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, 999px)) !important;
+  box-shadow: var(--lb-switch-thumb-shadow, var(--lb-toggle-thumb-shadow, 0 1px 4px rgba(0,0,0,.22))) !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-flipswitch, .theme-user-burgundy-calm .ui-flipswitch {
+  background-image: none !important;
+  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;
+  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))))) !important;
+  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-btn-radius, var(--lb-radius, 999px)))) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-flipswitch.ui-flipswitch-active, .theme-user-burgundy-calm .ui-flipswitch.ui-flipswitch-active {
+  background-color: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;
+  color: var(--lb-switch-on-text, var(--lb-toggle-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;
+}
+body.theme-user-burgundy-calm .ui-flipswitch .ui-flipswitch-on, .theme-user-burgundy-calm .ui-flipswitch .ui-flipswitch-on {
+  background-image: none !important;
+  background-color: var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, #fff))) !important;
+  border-color: var(--lb-switch-thumb-border, var(--lb-toggle-thumb-border, rgba(0,0,0,.18))) !important;
+  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, 999px)) !important;
+  box-shadow: var(--lb-switch-thumb-shadow, var(--lb-toggle-thumb-shadow, 0 1px 4px rgba(0,0,0,.22))) !important;
+}
+/* DESIGN STUDIO JQM COMPAT END */
 
 /* DESIGN STUDIO RULES START */
 /* V188: Table border width/color apply to the complete outer frame. Cell separators remain thin and do not cover the outer frame. */
@@ -180,6 +370,10 @@ body.theme-user-burgundy-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-
 .theme-user-burgundy-calm .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.is-active):hover {
   background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
   color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
 }
 body.theme-user-burgundy-calm .lb-btn-group button.ui-btn-active,
 body.theme-user-burgundy-calm .lb-btn-group button.lb-active,
@@ -230,6 +424,10 @@ body.theme-user-burgundy-calm .lb-btn-group > button.ui-btn-active, body.theme-u
 body.theme-user-burgundy-calm .lb-btn-group input:not(:checked) + label:hover, .theme-user-burgundy-calm .lb-btn-group input:not(:checked) + label:hover {
   background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;
   color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;
+  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
 }
 body.theme-user-burgundy-calm .lb-toggle, .theme-user-burgundy-calm .lb-toggle {
   border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-toggle-slider-radius, 999px))) !important;

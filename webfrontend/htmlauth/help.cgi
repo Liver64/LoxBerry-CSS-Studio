@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use lib "/opt/loxberry/libs/perllib";
+use lib "REPLACELBHOMEDIR/libs/perllib";
 use CGI qw(:standard);
 use JSON::PP qw(decode_json);
 use File::Path qw(make_path);
@@ -16,10 +16,10 @@ our ($lbpconfigdir, $lbphtmldir, $lbptemplatedir, $lbpdatadir, $lbhomedir);
 
 my $plugin  = 'cssframework';
 my $page    = 'help';
-my $cfgdir  = $lbpconfigdir   || $ENV{LBPCONFIG} || "/opt/loxberry/config/plugins/$plugin";
-my $htmldir = $lbphtmldir     || $ENV{LBPHTML}   || "/opt/loxberry/webfrontend/html/plugins/$plugin";
-my $tpldir  = $lbptemplatedir || $ENV{LBPTEMPL}  || "/opt/loxberry/templates/plugins/$plugin";
-my $datadir = $lbpdatadir      || $ENV{LBPDATA}   || "/opt/loxberry/data/plugins/$plugin";
+my $cfgdir  = $lbpconfigdir   || $ENV{LBPCONFIG} || "REPLACELBHOMEDIR/config/plugins/$plugin";
+my $htmldir = $lbphtmldir     || $ENV{LBPHTML}   || "REPLACELBHOMEDIR/webfrontend/html/plugins/$plugin";
+my $tpldir  = $lbptemplatedir || $ENV{LBPTEMPL}  || "REPLACELBHOMEDIR/templates/plugins/$plugin";
+my $datadir = $lbpdatadir      || $ENV{LBPDATA}   || "REPLACELBHOMEDIR/data/plugins/$plugin";
 
 # V79 storage split:
 # - JSON/editable Studio state is stored in config/plugins/cssframework/themes.
@@ -113,7 +113,7 @@ sub _theme_class_from_id {
 sub _build_theme_links {
     my @links;
     my @system_dirs = (
-        '/opt/loxberry/webfrontend/html/system/css/themes',
+        'REPLACELBHOMEDIR/webfrontend/html/system/css/themes',
         ($lbhomedir ? "$lbhomedir/webfrontend/html/system/css/themes" : ()),
     );
     my %seen;
@@ -136,7 +136,7 @@ sub _build_theme_links {
 
 sub _build_theme_classes_js {
     my %classes = ( _active_loxberry_theme_class() => 1 );
-    for my $file (glob('/opt/loxberry/webfrontend/html/system/css/themes/theme-*.css'), glob("$theme_dir/theme-user-*.css")) {
+    for my $file (glob('REPLACELBHOMEDIR/webfrontend/html/system/css/themes/theme-*.css'), glob("$theme_dir/theme-user-*.css")) {
         my ($class) = $file =~ m{/(theme-[a-zA-Z0-9_-]+)\.css\z};
         $classes{$class} = 1 if $class;
     }

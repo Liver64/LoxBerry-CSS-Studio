@@ -28,7 +28,7 @@ window.LBDesignStudioLangs.en = {
   },
   "studio": {
     "title": "LoxBerry Design Studio",
-    "subtitle": "Theme design using understandable elements. Core tokens are assigned automatically internally. Elements can be clicked directly in the preview. Ctrl-click, preview double-click, or double-click on a property/token tile opens the direct editor."
+    "subtitle": "Theme design using understandable elements. Core tokens are assigned automatically internally. Elements can be clicked directly in the preview."
   },
   "toolbar": {
     "userTheme": "User Theme",
@@ -43,22 +43,26 @@ window.LBDesignStudioLangs.en = {
   },
   "inspector": {
     "selectedElement": "Selected element",
-    "selectedCardTitle": "Double-click opens the direct editor for the current element; property tiles open the matching property directly",
-    "selectedEyebrow": "Preview selection · double-click element: direct editor",
+    "selectedCardTitle": "Currently selected element; property cards choose the exact property",
+    "selectedEyebrow": "Preview selection",
     "emptyMeta": "0 properties · 0 tokens",
     "noMapping": "No tokens in mapping",
     "moreTokens": "more",
+    "fewerTokens": "fewer",
     "noToken": "no token",
-    "propertyTitlePrefix": "Click: select property · double-click: open direct editor for this property"
+    "propertyTitlePrefix": "Click: select property · + more expands additional tokens"
   },
   "properties": {
     "ariaLabel": "Properties of the selected element",
     "area": "Area",
     "elementVariant": "Element / variant",
-    "property": "Property"
+    "property": "Property",
+    "tableCellLines": "Cell lines",
+    "tableCellLineWidth": "Cell line width"
   },
   "tokens": {
     "showAffected": "Show all affected tokens",
+    "token": "Token",
     "tokens": "Tokens",
     "internalTokens": "internal tokens"
   },
@@ -85,10 +89,15 @@ window.LBDesignStudioLangs.en = {
       "form": "Form"
     }
   },
+  "componentInspector": {
+    "mapping": "Mapping:",
+    "hint": "A normal click selects the element in Design Studio.",
+    "hoverHint": "Click: select"
+  },
   "directEditor": {
-    "title": "Direct editor",
-    "closeAria": "Close direct editor",
-    "hint": "Double-click a property/token tile or Ctrl-click in the final preview to open this element directly.",
+    "title": "Selection helper",
+    "closeAria": "Close selection helper",
+    "hint": "A normal click selects the element in Design Studio.",
     "noElement": "No element selected",
     "focusSettings": "Focus settings",
     "improveWithAi": "Improve this element with AI"
@@ -121,7 +130,7 @@ window.LBDesignStudioLangs.en = {
   },
   "preview": {
     "title": "Workspace / Preview",
-    "workHint": "Click individual elements to edit them in the Studio. Double-click opens the direct editor.",
+    "workHint": "Click individual elements to edit them in the Studio.",
     "caption": "No element selected.",
     "internalTokens": "internal tokens",
     "nav": {
@@ -195,7 +204,7 @@ window.LBDesignStudioLangs.en = {
     },
     "toggleOffTitle": "Off / Background",
     "toggleOnTitle": "On / Active",
-    "editAria": "Click to edit, double-click or Ctrl-click for direct editor",
+    "editAria": "Click to edit",
     "sampleColor": "Sample color"
   },
   "previewPage": {
@@ -298,10 +307,11 @@ window.LBDesignStudioLangs.en = {
     "aiConsentRequired": "Please first agree to external processing via Puter.js.",
     "aiLoading": "Loading Puter.js and requesting AI with restricted CSS/JSON/theme context ...",
     "aiReceived": "AI response received and pre-checked by AI Guard. Please validate before loading it into Design Studio.",
-    "directEditorFocused": "Direct editor selection focused: {path}",
+    "directEditorFocused": "Selection focused: {path}",
     "aiFocusPrepared": "AI focus prepared for {path}. Adjust the prompt if needed and generate the AI draft.",
-    "directEditorOpened": "Direct editor opened: {path}",
-    "previewSelected": "Preview selection applied: {path}. Double-click or Ctrl-click opens the direct editor.",
+    "directEditorOpened": "Selection opened: {path}",
+    "previewSelected": "Preview selection applied: {path}.",
+    "fromPreviewSelected": "selected from preview",
     "coreRead": "Core read: {tokens} tokens, {themes} themes.",
     "selectElementFirst": "Please select an element in Workspace / Preview or in the properties area first.",
     "noRadiusForElement": "This element has no radius tokens.",

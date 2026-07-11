@@ -28,7 +28,7 @@ window.LBDesignStudioLangs.de = {
   },
   "studio": {
     "title": "LoxBerry Design Studio",
-    "subtitle": "Theme-Gestaltung über verständliche Elemente. Core-Tokens werden intern automatisch zugeordnet. Elemente können direkt in der Preview angeklickt werden. Strg/CTRL-Klick, Preview-Doppelklick oder Doppelklick auf eine Eigenschaft/Token-Kachel öffnet den Direkteditor."
+    "subtitle": "Theme-Gestaltung über verständliche Elemente. Core-Tokens werden intern automatisch zugeordnet. Elemente können direkt in der Preview angeklickt werden."
   },
   "toolbar": {
     "userTheme": "User Theme",
@@ -43,22 +43,26 @@ window.LBDesignStudioLangs.de = {
   },
   "inspector": {
     "selectedElement": "Ausgewähltes Element",
-    "selectedCardTitle": "Doppelklick öffnet den Direkteditor für das aktuelle Element; Eigenschaftskacheln öffnen gezielt die jeweilige Eigenschaft",
-    "selectedEyebrow": "Preview Auswahl · Doppelklick auf Element: Direkteditor",
+    "selectedCardTitle": "Aktuell ausgewähltes Element; Eigenschaftskacheln wählen gezielt die jeweilige Eigenschaft",
+    "selectedEyebrow": "Preview Auswahl",
     "emptyMeta": "0 Eigenschaften · 0 Tokens",
     "noMapping": "Keine Tokens im Mapping",
     "moreTokens": "weitere",
+    "fewerTokens": "weniger",
     "noToken": "kein Token",
-    "propertyTitlePrefix": "Klick: Eigenschaft wählen · Doppelklick: Direkteditor für diese Eigenschaft öffnen"
+    "propertyTitlePrefix": "Klick: Eigenschaft wählen · + weitere klappt zusätzliche Tokens auf"
   },
   "properties": {
     "ariaLabel": "Eigenschaften des gewählten Elements",
     "area": "Bereich",
     "elementVariant": "Element / Variante",
-    "property": "Eigenschaft"
+    "property": "Eigenschaft",
+    "tableCellLines": "Zelllinien",
+    "tableCellLineWidth": "Zelllinien Stärke"
   },
   "tokens": {
     "showAffected": "Alle betroffenen Tokens anzeigen",
+    "token": "Token",
     "tokens": "Tokens",
     "internalTokens": "interne Tokens"
   },
@@ -85,10 +89,15 @@ window.LBDesignStudioLangs.de = {
       "form": "Formular"
     }
   },
+  "componentInspector": {
+    "mapping": "Mapping:",
+    "hint": "Normaler Klick wählt das Element im Design Studio aus.",
+    "hoverHint": "Klick: auswählen"
+  },
   "directEditor": {
-    "title": "Direkteditor",
-    "closeAria": "Direkteditor schließen",
-    "hint": "Doppelklick auf eine Eigenschaft/Token-Kachel oder CTRL-/Strg-Klick in der finalen Preview öffnet dieses Element direkt.",
+    "title": "Auswahlhilfe",
+    "closeAria": "Auswahlhilfe schließen",
+    "hint": "Normaler Klick wählt das Element im Design Studio aus.",
     "noElement": "Kein Element gewählt",
     "focusSettings": "Einstellungen fokussieren",
     "improveWithAi": "Dieses Element mit KI verbessern"
@@ -121,7 +130,7 @@ window.LBDesignStudioLangs.de = {
   },
   "preview": {
     "title": "Arbeitsbereich / Vorschau",
-    "workHint": "Klicke einzelne Elemente an, um sie im Studio zu bearbeiten. Doppelklick öffnet den Direkteditor.",
+    "workHint": "Klicke einzelne Elemente an, um sie im Studio zu bearbeiten.",
     "caption": "Kein Element ausgewählt.",
     "internalTokens": "interne Tokens",
     "nav": {
@@ -195,7 +204,7 @@ window.LBDesignStudioLangs.de = {
     },
     "toggleOffTitle": "Aus / Hintergrund",
     "toggleOnTitle": "Ein / Aktiv",
-    "editAria": "Klicken zum Bearbeiten, Doppelklick oder CTRL-/Strg-Klick für Direkteditor",
+    "editAria": "Klicken zum Bearbeiten",
     "sampleColor": "Beispielfarbe"
   },
   "previewPage": {
@@ -298,10 +307,11 @@ window.LBDesignStudioLangs.de = {
     "aiConsentRequired": "Bitte zuerst der externen Verarbeitung über Puter.js zustimmen.",
     "aiLoading": "Lade Puter.js und frage KI mit eingeschränktem CSS/JSON/Theme-Kontext an ...",
     "aiReceived": "KI-Antwort erhalten und vom KI-Guard vorgeprüft. Bitte validieren und erst danach ins Design Studio laden.",
-    "directEditorFocused": "Direkteditor-Auswahl fokussiert: {path}",
+    "directEditorFocused": "Auswahl fokussiert: {path}",
     "aiFocusPrepared": "KI-Fokus für {path} vorbereitet. Bei Bedarf Prompt anpassen und KI Entwurf erzeugen.",
-    "directEditorOpened": "Direkteditor geöffnet: {path}",
-    "previewSelected": "Preview-Auswahl übernommen: {path}. Doppelklick oder CTRL-/Strg-Klick öffnet den Direkteditor.",
+    "directEditorOpened": "Auswahl geöffnet: {path}",
+    "previewSelected": "Preview-Auswahl übernommen: {path}.",
+    "fromPreviewSelected": "aus Preview gewählt",
     "LoxBerryRead": "LoxBerry gelesen: {tokens} Tokens, {themes} Themes.",
     "selectElementFirst": "Bitte zuerst ein Element im Arbeitsbereich / Vorschau oder im Eigenschaftenbereich auswählen.",
     "noRadiusForElement": "Dieses Element besitzt keine Radius-Tokens.",

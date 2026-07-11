@@ -596,7 +596,7 @@
 }
 
 
-/* V34: Selected element card can open the direct editor. */
+/* V34: Selected element card styling. */
 .cfw-page.cfw-design-studio .cfw-selected-component-card {
   cursor: pointer;
 }
@@ -619,7 +619,7 @@
 }
 
 
-/* V35: Property/token tiles are the primary entry point for the direct editor. */
+/* V35: Property/token tiles. */
 .cfw-page.cfw-design-studio .cfw-property-item {
   cursor: pointer;
 }
@@ -661,8 +661,7 @@
 }
 
 
-/* V37: swap direct editor and settings positions in the two-column left workbench.
-   Row 1: selection + palette. Row 2: settings + direct editor. */
+/* V37: two-column left workbench layout. */
 .cfw-page.cfw-design-studio .cfw-slider-panel {
   order: 3;
 }
@@ -2232,4 +2231,80 @@
 .cfw-preview td.logcrit {
   background-color:#9b1515 !important;
   color:#ffffff !important;
+}
+
+/* V245: expandable token list inside property cards. */
+.cfw-page.cfw-design-studio .cfw-property-more {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 2px;
+  cursor: pointer;
+  user-select: none;
+}
+.cfw-page.cfw-design-studio .cfw-property-more:hover,
+.cfw-page.cfw-design-studio .cfw-property-more:focus {
+  text-decoration: underline;
+}
+.cfw-page.cfw-design-studio .cfw-property-more.is-expanded {
+  opacity: 0.9;
+}
+.cfw-page.cfw-design-studio .cfw-property-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+
+/* ============================================================
+   V274 Liquid Glass Studio wallpaper-only mode
+   ------------------------------------------------------------
+   theme-user-liquid-glass is protected: in the Studio UI only
+   the expanded Wallpaper Editor and the in-page Live Preview stay visible.
+   The toolbar remains visible so the wallpaper can be saved.
+   ============================================================ */
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-tabs,
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabAi,
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabPreview,
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabDocumentation {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabWorkbench {
+  display: block !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-workbench {
+  grid-template-columns: minmax(360px, 460px) minmax(620px, 1fr);
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-left {
+  display: block !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-left > .cfw-panel:not(.cfw-wallpaper-panel) {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #wallpaperControls.cfw-wallpaper-panel {
+  display: block !important;
+  width: 100%;
+  margin: 0 !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #wallpaperAdvancedControls.cfw-wallpaper-advanced {
+  display: grid !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #previewWorkHint,
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-preview-breadcrumb,
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-token-pill {
+  display: none !important;
+}
+
+@media (max-width: 1320px) {
+  .cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-workbench {
+    grid-template-columns: 1fr;
+  }
 }

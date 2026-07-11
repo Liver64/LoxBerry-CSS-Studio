@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use lib "/opt/loxberry/libs/perllib";
+use lib "REPLACELBHOMEDIR/libs/perllib";
 use FindBin qw($Bin);
 use lib "$Bin/lib";
 
@@ -25,10 +25,10 @@ our ($lbpconfigdir, $lbphtmldir, $lbptemplatedir, $lbpdatadir);
 my $plugin  = 'cssframework';
 my $version = '0.9.0-v87-utf8-text-read';
 
-my $cfgdir  = $lbpconfigdir   || $ENV{LBPCONFIG} || "/opt/loxberry/config/plugins/$plugin";
-my $htmldir = $lbphtmldir     || $ENV{LBPHTML}   || "/opt/loxberry/webfrontend/html/plugins/$plugin";
-my $tpldir  = $lbptemplatedir || $ENV{LBPTEMPL}  || "/opt/loxberry/templates/plugins/$plugin";
-my $datadir = $lbpdatadir      || $ENV{LBPDATA}   || "/opt/loxberry/data/plugins/$plugin";
+my $cfgdir  = $lbpconfigdir   || $ENV{LBPCONFIG} || "REPLACELBHOMEDIR/config/plugins/$plugin";
+my $htmldir = $lbphtmldir     || $ENV{LBPHTML}   || "REPLACELBHOMEDIR/webfrontend/html/plugins/$plugin";
+my $tpldir  = $lbptemplatedir || $ENV{LBPTEMPL}  || "REPLACELBHOMEDIR/templates/plugins/$plugin";
+my $datadir = $lbpdatadir      || $ENV{LBPDATA}   || "REPLACELBHOMEDIR/data/plugins/$plugin";
 
 # V79 storage split:
 # - JSON/editable Studio state stays in config/plugins/cssframework/themes.

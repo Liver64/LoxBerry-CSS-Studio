@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use lib "/opt/loxberry/libs/perllib";
+use lib "REPLACELBHOMEDIR/libs/perllib";
 use FindBin qw($Bin);
 use lib "$Bin/lib";
 
@@ -21,8 +21,8 @@ use LoxBerry::JSON;
 our ($lbpconfigdir, $lbpdatadir);
 
 my $plugin = 'cssframework';
-my $cfgdir = $lbpconfigdir || $ENV{LBPCONFIG} || "/opt/loxberry/config/plugins/$plugin";
-my $datadir = $lbpdatadir || $ENV{LBPDATA} || "/opt/loxberry/data/plugins/$plugin";
+my $cfgdir = $lbpconfigdir || $ENV{LBPCONFIG} || "REPLACELBHOMEDIR/config/plugins/$plugin";
+my $datadir = $lbpdatadir || $ENV{LBPDATA} || "REPLACELBHOMEDIR/data/plugins/$plugin";
 
 # V79 storage split:
 # - JSON/editable Studio state stays in config/plugins/cssframework/themes.
@@ -108,7 +108,10 @@ sub _is_protected_studio_theme_id {
     return $theme_id eq 'theme-user-liquid-glass';
 }
 
-if (_is_protected_studio_theme_id($id)) {
+my $is_protected_studio_theme = _is_protected_studio_theme_id($id) ? 1 : 0;
+my $protected_wallpaper_only_request = ($is_protected_studio_theme && $data->{protected_wallpaper_only}) ? 1 : 0;
+
+if ($is_protected_studio_theme && !$protected_wallpaper_only_request) {
     _respond('403 Forbidden', _error_payload('protectedPackageTheme', 'protectedPackageTheme', { theme => 'Liquid Glass', id => $id }));
 }
 
@@ -152,16 +155,40 @@ if (-f $json_path) {
 
 my $tokens = ref($data->{tokens}) eq 'HASH' ? $data->{tokens} : {};
 
+sub _sanitize_custom_css_value {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    return '' if $value eq '[object Object]';
+
+    # V275: remove the default Studio placeholder comment, including already
+    # mojibake-corrupted variants such as "Eigene ErgÃ...nzungen bleiben beim
+    # Speichern erhalten.". This placeholder is not user CSS and previously
+    # grew exponentially in both JSON custom_css and generated CSS.
+    $value =~ s{/\*\s*USER CUSTOM CSS START\s*\*/}{}ig;
+    $value =~ s{/\*\s*USER CUSTOM CSS END\s*\*/}{}ig;
+    $value =~ s{/\*\s*Eigene\s+Erg[\s\S]*?Speichern\s+erhalten\.\s*\*/}{}ig;
+
+    # Safety net for already exploded files where the placeholder is megabytes
+    # long and the exact comment pattern may be broken. Real CSS survives this.
+    if (length($value) > 100000 && $value =~ /Eigene\s+Erg/i && $value =~ /Speichern\s+erhalten\./i) {
+        my $without_comments = $value;
+        $without_comments =~ s{/\*[\s\S]*?\*/}{}g;
+        $without_comments =~ s/^\s+|\s+$//g;
+        $value = '' if $without_comments eq '';
+    }
+
+    $value =~ s/^\s+|\s+$//g;
+    return $value;
+}
+
 sub _normalize_custom_css_value {
     my ($value) = @_;
     return '' if !defined $value;
     if (ref($value) eq '') {
-        $value = "$value";
-        return '' if $value eq '[object Object]';
-        return $value;
+        return _sanitize_custom_css_value($value);
     }
     if (ref($value) eq 'ARRAY') {
-        return join("\n", grep { defined $_ && $_ ne '' } map { _normalize_custom_css_value($_) } @{$value});
+        return _sanitize_custom_css_value(join("\n", grep { defined $_ && $_ ne '' } map { _normalize_custom_css_value($_) } @{$value}));
     }
     if (ref($value) eq 'HASH') {
         return _normalize_custom_css_value($value->{css}) if exists $value->{css};
@@ -234,6 +261,40 @@ sub _is_classic_loxberry_green {
     my ($value) = @_;
     my $hex = _normalize_hex_color($value);
     return $hex eq '#6dac20' || $hex eq '#5a9418' || $hex eq '#4a7a12';
+}
+
+sub _is_plain_white_color {
+    my ($value) = @_;
+    my $hex = _normalize_hex_color($value);
+    return $hex eq '#ffffff';
+}
+
+sub _sync_tinted_surface_tokens {
+    my ($tokens) = @_;
+    return if ref($tokens) ne 'HASH';
+
+    my $bg = _first_clean_token_value($tokens, '--lb-bg');
+    return if $bg eq '' || _is_plain_white_color($bg);
+
+    # V272/V261 restored: backend safety net matching the Design Studio generator.
+    # If an already generated tinted user theme is loaded and saved unchanged,
+    # old pure-white surface tokens are mapped back to the theme background.
+    # Explicit non-white surface choices stay unchanged.
+    for my $token (qw(
+        --lb-card-bg
+        --lb-table-bg
+        --lb-table-row-bg
+        --lb-input-bg
+        --lb-input-disabled-bg
+        --lb-select-bg
+        --lb-dropdown-menu-bg
+        --lb-multiselect-bg
+        --lb-multiselect-summary-bg
+    )) {
+        next if !exists $tokens->{$token};
+        next if !_is_plain_white_color($tokens->{$token});
+        $tokens->{$token} = $bg;
+    }
 }
 
 sub _first_clean_token_value {
@@ -338,6 +399,13 @@ sub _write_wallpaper_asset {
     return '' if $image eq '';
 
     # Already a stored plugin asset reference.
+    # V263: The protected Liquid Glass theme now uses the canonical
+    # assets/images/theme-user-liquid-glass/ directory only. Older packages used
+    # assets/images/liquid-glass/; normalize that legacy reference before saving
+    # so the theme cannot render two wallpapers on top of each other.
+    if ($theme_id eq 'theme-user-liquid-glass' && $image =~ m{^assets/images/liquid-glass/(wallpaper\.(?:png|jpe?g|webp|gif))\z}i) {
+        return "assets/images/$theme_id/$1";
+    }
     return $image if $image =~ m{^assets/images/\Q$theme_id\E/wallpaper\.(?:png|jpe?g|webp|gif)\z}i;
 
     # V146: Uploaded wallpapers arrive from the browser as data URLs. Store them
@@ -372,6 +440,17 @@ sub _write_wallpaper_asset {
             unlink $old if $old ne $path && -f $old;
         }
 
+        # V263: Liquid Glass had a historical asset folder named just
+        # "liquid-glass". Remove its wallpaper files when the canonical
+        # theme-user-liquid-glass wallpaper is written to prevent a double
+        # background from the built-in body::before layer plus the Studio layer.
+        if ($theme_id eq 'theme-user-liquid-glass') {
+            for my $old_ext (qw(png jpg jpeg webp gif)) {
+                my $legacy = "$theme_dir/assets/images/liquid-glass/wallpaper.$old_ext";
+                unlink $legacy if -f $legacy;
+            }
+        }
+
         open(my $fh, '>', $tmp)
             or _respond('500 Internal Server Error', _error_payload('cannotWriteWallpaperAsset', 'cannotWriteWallpaperAsset', { path => $path }));
         binmode $fh;
@@ -400,6 +479,163 @@ my $wallpaper = {
     brightness => _clamp_int($wallpaper_src->{brightness}, 0, 150, 100),
     opacity    => _clamp_int($wallpaper_src->{opacity}, 0, 100, 100),
 };
+
+sub _wallpaper_css_block {
+    my ($theme_id, $wallpaper_ref) = @_;
+    return '' if ref($wallpaper_ref) ne 'HASH' || !$wallpaper_ref->{enabled} || !$wallpaper_ref->{image};
+
+    my $img = _css_string_escape(_theme_file_url_for_css($wallpaper_ref->{image}));
+    my $mode = $wallpaper_ref->{mode};
+    my $size = $mode eq 'contain' ? 'contain' : ($mode eq 'repeat' ? 'auto' : 'cover');
+    my $repeat = $mode eq 'repeat' ? 'repeat' : 'no-repeat';
+    my $opacity = sprintf('%.2f', $wallpaper_ref->{opacity} / 100);
+    my $brightness = sprintf('%.2f', $wallpaper_ref->{brightness} / 100);
+
+    my $block = "\n/* DESIGN STUDIO WALLPAPER START */\n";
+    $block .= "body.$theme_id .lb-main, .$theme_id .lb-main {\n";
+    $block .= "  position: relative !important;\n";
+    $block .= "  overflow: hidden;\n";
+    $block .= "  text-shadow: none;\n";
+    $block .= "}\n";
+    $block .= "body.$theme_id .lb-main::before, .$theme_id .lb-main::before {\n";
+    $block .= "  content: \"\";\n";
+    $block .= "  position: fixed;\n";
+    $block .= "  inset: 0;\n";
+    $block .= "  pointer-events: none;\n";
+    $block .= "  background-image: url(\"$img\");\n";
+    $block .= "  background-size: $size;\n";
+    $block .= "  background-repeat: $repeat;\n";
+    $block .= "  background-position: center center;\n";
+    $block .= "  opacity: $opacity;\n";
+    $block .= "  filter: brightness($brightness);\n";
+    $block .= "  z-index: 0;\n";
+    $block .= "}\n";
+    $block .= "body.$theme_id .lb-main > *, .$theme_id .lb-main > * { position: relative; z-index: 1; }\n";
+    $block .= "/* DESIGN STUDIO WALLPAPER END */\n";
+    return $block;
+}
+
+
+sub _apply_protected_liquid_glass_wallpaper_css {
+    my ($css_content, $theme_id, $wallpaper_ref) = @_;
+    return $css_content if $theme_id ne 'theme-user-liquid-glass';
+    return $css_content if ref($wallpaper_ref) ne 'HASH' || !$wallpaper_ref->{enabled} || !$wallpaper_ref->{image};
+
+    my $img = _css_string_escape(_theme_file_url_for_css($wallpaper_ref->{image}));
+
+    # Remove the generic Studio wallpaper layer. Liquid Glass already owns the
+    # page wallpaper through body::before; a second .lb-main::before layer makes
+    # two wallpapers visible at the same time.
+    $css_content =~ s{\n?\/\*\s*DESIGN STUDIO WALLPAPER START\s*\*\/[\s\S]*?\/\*\s*DESIGN STUDIO WALLPAPER END\s*\*\/\n?}{\n}ig;
+
+    # Replace the historical built-in Liquid Glass wallpaper URL, independent of
+    # whether it points to assets/images/liquid-glass/ or the canonical
+    # assets/images/theme-user-liquid-glass/ directory.
+    my $replacement = "url(\"$img\") !important;";
+    my $replaced = 0;
+
+    $replaced += ($css_content =~ s{url\(["']?(?:/admin/plugins/cssframework/theme-file\.cgi\?file=)?assets(?:/|%2F)images(?:/|%2F)(?:liquid-glass|theme-user-liquid-glass)(?:/|%2F)wallpaper\.(?:png|jpe?g|webp|gif)["']?\)\s*!important;?}{$replacement}ig);
+    $replaced += ($css_content =~ s{url\(["']?[^"')]*assets(?:/|%2F)images(?:/|%2F)(?:liquid-glass|theme-user-liquid-glass)(?:/|%2F)wallpaper\.(?:png|jpe?g|webp|gif)["']?\)\s*!important;?}{$replacement}ig) if !$replaced;
+
+    if (!$replaced) {
+        # Safe fallback for unexpected older CSS: add one Liquid-Glass-native
+        # wallpaper layer, not the generic Studio .lb-main layer.
+        $css_content .= "\n/* DESIGN STUDIO LIQUID GLASS WALLPAPER START */\n";
+        $css_content .= ":is(body.theme-user-liquid-glass, body.theme-liquid-glass)::before {\n";
+        $css_content .= "  background-image: url(\"$img\") !important;\n";
+        $css_content .= "}\n";
+        $css_content .= "/* DESIGN STUDIO LIQUID GLASS WALLPAPER END */\n";
+    }
+
+    return $css_content;
+}
+
+sub _save_protected_wallpaper_only {
+    my ($theme_id, $theme_name, $version_value, $wallpaper_ref) = @_;
+
+    if (ref($wallpaper_ref) ne 'HASH' || !$wallpaper_ref->{enabled} || !$wallpaper_ref->{image}) {
+        _respond('403 Forbidden', _error_payload('protectedPackageTheme', 'protectedPackageTheme', { theme => 'Liquid Glass', id => $theme_id }));
+    }
+
+    my $css_file = "$theme_id.css";
+    my $css_path = "$theme_dir/$css_file";
+    my $css_content = '';
+
+    if (-f $css_path) {
+        my $fh;
+        if (open($fh, '<:encoding(UTF-8)', $css_path)) {
+            local $/;
+            $css_content = <$fh>;
+            close($fh);
+            $css_content = '' if !defined $css_content;
+        }
+    }
+
+    if ($css_content eq '') {
+        $css_content = "/*\n * CSS-Studio protected package theme\n * Theme: $theme_name ($theme_id)\n */\n\nbody.$theme_id,\n.$theme_id { }\n";
+    }
+
+    # V263: Liquid Glass uses its own body::before wallpaper layer. Do not append
+    # the generic Design Studio .lb-main::before wallpaper block, because that
+    # creates two wallpapers on top of each other.
+    if ($theme_id eq 'theme-user-liquid-glass') {
+        $css_content = _apply_protected_liquid_glass_wallpaper_css($css_content, $theme_id, $wallpaper_ref);
+    }
+    else {
+        my $wallpaper_css = _wallpaper_css_block($theme_id, $wallpaper_ref);
+        if ($css_content =~ m{/\*\s*DESIGN STUDIO WALLPAPER START\s*\*/[\s\S]*?/\*\s*DESIGN STUDIO WALLPAPER END\s*\*/}i) {
+            $css_content =~ s{/\*\s*DESIGN STUDIO WALLPAPER START\s*\*/[\s\S]*?/\*\s*DESIGN STUDIO WALLPAPER END\s*\*/}{$wallpaper_css}i;
+        }
+        else {
+            $css_content .= "\n" . $wallpaper_css;
+        }
+    }
+
+    my $fh;
+    if (!open($fh, '>:encoding(UTF-8)', $css_path)) {
+        _respond('500 Internal Server Error', _error_payload('cannotWriteFile', 'cannotWriteFile', { path => $css_path }));
+    }
+    print {$fh} $css_content;
+    if (!close($fh)) {
+        _respond('500 Internal Server Error', _error_payload('cannotWriteFile', 'cannotWriteFile', { path => $css_path }));
+    }
+    chmod 0664, $css_path;
+
+    my $editable_wallpaper = {
+        id                       => $theme_id,
+        name                     => $theme_name,
+        version                  => $version_value,
+        tokens                   => {},
+        custom_css               => '',
+        studio_model             => {},
+        import_meta              => undef,
+        wallpaper                => $wallpaper_ref,
+        protected_wallpaper_only => JSON::PP::true,
+        studio_version           => 'V263_LiquidGlassWallpaperCanonicalPath',
+        updated_at               => strftime('%Y-%m-%dT%H:%M:%S%z', localtime),
+    };
+
+    my $jfh;
+    if (open($jfh, '>:encoding(UTF-8)', $json_path)) {
+        print {$jfh} _pretty_json($editable_wallpaper);
+        close($jfh);
+        chmod 0664, $json_path;
+    }
+
+    _respond('200 OK', {
+        ok        => JSON::PP::true,
+        id        => $theme_id,
+        name      => $theme_name,
+        version   => $version_value,
+        css       => $css_file,
+        wallpaper => $wallpaper_ref,
+        protected_wallpaper_only => JSON::PP::true,
+    });
+}
+
+if ($is_protected_studio_theme) {
+    _save_protected_wallpaper_only($id, $name, $version, $wallpaper);
+}
 # Avoid nested USER CUSTOM markers when importing/saving repeatedly.
 $custom_css =~ s{/\*\s*USER CUSTOM CSS START\s*\*/}{}ig;
 $custom_css =~ s{/\*\s*USER CUSTOM CSS END\s*\*/}{}ig;
@@ -435,6 +671,27 @@ for my $token (sort keys %{$tokens}) {
     $clean_tokens{$token} = $value;
 }
 _sync_primary_slider_value_tokens(\%clean_tokens) if keys(%clean_tokens);
+_sync_tinted_surface_tokens(\%clean_tokens) if keys(%clean_tokens);
+
+# V248: Backend safety net for Design Studio / AI-generated themes.
+# Keep inner table separators off by default unless the Studio/AI explicitly
+# sends another width. This is theme-generation logic, not a Core change.
+if (!exists $clean_tokens{'--lb-table-cell-border-width'} || $clean_tokens{'--lb-table-cell-border-width'} eq '') {
+    $clean_tokens{'--lb-table-cell-border-width'} = '0px';
+}
+
+# V248: Button-group hover is a simple color state. Its text follows the
+# active text by default and must not introduce a separate hover border/shadow.
+my $btn_group_active_text = _first_clean_token_value(\%clean_tokens,
+    '--lb-btn-group-active-text',
+    '--lb-active-text',
+    '--lb-btn-primary-text'
+);
+if ($btn_group_active_text ne '') {
+    $clean_tokens{'--lb-btn-group-hover-text'} = $btn_group_active_text;
+} else {
+    $clean_tokens{'--lb-btn-group-hover-text'} = 'var(--lb-btn-group-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))';
+}
 
 my $meaningful_custom_css = $custom_css;
 $meaningful_custom_css =~ s{/\*[\s\S]*?\*/}{}g;
@@ -528,6 +785,200 @@ if ($wallpaper->{enabled}) {
     $css .= "/* DESIGN STUDIO WALLPAPER END */\n";
 }
 
+
+# V250: Generated JQM compatibility helpers for user themes.
+# Keep this scoped to the generated theme class so old v3/JQM plugin markup can
+# consume the theme tokens without changing Core or plugin code. The more
+# specific Design-Studio component rules below still win for lb-* components.
+$css .= "\n/* DESIGN STUDIO JQM COMPAT START */\n";
+$css .= "/* V250: Token based jQuery Mobile compatibility for generated user themes. */\n";
+$css .= "body.$id .ui-page, body.$id .ui-content, body.$id .ui-body-a, body.$id .ui-body-b, body.$id .ui-body-c, body.$id .ui-body-d, body.$id .ui-body-e, body.$id .ui-overlay-a,\n";
+$css .= ".$id .ui-page, .$id .ui-content, .$id .ui-body-a, .$id .ui-body-b, .$id .ui-body-c, .$id .ui-body-d, .$id .ui-body-e, .$id .ui-overlay-a {\n";
+$css .= "  background: var(--lb-bg, transparent) !important;\n";
+$css .= "  color: var(--lb-text, inherit) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-btn, body.$id .ui-btn:visited, body.$id .ui-btn:link, body.$id a.ui-btn, body.$id button.ui-btn,\n";
+$css .= ".$id .ui-btn, .$id .ui-btn:visited, .$id .ui-btn:link, .$id a.ui-btn, .$id button.ui-btn {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-btn-bg, var(--lb-card-bg, #fff)) !important;\n";
+$css .= "  color: var(--lb-btn-text, var(--lb-text, inherit)) !important;\n";
+$css .= "  border-color: var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 1px !important;\n";
+$css .= "  border-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-btn:hover, body.$id a.ui-btn:hover, body.$id button.ui-btn:hover,\n";
+$css .= ".$id .ui-btn:hover, .$id a.ui-btn:hover, .$id button.ui-btn:hover {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-btn-hover-bg, var(--lb-btn-bg, var(--lb-card-bg, #fff))) !important;\n";
+$css .= "  color: var(--lb-btn-hover-text, var(--lb-btn-text, var(--lb-text, inherit))) !important;\n";
+$css .= "  border-color: var(--lb-btn-hover-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-btn.ui-btn-active, body.$id .ui-btn.ui-state-persist, body.$id .ui-btn-active,\n";
+$css .= ".$id .ui-btn.ui-btn-active, .$id .ui-btn.ui-state-persist, .$id .ui-btn-active {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  color: var(--lb-active-text, var(--lb-btn-primary-text, #fff)) !important;\n";
+$css .= "  border-color: var(--lb-active-border, var(--lb-btn-primary-border, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-input-text, body.$id .ui-input-search, body.$id .ui-textinput, body.$id .ui-select .ui-btn,\n";
+$css .= ".$id .ui-input-text, .$id .ui-input-search, .$id .ui-textinput, .$id .ui-select .ui-btn {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-input-bg, var(--lb-card-bg, #fff)) !important;\n";
+$css .= "  color: var(--lb-input-text, var(--lb-text, inherit)) !important;\n";
+$css .= "  border-color: var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 1px !important;\n";
+$css .= "  border-radius: var(--lb-radius, var(--lb-btn-radius, 4px)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-input-text input, body.$id .ui-input-search input, body.$id .ui-textinput input, body.$id textarea, body.$id select,\n";
+$css .= ".$id .ui-input-text input, .$id .ui-input-search input, .$id .ui-textinput input, .$id textarea, .$id select {\n";
+$css .= "  color: var(--lb-input-text, var(--lb-text, inherit)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-input-text:focus-within, body.$id .ui-input-search:focus-within, body.$id .ui-select .ui-btn:focus,\n";
+$css .= ".$id .ui-input-text:focus-within, .$id .ui-input-search:focus-within, .$id .ui-select .ui-btn:focus {\n";
+$css .= "  border-color: var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-checkbox .ui-btn, body.$id .ui-radio .ui-btn, .$id .ui-checkbox .ui-btn, .$id .ui-radio .ui-btn {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-input-bg, var(--lb-btn-bg, var(--lb-card-bg, #fff))) !important;\n";
+$css .= "  color: var(--lb-input-text, var(--lb-btn-text, var(--lb-text, inherit))) !important;\n";
+$css .= "  border-color: var(--lb-input-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-checkbox .ui-btn.ui-checkbox-on, body.$id .ui-radio .ui-btn.ui-radio-on,\n";
+$css .= ".$id .ui-checkbox .ui-btn.ui-checkbox-on, .$id .ui-radio .ui-btn.ui-radio-on {\n";
+$css .= "  background-color: var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  color: var(--lb-active-text, var(--lb-btn-primary-text, #fff)) !important;\n";
+$css .= "  border-color: var(--lb-active-border, var(--lb-btn-primary-border, var(--lb-primary, #007aff))) !important;\n";
+$css .= "}\n";
+$css .= "/* V252: JQM checkbox/radio icon compatibility. Keep icons in the active theme color and remove old jQM icon shadows. */\n";
+$css .= "body.$id .ui-checkbox .ui-btn::after, body.$id .ui-radio .ui-btn::after,\n";
+$css .= ".$id .ui-checkbox .ui-btn::after, .$id .ui-radio .ui-btn::after {\n";
+$css .= "  background-color: var(--lb-checkbox-bg, var(--lb-radio-bg, var(--lb-input-bg, #fff))) !important;\n";
+$css .= "  border: 2px solid var(--lb-checkbox-border, var(--lb-radio-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.25))))) !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-checkbox .ui-btn::after, .$id .ui-checkbox .ui-btn::after {\n";
+$css .= "  border-radius: var(--lb-checkbox-radius, 3px) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-radio .ui-btn::after, .$id .ui-radio .ui-btn::after {\n";
+$css .= "  border-radius: 999px !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-checkbox .ui-btn.ui-checkbox-on::after, body.$id .ui-radio .ui-btn.ui-radio-on::after,\n";
+$css .= ".$id .ui-checkbox .ui-btn.ui-checkbox-on::after, .$id .ui-radio .ui-btn.ui-radio-on::after {\n";
+$css .= "  background-color: var(--lb-checkbox-checked-bg, var(--lb-radio-checked-bg, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;\n";
+$css .= "  border-color: var(--lb-checkbox-checked-border, var(--lb-radio-checked-border, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-checkbox .ui-btn.ui-checkbox-on::after, .$id .ui-checkbox .ui-btn.ui-checkbox-on::after {\n";
+$css .= "  background-image: var(--lb-checkbox-check-icon, url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23000000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' d='M2 6.5L4.5 9.5L10 3'/%3E%3C/svg%3E\")) !important;\n";
+$css .= "  background-repeat: no-repeat !important;\n";
+$css .= "  background-position: center !important;\n";
+$css .= "  background-size: 12px 12px !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-radio .ui-btn.ui-radio-on::after, .$id .ui-radio .ui-btn.ui-radio-on::after {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  box-shadow: inset 0 0 0 4px var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-controlgroup-controls .ui-btn, .$id .ui-controlgroup-controls .ui-btn {\n";
+$css .= "  border-radius: 0 !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-controlgroup-controls .ui-btn:first-child, .$id .ui-controlgroup-controls .ui-btn:first-child {\n";
+$css .= "  border-top-left-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;\n";
+$css .= "  border-bottom-left-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-controlgroup-controls .ui-btn:last-child, .$id .ui-controlgroup-controls .ui-btn:last-child {\n";
+$css .= "  border-top-right-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;\n";
+$css .= "  border-bottom-right-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-slider-track, .$id .ui-slider-track {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-slider-track-bg, var(--lb-border-color, rgba(0,0,0,.18))) !important;\n";
+$css .= "  border-color: var(--lb-slider-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-slider-bg, .$id .ui-slider-bg {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-slider-handle, body.$id .ui-slider-track .ui-btn.ui-slider-handle,\n";
+$css .= ".$id .ui-slider-handle, .$id .ui-slider-track .ui-btn.ui-slider-handle {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-slider-thumb-bg, var(--lb-slider-fill-bg, var(--lb-slider-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff))))) !important;\n";
+$css .= "  border-color: var(--lb-slider-thumb-border-color, var(--lb-slider-thumb-border, #fff)) !important;\n";
+$css .= "  box-shadow: var(--lb-slider-thumb-shadow, 0 1px 5px rgba(0,0,0,.25)) !important;\n";
+$css .= "}\n";
+$css .= "/* V251/V252: JQM switch/flipswitch compatibility. Keep old data-role=slider toggles token based. */\n";
+$css .= "body.$id .ui-slider-switch.ui-slider-track, body.$id .ui-slider-switch,\n";
+$css .= ".$id .ui-slider-switch.ui-slider-track, .$id .ui-slider-switch {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 1px !important;\n";
+$css .= "  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-btn-radius, var(--lb-radius, 999px)))) !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-label, .$id .ui-slider-switch .ui-slider-label {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  font-family: var(--lb-font) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-label-a, .$id .ui-slider-switch .ui-slider-label-a {\n";
+$css .= "  background-color: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;\n";
+$css .= "  color: var(--lb-switch-on-text, var(--lb-toggle-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-label-b, .$id .ui-slider-switch .ui-slider-label-b {\n";
+$css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  color: var(--lb-switch-off-text, var(--lb-toggle-text, var(--lb-btn-text, var(--lb-text, inherit)))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-handle, body.$id .ui-slider-switch .ui-btn.ui-slider-handle,\n";
+$css .= ".$id .ui-slider-switch .ui-slider-handle, .$id .ui-slider-switch .ui-btn.ui-slider-handle {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, var(--lb-slider-thumb-bg, #fff)))) !important;\n";
+$css .= "  border-color: var(--lb-switch-thumb-border, var(--lb-toggle-thumb-border, var(--lb-slider-thumb-border-color, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, 999px)) !important;\n";
+$css .= "  box-shadow: var(--lb-switch-thumb-shadow, var(--lb-toggle-thumb-shadow, 0 1px 4px rgba(0,0,0,.22))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-flipswitch, .$id .ui-flipswitch {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))))) !important;\n";
+$css .= "  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-btn-radius, var(--lb-radius, 999px)))) !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-flipswitch.ui-flipswitch-active, .$id .ui-flipswitch.ui-flipswitch-active {\n";
+$css .= "  background-color: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;\n";
+$css .= "  color: var(--lb-switch-on-text, var(--lb-toggle-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-flipswitch .ui-flipswitch-on, .$id .ui-flipswitch .ui-flipswitch-on {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, #fff))) !important;\n";
+$css .= "  border-color: var(--lb-switch-thumb-border, var(--lb-toggle-thumb-border, rgba(0,0,0,.18))) !important;\n";
+$css .= "  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, 999px)) !important;\n";
+$css .= "  box-shadow: var(--lb-switch-thumb-shadow, var(--lb-toggle-thumb-shadow, 0 1px 4px rgba(0,0,0,.22))) !important;\n";
+$css .= "}\n";
+$css .= "/* DESIGN STUDIO JQM COMPAT END */\n";
+
 # Design Studio generated compatibility helpers. These are scoped to the user
 # theme and keep protected/compound components consistent without touching Core.
 $css .= "\n/* DESIGN STUDIO RULES START */\n";
@@ -592,6 +1043,10 @@ $css .= ".$id .lb-btn-group button:not(.ui-btn-active):not(.lb-active):not(.is-a
 $css .= ".$id .lb-btn-group .ui-btn:not(.ui-btn-active):not(.lb-active):not(.is-active):hover {\n";
 $css .= "  background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;\n";
 $css .= "  color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;\n";
+$css .= "  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  filter: none !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-btn-group button.ui-btn-active,\n";
 $css .= "body.$id .lb-btn-group button.lb-active,\n";
@@ -642,6 +1097,10 @@ $css .= "}\n";
 $css .= "body.$id .lb-btn-group input:not(:checked) + label:hover, .$id .lb-btn-group input:not(:checked) + label:hover {\n";
 $css .= "  background-color: var(--lb-btn-group-hover-bg, var(--lb-btn-group-active-bg, var(--lb-active-bg, #007aff))) !important;\n";
 $css .= "  color: var(--lb-btn-group-hover-text, var(--lb-btn-group-active-text, var(--lb-active-text, #fff))) !important;\n";
+$css .= "  border-color: var(--lb-btn-group-inactive-border, var(--lb-btn-group-border, var(--lb-border-color, var(--lb-border, #d7e7d9)))) !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  filter: none !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-toggle, .$id .lb-toggle {\n";
 $css .= "  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-toggle-slider-radius, 999px))) !important;\n";

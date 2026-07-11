@@ -114,6 +114,7 @@
   var lastImportMeta = null;
   // V129: Color swatches only edit an explicitly selected Preview/Inspector target.
   var hasActiveEditorSelection = false;
+  var expandedPropertyTokenKeys = {};
   var aiValidatedDraft = null;
   var aiResultSignature = '';
   var selectedComponentTarget = null;
@@ -151,6 +152,38 @@
 
   function tx(path, values) {
     return t(path, path, values);
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  var studioDisplayLabelKeys = {
+    groups: {
+      '__tableCellLines': 'properties.tableCellLines',
+      '__tableCellLineWidth': 'properties.tableCellLineWidth'
+    }
+  };
+
+  function displayStudioLabel(kind, name) {
+    var keys = studioDisplayLabelKeys[kind] || {};
+    var key = keys[name];
+    return key ? tx(key) : name;
+  }
+
+  function displayAreaName(name) { return displayStudioLabel('areas', name); }
+  function displayElementName(name) { return displayStudioLabel('elements', name); }
+  function displayGroupName(name) { return displayStudioLabel('groups', name); }
+
+  function selectionPathLabel(area, element, group) {
+    var parts = [displayAreaName(area), displayElementName(element)];
+    if (group) parts.push(displayGroupName(group));
+    return parts.join(' → ');
   }
 
   function localizedServerError(json, fallbackKey, values) {
@@ -373,6 +406,8 @@
         'Header Textfarbe': ['--lb-table-header-text'],
         'Rahmen': ['--lb-table-border-color', '--lb-table-header-border-color', '--lb-table-row-border-color', '--lb-table-border'],
         'Rahmenstärke': ['--lb-table-border-width', '--lb-table-outer-border-width'],
+        '__tableCellLines': ['--lb-table-cell-border-color', '--lb-table-header-border-color', '--lb-table-row-border-color'],
+        '__tableCellLineWidth': ['--lb-table-cell-border-width'],
         'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Radius': ['--lb-table-radius', '--lb-radius-table']
@@ -384,6 +419,8 @@
         'Header Textfarbe': ['--lb-table-compact-header-text', '--lb-table-header-text'],
         'Rahmen': ['--lb-table-compact-border-color', '--lb-table-border-color', '--lb-table-border'],
         'Rahmenstärke': ['--lb-table-compact-border-width', '--lb-table-border-width', '--lb-table-outer-border-width'],
+        '__tableCellLines': ['--lb-table-cell-border-color', '--lb-table-header-border-color', '--lb-table-row-border-color'],
+        '__tableCellLineWidth': ['--lb-table-cell-border-width'],
         'Hover': ['--lb-table-compact-hover-bg', '--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-compact-hover-text', '--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Radius': ['--lb-table-compact-radius', '--lb-table-radius', '--lb-radius-table']
@@ -393,6 +430,8 @@
         'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
         'Rahmen': ['--lb-table-border-color', '--lb-table-border'],
         'Rahmenstärke': ['--lb-table-border-width', '--lb-table-outer-border-width'],
+        '__tableCellLines': ['--lb-table-cell-border-color', '--lb-table-header-border-color', '--lb-table-row-border-color'],
+        '__tableCellLineWidth': ['--lb-table-cell-border-width'],
         'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Select Grundfarbe': ['--lb-select-bg', '--lb-input-bg'],
@@ -406,6 +445,8 @@
         'Textfarbe': ['--lb-table-text', '--lb-table-row-text'],
         'Rahmen': ['--lb-table-border-color', '--lb-table-border'],
         'Rahmenstärke': ['--lb-table-border-width', '--lb-table-outer-border-width'],
+        '__tableCellLines': ['--lb-table-cell-border-color', '--lb-table-header-border-color', '--lb-table-row-border-color'],
+        '__tableCellLineWidth': ['--lb-table-cell-border-width'],
         'Hover': ['--lb-table-row-hover-bg', '--lb-table-hover-bg'],
         'Hover Textfarbe': ['--lb-table-row-hover-text', '--lb-table-hover-text'],
         'Buttonfarbe': ['--lb-btn-bg'],
@@ -677,6 +718,47 @@
       'messages.protectedPackageTheme',
       { theme: tx('saveModal.baseLiquidGlass'), id: id || 'theme-user-liquid-glass' }
     );
+  }
+
+  function isLiquidGlassWallpaperEditorMode() {
+    var id = themeId && themeId.value ? themeId.value : currentStudioThemeId();
+    return isProtectedStudioThemeId(id);
+  }
+
+  function updateLiquidGlassWallpaperEditorMode() {
+    var page = document.querySelector('.cfw-page.cfw-design-studio');
+    var active = isLiquidGlassWallpaperEditorMode();
+
+    if (page) {
+      page.classList.toggle('cfw-liquid-glass-wallpaper-only', active);
+    }
+
+    if (active) {
+      /* V274: Protected Liquid Glass is wallpaper-only in the Studio UI.
+         Keep the Workbench open and show only Wallpaper Editor + Live Preview.
+         Saving remains possible through the normal toolbar. */
+      switchTab('workbench');
+
+      if (wallpaperControls) {
+        wallpaperControls.hidden = false;
+        wallpaperControls.setAttribute('aria-hidden', 'false');
+        wallpaperControls.classList.add('cfw-wallpaper-has-saved');
+        wallpaperControls.classList.add('cfw-wallpaper-context-editable');
+        wallpaperControls.classList.add('cfw-wallpaper-enabled');
+      }
+
+      if (wallpaperAdvancedControls) {
+        wallpaperAdvancedControls.hidden = false;
+        wallpaperAdvancedControls.setAttribute('aria-hidden', 'false');
+      }
+    }
+  }
+
+
+  function isProtectedStudioWallpaperOnlySave() {
+    if (!themeId || !isProtectedStudioThemeId(themeId.value)) return false;
+    var wallpaper = buildWallpaperPayload();
+    return !!(wallpaper && wallpaper.enabled && wallpaper.image);
   }
 
   function semverPatchPlus(version) {
@@ -1156,7 +1238,8 @@
       lower.indexOf('rahmenstärke') >= 0 ||
       lower.indexOf('rahmenstaerke') >= 0 ||
       lower.indexOf('border width') >= 0 ||
-      lower.indexOf('border-width') >= 0;
+      lower.indexOf('border-width') >= 0 ||
+      group === '__tableCellLineWidth';
   }
 
   function hasBorderWidthTokens(tokens) {
@@ -1164,6 +1247,8 @@
   }
 
   function resolveBorderWidthGroupForCurrentElement() {
+    var activeGroup = currentGroup();
+    if (isBorderWidthGroup(activeGroup) || hasBorderWidthTokens(currentMapping())) return activeGroup;
     if (groupExistsForCurrentElement('Rahmenstärke')) return 'Rahmenstärke';
     if (groupExistsForCurrentElement('Border Width')) return 'Border Width';
     var groups = elementGroups(currentArea(), currentElement());
@@ -1301,6 +1386,25 @@
 
   function updateWallpaperControlVisibility() {
     if (!wallpaperControls) return;
+
+    if (isLiquidGlassWallpaperEditorMode()) {
+      wallpaperControls.hidden = false;
+      wallpaperControls.setAttribute('aria-hidden', 'false');
+      wallpaperControls.classList.add('cfw-wallpaper-has-saved');
+      wallpaperControls.classList.add('cfw-wallpaper-context-editable');
+      wallpaperControls.classList.add('cfw-wallpaper-enabled');
+
+      if (wallpaperAdvancedControls) {
+        wallpaperAdvancedControls.hidden = false;
+        wallpaperAdvancedControls.setAttribute('aria-hidden', 'false');
+      }
+
+      updateLiquidGlassWallpaperEditorMode();
+      return;
+    }
+
+    updateLiquidGlassWallpaperEditorMode();
+
     var editable = isBackgroundWallpaperEditable();
     var enabled = !!(wallpaperEnabled && wallpaperEnabled.checked);
     var hasWallpaper = !!(wallpaperState && wallpaperState.enabled && wallpaperState.image);
@@ -1332,11 +1436,20 @@
     return image;
   }
 
+  function normalizeWallpaperImageForPayload(image) {
+    image = String(image || '').trim();
+    if (themeId && isProtectedStudioThemeId(themeId.value)) {
+      image = image.replace(/^assets\/images\/liquid-glass\//i, 'assets/images/theme-user-liquid-glass/');
+      image = image.replace(/^\/plugins\/cssframework\/themes\/assets\/images\/liquid-glass\//i, 'assets/images/theme-user-liquid-glass/');
+    }
+    return image;
+  }
+
   function buildWallpaperPayload() {
     syncWallpaperStateFromControls();
     return {
       enabled: !!wallpaperState.enabled,
-      image: wallpaperState.image || '',
+      image: normalizeWallpaperImageForPayload(wallpaperState.image || ''),
       mode: normalizeWallpaperMode(wallpaperState.mode),
       brightness: clamp(parseInt(wallpaperState.brightness == null ? 100 : wallpaperState.brightness, 10), 0, 150),
       opacity: clamp(parseInt(wallpaperState.opacity == null ? 100 : wallpaperState.opacity, 10), 0, 100)
@@ -1538,7 +1651,7 @@
 
   function renderAreas() {
     areaSelect.innerHTML = '';
-    Object.keys(areas).forEach(function (name) { areaSelect.appendChild(makeOption(name)); });
+    Object.keys(areas).forEach(function (name) { areaSelect.appendChild(makeOption(name, displayAreaName(name))); });
   }
 
   function primaryToken(tokens) {
@@ -1546,6 +1659,10 @@
     return tokens.length ? tokens[0] : '';
   }
 
+
+  function propertyTokenExpansionKey(areaName, variantName, prop) {
+    return [areaName || '', variantName || '', prop || ''].join('::');
+  }
 
   function relatedTokensForVariant(areaName, variantName) {
     var variant = (areas[areaName] || {})[variantName] || {};
@@ -1561,7 +1678,7 @@
   function propertyIcon(name) {
     var lower = String(name || '').toLowerCase();
     if (lower.indexOf('text') >= 0 || lower.indexOf('schrift') >= 0) return 'Aa';
-    if (lower.indexOf('rahmen') >= 0 || lower.indexOf('border') >= 0) return '▢';
+    if (lower.indexOf('rahmen') >= 0 || lower.indexOf('border') >= 0 || lower.indexOf('cellline') >= 0 || lower.indexOf('zell') >= 0) return '▢';
     if (lower.indexOf('hover') >= 0) return '✨';
     if (lower.indexOf('active') >= 0 || lower.indexOf('focus') >= 0) return '◎';
     if (lower.indexOf('disabled') >= 0) return '🚫';
@@ -1576,7 +1693,7 @@
     elementSelect.innerHTML = '';
     Object.keys(area).forEach(function (name) {
       var tokens = tokensForVariant(areaName, name);
-      elementSelect.appendChild(makeOption(name, name, tokens.join('\n')));
+      elementSelect.appendChild(makeOption(name, displayElementName(name), tokens.join('\n')));
     });
     renderColorGroups();
   }
@@ -1587,7 +1704,7 @@
     Object.keys(element).forEach(function (name) {
       var tokens = element[name] || [];
       var first = primaryToken(tokens);
-      colorGroupSelect.appendChild(makeOption(name, first ? (name + ' (' + first + ')') : name, tokens.join('\n')));
+      colorGroupSelect.appendChild(makeOption(name, first ? (displayGroupName(name) + ' (' + first + ')') : displayGroupName(name), tokens.join('\n')));
     });
     loadEntryToControls();
     updateWallpaperControlVisibility();
@@ -1603,7 +1720,7 @@
     var props = Object.keys(element);
     var variantTokens = tokensForVariant(areaName, variantName);
 
-    if (selectedElementTitle) selectedElementTitle.textContent = variantName || tx('directEditor.noElement');
+    if (selectedElementTitle) selectedElementTitle.textContent = displayElementName(variantName) || tx('inspector.noElement');
     if (selectedElementMeta) selectedElementMeta.textContent = props.length + ' ' + tx('properties.property') + ' · ' + variantTokens.length + ' ' + tx('tokens.tokens');
     if (selectedTokenList) {
       selectedTokenList.innerHTML = variantTokens.length
@@ -1621,26 +1738,34 @@
       item.setAttribute('data-role', 'none');
       item.setAttribute('title', tokens.join('\n'));
       var first = primaryToken(tokens);
-      var more = tokens.length > 1 ? '<span class="cfw-property-more">+' + (tokens.length - 1) + ' ' + tx('inspector.moreTokens') + '</span>' : '';
+      var expansionKey = propertyTokenExpansionKey(areaName, variantName, prop);
+      var isExpanded = !!expandedPropertyTokenKeys[expansionKey];
+      var more = '';
+      var extraTokens = tokens.slice(1);
+      if (tokens.length > 1) {
+        more = '<span class="cfw-property-more' + (isExpanded ? ' is-expanded' : '') + '" role="button">'
+          + (isExpanded ? '− ' + tx('inspector.fewerTokens') : '+' + (tokens.length - 1) + ' ' + tx('inspector.moreTokens'))
+          + '</span>';
+      }
+      var extra = isExpanded && extraTokens.length
+        ? '<span class="cfw-property-extra">' + extraTokens.map(function (token) { return '<code>' + escapeHtml(token) + '</code>'; }).join('') + '</span>'
+        : '';
       item.innerHTML = '' +
         '<span class="cfw-property-icon">' + propertyIcon(prop) + '</span>' +
-        '<span class="cfw-property-body"><strong>' + prop + '</strong><code>' + (first || tx('inspector.noToken')) + '</code>' + more + '</span>';
-      item.addEventListener('click', function () {
+        '<span class="cfw-property-body"><strong>' + escapeHtml(displayGroupName(prop)) + '</strong><code>' + escapeHtml(first || tx('inspector.noToken')) + '</code>' + more + extra + '</span>';
+      item.addEventListener('click', function (event) {
+        var toggle = event.target && event.target.closest ? event.target.closest('.cfw-property-more') : null;
         hasActiveEditorSelection = true;
         colorGroupSelect.value = prop;
         loadEntryToControls();
         updateAll();
-        previewCaption.textContent = areaName + ' → ' + variantName + ' → ' + prop;
-      });
-      item.addEventListener('dblclick', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        hasActiveEditorSelection = true;
-        colorGroupSelect.value = prop;
-        loadEntryToControls();
-        updateAll();
-        previewCaption.textContent = areaName + ' → ' + variantName + ' → ' + prop + ' (Direkteditor)';
-        openInspectorForCurrentSelection();
+        previewCaption.textContent = selectionPathLabel(areaName, variantName, prop);
+        if (toggle) {
+          event.preventDefault();
+          event.stopPropagation();
+          expandedPropertyTokenKeys[expansionKey] = !expandedPropertyTokenKeys[expansionKey];
+          renderPropertyInspector();
+        }
       });
       item.setAttribute('title', tx('inspector.propertyTitlePrefix') + '\n' + tokens.join('\n'));
       propertyInspector.appendChild(item);
@@ -1878,7 +2003,7 @@
       '--cfw-preview-btn-group-inactive-bg': resolvedTokenValue(tokens, '--lb-btn-group-inactive-bg') || resolvedTokenValue(tokens, '--lb-btn-bg'),
       '--cfw-preview-btn-group-inactive-text': resolvedTokenValue(tokens, '--lb-btn-group-inactive-text') || resolvedTokenValue(tokens, '--lb-btn-text'),
       '--cfw-preview-btn-group-hover-bg': resolvedTokenValue(tokens, '--lb-btn-group-hover-bg') || resolvedTokenValue(tokens, '--lb-btn-hover-bg'),
-      '--cfw-preview-btn-group-hover-text': resolvedTokenValue(tokens, '--lb-btn-group-hover-text') || resolvedTokenValue(tokens, '--lb-btn-hover-text'),
+      '--cfw-preview-btn-group-hover-text': resolvedTokenValue(tokens, '--lb-btn-group-hover-text') || resolvedTokenValue(tokens, '--lb-btn-group-active-text') || resolvedTokenValue(tokens, '--lb-active-text') || resolvedTokenValue(tokens, '--lb-btn-primary-text'),
       '--cfw-preview-btn-group-active-bg': resolvedTokenValue(tokens, '--lb-btn-group-active-bg') || resolvedTokenValue(tokens, '--lb-active-bg') || resolvedTokenValue(tokens, '--lb-primary') || resolvedTokenValue(tokens, '--lb-btn-primary-bg'),
       '--cfw-preview-btn-group-active-text': resolvedTokenValue(tokens, '--lb-btn-group-active-text') || resolvedTokenValue(tokens, '--lb-active-text') || resolvedTokenValue(tokens, '--lb-btn-primary-text'),
       '--cfw-preview-btn-group-active-hover-bg': resolvedTokenValue(tokens, '--lb-btn-group-active-hover-bg') || resolvedTokenValue(tokens, '--lb-primary-hover') || resolvedTokenValue(tokens, '--lb-btn-primary-hover-bg'),
@@ -1955,7 +2080,7 @@
       var groupBorder = tokens['--lb-btn-group-border'] || tokens['--lb-btn-group-inactive-border'] || tokens['--lb-btn-group-active-border'] || tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
       var inactiveBorder = tokens['--lb-btn-group-inactive-border'] || groupBorder;
       var hoverBg = tokens['--lb-btn-group-hover-bg'] || activeBg;
-      var hoverText = tokens['--lb-btn-group-hover-text'] || activeText;
+      var hoverText = activeText;
       var activeHoverText = tokens['--lb-btn-group-active-hover-text'] || activeText;
 
       setRuleToken(tokens, '--lb-btn-group-active-hover-bg', activeHoverBg);
@@ -2127,7 +2252,7 @@
     broadcastEmbeddedFrameTokens(tokens);
     applyStudioTheme(tokens);
     mappedTokenCount.textContent = Object.keys(tokens).filter(function (name) { return /^--lb-/.test(name); }).length;
-    previewCaption.textContent = currentArea() + ' → ' + currentElement() + ' → ' + currentGroup();
+    previewCaption.textContent = selectionPathLabel(currentArea(), currentElement(), currentGroup());
   }
 
   function updatePreviewStateClasses() {
@@ -2157,7 +2282,7 @@
 
   function openSaveModal() {
     updateThemeIdentityFromName();
-    if (themeId && isProtectedStudioThemeId(themeId.value)) {
+    if (themeId && isProtectedStudioThemeId(themeId.value) && !isProtectedStudioWallpaperOnlySave()) {
       setStatus(protectedStudioThemeMessage(themeId.value), true);
       return;
     }
@@ -2165,13 +2290,41 @@
   }
   function closeSaveModal() { saveModal.hidden = true; }
 
+  function sanitizeCustomCssText(value) {
+    var text = String(value || '');
+
+    if (text === '[object Object]') return '';
+
+    // V275: stop repeated UTF-8/mojibake growth of the default custom-CSS note.
+    // Older generated themes may contain a massively re-encoded line like
+    // "/* Eigene ErgÃ...nzungen bleiben beim Speichern erhalten. */".
+    // That note is only a placeholder, not real custom CSS, and must never be
+    // written back into JSON/CSS.
+    text = text
+      .replace(/\/\*\s*USER CUSTOM CSS START\s*\*\//ig, '')
+      .replace(/\/\*\s*USER CUSTOM CSS END\s*\*\//ig, '');
+
+    text = text.replace(/\/\*\s*Eigene\s+Erg[\s\S]*?Speichern\s+erhalten\.\s*\*\//ig, '');
+
+    // Safety net for already exploded files where the placeholder line became
+    // megabytes long and may no longer match perfectly. Keep real CSS intact.
+    if (text.length > 100000 && /Eigene\s+Erg/i.test(text) && /Speichern\s+erhalten\./i.test(text)) {
+      var withoutComments = text.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+      if (withoutComments === '') {
+        text = '';
+      }
+    }
+
+    return text.trim();
+  }
+
   function normalizeCustomCssValue(value) {
     if (value == null) return '';
     if (typeof value === 'string') {
-      return value === '[object Object]' ? '' : value;
+      return sanitizeCustomCssText(value);
     }
     if (Array.isArray(value)) {
-      return value.map(normalizeCustomCssValue).filter(Boolean).join('\n');
+      return sanitizeCustomCssText(value.map(normalizeCustomCssValue).filter(Boolean).join('\n'));
     }
     if (typeof value === 'object') {
       if (typeof value.css === 'string') return normalizeCustomCssValue(value.css);
@@ -2179,7 +2332,7 @@
       if (typeof value.text === 'string') return normalizeCustomCssValue(value.text);
       return '';
     }
-    return String(value || '');
+    return sanitizeCustomCssText(String(value || ''));
   }
 
   function meaningfulCustomCss(value) {
@@ -2193,16 +2346,19 @@
 
   function saveTheme() {
     updateThemeIdentityFromName();
-    if (themeId && isProtectedStudioThemeId(themeId.value)) {
+    var wallpaperPayload = buildWallpaperPayload();
+    var protectedWallpaperOnly = !!(themeId && isProtectedStudioThemeId(themeId.value));
+    if (protectedWallpaperOnly && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
       setStatus(protectedStudioThemeMessage(themeId.value), true);
       return;
     }
     // V31: Save the same effective token set that is visible in the final preview,
     // including Design Rules Engine output. This prevents empty CSS files when the
     // preview was based on AI/imported tokens or rule-derived values.
-    var effectiveTokens = applyDesignRules(collectTokens());
-    var wallpaperPayload = buildWallpaperPayload();
-    if (!Object.keys(effectiveTokens).filter(function (name) { return /^--lb-/.test(name); }).length && !meaningfulCustomCss(normalizeCustomCssValue(customCss && customCss.value)) && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
+    // V262: The protected packaged Liquid Glass theme may only save wallpaper data.
+    var effectiveTokens = protectedWallpaperOnly ? {} : syncTintedSurfaceTokens(applyDesignRules(collectTokens()));
+    var effectiveCustomCss = protectedWallpaperOnly ? '' : normalizeCustomCssValue(customCss && customCss.value);
+    if (!Object.keys(effectiveTokens).filter(function (name) { return /^--lb-/.test(name); }).length && !meaningfulCustomCss(effectiveCustomCss) && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
       setStatus(tx('messages.noSaveableContent'), true);
       return;
     }
@@ -2211,11 +2367,12 @@
       name: normalizeThemeDisplayName(themeName.value),
       version: themeVersion.value.trim(),
       tokens: effectiveTokens,
-      custom_css: normalizeCustomCssValue(customCss && customCss.value),
-      studio_model: studioModel,
-      import_meta: lastImportMeta,
+      custom_css: effectiveCustomCss,
+      studio_model: protectedWallpaperOnly ? {} : studioModel,
+      import_meta: protectedWallpaperOnly ? null : lastImportMeta,
       wallpaper: wallpaperPayload,
-      studio_version: 'V39_HybridImportTokensPlusCustomCss',
+      protected_wallpaper_only: protectedWallpaperOnly,
+      studio_version: 'V275_CustomCssMojibakeGuard',
       lang: i18nLanguage
     };
     setStatus(tx('messages.savingTheme'), false);
@@ -2456,6 +2613,7 @@
       }, 0);
     }
 
+    updateLiquidGlassWallpaperEditorMode();
     setStatus(t('messages.userThemeLoaded', 'messages.userThemeLoaded', { theme: (theme.name || theme.id) }), false);
   }
 
@@ -2479,6 +2637,7 @@
       var idx = userThemes.findIndex(function (item) { return item.id === payload.id; });
       if (idx >= 0) userThemeSelect.value = String(idx);
     }
+    updateLiquidGlassWallpaperEditorMode();
   }
 
 
@@ -2492,13 +2651,20 @@
   function updateDeleteThemeButton() {
     if (!deleteThemeButton) return;
     var selected = selectedUserThemeInfo();
-    deleteThemeButton.disabled = !selected || !!(selected.theme && selected.theme.readonly_css_only);
+    var blocked = !selected
+      || !!(selected.theme && selected.theme.readonly_css_only)
+      || !!(selected.theme && isProtectedStudioThemeId(selected.theme.id));
+    deleteThemeButton.disabled = blocked;
   }
 
   function openDeleteModal() {
     var selected = selectedUserThemeInfo();
     if (!selected || !selected.theme || !selected.theme.id) {
       setStatus(tx('messages.deleteNoThemeSelected'), true);
+      return;
+    }
+    if (isProtectedStudioThemeId(selected.theme.id)) {
+      setStatus(protectedStudioThemeMessage(selected.theme.id), true);
       return;
     }
     if (selected.theme.readonly_css_only) {
@@ -2519,6 +2685,11 @@
     if (!selected || !selected.theme || !selected.theme.id) {
       closeDeleteModal();
       setStatus(tx('messages.deleteNoThemeSelected'), true);
+      return;
+    }
+    if (isProtectedStudioThemeId(selected.theme.id)) {
+      closeDeleteModal();
+      setStatus(protectedStudioThemeMessage(selected.theme.id), true);
       return;
     }
     var name = selected.theme.name || selected.theme.id;
@@ -2699,6 +2870,17 @@
     return fallback || '14px';
   }
 
+  function normalizeBorderWidth(value, fallback) {
+    value = String(value == null ? '' : value).trim().toLowerCase();
+    if (/^\d+(\.\d+)?(px|rem|em)$/.test(value)) return value;
+    if (/^\d+(\.\d+)?$/.test(value)) return value + 'px';
+    if (value === 'none' || value === 'kein' || value === 'keine' || value === '0') return '0px';
+    if (value === 'thin' || value === 'dünn' || value === 'duenn') return '1px';
+    if (value === 'medium' || value === 'mittel') return '2px';
+    if (value === 'strong' || value === 'thick' || value === 'stark' || value === 'dick') return '3px';
+    return fallback || '0px';
+  }
+
   function normalizeShadow(value) {
     value = String(value || '').trim().toLowerCase();
     if (value === 'none' || value === 'kein' || value === 'keiner') return 'none';
@@ -2810,8 +2992,27 @@
     if (/^--lb-[a-z0-9-]+$/.test(name) && coreTokens[name] !== undefined && !isBlockedToken(name)) out[name] = value;
   }
 
+  function detectSpecificPaletteFamily(text) {
+    text = String(text || '').toLowerCase();
+    if (/creme\s*gelb|cremegelb|warm(?:es|e|er)?\s+creme|cremefarben|\bcreme\b|\bcream\b|warm\s+cream|soft\s+cream/.test(text)) return 'cream';
+    if (/warm(?:es|e|er)?\s+beige|\bbeige\b/.test(text)) return 'warm-beige';
+    if (/ocker|ochre/.test(text)) return 'ochre';
+    if (/mint\s*gr(?:ü|ue)n|mintgr(?:ü|ue)n|\bmint\b/.test(text)) return 'mint';
+    if (/wald\s*gr(?:ü|ue)n|waldgr(?:ü|ue)n|forest\s+green/.test(text)) return 'forest-green';
+    if (/satt(?:es|e|er)?\s+gr(?:ü|ue)n|rich\s+green|deep\s+green/.test(text)) return 'rich-green';
+    if (/frisch(?:es|e|er)?\s+gr(?:ü|ue)n|fresh\s+green/.test(text)) return 'fresh-green';
+    if (/hell(?:es|e|er)?\s+gr(?:ü|ue)n|hellgr(?:ü|ue)n|light\s+green|soft\s+green/.test(text)) return 'soft-green';
+    if (/himmel\s*blau|himmelblau|sky\s+blue/.test(text)) return 'sky-blue';
+    if (/eis\s*grau|eisgrau|ice\s+gr[ae]y/.test(text)) return 'ice-gray';
+    if (/lavendel|flieder|lilac|lavender/.test(text)) return 'lavender';
+    if (/wein\s*rot|weinrot|burgundy|wine\s+red/.test(text)) return 'wine-red';
+    return '';
+  }
+
   function detectPaletteFamilyFromText(text) {
     text = String(text || '').toLowerCase();
+    var specific = detectSpecificPaletteFamily(text);
+    if (specific) return specific;
     var map = window.CFW_COLOR_STYLE_MAP || {};
     var colors = map.colors || [];
     function esc(term) { return String(term || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s*'); }
@@ -2870,6 +3071,11 @@
         bg: '#eff6ff', surface: '#ffffff', surfaceAlt: '#dbeafe', text: '#0f172a', muted: '#475569', border: '#bfdbfe',
         sidebar: '#0f172a', sidebarText: '#eff6ff', focusShadow: '0 0 0 3px rgba(29, 78, 216, 0.25)'
       },
+      'sky-blue': {
+        primary: '#38bdf8', primaryHover: '#0284c7', primaryDark: '#0369a1',
+        bg: '#f0f9ff', surface: '#ffffff', surfaceAlt: '#e0f2fe', text: '#102a3a', muted: '#516978', border: '#bae6fd',
+        sidebar: '#123043', sidebarText: '#f0f9ff', focusShadow: '0 0 0 3px rgba(56, 189, 248, 0.25)'
+      },
       rose: {
         primary: '#c75b7a', primaryHover: '#a94363', primaryDark: '#8f3653',
         bg: '#fff7fa', surface: '#ffffff', surfaceAlt: '#fdf2f6', text: '#2f1a22', muted: '#75515e', border: '#f3c7d4',
@@ -2879,6 +3085,11 @@
         primary: '#7c3aed', primaryHover: '#6d28d9', primaryDark: '#5b21b6',
         bg: '#f7f2ff', surface: '#ffffff', surfaceAlt: '#f0e7ff', text: '#241733', muted: '#6b5a7a', border: '#d8c4f7',
         sidebar: '#2e2140', sidebarText: '#f7f2ff', focusShadow: '0 0 0 3px rgba(124, 58, 237, 0.25)'
+      },
+      lavender: {
+        primary: '#a78bfa', primaryHover: '#8b5cf6', primaryDark: '#6d28d9',
+        bg: '#fbf7ff', surface: '#ffffff', surfaceAlt: '#f1e9ff', text: '#261b33', muted: '#6b5e78', border: '#ddd0fb',
+        sidebar: '#30243f', sidebarText: '#fbf7ff', focusShadow: '0 0 0 3px rgba(167, 139, 250, 0.25)'
       },
       red: {
         primary: '#dc2626', primaryHover: '#b91c1c', primaryDark: '#991b1b',
@@ -2900,6 +3111,21 @@
         bg: '#f9f1e4', surface: '#fffaf2', surfaceAlt: '#efe0c7', text: '#2d241a', muted: '#705f4d', border: '#ddc7a7',
         sidebar: '#3c3023', sidebarText: '#fff8ed', focusShadow: '0 0 0 3px rgba(165, 121, 72, 0.25)'
       },
+      'warm-beige': {
+        primary: '#c79a5b', primaryHover: '#aa7f43', primaryDark: '#806038',
+        bg: '#fff6e8', surface: '#fffaf2', surfaceAlt: '#f3dfbd', text: '#2f2618', muted: '#78674f', border: '#e5cda8',
+        sidebar: '#3b3023', sidebarText: '#fff8ed', focusShadow: '0 0 0 3px rgba(199, 154, 91, 0.25)'
+      },
+      cream: {
+        primary: '#d8b46a', primaryHover: '#c29a4c', primaryDark: '#9d7733',
+        bg: '#fff8ea', surface: '#fffdf7', surfaceAlt: '#fff0c8', text: '#2d2416', muted: '#766954', border: '#ead8b4',
+        sidebar: '#332a1d', sidebarText: '#fff8ea', focusShadow: '0 0 0 3px rgba(216, 180, 106, 0.25)'
+      },
+      ochre: {
+        primary: '#b8792d', primaryHover: '#985f1d', primaryDark: '#744614',
+        bg: '#fff4e0', surface: '#fffaf2', surfaceAlt: '#f0d3a5', text: '#2d2115', muted: '#725b3f', border: '#e2bc85',
+        sidebar: '#352515', sidebarText: '#fff4e0', focusShadow: '0 0 0 3px rgba(184, 121, 45, 0.25)'
+      },
       yellow: {
         primary: '#ca8a04', primaryHover: '#a16207', primaryDark: '#854d0e',
         bg: '#fffbeb', surface: '#ffffff', surfaceAlt: '#fef3c7', text: '#2c2414', muted: '#746843', border: '#fde68a',
@@ -2909,6 +3135,31 @@
         primary: '#16a34a', primaryHover: '#15803d', primaryDark: '#166534',
         bg: '#f0fdf4', surface: '#ffffff', surfaceAlt: '#dcfce7', text: '#13291c', muted: '#516b58', border: '#bbf7d0',
         sidebar: '#17351f', sidebarText: '#f0fdf4', focusShadow: '0 0 0 3px rgba(22, 163, 74, 0.25)'
+      },
+      'fresh-green': {
+        primary: '#22c55e', primaryHover: '#16a34a', primaryDark: '#15803d',
+        bg: '#f0fdf4', surface: '#ffffff', surfaceAlt: '#dcfce7', text: '#11291b', muted: '#4e6a57', border: '#bbf7d0',
+        sidebar: '#15351f', sidebarText: '#f0fdf4', focusShadow: '0 0 0 3px rgba(34, 197, 94, 0.25)'
+      },
+      'soft-green': {
+        primary: '#86b96a', primaryHover: '#6fa455', primaryDark: '#537f3e',
+        bg: '#f7fbf2', surface: '#ffffff', surfaceAlt: '#e8f3dc', text: '#1f2a19', muted: '#627154', border: '#cfe4bd',
+        sidebar: '#25351d', sidebarText: '#f7fbf2', focusShadow: '0 0 0 3px rgba(134, 185, 106, 0.25)'
+      },
+      mint: {
+        primary: '#2fbf8f', primaryHover: '#219a73', primaryDark: '#187457',
+        bg: '#effcf7', surface: '#ffffff', surfaceAlt: '#d8f5e9', text: '#132b24', muted: '#527269', border: '#b8ead8',
+        sidebar: '#17352c', sidebarText: '#effcf7', focusShadow: '0 0 0 3px rgba(47, 191, 143, 0.25)'
+      },
+      'rich-green': {
+        primary: '#15803d', primaryHover: '#166534', primaryDark: '#14532d',
+        bg: '#edf7ef', surface: '#ffffff', surfaceAlt: '#cfead4', text: '#102417', muted: '#4f6656', border: '#a8d5b3',
+        sidebar: '#122b1a', sidebarText: '#edf7ef', focusShadow: '0 0 0 3px rgba(21, 128, 61, 0.25)'
+      },
+      'forest-green': {
+        primary: '#166534', primaryHover: '#14532d', primaryDark: '#052e16',
+        bg: '#edf5ec', surface: '#ffffff', surfaceAlt: '#d6e8d1', text: '#122018', muted: '#566a58', border: '#b7d2b4',
+        sidebar: '#0f2417', sidebarText: '#edf5ec', focusShadow: '0 0 0 3px rgba(22, 101, 52, 0.25)'
       },
       lime: {
         primary: '#65a30d', primaryHover: '#4d7c0f', primaryDark: '#365314',
@@ -2935,6 +3186,11 @@
         bg: '#fff5f5', surface: '#ffffff', surfaceAlt: '#fde2e2', text: '#2b1515', muted: '#755353', border: '#f5bcbc',
         sidebar: '#321818', sidebarText: '#fff5f5', focusShadow: '0 0 0 3px rgba(128, 0, 0, 0.25)'
       },
+      'wine-red': {
+        primary: '#991b1b', primaryHover: '#7f1d1d', primaryDark: '#5f1616',
+        bg: '#fff3f3', surface: '#ffffff', surfaceAlt: '#f7dede', text: '#2b1515', muted: '#765252', border: '#e9b8b8',
+        sidebar: '#321717', sidebarText: '#fff3f3', focusShadow: '0 0 0 3px rgba(153, 27, 27, 0.25)'
+      },
       olive: {
         primary: '#808000', primaryHover: '#6b6b00', primaryDark: '#4f4f00',
         bg: '#fbfbe9', surface: '#ffffff', surfaceAlt: '#f1f1c8', text: '#262714', muted: '#6b6b4b', border: '#dfdfa3',
@@ -2955,6 +3211,11 @@
         bg: '#f8fafc', surface: '#ffffff', surfaceAlt: '#e2e8f0', text: '#0f172a', muted: '#64748b', border: '#cbd5e1',
         sidebar: '#334155', sidebarText: '#f8fafc', focusShadow: '0 0 0 3px rgba(100, 116, 139, 0.25)'
       },
+      'ice-gray': {
+        primary: '#94a3b8', primaryHover: '#64748b', primaryDark: '#475569',
+        bg: '#f8fafc', surface: '#ffffff', surfaceAlt: '#eef2f7', text: '#0f172a', muted: '#64748b', border: '#d8e0ea',
+        sidebar: '#334155', sidebarText: '#f8fafc', focusShadow: '0 0 0 3px rgba(148, 163, 184, 0.25)'
+      },
       black: {
         primary: '#111827', primaryHover: '#000000', primaryDark: '#000000',
         bg: '#f9fafb', surface: '#ffffff', surfaceAlt: '#e5e7eb', text: '#111827', muted: '#4b5563', border: '#d1d5db',
@@ -2966,7 +3227,57 @@
         sidebar: '#f8fafc', sidebarText: '#0f172a', focusShadow: '0 0 0 3px rgba(71, 85, 105, 0.25)'
       }
     };
-    return presets[family] || null;
+    return normalizeTintedPaletteSurface(presets[family] || null, family);
+  }
+
+  function isPlainWhiteHex(value) {
+    var rgb = parseHexColor(value);
+    return !!rgb && rgb.r >= 250 && rgb.g >= 250 && rgb.b >= 250;
+  }
+
+  function normalizeTintedPaletteSurface(palette, family) {
+    if (!palette) return palette;
+
+    var normalized = {};
+    Object.keys(palette).forEach(function (key) {
+      normalized[key] = palette[key];
+    });
+
+    /* V272/V261 restored: generated or re-saved user themes should not turn
+       tinted themes into hard white content islands. If a palette has a
+       tinted page background but still uses pure white as the generic surface,
+       let component surface tokens inherit the theme background. Neutral/white
+       palettes intentionally keep white. */
+    if (family !== 'white' && !isPlainWhiteHex(normalized.bg) && isPlainWhiteHex(normalized.surface)) {
+      normalized.surface = normalized.bg;
+    }
+
+    return normalized;
+  }
+
+  function syncTintedSurfaceTokens(tokens) {
+    if (!tokens || typeof tokens !== 'object') return tokens;
+
+    var bg = String(tokens['--lb-bg'] || '').trim();
+    if (!bg || isPlainWhiteHex(bg)) return tokens;
+
+    [
+      '--lb-card-bg',
+      '--lb-table-bg',
+      '--lb-table-row-bg',
+      '--lb-input-bg',
+      '--lb-input-disabled-bg',
+      '--lb-select-bg',
+      '--lb-dropdown-menu-bg',
+      '--lb-multiselect-bg',
+      '--lb-multiselect-summary-bg'
+    ].forEach(function (name) {
+      if (Object.prototype.hasOwnProperty.call(tokens, name) && isPlainWhiteHex(tokens[name])) {
+        tokens[name] = bg;
+      }
+    });
+
+    return tokens;
   }
 
   function isGreenishHex(value) {
@@ -3070,14 +3381,17 @@
     put(['--lb-header-btn-hover-text'], componentValue(headerButton, ['hover_text'], componentValue(headerButton, ['text'], colorValue(colors.on_primary, readableTextFor(primary)))));
 
     var buttonGroup = componentsDesign.button_group || componentsDesign.buttonGroup || {};
+    var buttonGroupActiveText = componentValue(buttonGroup, ['active_text'], componentValue(buttonGroup, ['text'], colorValue(colors.on_primary, readableTextFor(primary))));
     put(['--lb-btn-group-border', '--lb-btn-group-inactive-border'], componentValue(buttonGroup, ['border'], componentValue(button, ['border'], border)));
     put(['--lb-btn-group-active-border'], componentValue(buttonGroup, ['active_border', 'border'], componentValue(button, ['border'], primary)));
     put(['--lb-btn-group-hover-bg'], componentValue(buttonGroup, ['hover', 'hover_background'], componentValue(button, ['hover'], primaryHover)));
-    put(['--lb-btn-group-hover-text'], componentValue(buttonGroup, ['hover_text'], componentValue(buttonGroup, ['text'], componentValue(button, ['text'], text))));
+    // V248: Button-group hover is a color-state only. As a fixed rule it uses the
+    // active text color and does not introduce separate hover border/shadow.
+    put(['--lb-btn-group-hover-text'], buttonGroupActiveText);
     put(['--lb-btn-group-active-bg'], componentValue(buttonGroup, ['active', 'background', 'bg'], primary));
-    put(['--lb-btn-group-active-text'], componentValue(buttonGroup, ['text', 'active_text'], colorValue(colors.on_primary, readableTextFor(primary))));
+    put(['--lb-btn-group-active-text'], buttonGroupActiveText);
     put(['--lb-btn-group-active-hover-bg'], componentValue(buttonGroup, ['active_hover', 'hover'], primaryHover));
-    put(['--lb-btn-group-active-hover-text'], componentValue(buttonGroup, ['active_hover_text', 'hover_text'], colorValue(colors.on_primary, readableTextFor(primary))));
+    put(['--lb-btn-group-active-hover-text'], componentValue(buttonGroup, ['active_hover_text', 'hover_text'], buttonGroupActiveText));
 
     var card = componentsDesign.card || {};
     put(['--lb-card-bg'], componentValue(card, ['background', 'bg'], surface));
@@ -3116,7 +3430,11 @@
     put(['--lb-table-header-text'], componentValue(table, ['header_text'], text));
     put(['--lb-table-cell-text'], componentValue(table, ['text', 'text_color'], text));
     put(['--lb-table-row-hover-bg'], componentValue(table, ['hover', 'hover_background'], mixColor(primary, 70)));
-    put(['--lb-table-border-color', '--lb-table-cell-border-color'], componentValue(table, ['border'], border));
+    put(['--lb-table-border-color'], componentValue(table, ['border'], border));
+    put(['--lb-table-cell-border-color', '--lb-table-header-border-color', '--lb-table-row-border-color'], componentValue(table, ['cell_border', 'cell_lines', 'inner_border', 'inner_lines', 'border'], border));
+    // AI-created themes should not reintroduce inner table separators by default.
+    // Outer table border remains controlled separately via --lb-table-border-width / --lb-table-outer-border-width.
+    putRaw(['--lb-table-cell-border-width'], normalizeBorderWidth(componentValue(table, ['cell_border_width', 'cell_line_width', 'cell_lines_width', 'inner_border_width', 'inner_lines_width'], '0px'), '0px'));
     putRaw(['--lb-table-radius'], normalizeRadius(componentValue(table, ['radius'], ''), '12px'));
 
     var toggle = componentsDesign.toggle || componentsDesign.switch || {};
@@ -3307,13 +3625,13 @@
       tokens: definition.tokens || []
     };
     if (componentInspectorTitle) {
-      componentInspectorTitle.textContent = definition.area + ' → ' + definition.variant + ' → ' + definition.property;
+      componentInspectorTitle.textContent = selectionPathLabel(definition.area, definition.variant, definition.property);
     }
     if (componentInspectorMeta) {
       componentInspectorMeta.innerHTML = '' +
-        '<div><strong>Mapping:</strong></div>' +
+        '<div><strong>' + tx('componentInspector.mapping') + '</strong></div>' +
         '<div class="cfw-token-list">' + formatTokenList(definition.tokens || []) + '</div>' +
-        '<div class="cfw-small-note">Normaler Klick wählt das Element. Doppelklick oder CTRL-/Strg-Klick öffnet diesen Direkteditor.</div>';
+        '<div class="cfw-small-note">' + tx('componentInspector.hint') + '</div>';
     }
     componentInspector.hidden = false;
     componentInspector.classList.add('is-open');
@@ -3333,7 +3651,7 @@
   function focusSelectedComponent() {
     if (!selectedComponentTarget) return;
     selectEditorTarget(selectedComponentTarget.area, selectedComponentTarget.variant, selectedComponentTarget.property);
-    setStatus(t('messages.directEditorFocused', 'messages.directEditorFocused', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
+    setStatus(t('messages.directEditorFocused', 'messages.directEditorFocused', { path: selectionPathLabel(currentArea(), currentElement(), currentGroup()) }), false);
   }
 
   function prepareElementAiPrompt() {
@@ -3346,7 +3664,7 @@
     relatedTokens.forEach(function (token) { if (values[token]) tokenState[token] = values[token]; });
     if (prompt) {
       prompt.value = t('ai.elementPromptTemplate', 'ai.elementPromptTemplate', {
-        element: selectedComponentTarget.area + ' → ' + selectedComponentTarget.variant,
+        element: selectionPathLabel(selectedComponentTarget.area, selectedComponentTarget.variant),
         property: selectedComponentTarget.property,
         tokens: tokens.join(', '),
         relatedTokens: relatedTokens.join(', '),
@@ -3355,7 +3673,7 @@
     }
     switchTab('ai');
     renderAiRequest();
-    setAiStatus(t('messages.aiFocusPrepared', 'messages.aiFocusPrepared', { path: selectedComponentTarget.area + ' → ' + selectedComponentTarget.variant }), false);
+    setAiStatus(t('messages.aiFocusPrepared', 'messages.aiFocusPrepared', { path: selectionPathLabel(selectedComponentTarget.area, selectedComponentTarget.variant) }), false);
   }
 
 
@@ -3384,9 +3702,9 @@
     var card = ensurePreviewHoverCard();
     var tokenCount = (definition.tokens || []).length;
     card.innerHTML = '' +
-      '<strong>' + definition.area + ' → ' + definition.variant + '</strong>' +
-      '<span>' + definition.property + ' · ' + tokenCount + ' Token' + (tokenCount === 1 ? '' : 's') + '</span>' +
-      '<em>Klick: auswählen · Doppelklick/Strg: Direkteditor</em>';
+      '<strong>' + selectionPathLabel(definition.area, definition.variant) + '</strong>' +
+      '<span>' + displayGroupName(definition.property) + ' · ' + tokenCount + ' ' + tx(tokenCount === 1 ? 'tokens.token' : 'tokens.tokens') + '</span>' +
+      '<em>' + tx('componentInspector.hoverHint') + '</em>';
     var rect = target.getBoundingClientRect();
     var top = Math.max(8, rect.top + window.scrollY - card.offsetHeight - 12);
     var left = Math.min(window.scrollX + document.documentElement.clientWidth - 280, Math.max(8, rect.left + window.scrollX));
@@ -3407,7 +3725,7 @@
     if (!definition) return false;
     selectEditorTarget(definition.area, definition.variant, definition.property);
     openComponentInspector(definition, target);
-    setStatus(t('messages.directEditorOpened', 'messages.directEditorOpened', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
+    setStatus(t('messages.directEditorOpened', 'messages.directEditorOpened', { path: selectionPathLabel(currentArea(), currentElement(), currentGroup()) }), false);
     return true;
   }
 
@@ -3428,7 +3746,7 @@
       componentInspector.classList.add('cfw-direct-focus');
       setTimeout(function () { componentInspector.classList.remove('cfw-direct-focus'); }, 1600);
     }
-    setStatus(t('messages.directEditorOpened', 'messages.directEditorOpened', { path: definition.area + ' → ' + definition.variant + ' → ' + definition.property }), false);
+    setStatus(t('messages.directEditorOpened', 'messages.directEditorOpened', { path: selectionPathLabel(definition.area, definition.variant, definition.property) }), false);
     return true;
   }
 
@@ -3453,7 +3771,7 @@
     colorGroupSelect.value = group;
     loadEntryToControls();
     updateAll();
-    previewCaption.textContent = area + ' → ' + element + ' → ' + group + ' (aus Preview gewählt)';
+    previewCaption.textContent = selectionPathLabel(area, element, group) + ' (' + tx('messages.fromPreviewSelected') + ')';
     return true;
   }
 
@@ -3473,12 +3791,6 @@
       if (event.relatedTarget && target.contains(event.relatedTarget)) return;
       hidePreviewHover();
     });
-    previewRoot.addEventListener('dblclick', function (event) {
-      var target = event.target.closest('[data-cfw-area]');
-      if (!target || !previewRoot.contains(target)) return;
-      event.preventDefault();
-      openInspectorForTarget(target);
-    });
     previewRoot.addEventListener('click', function (event) {
       var target = event.target.closest('[data-cfw-area]');
       if (!target || !previewRoot.contains(target)) return;
@@ -3497,11 +3809,7 @@
       previewRoot.querySelectorAll('.cfw-edit-highlight').forEach(function (node) { node.classList.remove('cfw-edit-highlight'); });
       target.classList.add('cfw-edit-highlight');
       setTimeout(function () { target.classList.remove('cfw-edit-highlight'); }, 1600);
-      if (event.ctrlKey || event.metaKey) {
-        openInspectorForTarget(target);
-      } else {
-        setStatus(t('messages.previewSelected', 'messages.previewSelected', { path: currentArea() + ' → ' + currentElement() + ' → ' + currentGroup() }), false);
-      }
+      setStatus(t('messages.previewSelected', 'messages.previewSelected', { path: selectionPathLabel(currentArea(), currentElement(), currentGroup()) }), false);
     });
   }
 
@@ -3678,6 +3986,12 @@
   if (aiResultBox) aiResultBox.addEventListener('input', invalidateAiValidation);
   if (userThemeSelect) userThemeSelect.addEventListener('change', function () {
     updateDeleteThemeButton();
+    if (userThemeSelect.value === '') {
+      if (themeId) themeId.value = '';
+      updateLiquidGlassWallpaperEditorMode();
+      updateWallpaperControlVisibility();
+      return;
+    }
     loadUserThemeByIndex(userThemeSelect.value);
   });
   if (selectedComponentCard) {
@@ -3700,13 +4014,8 @@
   }
 
   setupPreviewClickToEdit();
-  var inspectorClose = document.getElementById('componentInspectorClose');
-  var inspectorEdit = document.getElementById('componentInspectorEdit');
-  var inspectorAi = document.getElementById('componentInspectorAi');
-  if (inspectorClose) inspectorClose.addEventListener('click', closeComponentInspector);
-  if (inspectorEdit) inspectorEdit.addEventListener('click', focusSelectedComponent);
-  if (inspectorAi) inspectorAi.addEventListener('click', function () { (window.CFW_AI_ASSISTANT && window.CFW_AI_ASSISTANT.prepareElementPrompt ? window.CFW_AI_ASSISTANT.prepareElementPrompt : prepareElementAiPrompt)(); });
   populateUserThemeSelect();
+  updateLiquidGlassWallpaperEditorMode();
   renderAiColorPresetPalette();
   buildComponentRegistry();
   renderAreas();

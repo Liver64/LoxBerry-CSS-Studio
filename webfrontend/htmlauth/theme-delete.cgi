@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use lib "/opt/loxberry/libs/perllib";
+use lib "REPLACELBHOMEDIR/libs/perllib";
 use CGI qw(:standard);
 use JSON::PP qw(decode_json encode_json);
 use LoxBerry::System;
@@ -13,8 +13,8 @@ use LoxBerry::Web;
 our ($lbpconfigdir, $lbpdatadir);
 
 my $plugin = 'cssframework';
-my $cfgdir = $lbpconfigdir || $ENV{LBPCONFIG} || "/opt/loxberry/config/plugins/$plugin";
-my $datadir = $lbpdatadir || $ENV{LBPDATA} || "/opt/loxberry/data/plugins/$plugin";
+my $cfgdir = $lbpconfigdir || $ENV{LBPCONFIG} || "REPLACELBHOMEDIR/config/plugins/$plugin";
+my $datadir = $lbpdatadir || $ENV{LBPDATA} || "REPLACELBHOMEDIR/data/plugins/$plugin";
 
 # V79 storage split:
 # - JSON/editable Studio state is stored in config/plugins/cssframework/themes.
@@ -65,6 +65,20 @@ _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid JSON payl
 
 my $id = _safe_id($data->{id});
 _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid or missing theme id' }) if !$id;
+
+# V273: packaged Liquid Glass is protected in the Design Studio.
+# It may receive wallpaper-only updates via theme-save.cgi, but it must not be
+# deleted from Studio or by direct backend calls.
+if (lc($id) eq 'theme-user-liquid-glass') {
+    _respond('403 Forbidden', {
+        ok => JSON::PP::false,
+        error => 'Protected package theme cannot be deleted',
+        error_key => 'protectedPackageTheme',
+        message_key => 'protectedPackageTheme',
+        args => { theme => 'Liquid Glass', id => $id },
+        id => $id,
+    });
+}
 
 my $json_path = "$theme_json_dir/$id.json";
 my $legacy_data_json_path = "$theme_dir/$id.json";

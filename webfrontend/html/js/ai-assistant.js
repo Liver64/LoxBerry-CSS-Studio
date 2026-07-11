@@ -534,8 +534,26 @@
     return new RegExp(pattern, 'i').test(text);
   }
 
+  function detectSpecificPaletteFamily(text) {
+    text = String(text || '').toLowerCase();
+    if (/creme\s*gelb|cremegelb|warm(?:es|e|er)?\s+creme|cremefarben|\bcreme\b|\bcream\b|warm\s+cream|soft\s+cream/.test(text)) return { family: 'cream', en: 'warm cream' };
+    if (/warm(?:es|e|er)?\s+beige|\bbeige\b/.test(text)) return { family: 'warm-beige', en: 'warm beige' };
+    if (/ocker|ochre/.test(text)) return { family: 'ochre', en: 'warm ochre' };
+    if (/mint\s*gr(?:ü|ue)n|mintgr(?:ü|ue)n|\bmint\b/.test(text)) return { family: 'mint', en: 'mint green' };
+    if (/wald\s*gr(?:ü|ue)n|waldgr(?:ü|ue)n|forest\s+green/.test(text)) return { family: 'forest-green', en: 'forest green' };
+    if (/satt(?:es|e|er)?\s+gr(?:ü|ue)n|rich\s+green|deep\s+green/.test(text)) return { family: 'rich-green', en: 'rich green' };
+    if (/frisch(?:es|e|er)?\s+gr(?:ü|ue)n|fresh\s+green/.test(text)) return { family: 'fresh-green', en: 'fresh green' };
+    if (/hell(?:es|e|er)?\s+gr(?:ü|ue)n|hellgr(?:ü|ue)n|light\s+green|soft\s+green/.test(text)) return { family: 'soft-green', en: 'light green' };
+    if (/himmel\s*blau|himmelblau|sky\s+blue/.test(text)) return { family: 'sky-blue', en: 'sky blue' };
+    if (/eis\s*grau|eisgrau|ice\s+gr[ae]y/.test(text)) return { family: 'ice-gray', en: 'ice gray' };
+    if (/lavendel|flieder|lilac|lavender/.test(text)) return { family: 'lavender', en: 'lavender' };
+    if (/wein\s*rot|weinrot|burgundy|wine\s+red/.test(text)) return { family: 'wine-red', en: 'wine red' };
+    return null;
+  }
+
   function normalizeColorStyleIntent(prompt) {
     var text = String(prompt || '').toLowerCase();
+    var forcedPalette = detectSpecificPaletteFamily(text);
     var map = getColorStyleMap();
     var colors = [];
     var styles = [];
@@ -593,6 +611,10 @@
       seenStyles[key] = true;
       return true;
     });
+    if (forcedPalette) {
+      uniqueColors = uniqueColors.filter(function (item) { return item.family !== forcedPalette.family; });
+      uniqueColors.unshift({ family: forcedPalette.family, en: forcedPalette.en, source: 'specific-palette' });
+    }
     return {
       colors: uniqueColors,
       styles: uniqueStyles,
@@ -621,7 +643,7 @@
         '--lb-focus-ring',
         '--lb-btn-group-active-bg'
       ],
-      rule: 'The requested palette family is mandatory. The primary/action tokens must visibly belong to this family. Do not copy or preserve the currently loaded theme colors unless explicitly requested.'
+      rule: 'The requested palette family and variant are mandatory. The primary/action tokens must visibly belong to this exact variant (for example warm cream must look cream/ivory, not brown; mint green must not collapse to generic green). Do not copy or preserve the currently loaded theme colors unless explicitly requested.'
     };
   }
 
@@ -811,10 +833,12 @@
       request.intent = 'create-new-theme';
       request.priority_rules = [
         'User color/style is mandatory and outranks any loaded theme.',
-        'Primary/action tokens must visibly use the requested palette family from palette_directive.family. For example, brown means brown/beige/earth accent colors, not blue or green.',
+        'Primary/action tokens must visibly use the requested palette family and variant from palette_directive.family. For example warm cream means cream/ivory/champagne accents, not generic brown; mint/forest/fresh green must stay visually different.',
         'Do not copy or preserve the currently loaded theme colors unless the user explicitly asks for that.',
         'Return compact JSON. Prefer meta + tokens + optional wallpaper/custom_css/import_meta. Do not include full CSS or component catalog unless needed.',
-        'Use readable contrast after applying the requested palette.'
+        'Use readable contrast after applying the requested palette.',
+        'Do not create inner table separators by default. If table cell lines are not explicitly requested, keep --lb-table-cell-border-width at 0px; the outer table border is separate.',
+        'For button groups, hover is a simple color state: always use the same text color as active (--lb-btn-group-active-text) for --lb-btn-group-hover-text unless the user explicitly requests another hover text color. Do not create separate hover border or hover shadow for button groups.'
       ];
       request.output_size_policy = { compact: true, prefer_roots: ['meta', 'tokens', 'wallpaper', 'custom_css', 'import_meta'], avoid_roots: ['css', 'components', 'design'] };
       request.available_tokens_hint = compactAvailableTokens(context, selection, task);
@@ -827,7 +851,8 @@
       request.token_values = pickTokenValues(selectedAndRelated, currentValues);
       request.priority_rules = [
         'Change only selected/related tokens. Return compact JSON with tokens only.',
-        'Respect explicit color/state request; do not redesign the whole theme.'
+        'Respect explicit color/state request; do not redesign the whole theme.',
+        'For button groups, keep hover text on the active text color by default; do not add separate button-group hover border or shadow.'
       ];
       request.output_size_policy = { compact: true, prefer_roots: ['tokens'], avoid_roots: ['css', 'components', 'design'] };
       // Related tokens are already part of selection; do not repeat a large global token list.
