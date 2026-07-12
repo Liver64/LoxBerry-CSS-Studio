@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  // V287: Embedded Preview/Documentation now use the shared Core renderer via cssframework.cgi.
+
   var coreTokens = window.CFW_CORE_TOKENS || {};
   var coreData = window.CFW_CORE_DATA || {};
   var userThemes = Array.isArray(window.CFW_USER_THEMES) ? window.CFW_USER_THEMES : [];
@@ -2734,13 +2736,24 @@
     return theme && theme.id ? theme.id : '';
   }
 
+  function embeddedRendererSrc(tabName) {
+    var page = tabName === 'preview' ? 'preview' : (tabName === 'documentation' ? 'help' : '');
+    if (!page) return '';
+    var src = '/admin/plugins/cssframework/cssframework.cgi?page=' + encodeURIComponent(page);
+    var themeId = currentStudioThemeId();
+    if (themeId) src += '&theme=' + encodeURIComponent(themeId);
+    return src;
+  }
+
   function refreshEmbeddedFrame(tabName) {
     var frame = tabName === 'preview' ? document.getElementById('cfwPreviewFrame') : (tabName === 'documentation' ? document.getElementById('cfwHelpFrame') : null);
     if (!frame) return;
-    var nextSrc = tabName === 'preview' ? '/admin/plugins/cssframework/preview.cgi' : '/admin/plugins/cssframework/help.cgi';
+    var nextSrc = embeddedRendererSrc(tabName);
+    if (!nextSrc) return;
     if (frame.getAttribute('src') !== nextSrc) frame.setAttribute('src', nextSrc);
     if (tabName === 'preview') {
       setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 80);
+      setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 260);
     }
   }
 
@@ -3990,9 +4003,15 @@
       if (themeId) themeId.value = '';
       updateLiquidGlassWallpaperEditorMode();
       updateWallpaperControlVisibility();
+      refreshEmbeddedFrame('preview');
+      refreshEmbeddedFrame('documentation');
       return;
     }
     loadUserThemeByIndex(userThemeSelect.value);
+    window.setTimeout(function () {
+      refreshEmbeddedFrame('preview');
+      refreshEmbeddedFrame('documentation');
+    }, 120);
   });
   if (selectedComponentCard) {
     selectedComponentCard.setAttribute('title', tx('inspector.selectedCardTitle'));

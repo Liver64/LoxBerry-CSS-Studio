@@ -107,7 +107,44 @@ restore_dir() {
     return 0
 }
 
-restore_data_without_docs() {
+restore_config_themes_incremental() {
+    SRC="$1"
+    DST="$2"
+
+    echo "<INFO> Restoring theme JSON incrementally"
+    echo "<INFO> Source: $SRC"
+    echo "<INFO> Target: $DST"
+
+    if [ ! -d "$SRC" ]; then
+        echo "<INFO> No theme JSON backup found"
+        return 0
+    fi
+
+    mkdir -p "$DST"
+
+    FOUND=0
+    find "$SRC" -maxdepth 1 -type f -name 'theme-user-*.json' -print | while IFS= read -r JSONFILE; do
+        FOUND=1
+        BASENAME="$(basename "$JSONFILE")"
+        TARGET="$DST/$BASENAME"
+
+        # Theme JSON is user-editable Studio state. The backed-up version wins
+        # over the freshly installed seed JSON to avoid losing user changes.
+        if cp -p "$JSONFILE" "$TARGET"; then
+            echo "<OK> Restored user theme JSON: $BASENAME"
+        else
+            echo "<WARNING> Could not restore user theme JSON: $BASENAME"
+        fi
+    done
+
+    if [ "$FOUND" -eq 0 ]; then
+        echo "<INFO> No user theme JSON files found in backup"
+    fi
+
+    return 0
+}
+
+restore_config_incremental() {
     SRC="$1"
     DST="$2"
     LABEL="$3"
@@ -119,10 +156,10 @@ restore_data_without_docs() {
         return 0
     fi
 
-    echo "<INFO> Restoring $LABEL"
+    echo "<INFO> Restoring $LABEL incrementally"
     echo "<INFO> Source: $SRC"
     echo "<INFO> Target: $DST"
-    echo "<INFO> Documentation folder 'docs' is not restored to keep the upgraded documentation"
+    echo "<INFO> Package support data such as translations is kept from the upgraded package"
 
     mkdir -p "$DST"
 
@@ -131,17 +168,167 @@ restore_data_without_docs() {
 
     for ITEM in "$SRC"/* "$SRC"/.[!.]* "$SRC"/..?*; do
         [ -e "$ITEM" ] || continue
-
         NAME="$(basename "$ITEM")"
 
-        if [ "$NAME" = "docs" ]; then
-            echo "<INFO> Skipping upgraded documentation folder: $ITEM"
+        case "$NAME" in
+            translations)
+                echo "<INFO> Skipping package translation helper data: $ITEM"
+                continue
+                ;;
+            themes)
+                restore_config_themes_incremental "$ITEM" "$DST/themes"
+                COPIED=1
+                continue
+                ;;
+            manifests)
+                # Manifests are generated/user-state metadata. Preserve them.
+                mkdir -p "$DST/manifests"
+                if cp -p -r "$ITEM/." "$DST/manifests/"; then
+                    echo "<OK> Restored theme manifests"
+                    COPIED=1
+                else
+                    echo "<WARNING> Could not restore theme manifests"
+                    FAILED=1
+                fi
+                continue
+                ;;
+        esac
+
+        # Unknown config items are treated as user data and restored.
+        if cp -p -r "$ITEM" "$DST"/; then
+            echo "<OK> Restored config item: $NAME"
+            COPIED=1
+        else
+            echo "<WARNING> Could not restore config item: $NAME"
+            FAILED=1
+        fi
+    done
+
+    if [ "$FAILED" -eq 0 ]; then
+        echo "<OK> Restore completed: $LABEL"
+    else
+        echo "<WARNING> Restore finished with warnings: $LABEL"
+    fi
+
+    if [ "$COPIED" -eq 0 ]; then
+        echo "<INFO> No config files restored for: $LABEL"
+    fi
+
+    echo "<INFO> Finished restore step: $LABEL"
+    return 0
+}
+
+restore_theme_master_incremental() {
+    SRC="$1"
+    DST="$2"
+
+    echo "<INFO> Restoring theme master incrementally"
+    echo "<INFO> Source: $SRC"
+    echo "<INFO> Target: $DST"
+
+    if [ ! -d "$SRC" ]; then
+        echo "<INFO> No theme master backup found"
+        return 0
+    fi
+
+    mkdir -p "$DST"
+
+    # CSS user themes are generated/user-editable output. Preserve them.
+    # Exception: Liquid Glass CSS is package-owned/protected. Keep the freshly
+    # installed package version, but restore its user wallpaper assets below.
+    find "$SRC" -maxdepth 1 -type f -name 'theme-user-*.css' -print | while IFS= read -r CSSFILE; do
+        BASENAME="$(basename "$CSSFILE")"
+        TARGET="$DST/$BASENAME"
+
+        if [ "$BASENAME" = "theme-user-liquid-glass.css" ]; then
+            echo "<INFO> Keeping upgraded protected package theme CSS: $BASENAME"
             continue
         fi
 
-        if cp -p -v -r "$ITEM" "$DST"/; then
+        if cp -p "$CSSFILE" "$TARGET"; then
+            echo "<OK> Restored user theme CSS: $BASENAME"
+        else
+            echo "<WARNING> Could not restore user theme CSS: $BASENAME"
+        fi
+    done
+
+    # If old installations accidentally stored JSON in data/themes, migrate it
+    # back to the editable config theme store instead of keeping JSON in data.
+    if find "$SRC" -maxdepth 1 -type f -name 'theme-user-*.json' -print -quit | grep -q .; then
+        mkdir -p "$PCONFIG/themes"
+        find "$SRC" -maxdepth 1 -type f -name 'theme-user-*.json' -print | while IFS= read -r JSONFILE; do
+            BASENAME="$(basename "$JSONFILE")"
+            if [ -f "$PCONFIG/themes/$BASENAME" ]; then
+                echo "<INFO> Config theme JSON already restored: $BASENAME"
+            elif cp -p "$JSONFILE" "$PCONFIG/themes/$BASENAME"; then
+                echo "<OK> Migrated legacy data theme JSON to config: $BASENAME"
+            else
+                echo "<WARNING> Could not migrate legacy data theme JSON: $BASENAME"
+            fi
+        done
+    fi
+
+    # Assets are user data. This intentionally preserves custom wallpapers and
+    # generated assets, including Liquid Glass wallpaper-only changes.
+    if [ -d "$SRC/assets" ]; then
+        mkdir -p "$DST/assets"
+        if cp -p -r "$SRC/assets/." "$DST/assets/"; then
+            echo "<OK> Restored user theme assets"
+        else
+            echo "<WARNING> Theme asset restore finished with warnings"
+        fi
+    else
+        echo "<INFO> No theme assets found in backup"
+    fi
+
+    echo "<INFO> Finished restore step: theme master"
+    return 0
+}
+
+restore_data_incremental() {
+    SRC="$1"
+    DST="$2"
+    LABEL="$3"
+
+    if [ ! -d "$SRC" ]; then
+        echo "<INFO> Skipping missing backup folder: $SRC"
+        echo "<INFO> Restore skipped: $LABEL"
+        echo "<INFO> Finished restore step: $LABEL"
+        return 0
+    fi
+
+    echo "<INFO> Restoring $LABEL incrementally"
+    echo "<INFO> Source: $SRC"
+    echo "<INFO> Target: $DST"
+    echo "<INFO> Package folders docs/schema/templates are kept from the upgraded package"
+
+    mkdir -p "$DST"
+
+    FAILED=0
+    COPIED=0
+
+    for ITEM in "$SRC"/* "$SRC"/.[!.]* "$SRC"/..?*; do
+        [ -e "$ITEM" ] || continue
+        NAME="$(basename "$ITEM")"
+
+        case "$NAME" in
+            docs|schema|templates)
+                echo "<INFO> Skipping upgraded package data folder: $NAME"
+                continue
+                ;;
+            themes)
+                restore_theme_master_incremental "$ITEM" "$DST/themes"
+                COPIED=1
+                continue
+                ;;
+        esac
+
+        # Unknown data folders/files are treated as user data and restored.
+        if cp -p -r "$ITEM" "$DST"/; then
+            echo "<OK> Restored data item: $NAME"
             COPIED=1
         else
+            echo "<WARNING> Could not restore data item: $NAME"
             FAILED=1
         fi
     done
@@ -179,32 +366,9 @@ keep_backup_only() {
 }
 
 migrate_legacy_config_theme_json() {
-    echo "<INFO> Migrating legacy config theme JSON files"
-    echo "<INFO> Legacy source: $LEGACY_CONFIG_THEMES"
-    echo "<INFO> Theme master: $THEME_MASTER"
-
-    mkdir -p "$THEME_MASTER"
-
-    if [ ! -d "$LEGACY_CONFIG_THEMES" ]; then
-        echo "<INFO> No legacy config theme folder found"
-        echo "<INFO> Finished migration step: legacy config theme JSON files"
-        return 0
-    fi
-
-    FOUND=0
-    find "$LEGACY_CONFIG_THEMES" -maxdepth 1 -type f -name 'theme-user-*.json' -print | while IFS= read -r JSONFILE; do
-        FOUND=1
-        BASENAME="$(basename "$JSONFILE")"
-        TARGET="$THEME_MASTER/$BASENAME"
-        if [ -f "$TARGET" ]; then
-            echo "<INFO> Keeping existing data theme JSON: $BASENAME"
-        elif cp -p "$JSONFILE" "$TARGET"; then
-            echo "<OK> Migrated theme JSON to data: $BASENAME"
-        else
-            echo "<WARNING> Could not migrate theme JSON: $BASENAME"
-        fi
-    done
-
+    echo "<INFO> Skipping obsolete config-to-data JSON migration"
+    echo "<INFO> Theme JSON belongs to config/plugins/$PDIR/themes"
+    echo "<INFO> Theme CSS/assets belong to data/plugins/$PDIR/themes"
     echo "<INFO> Finished migration step: legacy config theme JSON files"
     return 0
 }
@@ -296,18 +460,18 @@ echo "<INFO> Restoring persistent CSS Framework / Design Studio data"
 #   /tmp/<PTEMPDIR>_upgrade/config/<PDIR>/
 # Restore target:
 #   $LBPCONFIG/<PDIR>/
-restore_dir "$BACKUP_BASE/config/$PDIR" \
-            "$PCONFIG" \
-            "plugin configuration"
+restore_config_incremental "$BACKUP_BASE/config/$PDIR" \
+                           "$PCONFIG" \
+                           "plugin configuration"
 
 # Restore plugin data, but keep upgraded documentation.
 # Backup source:
 #   /tmp/<PTEMPDIR>_upgrade/data/<PDIR>/
 # Restore target:
 #   $LBPDATA/<PDIR>/
-restore_data_without_docs "$BACKUP_BASE/data/$PDIR" \
-                          "$PDATA" \
-                          "plugin data"
+restore_data_incremental "$BACKUP_BASE/data/$PDIR" \
+                         "$PDATA" \
+                         "plugin data"
 
 echo "<INFO> Migrating theme storage to data/plugins/$PDIR/themes"
 migrate_legacy_config_theme_json
