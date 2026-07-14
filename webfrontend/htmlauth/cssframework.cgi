@@ -81,6 +81,20 @@ sub cssframework_candidate_html_dirs {
 	return @unique;
 }
 
+sub cssframework_optional_liquid_glass_runtime {
+	my $relative_file = 'plugins/cssframework/js/liquid-glass/lb-liquid-glass-preview.js';
+
+	foreach my $htmlroot (cssframework_candidate_html_dirs()) {
+		my $runtime_file = "$htmlroot/$relative_file";
+		next if ! -f $runtime_file;
+
+		return "\t<script src='/plugins/cssframework/js/liquid-glass/lb-liquid-glass-preview.js' defer></script>";
+	}
+
+	return '';
+}
+
+
 sub cssframework_find_first_dir {
 	my (@relative_paths) = @_;
 
@@ -404,6 +418,7 @@ my $core_theme_options = cssframework_theme_options(
 	@core_themes
 );
 my $plugin_theme_links = cssframework_theme_links('/admin/plugins/cssframework/theme-file.cgi', @plugin_user_themes);
+my $optional_liquid_glass_runtime = cssframework_optional_liquid_glass_runtime();
 my $plugin_theme_options = cssframework_theme_options(
 	$lang,
 	'Keine Plugin-Themes gefunden',
@@ -448,6 +463,8 @@ close($fh);
 $content =~ s/__LB_CURRENT_THEME_CLASS__/$current_theme_class/g;
 $content =~ s/__LB_CORE_THEME_LINKS__/$core_theme_links/g;
 $content =~ s/__LB_PLUGIN_THEME_LINKS__/$plugin_theme_links/g;
+$content =~ s/<!--\s*__LB_OPTIONAL_LIQUID_GLASS_RUNTIME__\s*-->/$optional_liquid_glass_runtime/g;
+$content =~ s/__LB_OPTIONAL_LIQUID_GLASS_RUNTIME__/$optional_liquid_glass_runtime/g;
 $content =~ s/__LB_CORE_THEME_OPTIONS__/$core_theme_options/g;
 $content =~ s/__LB_PLUGIN_THEME_OPTIONS__/$plugin_theme_options/g;
 $content =~ s/__LB_THEME_CLASSES_JS__/$theme_classes_js/g;
