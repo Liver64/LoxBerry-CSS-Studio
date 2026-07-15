@@ -352,19 +352,52 @@ sub _clamp_int {
     return $value;
 }
 
-sub _wallpaper_mode {
-    my ($mode) = @_;
-    $mode = defined $mode ? lc("$mode") : 'cover';
-    return $mode if $mode =~ /^(cover|contain|repeat|center)$/;
-    return 'cover';
-}
-
 sub _css_string_escape {
     my ($value) = @_;
     $value = defined $value ? "$value" : '';
     $value =~ s/\\/\\\\/g;
     $value =~ s/"/\\"/g;
     return $value;
+}
+
+# Wallpaper metadata contract for LoxBerry Core.
+# Core may inspect only the CSS header, so these values must remain on one line
+# and must use the canonical stored source path, not the theme-file.cgi URL.
+sub _css_header_value {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/[\r\n]+/ /g;
+    $value =~ s{\*/}{* /}g;
+    $value =~ s/^\s+|\s+$//g;
+    return $value;
+}
+
+sub _sync_wallpaper_header_metadata {
+    my ($css_content, $wallpaper_ref) = @_;
+    $css_content = defined $css_content ? "$css_content" : '';
+
+    # Remove older metadata first, so repeated saves never duplicate markers.
+    $css_content =~ s{^[ \t]*\*?[ \t]*Wallpaper-(?:URL|Brightness|Opacity):[^\r\n]*(?:\r?\n|\z)}{}gim;
+
+    return $css_content
+        if ref($wallpaper_ref) ne 'HASH'
+        || !$wallpaper_ref->{enabled}
+        || !$wallpaper_ref->{image};
+
+    my $image = _css_header_value($wallpaper_ref->{image});
+    my $brightness = _clamp_int($wallpaper_ref->{brightness}, 0, 150, 100);
+    my $opacity = _clamp_int($wallpaper_ref->{opacity}, 0, 100, 100);
+    my $metadata = " * Wallpaper-URL: $image\n";
+    $metadata .= " * Wallpaper-Brightness: $brightness\n";
+    $metadata .= " * Wallpaper-Opacity: $opacity\n";
+
+    # Prefer the first existing CSS header. If none exists, create one.
+    if ($css_content =~ m{\A/\*}) {
+        $css_content =~ s{\*/}{$metadata . "*/"}e;
+        return $css_content;
+    }
+
+    return "/*\n$metadata*/\n\n" . $css_content;
 }
 
 sub _theme_file_url_for_css {
@@ -475,7 +508,6 @@ $wallpaper_image = _write_wallpaper_asset($wallpaper_image, $id) if $wallpaper_i
 my $wallpaper = {
     enabled    => ($wallpaper_src->{enabled} && $wallpaper_image ne '') ? JSON::PP::true : JSON::PP::false,
     image      => $wallpaper_image,
-    mode       => _wallpaper_mode($wallpaper_src->{mode}),
     brightness => _clamp_int($wallpaper_src->{brightness}, 0, 150, 100),
     opacity    => _clamp_int($wallpaper_src->{opacity}, 0, 100, 100),
 };
@@ -485,9 +517,6 @@ sub _wallpaper_css_block {
     return '' if ref($wallpaper_ref) ne 'HASH' || !$wallpaper_ref->{enabled} || !$wallpaper_ref->{image};
 
     my $img = _css_string_escape(_theme_file_url_for_css($wallpaper_ref->{image}));
-    my $mode = $wallpaper_ref->{mode};
-    my $size = $mode eq 'contain' ? 'contain' : ($mode eq 'repeat' ? 'auto' : 'cover');
-    my $repeat = $mode eq 'repeat' ? 'repeat' : 'no-repeat';
     my $opacity = sprintf('%.2f', $wallpaper_ref->{opacity} / 100);
     my $brightness = sprintf('%.2f', $wallpaper_ref->{brightness} / 100);
 
@@ -503,8 +532,8 @@ sub _wallpaper_css_block {
     $block .= "  inset: 0;\n";
     $block .= "  pointer-events: none;\n";
     $block .= "  background-image: url(\"$img\");\n";
-    $block .= "  background-size: $size;\n";
-    $block .= "  background-repeat: $repeat;\n";
+    $block .= "  background-size: cover;\n";
+    $block .= "  background-repeat: no-repeat;\n";
     $block .= "  background-position: center center;\n";
     $block .= "  opacity: $opacity;\n";
     $block .= "  filter: brightness($brightness);\n";
@@ -591,6 +620,10 @@ sub _save_protected_wallpaper_only {
         }
     }
 
+    # V302: Keep the protected package theme compatible with the same CSS-only
+    # wallpaper detection contract as normal Studio-generated themes.
+    $css_content = _sync_wallpaper_header_metadata($css_content, $wallpaper_ref);
+
     my $fh;
     if (!open($fh, '>:encoding(UTF-8)', $css_path)) {
         _respond('500 Internal Server Error', _error_payload('cannotWriteFile', 'cannotWriteFile', { path => $css_path }));
@@ -611,7 +644,7 @@ sub _save_protected_wallpaper_only {
         import_meta              => undef,
         wallpaper                => $wallpaper_ref,
         protected_wallpaper_only => JSON::PP::true,
-        studio_version           => 'V263_LiquidGlassWallpaperCanonicalPath',
+        studio_version           => 'V302_WallpaperHeaderCoreContract',
         updated_at               => strftime('%Y-%m-%dT%H:%M:%S%z', localtime),
     };
 
@@ -733,7 +766,7 @@ my $editable = {
     import_meta  => $import_meta,
     wallpaper    => $wallpaper,
     studio       => { generator => 'CSS-Studio' },
-    studio_version => ($data->{studio_version} || 'V39_HybridImportTokensPlusCustomCss'),
+    studio_version => ($data->{studio_version} || 'V302_WallpaperHeaderCoreContract'),
 };
 
 my $css = "/*\n";
@@ -743,6 +776,12 @@ $css .= " * Plugin folder: cssframework\n";
 $css .= " * Theme: $name ($id)\n";
 $css .= " * Source-JSON: config/plugins/cssframework/themes/$id.json\n";
 $css .= " * Runtime scope: body.$id / .$id\n";
+if ($wallpaper->{enabled} && $wallpaper->{image}) {
+    my $wallpaper_header_image = _css_header_value($wallpaper->{image});
+    $css .= " * Wallpaper-URL: $wallpaper_header_image\n";
+    $css .= " * Wallpaper-Brightness: $wallpaper->{brightness}\n";
+    $css .= " * Wallpaper-Opacity: $wallpaper->{opacity}\n";
+}
 $css .= " */\n\n";
 $css .= "body.$id,\n.$id {\n";
 for my $token (sort keys %clean_tokens) {
@@ -757,9 +796,6 @@ $css .= "/* USER CUSTOM CSS START */\n" . $custom_css . "\n/* USER CUSTOM CSS EN
 # stays authoritative; the wallpaper is layered behind page content.
 if ($wallpaper->{enabled}) {
     my $img = _css_string_escape(_theme_file_url_for_css($wallpaper->{image}));
-    my $mode = $wallpaper->{mode};
-    my $size = $mode eq 'contain' ? 'contain' : ($mode eq 'repeat' ? 'auto' : 'cover');
-    my $repeat = $mode eq 'repeat' ? 'repeat' : 'no-repeat';
     my $opacity = sprintf('%.2f', $wallpaper->{opacity} / 100);
     my $brightness = sprintf('%.2f', $wallpaper->{brightness} / 100);
     $css .= "\n/* DESIGN STUDIO WALLPAPER START */\n";
@@ -774,8 +810,8 @@ if ($wallpaper->{enabled}) {
     $css .= "  inset: 0;\n";
     $css .= "  pointer-events: none;\n";
     $css .= "  background-image: url(\"$img\");\n";
-    $css .= "  background-size: $size;\n";
-    $css .= "  background-repeat: $repeat;\n";
+    $css .= "  background-size: cover;\n";
+    $css .= "  background-repeat: no-repeat;\n";
     $css .= "  background-position: center center;\n";
     $css .= "  opacity: $opacity;\n";
     $css .= "  filter: brightness($brightness);\n";
@@ -1178,6 +1214,41 @@ $css .= "}\n";
 $css .= "body.$id .lb-tooltip, body.$id [role=tooltip], .$id .lb-tooltip, .$id [role=tooltip] {\n";
 $css .= "  background-color: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;\n";
 $css .= "  color: var(--lb-tooltip-text, var(--lb-sidebar-text, #fff)) !important;\n";
+$css .= "}\n";
+# V308: Reliable dropdown indicators.
+# Do not redraw native selects with background gradients. Core and legacy
+# rules may replace background-image. Restore the platform menulist for raw
+# single-choice selects. jQuery Mobile renders its own button, so give that
+# visible wrapper one deterministic caret.
+$css .= "/* V308: Reliable native and jQuery Mobile dropdown indicators. */\n";
+$css .= "body.$id select:not([multiple]):not([size]), body.$id select:not([multiple])[size=\"0\"], body.$id select:not([multiple])[size=\"1\"],\n";
+$css .= ".$id select:not([multiple]):not([size]), .$id select:not([multiple])[size=\"0\"], .$id select:not([multiple])[size=\"1\"] {\n";
+$css .= "  -webkit-appearance: menulist !important;\n";
+$css .= "  -moz-appearance: menulist !important;\n";
+$css .= "  appearance: auto !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-select .ui-btn, .$id .ui-select .ui-btn {\n";
+$css .= "  position: relative !important;\n";
+$css .= "  padding-right: 36px !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-select .ui-btn::after, .$id .ui-select .ui-btn::after {\n";
+$css .= "  content: \"\" !important;\n";
+$css .= "  position: absolute !important;\n";
+$css .= "  top: 50% !important;\n";
+$css .= "  right: 14px !important;\n";
+$css .= "  left: auto !important;\n";
+$css .= "  width: 0 !important;\n";
+$css .= "  height: 0 !important;\n";
+$css .= "  margin: -2px 0 0 0 !important;\n";
+$css .= "  border-left: 5px solid transparent !important;\n";
+$css .= "  border-right: 5px solid transparent !important;\n";
+$css .= "  border-top: 6px solid currentColor !important;\n";
+$css .= "  border-bottom: 0 !important;\n";
+$css .= "  border-radius: 0 !important;\n";
+$css .= "  background: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  opacity: .82 !important;\n";
+$css .= "  pointer-events: none !important;\n";
 $css .= "}\n";
 $css .= "/* DESIGN STUDIO RULES END */\n";
 

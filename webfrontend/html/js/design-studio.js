@@ -49,7 +49,6 @@
   var wallpaperFile = document.getElementById('wallpaperFile');
   var wallpaperFileButton = document.getElementById('wallpaperFileButton');
   var wallpaperFileName = document.getElementById('wallpaperFileName');
-  var wallpaperMode = document.getElementById('wallpaperMode');
   var wallpaperBrightness = document.getElementById('wallpaperBrightness');
   var wallpaperOpacity = document.getElementById('wallpaperOpacity');
   var wallpaperBrightnessValue = document.getElementById('wallpaperBrightnessValue');
@@ -126,7 +125,7 @@
   var previewHoverCard = null;
   var previewHoverTarget = null;
   var appliedPreviewVars = [];
-  var wallpaperState = { enabled: false, image: '', mode: 'cover', brightness: 100, opacity: 100 };
+  var wallpaperState = { enabled: false, image: '', brightness: 100, opacity: 100 };
 
   var i18nLanguage = (window.CFW_LANGUAGE || window.LBLANG || 'en').toLowerCase().indexOf('de') === 0 ? 'de' : 'en';
   var i18nDictionary = (window.LBDesignStudioLangs && (window.LBDesignStudioLangs[i18nLanguage] || window.LBDesignStudioLangs.de || window.LBDesignStudioLangs.en)) || {};
@@ -1338,11 +1337,6 @@
     updateLabels();
   }
 
-  function normalizeWallpaperMode(value) {
-    value = String(value || 'cover').toLowerCase();
-    return ['cover', 'contain', 'repeat', 'center'].indexOf(value) >= 0 ? value : 'cover';
-  }
-
   function isBackgroundWallpaperEditable() {
     // V139: Wallpaper Editor is contextual. Show it only after the user
     // explicitly selects the real background target.
@@ -1350,19 +1344,17 @@
   }
 
   function syncWallpaperStateFromControls() {
-    if (!wallpaperEnabled || !wallpaperImage || !wallpaperMode || !wallpaperBrightness || !wallpaperOpacity) return;
+    if (!wallpaperEnabled || !wallpaperImage || !wallpaperBrightness || !wallpaperOpacity) return;
     wallpaperState.enabled = !!wallpaperEnabled.checked;
     wallpaperState.image = String(wallpaperImage.value || '').trim();
-    wallpaperState.mode = normalizeWallpaperMode(wallpaperMode.value);
     wallpaperState.brightness = clamp(parseInt(wallpaperBrightness.value || '100', 10), 0, 150);
     wallpaperState.opacity = clamp(parseInt(wallpaperOpacity.value || '100', 10), 0, 100);
   }
 
   function loadWallpaperStateToControls() {
-    if (!wallpaperEnabled || !wallpaperImage || !wallpaperMode || !wallpaperBrightness || !wallpaperOpacity) return;
+    if (!wallpaperEnabled || !wallpaperImage || !wallpaperBrightness || !wallpaperOpacity) return;
     wallpaperEnabled.checked = !!wallpaperState.enabled;
     wallpaperImage.value = wallpaperState.image || '';
-    wallpaperMode.value = normalizeWallpaperMode(wallpaperState.mode);
     wallpaperBrightness.value = wallpaperState.brightness == null ? 100 : wallpaperState.brightness;
     wallpaperOpacity.value = wallpaperState.opacity == null ? 100 : wallpaperState.opacity;
   }
@@ -1452,7 +1444,6 @@
     return {
       enabled: !!wallpaperState.enabled,
       image: normalizeWallpaperImageForPayload(wallpaperState.image || ''),
-      mode: normalizeWallpaperMode(wallpaperState.mode),
       brightness: clamp(parseInt(wallpaperState.brightness == null ? 100 : wallpaperState.brightness, 10), 0, 150),
       opacity: clamp(parseInt(wallpaperState.opacity == null ? 100 : wallpaperState.opacity, 10), 0, 100)
     };
@@ -1467,8 +1458,8 @@
       previewRoot.style.setProperty('--cfw-wallpaper-image', 'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")');
       previewRoot.style.setProperty('--cfw-wallpaper-opacity', String(wallpaper.opacity / 100));
       previewRoot.style.setProperty('--cfw-wallpaper-brightness', String(wallpaper.brightness / 100));
-      previewRoot.style.setProperty('--cfw-wallpaper-size', wallpaper.mode === 'contain' ? 'contain' : (wallpaper.mode === 'repeat' || wallpaper.mode === 'center' ? 'auto' : 'cover'));
-      previewRoot.style.setProperty('--cfw-wallpaper-repeat', wallpaper.mode === 'repeat' ? 'repeat' : 'no-repeat');
+      previewRoot.style.setProperty('--cfw-wallpaper-size', 'cover');
+      previewRoot.style.setProperty('--cfw-wallpaper-repeat', 'no-repeat');
       previewRoot.style.setProperty('--cfw-wallpaper-position', 'center center');
     } else {
       previewRoot.style.removeProperty('--cfw-wallpaper-image');
@@ -1485,7 +1476,6 @@
     wallpaperState = {
       enabled: !!(wallpaper && wallpaper.enabled),
       image: wallpaper && wallpaper.image ? String(wallpaper.image) : '',
-      mode: normalizeWallpaperMode(wallpaper && wallpaper.mode),
       brightness: clamp(parseInt(wallpaper && wallpaper.brightness != null ? wallpaper.brightness : 100, 10), 0, 150),
       opacity: clamp(parseInt(wallpaper && wallpaper.opacity != null ? wallpaper.opacity : 100, 10), 0, 100)
     };
@@ -1538,7 +1528,7 @@
       aiImportedCss: aiImportedCss || '',
       customCssValue: customCss ? (customCss.value || '') : '',
       lastImportMeta: cloneStudioObject(lastImportMeta || null),
-      wallpaperState: cloneStudioObject(wallpaperState || { enabled: false, image: '', mode: 'cover', brightness: 100, opacity: 100 }),
+      wallpaperState: cloneStudioObject(wallpaperState || { enabled: false, image: '', brightness: 100, opacity: 100 }),
       themeIdValue: themeId ? (themeId.value || '') : '',
       themeNameValue: themeName ? (themeName.value || '') : '',
       themeVersionValue: themeVersion ? (themeVersion.value || '') : ''
@@ -1565,7 +1555,7 @@
     aiImportedTokens = cloneStudioObject(snapshot.aiImportedTokens || {});
     aiImportedCss = snapshot.aiImportedCss || '';
     lastImportMeta = cloneStudioObject(snapshot.lastImportMeta || null);
-    wallpaperState = cloneStudioObject(snapshot.wallpaperState || { enabled: false, image: '', mode: 'cover', brightness: 100, opacity: 100 });
+    wallpaperState = cloneStudioObject(snapshot.wallpaperState || { enabled: false, image: '', brightness: 100, opacity: 100 });
 
     if (themeId) themeId.value = snapshot.themeIdValue || '';
     if (themeName) themeName.value = snapshot.themeNameValue || '';
@@ -1888,6 +1878,19 @@
       '--cfw-preview-card-bg',
       '--cfw-preview-card-text',
       '--cfw-preview-card-border',
+      '--cfw-preview-shell-radius',
+      '--cfw-preview-header-radius',
+      '--cfw-preview-card-radius',
+      '--cfw-preview-input-radius',
+      '--cfw-preview-select-radius',
+      '--cfw-preview-textarea-radius',
+      '--cfw-preview-button-radius',
+      '--cfw-preview-btn-group-radius',
+      '--cfw-preview-table-radius',
+      '--cfw-preview-sidebar-link-radius',
+      '--cfw-preview-dialog-radius',
+      '--cfw-preview-checkbox-radius',
+      '--cfw-preview-badge-radius',
       '--cfw-preview-input-bg',
       '--cfw-preview-input-text',
       '--cfw-preview-input-border',
@@ -1957,6 +1960,30 @@
     return '';
   }
 
+  function isZeroRadiusValue(value) {
+    value = String(value == null ? '' : value).trim().toLowerCase();
+    return /^(?:0|0\.0+)(?:px|rem|em|%|vh|vw)?$/.test(value);
+  }
+
+  function hasSquareRadiusTokenContract(tokens) {
+    tokens = tokens || {};
+    var resolved = [
+      firstResolvedToken(tokens, ['--lb-radius-card', '--lb-card-radius', '--lb-radius', '--lb-radius-sm']),
+      firstResolvedToken(tokens, ['--lb-radius-button', '--lb-btn-radius', '--lb-radius-sm', '--lb-radius']),
+      firstResolvedToken(tokens, ['--lb-input-radius', '--lb-radius-input', '--lb-radius-sm', '--lb-radius']),
+      firstResolvedToken(tokens, ['--lb-table-radius', '--lb-radius-table', '--lb-radius-card', '--lb-radius'])
+    ].filter(function (value) { return String(value || '').trim() !== ''; });
+    return resolved.length >= 3 && resolved.every(isZeroRadiusValue);
+  }
+
+  function previewRadiusValue(tokens, names) {
+    // V305: The complete zero-radius token contract is authoritative for the
+    // preview. This also works for loaded/saved user themes and cannot be
+    // polluted by an older prompt that still happens to be visible in the AI tab.
+    if (hasSquareRadiusTokenContract(tokens)) return '0px';
+    return firstResolvedToken(tokens, names);
+  }
+
   function derivedSliderActiveColor(tokens) {
     tokens = tokens || {};
     // V225/V228: Slider fallbacks are derived from the loaded/generated theme
@@ -2013,6 +2040,23 @@
       '--cfw-preview-card-bg': tokens['--lb-card-bg'] || tokens['--lb-note-bg'] || tokens['--lb-glass-bg'],
       '--cfw-preview-card-text': tokens['--lb-card-text'] || tokens['--lb-text'],
       '--cfw-preview-card-border': tokens['--lb-card-border'] || tokens['--lb-border'] || tokens['--lb-border-color'],
+      // V305: Radius bridge variables are resolved only from the effective
+      // preview theme. This prevents radius aliases inherited from the active
+      // LoxBerry/Core theme from keeping Studio controls rounded when an AI or
+      // imported user theme explicitly requests square corners.
+      '--cfw-preview-shell-radius': previewRadiusValue(tokens, ['--lb-radius-card', '--lb-card-radius', '--lb-radius', '--lb-radius-sm']),
+      '--cfw-preview-header-radius': previewRadiusValue(tokens, ['--lb-header-radius', '--lb-radius-card', '--lb-card-radius', '--lb-radius', '--lb-radius-sm']),
+      '--cfw-preview-card-radius': previewRadiusValue(tokens, ['--lb-radius-card', '--lb-card-radius', '--lb-radius', '--lb-radius-sm']),
+      '--cfw-preview-input-radius': previewRadiusValue(tokens, ['--lb-input-radius', '--lb-radius-input', '--lb-radius-sm', '--lb-radius']),
+      '--cfw-preview-select-radius': previewRadiusValue(tokens, ['--lb-select-radius', '--lb-radius-select', '--lb-input-radius', '--lb-radius-input', '--lb-radius-sm', '--lb-radius']),
+      '--cfw-preview-textarea-radius': previewRadiusValue(tokens, ['--lb-textarea-radius', '--lb-input-radius', '--lb-radius-input', '--lb-radius-sm', '--lb-radius']),
+      '--cfw-preview-button-radius': previewRadiusValue(tokens, ['--lb-radius-button', '--lb-btn-radius', '--lb-radius-sm', '--lb-radius']),
+      '--cfw-preview-btn-group-radius': previewRadiusValue(tokens, ['--lb-btn-group-radius', '--lb-btn-group-item-radius', '--lb-radius-button', '--lb-btn-radius', '--lb-radius-sm', '--lb-radius']),
+      '--cfw-preview-table-radius': previewRadiusValue(tokens, ['--lb-table-radius', '--lb-radius-table', '--lb-radius-card', '--lb-card-radius', '--lb-radius', '--lb-radius-sm']),
+      '--cfw-preview-sidebar-link-radius': previewRadiusValue(tokens, ['--lb-sidebar-link-radius', '--lb-radius-sm', '--lb-radius']),
+      '--cfw-preview-dialog-radius': previewRadiusValue(tokens, ['--lb-dialog-radius', '--lb-radius-card', '--lb-card-radius', '--lb-radius', '--lb-radius-sm']),
+      '--cfw-preview-checkbox-radius': previewRadiusValue(tokens, ['--lb-checkbox-radius', '--lb-input-radius', '--lb-radius-input', '--lb-radius-sm', '--lb-radius']),
+      '--cfw-preview-badge-radius': previewRadiusValue(tokens, ['--lb-badge-radius', '--lb-notify-radius', '--lb-validation-radius', '--lb-radius-sm', '--lb-radius']),
       '--cfw-preview-input-bg': tokens['--lb-input-bg'] || tokens['--lb-select-bg'],
       '--cfw-preview-input-text': tokens['--lb-input-text'] || tokens['--lb-text'],
       '--cfw-preview-input-border': tokens['--lb-input-border'] || tokens['--lb-border'] || tokens['--lb-border-color'],
@@ -2374,7 +2418,7 @@
       import_meta: protectedWallpaperOnly ? null : lastImportMeta,
       wallpaper: wallpaperPayload,
       protected_wallpaper_only: protectedWallpaperOnly,
-      studio_version: 'V275_CustomCssMojibakeGuard',
+      studio_version: 'V305_SquarePreviewContract',
       lang: i18nLanguage
     };
     setStatus(tx('messages.savingTheme'), false);
@@ -3072,6 +3116,56 @@
     return detectPaletteFamilyFromText(prompt ? prompt.value : '');
   }
 
+  function detectAiCornerStyleFromText(text) {
+    text = String(text || '').toLowerCase();
+    if (/(?:keine?|ohne|nicht)\s+(?:abgerundet(?:e|en|er|es)?|rund(?:e|en|er|es)?)\b/.test(text) ||
+        /\b(?:eckig(?:e|en|er|es)?|kantig(?:e|en|er|es)?|rechtwinklig(?:e|en|er|es)?|square\s+corners?|sharp\s+corners?|squared|angular)\b/.test(text) ||
+        /(?:\b(?:0|zero)\s*(?:px)?\s*(?:border[- ]?radius|radius|rundung)\b|\b(?:border[- ]?radius|radius|rundung)\s*(?::|=)?\s*(?:0|zero)\s*(?:px)?\b)/.test(text)) return 'square';
+    if (/\b(?:abgerundet(?:e|en|er|es)?|rund(?:e|en|er|es)?\s+(?:karten|kanten|buttons?)|rounded\s+corners?|rounded)\b/.test(text)) return 'rounded';
+    return '';
+  }
+
+  function getCurrentAiCornerStyle() {
+    var reqBox = document.getElementById('aiRequest');
+    if (reqBox && reqBox.value) {
+      try {
+        var req = JSON.parse(reqBox.value);
+        if (req.corner_directive && req.corner_directive.mode) return String(req.corner_directive.mode);
+        if (req.corner_style_direction) return String(req.corner_style_direction);
+        if (req.color_style_direction && req.color_style_direction.corner_style) return String(req.color_style_direction.corner_style);
+        var fromRequest = detectAiCornerStyleFromText(req.user_request || '');
+        if (fromRequest) return fromRequest;
+      } catch (ignore) {}
+    }
+    var prompt = document.getElementById('aiPrompt');
+    return detectAiCornerStyleFromText(prompt ? prompt.value : '');
+  }
+
+  function applyAiCornerStyleGuard(tokens, mode) {
+    if (mode !== 'square') return tokens;
+    // V303: Explicit square/sharp wording is a deterministic contract, not a
+    // suggestion to the model. Structural containers and interactive fields
+    // are forced to 0px after semantic compilation. Inherently circular
+    // controls (radio, toggle knob, slider thumb) intentionally stay untouched.
+    [
+      '--lb-radius', '--lb-radius-sm', '--lb-radius-lg', '--lb-radius-card', '--lb-card-radius',
+      '--lb-header-radius', '--lb-panel-radius', '--lb-note-radius',
+      '--lb-btn-radius', '--lb-radius-button', '--lb-btn-group-radius', '--lb-btn-group-item-radius',
+      '--lb-input-radius', '--lb-radius-input', '--lb-textarea-radius',
+      '--lb-select-radius', '--lb-radius-select',
+      '--lb-table-radius', '--lb-radius-table', '--lb-table-compact-radius',
+      '--lb-sidebar-link-radius', '--lb-dialog-radius', '--lb-modal-radius', '--lb-checkbox-radius',
+      '--lb-badge-radius', '--lb-notify-radius', '--lb-validation-radius'
+    ].forEach(function (name) {
+      // V305: Write the complete square-corner contract unconditionally. The
+      // save backend accepts valid --lb-* properties, and preview/runtime CSS
+      // can therefore use the same aliases even when the current Core token
+      // registry did not expose every specialised radius token yet.
+      tokens[name] = '0px';
+    });
+    return tokens;
+  }
+
   function aiPaletteDefaults(family) {
     var presets = {
       blue: {
@@ -3457,7 +3551,10 @@
     put(['--lb-switch-border'], componentValue(toggle, ['border'], border));
     put(['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'], componentValue(toggle, ['thumb', 'thumb_bg'], '#ffffff'));
 
-    return applyPaletteGuard(out, getCurrentAiPaletteFamily());
+    return applyAiCornerStyleGuard(
+      applyPaletteGuard(out, getCurrentAiPaletteFamily()),
+      getCurrentAiCornerStyle()
+    );
   }
 
   function validateAiDraftObject(draft) {
@@ -3899,7 +3996,7 @@
     undoThemeButton.addEventListener('click', function () { undoLastChange(); });
     updateUndoButton();
   }
-  [colorPicker, alphaRange, brightnessRange, radiusRange, borderWidthRange, shadowRange, customCss, wallpaperEnabled, wallpaperImage, wallpaperMode, wallpaperBrightness, wallpaperOpacity].forEach(bindUndoControl);
+  [colorPicker, alphaRange, brightnessRange, radiusRange, borderWidthRange, shadowRange, customCss, wallpaperEnabled, wallpaperImage, wallpaperBrightness, wallpaperOpacity].forEach(bindUndoControl);
 
   document.getElementById('saveTheme').addEventListener('click', openSaveModal);
   if (deleteThemeButton) deleteThemeButton.addEventListener('click', openDeleteModal);
@@ -3945,7 +4042,7 @@
   if (cssImportButton && cssImport) { cssImportButton.addEventListener('click', function () { cssImport.click(); }); }
   updateCssImportFileName(null);
   if (cssImport) cssImport.addEventListener('change', function () { var file = cssImport.files && cssImport.files[0]; updateCssImportFileName(file); importCss(file); });
-  [wallpaperEnabled, wallpaperImage, wallpaperMode, wallpaperBrightness, wallpaperOpacity].forEach(function (node) {
+  [wallpaperEnabled, wallpaperImage, wallpaperBrightness, wallpaperOpacity].forEach(function (node) {
     if (!node) return;
     node.addEventListener('input', function () { syncWallpaperStateFromControls(); updateWallpaperLabels(); updateWallpaperControlVisibility(); updatePreview(); });
     node.addEventListener('change', function () { syncWallpaperStateFromControls(); updateWallpaperLabels(); updateWallpaperControlVisibility(); updatePreview(); });

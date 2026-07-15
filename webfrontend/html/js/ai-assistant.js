@@ -1,4 +1,4 @@
-/* LoxBerry CSS Framework Design Studio - V66 AI Assistant Integration
+/* LoxBerry CSS Framework Design Studio - V303 AI Assistant Integration
  * Purpose: Puter.js loading/calls and task-specific prompt context.
  * Security stays in ai-guard.js. This file deliberately sends only the
  * information needed for the selected AI task.
@@ -498,6 +498,26 @@
           "rounded"
         ],
         "en": "rounded"
+      },
+      {
+        "de": [
+          "eckig",
+          "eckige kanten",
+          "eckige karten",
+          "eckige buttons",
+          "kantig",
+          "rechtwinklig",
+          "ohne rundung",
+          "ohne rundungen",
+          "keine rundung",
+          "keine rundungen",
+          "nicht abgerundet",
+          "square corners",
+          "sharp corners",
+          "squared",
+          "angular"
+        ],
+        "en": "square corners"
       }
     ]
   };
@@ -534,6 +554,32 @@
     return new RegExp(pattern, 'i').test(text);
   }
 
+  function detectCornerStyleIntent(text) {
+    text = String(text || '').toLowerCase();
+    // Negated rounded wording must win over the generic rounded term. This is
+    // deliberately deterministic so "keine runden Kanten" can never be
+    // interpreted as a request for rounded cards.
+    if (/(?:keine?|ohne|nicht)\s+(?:abgerundet(?:e|en|er|es)?|rund(?:e|en|er|es)?)\b/.test(text) ||
+        /\b(?:eckig(?:e|en|er|es)?|kantig(?:e|en|er|es)?|rechtwinklig(?:e|en|er|es)?|square\s+corners?|sharp\s+corners?|squared|angular)\b/.test(text) ||
+        /(?:\b(?:0|zero)\s*(?:px)?\s*(?:border[- ]?radius|radius|rundung)\b|\b(?:border[- ]?radius|radius|rundung)\s*(?::|=)?\s*(?:0|zero)\s*(?:px)?\b)/.test(text)) {
+      return 'square';
+    }
+    if (/\b(?:abgerundet(?:e|en|er|es)?|rund(?:e|en|er|es)?\s+(?:karten|kanten|buttons?)|rounded\s+corners?|rounded)\b/.test(text)) {
+      return 'rounded';
+    }
+    return '';
+  }
+
+  function normalizeCornerStyles(styles, cornerStyle, source) {
+    styles = (styles || []).filter(function (item) {
+      var value = String((item && item.en) || item || '').toLowerCase();
+      return value !== 'rounded' && value !== 'square corners' && value !== 'sharp corners' && value !== 'square';
+    });
+    if (cornerStyle === 'square') styles.push({ en: 'square corners', source: source || 'corner-intent' });
+    if (cornerStyle === 'rounded') styles.push({ en: 'rounded', source: source || 'corner-intent' });
+    return styles;
+  }
+
   function detectSpecificPaletteFamily(text) {
     text = String(text || '').toLowerCase();
     if (/creme\s*gelb|cremegelb|warm(?:es|e|er)?\s+creme|cremefarben|\bcreme\b|\bcream\b|warm\s+cream|soft\s+cream/.test(text)) return { family: 'cream', en: 'warm cream' };
@@ -553,6 +599,7 @@
 
   function normalizeColorStyleIntent(prompt) {
     var text = String(prompt || '').toLowerCase();
+    var cornerStyle = detectCornerStyleIntent(text);
     var forcedPalette = detectSpecificPaletteFamily(text);
     var map = getColorStyleMap();
     var colors = [];
@@ -605,7 +652,7 @@
       return true;
     });
     var seenStyles = {};
-    var uniqueStyles = styles.filter(function (item) {
+    var uniqueStyles = normalizeCornerStyles(styles, cornerStyle, 'static-corner-intent').filter(function (item) {
       var key = item.en;
       if (!key || seenStyles[key]) return false;
       seenStyles[key] = true;
@@ -618,6 +665,7 @@
     return {
       colors: uniqueColors,
       styles: uniqueStyles,
+      corner_style: cornerStyle,
       primary_family: uniqueColors.length ? uniqueColors[0].family : '',
       normalized_english: unique([].concat(uniqueColors.map(function (c) { return c.en; }), uniqueStyles.map(function (st) { return st.en; }))).join(', ')
     };
@@ -644,6 +692,26 @@
         '--lb-btn-group-active-bg'
       ],
       rule: 'The requested palette family and variant are mandatory. The primary/action tokens must visibly belong to this exact variant (for example warm cream must look cream/ivory, not brown; mint green must not collapse to generic green). Do not copy or preserve the currently loaded theme colors unless explicitly requested.'
+    };
+  }
+
+  function cornerDirective(intent) {
+    var mode = intent && intent.corner_style ? intent.corner_style : '';
+    if (mode !== 'square' && mode !== 'rounded') return null;
+    if (mode === 'square') {
+      return {
+        mode: 'square',
+        required: true,
+        radius: '0px',
+        applies_to: ['layout containers', 'cards', 'buttons', 'button groups', 'inputs', 'selects', 'tables', 'sidebar links', 'dialogs'],
+        excludes: ['radio circles', 'toggle knobs', 'slider thumbs'],
+        rule: 'The user explicitly requested square/sharp corners. Set all structural and interactive border-radius tokens to 0px. Do not return rounded card, button, input, select, table, navigation or dialog corners. Keep inherently circular controls such as radio circles, toggle knobs and slider thumbs functional.'
+      };
+    }
+    return {
+      mode: 'rounded',
+      required: true,
+      rule: 'The user explicitly requested rounded corners. Use consistent readable radii for cards, buttons, inputs, selects, tables, navigation and dialogs.'
     };
   }
 
@@ -694,11 +762,14 @@
       if (typeof item === 'string') return { en: item, source: 'ai-normalizer' };
       return { en: item.en || item.name || '', source: item.source || 'ai-normalizer' };
     }).filter(function (item) { return item.en; });
+    var cornerStyle = detectCornerStyleIntent(originalPrompt);
+    styles = normalizeCornerStyles(styles, cornerStyle, 'static-corner-intent');
     colors = unique(colors.map(function (c) { return JSON.stringify(c); })).map(function (v) { return JSON.parse(v); });
     styles = unique(styles.map(function (st) { return JSON.stringify(st); })).map(function (v) { return JSON.parse(v); });
     return {
       colors: colors,
       styles: styles,
+      corner_style: cornerStyle,
       primary_family: primary || (colors[0] && colors[0].family) || '',
       normalized_english: normalized || unique([].concat(colors.map(function (c) { return c.en || c.family; }), styles.map(function (st) { return st.en; }))).join(', '),
       source: 'ai-normalizer'
@@ -723,7 +794,7 @@
   }
 
   function intentCacheKey(userPrompt, task, staticIntent) {
-    return 'cfw_ai_intent_v73:' + String(task || '') + ':' + String(userPrompt || '').trim().toLowerCase() + ':' + JSON.stringify(staticIntent || {});
+    return 'cfw_ai_intent_v303:' + String(task || '') + ':' + String(userPrompt || '').trim().toLowerCase() + ':' + JSON.stringify(staticIntent || {});
   }
 
   function readIntentCache(key) {
@@ -763,6 +834,10 @@
       .then(function (response) {
         var obj = parseJsonFromText(extractTextFromAiResponse(response));
         var aiIntent = normalizeAiIntentObject(obj, userPrompt);
+        if (staticIntent.corner_style) {
+          aiIntent.corner_style = staticIntent.corner_style;
+          aiIntent.styles = normalizeCornerStyles(aiIntent.styles, staticIntent.corner_style, 'static-corner-intent');
+        }
         if ((aiIntent.colors && aiIntent.colors.length) || (aiIntent.styles && aiIntent.styles.length)) {
           writeIntentCache(cacheKey, aiIntent);
           return aiIntent;
@@ -814,6 +889,8 @@
       color_direction: colorHints,
       color_style_direction: colorIntent,
       palette_directive: paletteDirective(colorIntent),
+      corner_style_direction: colorIntent.corner_style || '',
+      corner_directive: cornerDirective(colorIntent),
       output_contract: {
         format: 'json-only',
         allowed_roots: ['theme', 'design', 'meta', 'tokens', 'effects', 'components', 'custom_css', 'css', 'import_meta'],
@@ -837,6 +914,7 @@
         'Do not copy or preserve the currently loaded theme colors unless the user explicitly asks for that.',
         'Return compact JSON. Prefer meta + tokens + optional wallpaper/custom_css/import_meta. Do not include full CSS or component catalog unless needed.',
         'Use readable contrast after applying the requested palette.',
+        'If corner_directive is present and required, follow it exactly. A square corner request means 0px structural/card/button/input/select/table/navigation/dialog radii, regardless of modern/calm styling defaults.',
         'Do not create inner table separators by default. If table cell lines are not explicitly requested, keep --lb-table-cell-border-width at 0px; the outer table border is separate.',
         'For button groups, hover is a simple color state: always use the same text color as active (--lb-btn-group-active-text) for --lb-btn-group-hover-text unless the user explicitly requests another hover text color. Do not create separate hover border or hover shadow for button groups.'
       ];

@@ -17,7 +17,7 @@
          "shadow" : 1
       }
    },
-   "studio_version" : "V263_LiquidGlassWallpaperCanonicalPath",
+   "studio_version" : "V305_SquarePreviewContract",
    "tokens" : {
       "--lb-active-bg" : "#c75b7a",
       "--lb-active-text" : "#fff7fa",
@@ -126,12 +126,11 @@
       "--lb-tooltip-bg" : "#a94363",
       "--lb-tooltip-text" : "#fff7fa"
    },
-   "version" : "0.1.36",
+   "version" : "0.1.39",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,
       "image" : "",
-      "mode" : "cover",
       "opacity" : 100
    }
 }

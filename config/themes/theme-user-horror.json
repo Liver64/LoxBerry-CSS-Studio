@@ -17,7 +17,7 @@
          "shadow" : 1
       }
    },
-   "studio_version" : "V263_LiquidGlassWallpaperCanonicalPath",
+   "studio_version" : "V305_SquarePreviewContract",
    "tokens" : {
       "--lb-active-bg" : "#c4b8e0",
       "--lb-active-text" : "#ecfeff",
@@ -122,7 +122,7 @@
       "--lb-slider-value-text" : "var(--lb-primary)",
       "--lb-switch-off-bg" : "#53f356",
       "--lb-switch-on-bg" : "#f97316",
-      "--lb-switch-radius" : "36px",
+      "--lb-switch-radius" : "2px",
       "--lb-switch-thumb-bg" : "#cffafe",
       "--lb-tab-popup-item-hover-bg" : "#0e7490",
       "--lb-table-bg" : "#ecfeff",
@@ -149,19 +149,18 @@
       "--lb-toggle-active-bg" : "#f97316",
       "--lb-toggle-bg" : "#cffafe",
       "--lb-toggle-hover-bg" : "#c5eef1",
-      "--lb-toggle-knob-radius" : "36px",
-      "--lb-toggle-radius" : "36px",
-      "--lb-toggle-slider-radius" : "36px",
-      "--lb-toggle-thumb-radius" : "36px",
+      "--lb-toggle-knob-radius" : "2px",
+      "--lb-toggle-radius" : "2px",
+      "--lb-toggle-slider-radius" : "2px",
+      "--lb-toggle-thumb-radius" : "2px",
       "--lb-tooltip-bg" : "#0e7490",
       "--lb-tooltip-text" : "#ffffff"
    },
-   "version" : "0.1.70",
+   "version" : "0.1.73",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,
       "image" : "",
-      "mode" : "cover",
       "opacity" : 100
    }
 }

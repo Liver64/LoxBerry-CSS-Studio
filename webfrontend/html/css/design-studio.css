@@ -1094,7 +1094,7 @@
 /* ============================================================
    V77 Wallpaper activation gating
    - The Wallpaper Editor keeps only the activation checkbox visible by default.
-   - Path, file picker, display mode and sliders appear after enabling wallpaper.
+   - Path, file picker and sliders appear after enabling wallpaper.
    ============================================================ */
 .cfw-page.cfw-design-studio .cfw-wallpaper-advanced {
   display: none;
@@ -1516,7 +1516,7 @@
   cursor: pointer;
   vertical-align: middle;
 }
-.cfw-page.cfw-design-studio .cfw-check input[type="checkbox"] {
+.cfw-page.cfw-design-studio .cfw-preview .cfw-check input[type="checkbox"] {
   border: 2px solid var(--lb-checkbox-border, var(--lb-border-color, #cbd5e1)) !important;
   border-radius: var(--lb-checkbox-radius, 4px) !important;
   background: var(--lb-checkbox-bg, var(--lb-input-bg, #ffffff)) !important;
@@ -1748,7 +1748,7 @@
 .cfw-page.cfw-design-studio .cfw-preview-card input,
 .cfw-page.cfw-design-studio .cfw-preview-card select,
 .cfw-page.cfw-design-studio .cfw-preview-card textarea {
-  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px))))) !important;
+  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px)))))) !important;
 }
 .cfw-page.cfw-design-studio .cfw-preview-btn-group {
   border-radius: var(--lb-btn-group-radius, var(--lb-btn-radius, var(--lb-radius-button, 10px))) !important;
@@ -1894,24 +1894,9 @@
 
 
 /* V148: Release UI polish.
-   CSS import stays in code but is hidden for the first release.
-   Wallpaper select gets a visible dropdown chevron. */
+   CSS import stays in code but is hidden for the first release. */
 .cfw-page.cfw-design-studio .cfw-import-panel[hidden] {
   display: none !important;
-}
-.cfw-page.cfw-design-studio #wallpaperMode {
-  padding-right: 34px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, currentColor 50%),
-    linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position:
-    calc(100% - 18px) calc(50% + 1px),
-    calc(100% - 13px) calc(50% + 1px);
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
 }
 
 
@@ -2307,4 +2292,123 @@
   .cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-workbench {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* ============================================================
+   V305: Effective radius bridge for the Studio Live Preview
+   ------------------------------------------------------------
+   Radius values must come from the theme currently being edited, not from
+   radius aliases inherited from the active LoxBerry/Core theme. This keeps
+   cards, header, input text, selects/dropdowns, textareas, buttons, button
+   groups, tables and sidebar entries in sync with square-corner AI themes.
+   Radio circles, toggle knobs and slider thumbs intentionally remain round.
+   ============================================================ */
+.cfw-page.cfw-design-studio .cfw-preview {
+  border-radius: var(--cfw-preview-shell-radius, var(--lb-radius-card, var(--lb-card-radius, var(--lb-radius, 16px)))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-app-preview {
+  border-radius: var(--cfw-preview-shell-radius, var(--lb-radius-card, var(--lb-card-radius, var(--lb-radius, 20px)))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-app-header {
+  border-radius: var(--cfw-preview-header-radius, var(--lb-radius-card, var(--lb-card-radius, var(--lb-radius, 14px)))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-hero-card,
+.cfw-page.cfw-design-studio .cfw-form-card,
+.cfw-page.cfw-design-studio .cfw-preview .lb-card {
+  border-radius: var(--cfw-preview-card-radius, var(--lb-radius-card, var(--lb-card-radius, var(--lb-radius, 16px)))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview input.lb-input {
+  border-radius: var(--cfw-preview-input-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px)))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview select.lb-input {
+  border-radius: var(--cfw-preview-select-radius, var(--lb-select-radius, var(--lb-radius-select, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px)))))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview textarea.lb-input {
+  border-radius: var(--cfw-preview-textarea-radius, var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, 10px))))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview button.lb-button {
+  border-radius: var(--cfw-preview-button-radius, var(--lb-radius-button, var(--lb-btn-radius, var(--lb-radius-sm, 12px)))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-btn-group,
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group {
+  border-radius: var(--cfw-preview-btn-group-radius, var(--lb-btn-group-radius, var(--lb-radius-button, var(--lb-btn-radius, var(--lb-radius-sm, 10px))))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-btn-group > button,
+.cfw-page.cfw-design-studio .cfw-preview .lb-btn-group > button {
+  border-radius: 0 !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview .cfw-nav-item {
+  border-radius: var(--cfw-preview-sidebar-link-radius, var(--lb-sidebar-link-radius, var(--lb-radius-sm, 10px))) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-table {
+  --cfw-preview-effective-table-radius: var(--cfw-preview-table-radius, var(--lb-table-radius, var(--lb-radius-table, var(--lb-radius-card, var(--lb-radius, 12px)))));
+  border-radius: var(--cfw-preview-effective-table-radius) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > th:first-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > td:first-child {
+  border-top-left-radius: var(--cfw-preview-effective-table-radius) !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > th:last-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:first-child > td:last-child {
+  border-top-right-radius: var(--cfw-preview-effective-table-radius) !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > td:first-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > th:first-child {
+  border-bottom-left-radius: var(--cfw-preview-effective-table-radius) !important;
+}
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > td:last-child,
+.cfw-page.cfw-design-studio .cfw-preview-table tr:last-child > th:last-child {
+  border-bottom-right-radius: var(--cfw-preview-effective-table-radius) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-check input[type="checkbox"] {
+  border-radius: var(--cfw-preview-checkbox-radius, var(--lb-checkbox-radius, var(--lb-input-radius, var(--lb-radius-sm, 4px)))) !important;
+}
+
+
+.cfw-page.cfw-design-studio .cfw-preview .cfw-badge,
+.cfw-page.cfw-design-studio .cfw-preview .cfw-notify,
+.cfw-page.cfw-design-studio .cfw-preview .cfw-validation {
+  border-radius: var(--cfw-preview-badge-radius, var(--lb-badge-radius, var(--lb-radius-sm, 999px))) !important;
+}
+
+
+/* ============================================================
+   V308: Native dropdown indicators
+   ------------------------------------------------------------
+   Keep native single-choice selects native. Do not replace the browser
+   control with a caret drawn into background-image: theme and Core background
+   rules may suppress that image. Native menulist appearance gives every raw
+   select a reliable, platform-accessible dropdown indicator while preserving the
+   theme's colors, borders and radius.
+   ============================================================ */
+.cfw-page.cfw-design-studio select:not([multiple]):not([size]),
+.cfw-page.cfw-design-studio select:not([multiple])[size="0"],
+.cfw-page.cfw-design-studio select:not([multiple])[size="1"] {
+  -webkit-appearance: menulist !important;
+  -moz-appearance: menulist !important;
+  appearance: auto !important;
+}
+
+/* The AI model selector already has a dedicated wrapper caret. Prevent a
+   duplicate native indicator only for that explicitly wrapped control. */
+.cfw-page.cfw-design-studio .cfw-select-wrap select:not([multiple]):not([size]),
+.cfw-page.cfw-design-studio .cfw-select-wrap select:not([multiple])[size="0"],
+.cfw-page.cfw-design-studio .cfw-select-wrap select:not([multiple])[size="1"] {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
 }

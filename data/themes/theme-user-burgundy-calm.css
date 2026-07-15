@@ -506,4 +506,34 @@ body.theme-user-burgundy-calm .lb-tooltip, body.theme-user-burgundy-calm [role=t
   background-color: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;
   color: var(--lb-tooltip-text, var(--lb-sidebar-text, #fff)) !important;
 }
+/* V308: Reliable native and jQuery Mobile dropdown indicators. */
+body.theme-user-burgundy-calm select:not([multiple]):not([size]), body.theme-user-burgundy-calm select:not([multiple])[size="0"], body.theme-user-burgundy-calm select:not([multiple])[size="1"],
+.theme-user-burgundy-calm select:not([multiple]):not([size]), .theme-user-burgundy-calm select:not([multiple])[size="0"], .theme-user-burgundy-calm select:not([multiple])[size="1"] {
+  -webkit-appearance: menulist !important;
+  -moz-appearance: menulist !important;
+  appearance: auto !important;
+}
+body.theme-user-burgundy-calm .ui-select .ui-btn, .theme-user-burgundy-calm .ui-select .ui-btn {
+  position: relative !important;
+  padding-right: 36px !important;
+}
+body.theme-user-burgundy-calm .ui-select .ui-btn::after, .theme-user-burgundy-calm .ui-select .ui-btn::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  right: 14px !important;
+  left: auto !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: -2px 0 0 0 !important;
+  border-left: 5px solid transparent !important;
+  border-right: 5px solid transparent !important;
+  border-top: 6px solid currentColor !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  opacity: .82 !important;
+  pointer-events: none !important;
+}
 /* DESIGN STUDIO RULES END */

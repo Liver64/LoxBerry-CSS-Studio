@@ -112,7 +112,7 @@ body.theme-user-horror,
   --lb-slider-value-text: var(--lb-primary);
   --lb-switch-off-bg: #53f356;
   --lb-switch-on-bg: #f97316;
-  --lb-switch-radius: 36px;
+  --lb-switch-radius: 2px;
   --lb-switch-thumb-bg: #cffafe;
   --lb-tab-popup-item-hover-bg: #0e7490;
   --lb-table-bg: #ecfeff;
@@ -139,10 +139,10 @@ body.theme-user-horror,
   --lb-toggle-active-bg: #f97316;
   --lb-toggle-bg: #cffafe;
   --lb-toggle-hover-bg: #c5eef1;
-  --lb-toggle-knob-radius: 36px;
-  --lb-toggle-radius: 36px;
-  --lb-toggle-slider-radius: 36px;
-  --lb-toggle-thumb-radius: 36px;
+  --lb-toggle-knob-radius: 2px;
+  --lb-toggle-radius: 2px;
+  --lb-toggle-slider-radius: 2px;
+  --lb-toggle-thumb-radius: 2px;
   --lb-tooltip-bg: #0e7490;
   --lb-tooltip-text: #ffffff;
 }
@@ -537,5 +537,35 @@ body.theme-user-horror .lb-slider::-webkit-slider-thumb:hover, .theme-user-horro
 body.theme-user-horror .lb-tooltip, body.theme-user-horror [role=tooltip], .theme-user-horror .lb-tooltip, .theme-user-horror [role=tooltip] {
   background-color: var(--lb-tooltip-bg, var(--lb-primary-hover, #2e8b57)) !important;
   color: var(--lb-tooltip-text, var(--lb-sidebar-text, #fff)) !important;
+}
+/* V308: Reliable native and jQuery Mobile dropdown indicators. */
+body.theme-user-horror select:not([multiple]):not([size]), body.theme-user-horror select:not([multiple])[size="0"], body.theme-user-horror select:not([multiple])[size="1"],
+.theme-user-horror select:not([multiple]):not([size]), .theme-user-horror select:not([multiple])[size="0"], .theme-user-horror select:not([multiple])[size="1"] {
+  -webkit-appearance: menulist !important;
+  -moz-appearance: menulist !important;
+  appearance: auto !important;
+}
+body.theme-user-horror .ui-select .ui-btn, .theme-user-horror .ui-select .ui-btn {
+  position: relative !important;
+  padding-right: 36px !important;
+}
+body.theme-user-horror .ui-select .ui-btn::after, .theme-user-horror .ui-select .ui-btn::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  right: 14px !important;
+  left: auto !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: -2px 0 0 0 !important;
+  border-left: 5px solid transparent !important;
+  border-right: 5px solid transparent !important;
+  border-top: 6px solid currentColor !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  opacity: .82 !important;
+  pointer-events: none !important;
 }
 /* DESIGN STUDIO RULES END */
