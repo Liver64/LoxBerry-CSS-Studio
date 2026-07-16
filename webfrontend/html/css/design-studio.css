@@ -2412,3 +2412,20 @@
   -moz-appearance: none !important;
   appearance: none !important;
 }
+
+
+/* ============================================================
+   V311 - protected read-only package themes
+   ------------------------------------------------------------
+   Classic Mac can be inspected in the full Preview and Documentation,
+   but it has no editable Studio/AI surface and no mutation actions.
+   ============================================================ */
+.cfw-page.cfw-design-studio.cfw-protected-theme-readonly [data-cfw-tab="ai"],
+.cfw-page.cfw-design-studio.cfw-protected-theme-readonly [data-cfw-tab="workbench"],
+.cfw-page.cfw-design-studio.cfw-protected-theme-readonly #cfwTabAi,
+.cfw-page.cfw-design-studio.cfw-protected-theme-readonly #cfwTabWorkbench,
+.cfw-page.cfw-design-studio.cfw-protected-theme-readonly #saveTheme,
+.cfw-page.cfw-design-studio.cfw-protected-theme-readonly #deleteTheme,
+.cfw-page.cfw-design-studio.cfw-protected-theme-readonly #undoTheme {
+  display: none !important;
+}

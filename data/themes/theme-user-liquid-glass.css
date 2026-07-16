@@ -6,9 +6,6 @@
 
    Theme value: theme-user-liquid-glass / liquid-glass
    Expected filename: data/plugins/cssframework/themes/theme-user-liquid-glass.css
-   * Wallpaper-URL: assets/images/theme-user-liquid-glass/wallpaper.png
-   * Wallpaper-Brightness: 100
-   * Wallpaper-Opacity: 100
 
    Important:
    - No .demo-wrap / .glass-form / .liquid-glass demo classes are required.
@@ -16,6 +13,9 @@
    - Structural plugin CSS should remain in the plugin; this theme only defines the look.
    - Plugin-specific compatibility fixes are grouped at the end and intentionally override
      the generic theme rules where needed.
+ * Wallpaper-URL: assets/images/theme-user-liquid-glass/wallpaper.png
+ * Wallpaper-Brightness: 79
+ * Wallpaper-Opacity: 91
 */
 
 /* =========================================================
@@ -2806,3 +2806,13 @@ body.theme-user-liquid-glass .lb-lg-native-glass.lb-lg-is-disabled > select {
 	-webkit-text-fill-color: #000000 !important;
 }
 
+
+
+
+
+/* DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS START */
+:is(body.theme-user-liquid-glass, body.theme-liquid-glass)::before {
+  opacity: 0.91 !important;
+  filter: brightness(0.79) !important;
+}
+/* DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS END */

@@ -708,36 +708,62 @@
     return 'theme-user-' + (slug || 'theme');
   }
 
+  function isLiquidGlassThemeId(id) {
+    return String(id || '').trim().toLowerCase() === 'theme-user-liquid-glass';
+  }
+
+  function isReadOnlyProtectedStudioThemeId(id) {
+    return String(id || '').trim().toLowerCase() === 'theme-user-classic-mac';
+  }
+
   function isProtectedStudioThemeId(id) {
-    id = String(id || '').trim().toLowerCase();
-    return id === 'theme-user-liquid-glass';
+    return isLiquidGlassThemeId(id) || isReadOnlyProtectedStudioThemeId(id);
+  }
+
+  function protectedStudioThemeDisplayName(id) {
+    if (isLiquidGlassThemeId(id)) return tx('saveModal.baseLiquidGlass');
+    if (isReadOnlyProtectedStudioThemeId(id)) return 'Classic Mac';
+    return String(id || 'Package Theme');
   }
 
   function protectedStudioThemeMessage(id) {
     return t(
       'messages.protectedPackageTheme',
       'messages.protectedPackageTheme',
-      { theme: tx('saveModal.baseLiquidGlass'), id: id || 'theme-user-liquid-glass' }
+      { theme: protectedStudioThemeDisplayName(id), id: id || 'protected-package-theme' }
     );
   }
 
   function isLiquidGlassWallpaperEditorMode() {
     var id = themeId && themeId.value ? themeId.value : currentStudioThemeId();
-    return isProtectedStudioThemeId(id);
+    return isLiquidGlassThemeId(id);
   }
 
-  function updateLiquidGlassWallpaperEditorMode() {
+  function isReadOnlyProtectedStudioThemeMode() {
+    var id = themeId && themeId.value ? themeId.value : currentStudioThemeId();
+    return isReadOnlyProtectedStudioThemeId(id);
+  }
+
+  function updateProtectedStudioThemeMode() {
     var page = document.querySelector('.cfw-page.cfw-design-studio');
-    var active = isLiquidGlassWallpaperEditorMode();
+    var liquidWallpaperOnly = isLiquidGlassWallpaperEditorMode();
+    var readOnly = isReadOnlyProtectedStudioThemeMode();
+    var saveThemeButton = document.getElementById('saveTheme');
 
     if (page) {
-      page.classList.toggle('cfw-liquid-glass-wallpaper-only', active);
+      page.classList.toggle('cfw-liquid-glass-wallpaper-only', liquidWallpaperOnly);
+      page.classList.toggle('cfw-protected-theme-readonly', readOnly);
     }
 
-    if (active) {
-      /* V274: Protected Liquid Glass is wallpaper-only in the Studio UI.
-         Keep the Workbench open and show only Wallpaper Editor + Live Preview.
-         Saving remains possible through the normal toolbar. */
+    if (saveThemeButton) saveThemeButton.disabled = readOnly;
+
+    if (readOnly) {
+      /* V311: Classic Mac is a package-owned preview/documentation theme.
+         It is selectable, but AI, Workbench, Save, Undo and Delete remain
+         unavailable. Backend protection independently enforces this contract. */
+      switchTab('preview');
+    } else if (liquidWallpaperOnly) {
+      /* Protected Liquid Glass remains wallpaper-only in the Studio UI. */
       switchTab('workbench');
 
       if (wallpaperControls) {
@@ -753,11 +779,16 @@
         wallpaperAdvancedControls.setAttribute('aria-hidden', 'false');
       }
     }
+
+    updateDeleteThemeButton();
   }
 
+  function updateLiquidGlassWallpaperEditorMode() {
+    updateProtectedStudioThemeMode();
+  }
 
   function isProtectedStudioWallpaperOnlySave() {
-    if (!themeId || !isProtectedStudioThemeId(themeId.value)) return false;
+    if (!themeId || !isLiquidGlassThemeId(themeId.value)) return false;
     var wallpaper = buildWallpaperPayload();
     return !!(wallpaper && wallpaper.enabled && wallpaper.image);
   }
@@ -1432,7 +1463,7 @@
 
   function normalizeWallpaperImageForPayload(image) {
     image = String(image || '').trim();
-    if (themeId && isProtectedStudioThemeId(themeId.value)) {
+    if (themeId && isLiquidGlassThemeId(themeId.value)) {
       image = image.replace(/^assets\/images\/liquid-glass\//i, 'assets/images/theme-user-liquid-glass/');
       image = image.replace(/^\/plugins\/cssframework\/themes\/assets\/images\/liquid-glass\//i, 'assets/images/theme-user-liquid-glass/');
     }
@@ -2328,7 +2359,11 @@
 
   function openSaveModal() {
     updateThemeIdentityFromName();
-    if (themeId && isProtectedStudioThemeId(themeId.value) && !isProtectedStudioWallpaperOnlySave()) {
+    if (themeId && isReadOnlyProtectedStudioThemeId(themeId.value)) {
+      setStatus(protectedStudioThemeMessage(themeId.value), true);
+      return;
+    }
+    if (themeId && isLiquidGlassThemeId(themeId.value) && !isProtectedStudioWallpaperOnlySave()) {
       setStatus(protectedStudioThemeMessage(themeId.value), true);
       return;
     }
@@ -2392,8 +2427,12 @@
 
   function saveTheme() {
     updateThemeIdentityFromName();
+    if (themeId && isReadOnlyProtectedStudioThemeId(themeId.value)) {
+      setStatus(protectedStudioThemeMessage(themeId.value), true);
+      return;
+    }
     var wallpaperPayload = buildWallpaperPayload();
-    var protectedWallpaperOnly = !!(themeId && isProtectedStudioThemeId(themeId.value));
+    var protectedWallpaperOnly = !!(themeId && isLiquidGlassThemeId(themeId.value));
     if (protectedWallpaperOnly && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
       setStatus(protectedStudioThemeMessage(themeId.value), true);
       return;
@@ -2418,7 +2457,7 @@
       import_meta: protectedWallpaperOnly ? null : lastImportMeta,
       wallpaper: wallpaperPayload,
       protected_wallpaper_only: protectedWallpaperOnly,
-      studio_version: 'V305_SquarePreviewContract',
+      studio_version: 'V311_ProtectedClassicMacPackage',
       lang: i18nLanguage
     };
     setStatus(tx('messages.savingTheme'), false);

@@ -35,7 +35,7 @@ body.theme-user-horror,
   --lb-btn-primary-hover-bg: #0e7490;
   --lb-btn-primary-hover-text: #ecfeff;
   --lb-btn-primary-text: #ecfeff;
-  --lb-btn-radius: 0px;
+  --lb-btn-radius: 23px;
   --lb-btn-text: #103038;
   --lb-card-bg: #ecfeff;
   --lb-card-border: #a5f3fc;
@@ -74,10 +74,10 @@ body.theme-user-horror,
   --lb-primary-hover: #0e7490;
   --lb-radio-checked-bg: #0a12f0;
   --lb-radius: 14px;
-  --lb-radius-button: 0px;
+  --lb-radius-button: 23px;
   --lb-radius-input: 0px;
   --lb-radius-select: 0px;
-  --lb-radius-sm: 10px;
+  --lb-radius-sm: 0px;
   --lb-radius-table: 28px;
   --lb-range-active-bg: #1096ea;
   --lb-range-track-bg: #f0dd0a;
@@ -136,6 +136,7 @@ body.theme-user-horror,
   --lb-text: #103038;
   --lb-text-muted: #4b6d75;
   --lb-text-secondary: #4b6d75;
+  --lb-textarea-radius: 0px;
   --lb-toggle-active-bg: #f97316;
   --lb-toggle-bg: #cffafe;
   --lb-toggle-hover-bg: #c5eef1;
@@ -189,26 +190,67 @@ body.theme-user-horror .ui-btn.ui-btn-active, body.theme-user-horror .ui-btn.ui-
   text-shadow: none !important;
   box-shadow: none !important;
 }
-body.theme-user-horror .ui-input-text, body.theme-user-horror .ui-input-search, body.theme-user-horror .ui-textinput, body.theme-user-horror .ui-select .ui-btn,
-.theme-user-horror .ui-input-text, .theme-user-horror .ui-input-search, .theme-user-horror .ui-textinput, .theme-user-horror .ui-select .ui-btn {
+/* V310: Granular input, textarea and select token compatibility. */
+body.theme-user-horror .ui-input-text, body.theme-user-horror .ui-input-search, body.theme-user-horror .ui-textinput,
+.theme-user-horror .ui-input-text, .theme-user-horror .ui-input-search, .theme-user-horror .ui-textinput {
   background-image: none !important;
   background-color: var(--lb-input-bg, var(--lb-card-bg, #fff)) !important;
   color: var(--lb-input-text, var(--lb-text, inherit)) !important;
   border-color: var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;
   border-style: solid !important;
   border-width: 1px !important;
-  border-radius: var(--lb-radius, var(--lb-btn-radius, 4px)) !important;
+  border-radius: var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))) !important;
   text-shadow: none !important;
   box-shadow: none !important;
 }
-body.theme-user-horror .ui-input-text input, body.theme-user-horror .ui-input-search input, body.theme-user-horror .ui-textinput input, body.theme-user-horror textarea, body.theme-user-horror select,
-.theme-user-horror .ui-input-text input, .theme-user-horror .ui-input-search input, .theme-user-horror .ui-textinput input, .theme-user-horror textarea, .theme-user-horror select {
+body.theme-user-horror textarea.ui-input-text, body.theme-user-horror textarea.ui-textinput, body.theme-user-horror textarea.ui-input-search,
+.theme-user-horror textarea.ui-input-text, .theme-user-horror textarea.ui-textinput, .theme-user-horror textarea.ui-input-search {
+  background-color: var(--lb-textarea-bg, var(--lb-input-bg, var(--lb-card-bg, #fff))) !important;
+  color: var(--lb-textarea-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  border-color: var(--lb-textarea-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;
+  border-radius: var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px))))) !important;
+}
+body.theme-user-horror .ui-select .ui-btn, .theme-user-horror .ui-select .ui-btn {
+  background-image: none !important;
+  background-color: var(--lb-select-bg, var(--lb-input-bg, var(--lb-card-bg, #fff))) !important;
+  color: var(--lb-select-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  border-color: var(--lb-select-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))))) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-user-horror input:not([type]), body.theme-user-horror input[type="text"], body.theme-user-horror input[type="password"], body.theme-user-horror input[type="email"], body.theme-user-horror input[type="number"], body.theme-user-horror input[type="search"], body.theme-user-horror input[type="tel"], body.theme-user-horror input[type="url"], body.theme-user-horror input[type="date"], body.theme-user-horror input[type="time"], body.theme-user-horror input[type="datetime-local"], body.theme-user-horror input[type="month"], body.theme-user-horror input[type="week"],
+.theme-user-horror input:not([type]), .theme-user-horror input[type="text"], .theme-user-horror input[type="password"], .theme-user-horror input[type="email"], .theme-user-horror input[type="number"], .theme-user-horror input[type="search"], .theme-user-horror input[type="tel"], .theme-user-horror input[type="url"], .theme-user-horror input[type="date"], .theme-user-horror input[type="time"], .theme-user-horror input[type="datetime-local"], .theme-user-horror input[type="month"], .theme-user-horror input[type="week"] {
+  border-radius: var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))) !important;
+}
+body.theme-user-horror textarea, .theme-user-horror textarea {
+  border-radius: var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px))))) !important;
+}
+body.theme-user-horror select, .theme-user-horror select {
+  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))))) !important;
+}
+body.theme-user-horror .ui-input-text input, body.theme-user-horror .ui-input-search input, body.theme-user-horror .ui-textinput input,
+.theme-user-horror .ui-input-text input, .theme-user-horror .ui-input-search input, .theme-user-horror .ui-textinput input {
   color: var(--lb-input-text, var(--lb-text, inherit)) !important;
   text-shadow: none !important;
 }
-body.theme-user-horror .ui-input-text:focus-within, body.theme-user-horror .ui-input-search:focus-within, body.theme-user-horror .ui-select .ui-btn:focus,
-.theme-user-horror .ui-input-text:focus-within, .theme-user-horror .ui-input-search:focus-within, .theme-user-horror .ui-select .ui-btn:focus {
+body.theme-user-horror textarea, .theme-user-horror textarea {
+  color: var(--lb-textarea-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  text-shadow: none !important;
+}
+body.theme-user-horror select, .theme-user-horror select {
+  color: var(--lb-select-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  text-shadow: none !important;
+}
+body.theme-user-horror .ui-input-text:focus-within, body.theme-user-horror .ui-input-search:focus-within,
+.theme-user-horror .ui-input-text:focus-within, .theme-user-horror .ui-input-search:focus-within {
   border-color: var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff))) !important;
+  box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;
+}
+body.theme-user-horror .ui-select .ui-btn:focus, .theme-user-horror .ui-select .ui-btn:focus {
+  border-color: var(--lb-select-focus-border, var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff)))) !important;
   box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;
 }
 body.theme-user-horror .ui-checkbox .ui-btn, body.theme-user-horror .ui-radio .ui-btn, .theme-user-horror .ui-checkbox .ui-btn, .theme-user-horror .ui-radio .ui-btn {

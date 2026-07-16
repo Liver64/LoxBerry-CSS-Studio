@@ -7,6 +7,33 @@
       "generator" : "CSS-Studio"
    },
    "studio_model" : {
+      "Buttons|Active Button|Grundfarbe" : {
+         "alpha" : 100,
+         "borderWidth" : 1,
+         "brightness" : 0,
+         "color" : "#f97316",
+         "dirty" : false,
+         "radius" : 12,
+         "shadow" : 1
+      },
+      "Buttons|Standard Button|Grundfarbe" : {
+         "alpha" : 100,
+         "borderWidth" : 1,
+         "brightness" : 0,
+         "color" : "#f97316",
+         "dirty" : false,
+         "radius" : 12,
+         "shadow" : 1
+      },
+      "Buttons|Standard Button|Radius" : {
+         "alpha" : 100,
+         "borderWidth" : 1,
+         "brightness" : 0,
+         "color" : "#f97316",
+         "dirty" : true,
+         "radius" : 23,
+         "shadow" : 1
+      },
       "Input|Input Text|Grundfarbe" : {
          "alpha" : 100,
          "borderWidth" : 1,
@@ -45,7 +72,7 @@
       "--lb-btn-primary-hover-bg" : "#0e7490",
       "--lb-btn-primary-hover-text" : "#ecfeff",
       "--lb-btn-primary-text" : "#ecfeff",
-      "--lb-btn-radius" : "0px",
+      "--lb-btn-radius" : "23px",
       "--lb-btn-text" : "#103038",
       "--lb-card-bg" : "#ecfeff",
       "--lb-card-border" : "#a5f3fc",
@@ -84,10 +111,10 @@
       "--lb-primary-hover" : "#0e7490",
       "--lb-radio-checked-bg" : "#0a12f0",
       "--lb-radius" : "14px",
-      "--lb-radius-button" : "0px",
+      "--lb-radius-button" : "23px",
       "--lb-radius-input" : "0px",
       "--lb-radius-select" : "0px",
-      "--lb-radius-sm" : "10px",
+      "--lb-radius-sm" : "0px",
       "--lb-radius-table" : "28px",
       "--lb-range-active-bg" : "#1096ea",
       "--lb-range-track-bg" : "#f0dd0a",
@@ -146,6 +173,7 @@
       "--lb-text" : "#103038",
       "--lb-text-muted" : "#4b6d75",
       "--lb-text-secondary" : "#4b6d75",
+      "--lb-textarea-radius" : "0px",
       "--lb-toggle-active-bg" : "#f97316",
       "--lb-toggle-bg" : "#cffafe",
       "--lb-toggle-hover-bg" : "#c5eef1",
@@ -156,7 +184,7 @@
       "--lb-tooltip-bg" : "#0e7490",
       "--lb-tooltip-text" : "#ffffff"
    },
-   "version" : "0.1.73",
+   "version" : "0.1.76",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

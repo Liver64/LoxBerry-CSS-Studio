@@ -1,0 +1,1863 @@
+/*
+ * LoxBerry CSS Framework Theme
+ * Header-Version: 1
+ * Type: user
+ * Name: Classic Mac
+ * Slug: classic-mac
+ * Theme-ID: theme-user-classic-mac
+ * Filename: theme-user-classic-mac.css
+ * Scope: body.theme-user-classic-mac
+ * Legacy-Scope: body.theme-classic-mac
+ * Version: V319_2026_07_16_CLASSIC_MAC_NATIVE_SELECT_OVERLAY
+ * Compatible: LoxBerry >= 4
+ * Storage: data/plugins/cssframework/themes/
+ * Generated-By: LoxBerry CSS Framework / protected package theme
+ * Protected: yes
+ * Studio-Mode: readonly
+ * Asset-Fonts-Web: /plugins/cssframework/themes/assets/fonts/mac-classic/fonts/
+ * Asset-Fonts-Path: webfrontend/html/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/
+ * Asset-Icons-Web: /plugins/cssframework/themes/assets/fonts/mac-classic/icon/
+ * Asset-Icons-Path: webfrontend/html/plugins/cssframework/themes/assets/fonts/mac-classic/icon/
+ *
+ * Classic Mac / Apple System 6 inspired adapter for the LoxBerry Design
+ * System and selected jQuery Mobile wrappers. The theme is package-owned and
+ * intentionally cannot be changed, overwritten or deleted in Design Studio.
+ */
+
+@font-face {
+  font-family: "Chicago_12";
+  src: url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChiKareGo2.woff2?v=313") format("woff2"),
+       url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChiKareGo2.woff?v=313") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Chicago";
+  src: url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChicagoFLF.woff2?v=313") format("woff2"),
+       url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChicagoFLF.woff?v=313") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) {
+  /* === Base === */
+  --lb-font: "Chicago_12", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-family: "Chicago_12", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-heading: "Chicago", "Chicago_12", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-mono: Monaco, Consolas, "Courier New", monospace;
+
+  --lb-primary: #000000;
+  --lb-primary-hover: #000000;
+  --lb-primary-dark: #000000;
+
+  --lb-danger: #000000;
+  --lb-info: #000000;
+  --lb-success: #000000;
+  --lb-warning: #000000;
+
+  --lb-bg: #ffffff;
+  --lb-text: #000000;
+  --lb-text-secondary: #000000;
+  --lb-text-muted: #666666;
+  --lb-border-color: #000000;
+
+  --lb-radius: 0;
+  --lb-radius-sm: 0;
+  --lb-border: 1.5px solid #000000;
+
+  /* === Cards / windows === */
+  --lb-card-bg: #ffffff;
+  --lb-card-border: 2px solid #000000;
+  --lb-card-shadow: 2px 2px 0 #000000;
+
+  /* === Buttons === */
+  --lb-btn-bg: #ffffff;
+  --lb-btn-hover-bg: #000000;
+  --lb-btn-text: #000000;
+  --lb-btn-border: #000000;
+  --lb-btn-radius: 0;
+  --lb-btn-primary-bg: #ffffff;
+  --lb-btn-primary-text: #000000;
+  --lb-btn-primary-border: #000000;
+
+  /* === Header action buttons === */
+  --lb-header-btn-bg: #ffffff;
+  --lb-header-btn-text: #000000;
+
+  /* === Inputs === */
+  --lb-input-bg: #ffffff;
+  --lb-input-border: #000000;
+  --lb-input-text: #000000;
+  --lb-highlight-bg: #ffffc0;
+
+  /* === Toggle === */
+  --lb-toggle-bg: #ffffff;
+  --lb-toggle-active-bg: #000000;
+  --lb-toggle-border: #000000;
+  --lb-toggle-thumb-bg: #ffffff;
+  --lb-toggle-thumb-border: #000000;
+  --lb-toggle-radius: 0;
+  --lb-toggle-slider-radius: 0;
+  --lb-toggle-thumb-radius: 0;
+  --lb-toggle-knob-radius: 0;
+  --lb-switch-off-bg: #ffffff;
+  --lb-switch-on-bg: #000000;
+  --lb-switch-border: #000000;
+  --lb-switch-thumb-bg: #ffffff;
+  --lb-switch-thumb-border: #000000;
+  --lb-switch-radius: 0;
+
+  /* === Section Title === */
+  --lb-section-border: #000000;
+
+  /* === Sidebar === */
+  --lb-sidebar-bg: #ffffff;
+  --lb-sidebar-text: #000000;
+  --lb-sidebar-active-bg: #000000;
+  --lb-sidebar-active-text: #ffffff;
+  --lb-sidebar-border: #000000;
+  --lb-sidebar-section: #000000;
+
+  /* === Mobile tab bar === */
+  --lb-tab-bar-bg: #ffffff;
+  --lb-tab-bar-text: #000000;
+  --lb-tab-bar-active: #000000;
+
+  /* Modern Core component contract */
+  --lb-radius-xs: 0;
+  --lb-radius-md: 0;
+  --lb-radius-lg: 0;
+  --lb-card-radius: 0;
+  --lb-input-radius: 0;
+  --lb-textarea-radius: 0;
+  --lb-select-radius: 0;
+  --lb-radius-input: 0;
+  --lb-radius-select: 0;
+  --lb-table-radius: 0;
+  --lb-modal-radius: 0;
+  --lb-tooltip-radius: 0;
+
+  --lb-hover-bg: #000000;
+  --lb-hover-text: #ffffff;
+  --lb-hover-border: #000000;
+  --lb-active-bg: #000000;
+  --lb-active-text: #ffffff;
+  --lb-active-border: #000000;
+  --lb-active-soft-bg: #ffffff;
+  --lb-focus-ring: rgba(0, 0, 0, 0.25);
+  --lb-focus-ring-strong: rgba(0, 0, 0, 0.45);
+  --lb-on-light-text: #000000;
+  --lb-on-dark-text: #ffffff;
+
+  --lb-btn-hover-text: #ffffff;
+  --lb-btn-hover-border: #000000;
+  --lb-btn-primary-hover-bg: #000000;
+  --lb-btn-primary-hover-text: #ffffff;
+  --lb-btn-primary-hover-border: #000000;
+  --lb-btn-group-active-bg: #000000;
+  --lb-btn-group-active-text: #ffffff;
+  --lb-btn-group-hover-bg: #000000;
+  --lb-btn-group-hover-text: #ffffff;
+  --lb-header-btn-hover-bg: #000000;
+  --lb-header-btn-hover-text: #ffffff;
+
+  --lb-input-hover-bg: #ffffff;
+  --lb-input-hover-text: #000000;
+  --lb-input-hover-border: #000000;
+  --lb-select-bg: #ffffff;
+  --lb-select-text: #000000;
+  --lb-select-border: #000000;
+  --lb-select-hover-bg: #ffffff;
+  --lb-select-hover-text: #000000;
+  --lb-select-hover-border: #000000;
+  --lb-select-option-bg: #ffffff;
+  --lb-select-option-text: #000000;
+  --lb-select-option-hover-bg: #000000;
+  --lb-select-option-hover-text: #ffffff;
+
+  --lb-input-disabled-bg: #ffffff;
+  --lb-input-disabled-text: #999999;
+  --lb-input-disabled-border: #999999;
+  --lb-input-disabled-opacity: 1;
+
+  --lb-table-bg: #ffffff;
+  --lb-table-cell-bg: #ffffff;
+  --lb-table-cell-text: #000000;
+  --lb-table-row-bg: #ffffff;
+  --lb-table-row-alt-bg: #ffffff;
+  --lb-table-row-hover-bg: #ffffff;
+  --lb-table-row-hover-text: #000000;
+  --lb-table-header-bg: #000000;
+  --lb-table-header-text: #ffffff;
+  --lb-table-header-hover-bg: #000000;
+  --lb-table-header-hover-text: #ffffff;
+  --lb-table-footer-bg: #ffffff;
+  --lb-table-footer-text: #000000;
+  --lb-table-border-width: 2px;
+  --lb-table-border-style: solid;
+  --lb-table-border-color: #000000;
+  --lb-table-cell-border-width: 1px;
+  --lb-table-cell-border-style: solid;
+  --lb-table-cell-border-color: #000000;
+  --lb-table-shadow: 2px 2px 0 #000000;
+
+  --lb-tooltip-bg: #ffffff;
+  --lb-tooltip-text: #000000;
+  --lb-tooltip-border: #000000;
+  --lb-tooltip-shadow: 2px 2px 0 #000000;
+
+  /* Sonos4Lox consumes these optional visual tokens. Structural Sonos layout
+     remains in sonos_lbv4.css. */
+  --s4lox-zone-online-bg: #000000;
+  --s4lox-zone-online-border: #000000;
+  --s4lox-zone-online-text: #ffffff;
+  --s4lox-zone-online-hover-text: #ffffff;
+  --s4lox-player-zone-hover-text: #ffffff;
+  --s4lox-select-text: #000000;
+  --s4lox-select-hover-bg: #000000;
+  --s4lox-select-hover-text: #ffffff;
+  --s4lox-select-hover-border: #000000;
+  --s4lox-select-option-bg: #ffffff;
+  --s4lox-select-option-text: #000000;
+  --s4lox-modal-button-bg: #000000;
+  --s4lox-modal-button-border: #000000;
+  --s4lox-modal-button-text: #ffffff;
+  --s4lox-modal-title-text: #000000;
+
+  background-color: #ffffff;
+  color: #000000;
+  font-family: var(--lb-font-family, var(--lb-font));
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) button,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) select,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) textarea,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) table,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) th,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) td {
+  font-family: var(--lb-font-family, var(--lb-font)) !important;
+}
+
+/* =========================================================
+   Page background and typography
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac),
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-main,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-page,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-content,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-panel-wrapper {
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px),
+    linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px) !important;
+  background-size: 22px 22px !important;
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-body-a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-body-c,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-overlay-a {
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a:link {
+  color: #000000 !important;
+  text-decoration: underline !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) hr {
+  border: 0 !important;
+  border-top: 2px solid #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) h1,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) h2,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) h3,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) h4,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .heading {
+  color: #000000 !important;
+  font-family: "Chicago", "Chicago_12", Geneva, Arial, system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   Section titles: Classic Mac title-bar / separator feeling
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-section-title,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content h2,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content h3 {
+  position: relative;
+  color: #000000 !important;
+  font-family: "Chicago", "Chicago_12", Geneva, Arial, system-ui, sans-serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  border-bottom: 2px solid #000000 !important;
+  padding: 0 0 9px 0 !important;
+  margin-top: 24px !important;
+  margin-bottom: 22px !important;
+  background: transparent !important;
+}
+
+/* =========================================================
+   Cards / content boxes: map system.css .window to LoxBerry .lb-card
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-card,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-body-a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-body-c,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-body-inherit,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-corner-all.ui-body-inherit {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  backdrop-filter: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-card {
+  padding: 18px !important;
+}
+
+/* =========================================================
+   Buttons: map system.css .btn / .btn-default to .lb-btn
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-btn:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-btn:link,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) button.lb-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="submit"].lb-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="button"].lb-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn.lb-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn.lb-btn:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn.lb-btn-primary,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-link.lb-btn-primary,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="submit"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="button"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content button:not(.lb-tab-bar-item):not(.lb-header-btn):not(.lb-helppanel-close):not(.lb-toggle):not([data-role="none"]) {
+  min-height: 24px !important;
+  min-width: 64px !important;
+  padding: 4px 18px !important;
+  margin: 4px 8px 4px 0 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  font-family: var(--lb-font) !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-shadow: none !important;
+  background-image: none !important;
+  filter: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) button.lb-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn.lb-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn.lb-btn:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="submit"]:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="button"]:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content button:not(.lb-tab-bar-item):not(.lb-header-btn):not(.lb-helppanel-close):not(.lb-toggle):not([data-role="none"]):hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-btn:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) button.lb-btn:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn.lb-btn:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="submit"]:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="button"]:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content button:not(.lb-tab-bar-item):not(.lb-header-btn):not(.lb-helppanel-close):not(.lb-toggle):not([data-role="none"]):active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 1px 1px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-primary,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-btn-primary,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) button.lb-btn-primary,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="submit"].lb-btn-primary,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-link.lb-btn-primary {
+  border-width: 4px !important;
+  padding: 2px 16px !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn:disabled,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) button:disabled,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="submit"]:disabled,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="button"]:disabled,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-state-disabled {
+  color: #999999 !important;
+  opacity: 1 !important;
+  cursor: default !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-icon .pi {
+  color: inherit !important;
+  font-size: 0.9em !important;
+}
+
+/* =========================================================
+   Inputs and textareas
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-input,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-textarea,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="text"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="password"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="email"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="url"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="number"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="tel"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="search"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="date"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="time"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content textarea,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-text input,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-search input,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) textarea.ui-input-text {
+  background: #ffffff !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: inset 1px 1px 0 #000000 !important;
+  font-family: var(--lb-font) !important;
+  font-size: 16px !important;
+  line-height: 1.3 !important;
+  padding: 6px 8px !important;
+  text-shadow: none !important;
+  background-image: none !important;
+  box-sizing: border-box !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-text,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-search {
+  background: #ffffff !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-input:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-textarea:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="text"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="password"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="email"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="url"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="number"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="tel"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="search"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="date"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="time"]:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content textarea:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-text input:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-search input:focus {
+  outline: 2px solid #000000 !important;
+  outline-offset: 1px !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   Selects: native lb-select and jQuery Mobile select wrappers
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-select,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content select,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn:hover {
+  min-height: 30px !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  font-family: var(--lb-font) !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  text-shadow: none !important;
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/select-button.svg?v=319") !important;
+  background-position: right 2px center !important;
+  background-size: 17px 17px !important;
+  background-repeat: no-repeat !important;
+  padding: 5px 25px 5px 8px !important;
+  box-sizing: border-box !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-select,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn {
+  max-width: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn span {
+  color: #000000 !important;
+  font-family: var(--lb-font) !important;
+  font-weight: 400 !important;
+  text-align: left !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn:active {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn:hover span,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn:active span {
+  color: #ffffff !important;
+}
+
+/* =========================================================
+   Form layout
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-row {
+  gap: 12px !important;
+  margin-bottom: 18px !important;
+  padding: 4px 0 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-help,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) legend {
+  color: #000000 !important;
+  font-family: var(--lb-font) !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-label {
+  font-weight: 700 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-help,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .form-error,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .form-error-message {
+  font-size: 0.82rem !important;
+}
+
+/* =========================================================
+   Checkboxes and radios — original Classic Mac bitmap-style SVG assets
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="checkbox"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 8px 0 0 !important;
+  background-color: #ffffff !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  vertical-align: middle !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="checkbox"] {
+  width: 17px !important;
+  height: 17px !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  background-image: none !important;
+  background-size: 12px 12px !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="checkbox"]:checked {
+  background-color: #ffffff !important;
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/checkmark.svg?v=315") !important;
+  border-color: #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"] {
+  width: 18px !important;
+  height: 18px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+  background-size: 12px 12px !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:focus-visible {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=315") !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:checked {
+  background-image:
+    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-dot.svg?v=315"),
+    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+  background-size: 7px 7px, 12px 12px !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:checked:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:checked:focus-visible {
+  background-image:
+    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-dot.svg?v=315"),
+    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=315") !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="checkbox"]:focus-visible,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:focus-visible {
+  outline: 2px solid #000000 !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-field > label:not(.lb-toggle):has(> input[type="checkbox"], > input[type="radio"]) {
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-field > label:not(.lb-toggle):has(> input[type="checkbox"]:checked, > input[type="radio"]:checked) {
+  background: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+/* Keep hidden inputs of lb-btn-group hidden. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group input[type="radio"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group input[type="checkbox"] {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Keep hidden input of lb-toggle hidden. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content .lb-toggle input[type="checkbox"] {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   Button groups / segmented controls
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group {
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group .lb-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group input[type="radio"] + label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group input[type="checkbox"] + label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group label.ui-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: none !important;
+  border-right: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 6px 14px !important;
+  font-family: var(--lb-font) !important;
+  font-weight: 400 !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group .lb-btn:last-child,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group label:last-of-type {
+  border-right: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group .lb-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group label:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group .lb-btn.active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group .lb-btn-active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group label.active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group label.lb-checked,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group input[type="radio"]:checked + label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-btn-group input[type="checkbox"]:checked + label {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* =========================================================
+   Toggle switch: Classic Mac rectangular switch, not pill
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-toggle {
+  width: 48px !important;
+  height: 24px !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) label.lb-toggle.ui-btn {
+  width: 48px !important;
+  height: 24px !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-toggle-slider {
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-toggle-slider::before {
+  width: 18px !important;
+  height: 18px !important;
+  left: 1px !important;
+  bottom: 1px !important;
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-toggle input:checked + .lb-toggle-slider {
+  background: #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-toggle input:checked + .lb-toggle-slider::before {
+  transform: translateX(24px) !important;
+  background: #ffffff !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-toggle input:focus + .lb-toggle-slider {
+  box-shadow: 2px 2px 0 #000000, 0 0 0 2px #ffffff, 0 0 0 4px #000000 !important;
+}
+
+/* =========================================================
+   Tables
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) table,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-table {
+  border-collapse: collapse !important;
+  color: #000000 !important;
+  font-family: var(--lb-font) !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) table th,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) table td,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-table th,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-table td {
+  border-color: #000000 !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) table th,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-table th {
+  background: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 400 !important;
+}
+
+/* =========================================================
+   Sidebar and navigation
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-right: 2px solid #000000 !important;
+  box-shadow: 2px 0 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-header,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-sidebar-header,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-footer,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-section:not(:first-child) {
+  border-color: #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-brand,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-section,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-link,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-sidebar-link,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-sidebar-link:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-sidebar-link:link {
+  color: #000000 !important;
+  font-family: var(--lb-font) !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-link:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-link.active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-sidebar-link.active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.lb-sidebar-link.active:visited {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-left-color: #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-status,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-status.error {
+  background: #000000 !important;
+  border: 1px solid #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-badge {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
+}
+
+/* =========================================================
+   Header buttons, tabs, collapsibles and sliders
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-nav-toggle,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-sidebar-toggle.lb-header-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-nav-toggle:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-collapsible {
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  background: #ffffff !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-collapsible summary {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-bottom: 2px solid #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-collapsible summary:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-slider {
+  accent-color: #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-slider-value {
+  color: #000000 !important;
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+/* =========================================================
+   jQuery Mobile compatibility
+   ========================================================= */
+
+/* V317: jQuery Mobile buttons are often anchors rather than native button
+   elements. The generic form-control font bridge therefore does not reach
+   them. Apply the Classic-Mac face explicitly to both current and legacy
+   jQM button markup, including the inner text wrappers. Keep icon-font
+   elements untouched; they continue to use their own icon classes. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) button.ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input.ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn-inner,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn-text,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-controlgroup-controls .ui-btn {
+  font-family: var(--lb-font-family, var(--lb-font)) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.ui-btn:link,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.ui-btn:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.ui-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.ui-btn:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) a.ui-btn:active {
+  text-decoration: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn:focus {
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-corner-all,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn-corner-all,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-shadow,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-text,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn {
+  border-radius: 0 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-input-text.ui-focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-select .ui-btn.ui-focus {
+  box-shadow: 0 0 0 2px #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio label {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox label.ui-btn-active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio label.ui-btn-active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox-on,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio-on {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* jQuery Mobile renders checkbox/radio icons on the visible label pseudo-element. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox .ui-btn::after {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox .ui-checkbox-on::after,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox label.ui-btn-active::after {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/checkmark.svg?v=315") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 12px 12px !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-btn::after {
+  background-color: transparent !important;
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 12px 12px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-btn:hover::after,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-btn:focus::after {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=315") !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-radio-on::after,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio label.ui-btn-active::after {
+  background-image:
+    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-dot.svg?v=315"),
+    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+  background-size: 7px 7px, 12px 12px !important;
+}
+
+/* =========================================================
+   Scrollbars — original Classic Mac arrow assets
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar {
+  width: 22px;
+  height: 22px;
+  background: #ffffff;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-track {
+  background:
+    linear-gradient(45deg, #000000 25%, transparent 25%, transparent 75%, #000000 75%, #000000),
+    linear-gradient(45deg, #000000 25%, transparent 25%, transparent 75%, #000000 75%, #000000);
+  background-color: #ffffff;
+  background-size: 4px 4px;
+  background-position: 0 0, 2px 2px;
+  border: 2px solid #000000;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-thumb {
+  background: #ffffff;
+  border: 2px solid #000000;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-thumb:hover {
+  background: #000000;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button {
+  display: block;
+  width: 22px;
+  height: 24px;
+  background-color: #ffffff;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 22px 24px;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:decrement {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-up.svg?v=315");
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:decrement:active {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-up-active.svg?v=315");
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:increment {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-down.svg?v=315");
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:increment:active {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-down-active.svg?v=315");
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:decrement {
+  width: 24px;
+  height: 22px;
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-left.svg?v=315");
+  background-size: 24px 22px;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:decrement:active {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-left-active.svg?v=315");
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:increment {
+  width: 24px;
+  height: 22px;
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-right.svg?v=315");
+  background-size: 24px 22px;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:increment:active {
+  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-right-active.svg?v=315");
+}
+
+/* =========================================================
+   Responsive adjustments
+   ========================================================= */
+
+@media (max-width: 875px) {
+  :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-label {
+    text-align: left !important;
+  }
+
+  :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-form-help {
+    padding-left: 0 !important;
+  }
+
+  :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-main {
+    margin-left: 0;
+  }
+}
+
+/* =========================================================
+   V03 refinement: LoxBerry top header / menu bar
+   ---------------------------------------------------------
+   Some LoxBerry pages keep their header/top navigation outside
+   the normal lb-content area. Force it into the Classic Mac
+   monochrome menu-bar style so the previous soft-rounded/dark
+   header does not remain visible.
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) > header,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-topbar,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-navbar,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-main-header,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-page-header,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .topbar,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .navbar,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-header {
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border: 0 !important;
+  border-bottom: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-topbar *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-navbar *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-main-header *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-page-header *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .topbar *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .navbar *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-header * {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-topbar a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-navbar a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-main-header a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-page-header a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .topbar a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .navbar a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-header a {
+  color: #000000 !important;
+  background: transparent !important;
+  text-decoration: underline !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header .active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-topbar .active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-navbar .active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .topbar .active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .navbar .active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-header .active {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header .active *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-topbar .active *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-navbar .active *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .topbar .active *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .navbar .active *,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-header .active * {
+  color: #ffffff !important;
+}
+
+/* Avoid a black block from legacy logo/brand containers. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-logo,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-brand,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-header-brand,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .brand,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .logo {
+  background: transparent !important;
+  color: #000000 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   Classic Mac - active / selected header navigation
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-btn-active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-btn-active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-btn-active:link,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-btn-active:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-btn-active:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-btn-active:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-btn-active span,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-state-active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .ui-state-active a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .active a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .selected,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-navbar .selected a {
+	background: #000000 !important;
+	background-color: #000000 !important;
+	background-image: none !important;
+
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+	text-shadow: none !important;
+}
+
+/* =========================================================
+   V03 refinement: keep save/cancel buttons visually aligned
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="submit"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="button"],
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content button,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content .ui-btn,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content .lb-btn {
+  vertical-align: middle !important;
+}
+
+/* =========================================================
+   Classic Mac - Vue navbar active item
+   LoxBerry v3/v4 Vue navigation uses .vuenavbarelement_active.
+   This must override the global classic-mac link color.
+   ========================================================= */
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #vuenavbar a.vuenavbarelement_active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #vuenavbar a.vuenavbarelement_active:link,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #vuenavbar a.vuenavbarelement_active:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #vuenavbar a.vuenavbarelement_active:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #vuenavbar a.vuenavbarelement_active:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #vuenavbar a.vuenavbarelement_active:active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .vuenavbarcontainer a.vuenavbarelement_active,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .vuenavbarcontainer a.vuenavbarelement_active:link,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .vuenavbarcontainer a.vuenavbarelement_active:visited,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .vuenavbarcontainer a.vuenavbarelement_active:hover,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .vuenavbarcontainer a.vuenavbarelement_active:focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .vuenavbarcontainer a.vuenavbarelement_active:active {
+	background: #000000 !important;
+	background-color: #000000 !important;
+	background-image: none !important;
+
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+	text-shadow: none !important;
+	text-decoration: underline !important;
+}
+
+
+
+/* =========================================================
+   Protected package compatibility: sliders and Sonos4Lox
+   ---------------------------------------------------------
+   Supports both the native Core .lb-slider and the ion.rangeSlider
+   variants used by Sonos4Lox (legacy .irs-slider and modern .irs-handle).
+   ========================================================= */
+
+/* Native Core range slider */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="range"].lb-slider {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  height: 24px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  accent-color: #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="range"].lb-slider::-webkit-slider-runnable-track {
+  height: 8px !important;
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="range"].lb-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin-top: -8px !important;
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  cursor: pointer !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="range"].lb-slider::-moz-range-track {
+  height: 8px !important;
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="range"].lb-slider::-moz-range-progress {
+  height: 8px !important;
+  background: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="range"].lb-slider::-moz-range-thumb {
+  width: 20px !important;
+  height: 20px !important;
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  cursor: pointer !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) input[type="range"].lb-slider:focus-visible {
+  outline: 2px solid #000000 !important;
+  outline-offset: 3px !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-slider-value,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-slider-labels {
+  font-family: var(--lb-font-family, var(--lb-font)) !important;
+}
+
+/* ion.rangeSlider: shared Classic Mac surface */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs * {
+  box-sizing: border-box !important;
+  font-family: var(--lb-font-family, var(--lb-font)) !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-line {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-line-left,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-line-mid,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-line-right {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-bar,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-bar-edge {
+  background: #000000 !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-slider,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-handle,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs--big .irs-handle {
+  width: 22px !important;
+  height: 22px !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-single,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-from,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-to,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-min,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-max {
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  font-family: var(--lb-font-family, var(--lb-font)) !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-single,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-from,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-to {
+  background: #000000 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-single::before,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-from::before,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-to::before {
+  display: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-grid-pol {
+  background: #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .irs-grid-text {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  font-family: var(--lb-font-family, var(--lb-font)) !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #tblzonen .player-add-row,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #tblzonen .player-add-row td,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) #tblzonen .player-add-cell {
+  background: #000000 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   V316: jQuery Mobile toggles match the native Classic-Mac switch
+   ----------------------------------------------------------------
+   jQM 1.4 data-role="flipswitch" normally renders a wide control with
+   a round button and visible On/Off text. Classic Mac uses the same
+   compact 48 x 24 px rectangular geometry as .lb-toggle. The hidden
+   native input and jQM behaviour remain untouched; only presentation
+   is replaced. The older data-role="slider" switch is squared as well.
+   ========================================================= */
+
+/* jQuery Mobile 1.4 flipswitch */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch {
+  position: relative !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  text-shadow: none !important;
+  transition: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-flipswitch-active {
+  width: 48px !important;
+  padding-left: 0 !important;
+  background: #000000 !important;
+  background-color: #000000 !important;
+  background-image: none !important;
+  border-color: #000000 !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* The visual jQM On button becomes the square Classic-Mac thumb. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch .ui-flipswitch-on,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch .ui-btn.ui-flipswitch-on,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-flipswitch-active .ui-btn.ui-flipswitch-on {
+  position: absolute !important;
+  top: 1px !important;
+  left: 1px !important;
+  float: none !important;
+  display: block !important;
+  width: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-indent: -9999px !important;
+  text-decoration: none !important;
+  text-shadow: none !important;
+  line-height: 18px !important;
+  transform: translateX(0) !important;
+  transition: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-flipswitch-active .ui-btn.ui-flipswitch-on {
+  left: 25px !important;
+  transform: translateX(0) !important;
+}
+
+/* State is communicated by position and black/white fill, like .lb-toggle. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch .ui-flipswitch-off,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch .ui-btn-text,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch .ui-btn-inner {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-indent: -9999px !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-focus,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch:focus-within {
+  outline: 2px solid #000000 !important;
+  outline-offset: 3px !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-disabled,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-flipswitch.ui-state-disabled,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-disabled .ui-flipswitch,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-state-disabled .ui-flipswitch {
+  opacity: 0.45 !important;
+}
+
+/* Older jQM data-role="slider" switch: preserve its movement logic, but
+   remove all pill/circular styling so it remains visibly Classic Mac. */
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch.ui-slider-track,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch {
+  background-image: none !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch .ui-slider-label,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch .ui-slider-label-a,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch .ui-slider-label-b {
+  border-radius: 0 !important;
+  text-shadow: none !important;
+}
+
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch .ui-slider-handle,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch .ui-btn.ui-slider-handle,
+:is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-slider-switch .ui-slider-handle .ui-btn-inner {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 2px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   V317 final override: legacy jQuery-Mobile button typography
+   ---------------------------------------------------------
+   Some legacy plugins load additional jQM/plugin CSS after the theme and use
+   anchors or nested wrappers as the visible button text. Keep this final,
+   deliberately high-specificity bridge at the end of the protected theme.
+   ========================================================= */
+html body.theme-user-classic-mac .ui-btn,
+html body.theme-classic-mac .ui-btn,
+html body.theme-user-classic-mac a.ui-btn,
+html body.theme-classic-mac a.ui-btn,
+html body.theme-user-classic-mac button.ui-btn,
+html body.theme-classic-mac button.ui-btn,
+html body.theme-user-classic-mac input.ui-btn,
+html body.theme-classic-mac input.ui-btn,
+html body.theme-user-classic-mac .ui-input-btn input,
+html body.theme-classic-mac .ui-input-btn input,
+html body.theme-user-classic-mac .ui-btn .ui-btn-inner,
+html body.theme-classic-mac .ui-btn .ui-btn-inner,
+html body.theme-user-classic-mac .ui-btn .ui-btn-text,
+html body.theme-classic-mac .ui-btn .ui-btn-text,
+html body.theme-user-classic-mac .ui-btn > a,
+html body.theme-classic-mac .ui-btn > a,
+html body.theme-user-classic-mac .ui-btn > span,
+html body.theme-classic-mac .ui-btn > span,
+html body.theme-user-classic-mac .ui-controlgroup-controls .ui-btn,
+html body.theme-classic-mac .ui-controlgroup-controls .ui-btn,
+html body.theme-user-classic-mac .ui-navbar .ui-btn,
+html body.theme-classic-mac .ui-navbar .ui-btn {
+  font-family: "Chicago_12", "Chicago", Geneva, Arial, system-ui, sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+}
+
+html body.theme-user-classic-mac a.ui-btn,
+html body.theme-classic-mac a.ui-btn,
+html body.theme-user-classic-mac .ui-btn > a,
+html body.theme-classic-mac .ui-btn > a,
+html body.theme-user-classic-mac .ui-btn .ui-link,
+html body.theme-classic-mac .ui-btn .ui-link {
+  text-decoration: none !important;
+}
+
+/* =========================================================
+   V317 final override: Core/Vue/legacy sidebar hover contrast
+   ---------------------------------------------------------
+   The global Classic-Mac link rule intentionally keeps normal links black.
+   Sidebar hover and active rows are black surfaces and therefore need a
+   stronger white-text override, including nested text/icon wrappers.
+   ========================================================= */
+html body.theme-user-classic-mac,
+html body.theme-classic-mac {
+  --lb-sidebar-link-hover-bg: #000000;
+  --lb-sidebar-link-hover-text: #ffffff;
+  --lb-sidebar-hover-bg: #000000;
+  --lb-sidebar-hover-text: #ffffff;
+  --lb-nav-hover-bg: #000000;
+  --lb-nav-hover-text: #ffffff;
+}
+
+html body.theme-user-classic-mac .lb-sidebar-link:hover,
+html body.theme-classic-mac .lb-sidebar-link:hover,
+html body.theme-user-classic-mac a.lb-sidebar-link:hover,
+html body.theme-classic-mac a.lb-sidebar-link:hover,
+html body.theme-user-classic-mac .lb-sidebar a:hover,
+html body.theme-classic-mac .lb-sidebar a:hover,
+html body.theme-user-classic-mac #vuenavbar a:hover,
+html body.theme-classic-mac #vuenavbar a:hover,
+html body.theme-user-classic-mac .vuenavbarcontainer a:hover,
+html body.theme-classic-mac .vuenavbarcontainer a:hover,
+html body.theme-user-classic-mac .vuenavbarelement:hover,
+html body.theme-classic-mac .vuenavbarelement:hover,
+html body.theme-user-classic-mac .vuenavbarsubelement:hover,
+html body.theme-classic-mac .vuenavbarsubelement:hover,
+html body.theme-user-classic-mac .vuenavbarelement_active,
+html body.theme-classic-mac .vuenavbarelement_active,
+html body.theme-user-classic-mac .vuenavbarsubelement_active,
+html body.theme-classic-mac .vuenavbarsubelement_active {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: #000000 !important;
+  text-shadow: none !important;
+}
+
+html body.theme-user-classic-mac .lb-sidebar-link:hover *,
+html body.theme-classic-mac .lb-sidebar-link:hover *,
+html body.theme-user-classic-mac .lb-sidebar a:hover *,
+html body.theme-classic-mac .lb-sidebar a:hover *,
+html body.theme-user-classic-mac #vuenavbar a:hover *,
+html body.theme-classic-mac #vuenavbar a:hover *,
+html body.theme-user-classic-mac .vuenavbarcontainer a:hover *,
+html body.theme-classic-mac .vuenavbarcontainer a:hover *,
+html body.theme-user-classic-mac .vuenavbarelement:hover *,
+html body.theme-classic-mac .vuenavbarelement:hover *,
+html body.theme-user-classic-mac .vuenavbarsubelement:hover *,
+html body.theme-classic-mac .vuenavbarsubelement:hover *,
+html body.theme-user-classic-mac .vuenavbarelement_active *,
+html body.theme-classic-mac .vuenavbarelement_active *,
+html body.theme-user-classic-mac .vuenavbarsubelement_active *,
+html body.theme-classic-mac .vuenavbarsubelement_active * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   V319 final override: native single-select indicator layer
+   ---------------------------------------------------------
+   Some Core/plugin rules deliberately reset background-image on native
+   selects after the Theme CSS has loaded. Therefore the Classic-Mac arrow
+   is no longer painted on the select itself. Instead it is rendered as a
+   pointer-events:none overlay on the select's direct wrapper. This survives
+   later background/background-image resets on the native control.
+
+   Supported wrappers are the normal Core form field and direct layout
+   wrappers used by current plugins. jQuery-Mobile selects keep their own
+   visible .ui-select button and are intentionally excluded here.
+   ========================================================= */
+html body.theme-user-classic-mac select.lb-select:not([multiple]):not([size]),
+html body.theme-classic-mac select.lb-select:not([multiple]):not([size]),
+html body.theme-user-classic-mac select.lb-select[size="1"],
+html body.theme-classic-mac select.lb-select[size="1"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  padding-right: 25px !important;
+  text-shadow: none !important;
+}
+
+html body.theme-user-classic-mac select.lb-select:not([multiple]):not([size]):hover,
+html body.theme-classic-mac select.lb-select:not([multiple]):not([size]):hover,
+html body.theme-user-classic-mac select.lb-select:not([multiple]):not([size]):focus,
+html body.theme-classic-mac select.lb-select:not([multiple]):not([size]):focus,
+html body.theme-user-classic-mac select.lb-select[size="1"]:hover,
+html body.theme-classic-mac select.lb-select[size="1"]:hover,
+html body.theme-user-classic-mac select.lb-select[size="1"]:focus,
+html body.theme-classic-mac select.lb-select[size="1"]:focus {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+@supports not selector(div:has(> select)) {
+  html body.theme-user-classic-mac select.lb-select:not([multiple]):not([size]),
+  html body.theme-classic-mac select.lb-select:not([multiple]):not([size]),
+  html body.theme-user-classic-mac select.lb-select[size="1"],
+  html body.theme-classic-mac select.lb-select[size="1"] {
+    background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/select-button.svg?v=319") !important;
+    background-position: right 2px center !important;
+    background-size: 17px 17px !important;
+    background-repeat: no-repeat !important;
+  }
+}
+
+@supports selector(div:has(> select)) {
+  html body.theme-user-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select:not([multiple]):not([size])),
+  html body.theme-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select:not([multiple]):not([size])),
+  html body.theme-user-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select[size="1"]),
+  html body.theme-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select[size="1"]) {
+    position: relative !important;
+  }
+
+  html body.theme-user-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select:not([multiple]):not([size]))::after,
+  html body.theme-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select:not([multiple]):not([size]))::after,
+  html body.theme-user-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select[size="1"])::after,
+  html body.theme-classic-mac :is(div, fieldset, td, label, span):has(> select.lb-select[size="1"])::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 2px !important;
+    width: 17px !important;
+    height: 17px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(-50%) !important;
+    background-color: #ffffff !important;
+    background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/select-button.svg?v=319") !important;
+    background-position: center !important;
+    background-size: 17px 17px !important;
+    background-repeat: no-repeat !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
+    z-index: 20 !important;
+  }
+}
+
+/* =========================================================
+   V318 final override: Sonos online player status
+   ---------------------------------------------------------
+   Sonos marks online room fields on the native input itself. The surrounding
+   jQuery-Mobile wrapper and later generic input rules must not repaint the
+   Classic-Mac status surface. Online fields are therefore always black with
+   white text, including hover, focus and row-hover states.
+   ========================================================= */
+html body.theme-user-classic-mac input[type="text"].zone-online,
+html body.theme-classic-mac input[type="text"].zone-online,
+html body.theme-user-classic-mac input[type="text"].player-zone-online,
+html body.theme-classic-mac input[type="text"].player-zone-online,
+html body.theme-user-classic-mac input[type="text"].volume-zone-online,
+html body.theme-classic-mac input[type="text"].volume-zone-online,
+html body.theme-user-classic-mac input[type="text"].sb_topline_input_online,
+html body.theme-classic-mac input[type="text"].sb_topline_input_online,
+html body.theme-user-classic-mac .ui-input-text > input[type="text"].zone-online,
+html body.theme-classic-mac .ui-input-text > input[type="text"].zone-online,
+html body.theme-user-classic-mac .ui-input-text > input[type="text"].player-zone-online,
+html body.theme-classic-mac .ui-input-text > input[type="text"].player-zone-online,
+html body.theme-user-classic-mac .ui-input-text > input[type="text"].volume-zone-online,
+html body.theme-classic-mac .ui-input-text > input[type="text"].volume-zone-online,
+html body.theme-user-classic-mac table.sonos-player-table input[type="text"].zone-online,
+html body.theme-classic-mac table.sonos-player-table input[type="text"].zone-online,
+html body.theme-user-classic-mac table.sonos-volume-profile-table input[type="text"].zone-online,
+html body.theme-classic-mac table.sonos-volume-profile-table input[type="text"].zone-online {
+  --lb-input-bg: #000000 !important;
+  --lb-input-text: #ffffff !important;
+  --lb-text: #ffffff !important;
+  --lb-jqm-text: #ffffff !important;
+  --lb-active-bg: #000000 !important;
+  --lb-active-text: #ffffff !important;
+  --s4lox-zone-online-bg: #000000 !important;
+  --s4lox-zone-online-border: #000000 !important;
+  --s4lox-zone-online-text: #ffffff !important;
+  --s4lox-zone-online-hover-text: #ffffff !important;
+  background: #000000 !important;
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  border-color: #000000 !important;
+  box-shadow: inset 1px 1px 0 #ffffff !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+
+html body.theme-user-classic-mac input[type="text"].zone-online:hover,
+html body.theme-classic-mac input[type="text"].zone-online:hover,
+html body.theme-user-classic-mac input[type="text"].zone-online:focus,
+html body.theme-classic-mac input[type="text"].zone-online:focus,
+html body.theme-user-classic-mac table.sonos-player-table tbody tr:hover input[type="text"].zone-online,
+html body.theme-classic-mac table.sonos-player-table tbody tr:hover input[type="text"].zone-online,
+html body.theme-user-classic-mac table.sonos-volume-profile-table tbody tr:hover input[type="text"].zone-online,
+html body.theme-classic-mac table.sonos-volume-profile-table tbody tr:hover input[type="text"].zone-online {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  border-color: #000000 !important;
+  outline-color: #000000 !important;
+  text-shadow: none !important;
+}
+
+@supports selector(.ui-input-text:has(> input.zone-online)) {
+  html body.theme-user-classic-mac .ui-input-text:has(> input.zone-online),
+  html body.theme-classic-mac .ui-input-text:has(> input.zone-online),
+  html body.theme-user-classic-mac .ui-input-text:has(> input.player-zone-online),
+  html body.theme-classic-mac .ui-input-text:has(> input.player-zone-online),
+  html body.theme-user-classic-mac .ui-input-text:has(> input.volume-zone-online),
+  html body.theme-classic-mac .ui-input-text:has(> input.volume-zone-online),
+  html body.theme-user-classic-mac .ui-input-text:has(> input.sb_topline_input_online),
+  html body.theme-classic-mac .ui-input-text:has(> input.sb_topline_input_online) {
+    background: #000000 !important;
+    background-color: #000000 !important;
+    background-image: none !important;
+    border: 2px solid #000000 !important;
+    border-radius: 0 !important;
+    box-shadow: 2px 2px 0 #000000 !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+  }
+}
+

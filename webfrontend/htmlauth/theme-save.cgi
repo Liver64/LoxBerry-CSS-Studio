@@ -102,17 +102,37 @@ sub _inc_patch {
 my $name = _normalize_name($data->{name});
 my $id = _theme_id_from_name($name);
 
-sub _is_protected_studio_theme_id {
+sub _protected_studio_theme_mode {
     my ($theme_id) = @_;
     $theme_id = defined $theme_id ? lc("$theme_id") : '';
-    return $theme_id eq 'theme-user-liquid-glass';
+    return 'wallpaper-only' if $theme_id eq 'theme-user-liquid-glass';
+    return 'readonly'       if $theme_id eq 'theme-user-classic-mac';
+    return '';
 }
 
-my $is_protected_studio_theme = _is_protected_studio_theme_id($id) ? 1 : 0;
-my $protected_wallpaper_only_request = ($is_protected_studio_theme && $data->{protected_wallpaper_only}) ? 1 : 0;
+sub _protected_studio_theme_name {
+    my ($theme_id) = @_;
+    return 'Liquid Glass' if lc($theme_id || '') eq 'theme-user-liquid-glass';
+    return 'Classic Mac'  if lc($theme_id || '') eq 'theme-user-classic-mac';
+    return $theme_id || 'Package Theme';
+}
 
-if ($is_protected_studio_theme && !$protected_wallpaper_only_request) {
-    _respond('403 Forbidden', _error_payload('protectedPackageTheme', 'protectedPackageTheme', { theme => 'Liquid Glass', id => $id }));
+my $protected_studio_theme_mode = _protected_studio_theme_mode($id);
+my $is_protected_studio_theme = $protected_studio_theme_mode ne '' ? 1 : 0;
+my $protected_wallpaper_only_request = (
+    $protected_studio_theme_mode eq 'wallpaper-only' && $data->{protected_wallpaper_only}
+) ? 1 : 0;
+
+if ($protected_studio_theme_mode eq 'readonly') {
+    _respond('403 Forbidden', _error_payload('protectedPackageTheme', 'protectedPackageTheme', {
+        theme => _protected_studio_theme_name($id), id => $id
+    }));
+}
+
+if ($protected_studio_theme_mode eq 'wallpaper-only' && !$protected_wallpaper_only_request) {
+    _respond('403 Forbidden', _error_payload('protectedPackageTheme', 'protectedPackageTheme', {
+        theme => _protected_studio_theme_name($id), id => $id
+    }));
 }
 
 my $version = $data->{version} || '0.1.0';
@@ -551,11 +571,15 @@ sub _apply_protected_liquid_glass_wallpaper_css {
     return $css_content if ref($wallpaper_ref) ne 'HASH' || !$wallpaper_ref->{enabled} || !$wallpaper_ref->{image};
 
     my $img = _css_string_escape(_theme_file_url_for_css($wallpaper_ref->{image}));
+    my $opacity = sprintf('%.2f', _clamp_int($wallpaper_ref->{opacity}, 0, 100, 100) / 100);
+    my $brightness = sprintf('%.2f', _clamp_int($wallpaper_ref->{brightness}, 0, 150, 100) / 100);
 
-    # Remove the generic Studio wallpaper layer. Liquid Glass already owns the
-    # page wallpaper through body::before; a second .lb-main::before layer makes
-    # two wallpapers visible at the same time.
+    # Liquid Glass already owns the page wallpaper through body::before. Remove
+    # every generic Studio layer and every older Liquid-Glass override block
+    # before writing one deterministic current block.
     $css_content =~ s{\n?\/\*\s*DESIGN STUDIO WALLPAPER START\s*\*\/[\s\S]*?\/\*\s*DESIGN STUDIO WALLPAPER END\s*\*\/\n?}{\n}ig;
+    $css_content =~ s{\n?\/\*\s*DESIGN STUDIO LIQUID GLASS WALLPAPER START\s*\*\/[\s\S]*?\/\*\s*DESIGN STUDIO LIQUID GLASS WALLPAPER END\s*\*\/\n?}{\n}ig;
+    $css_content =~ s{\n?\/\*\s*DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS START\s*\*\/[\s\S]*?\/\*\s*DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS END\s*\*\/\n?}{\n}ig;
 
     # Replace the historical built-in Liquid Glass wallpaper URL, independent of
     # whether it points to assets/images/liquid-glass/ or the canonical
@@ -567,14 +591,25 @@ sub _apply_protected_liquid_glass_wallpaper_css {
     $replaced += ($css_content =~ s{url\(["']?[^"')]*assets(?:/|%2F)images(?:/|%2F)(?:liquid-glass|theme-user-liquid-glass)(?:/|%2F)wallpaper\.(?:png|jpe?g|webp|gif)["']?\)\s*!important;?}{$replacement}ig) if !$replaced;
 
     if (!$replaced) {
-        # Safe fallback for unexpected older CSS: add one Liquid-Glass-native
-        # wallpaper layer, not the generic Studio .lb-main layer.
+        # Safe fallback for unexpected older CSS: add only the background image
+        # to the existing Liquid-Glass-native pseudo element.
         $css_content .= "\n/* DESIGN STUDIO LIQUID GLASS WALLPAPER START */\n";
         $css_content .= ":is(body.theme-user-liquid-glass, body.theme-liquid-glass)::before {\n";
         $css_content .= "  background-image: url(\"$img\") !important;\n";
         $css_content .= "}\n";
         $css_content .= "/* DESIGN STUDIO LIQUID GLASS WALLPAPER END */\n";
     }
+
+    # V309: The protected-theme path previously replaced only the image URL.
+    # Persist and apply the same brightness/opacity values that the Studio
+    # preview shows. A marked override at the end wins over package defaults and
+    # is replaced atomically on every save, so no duplicate rules accumulate.
+    $css_content .= "\n/* DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS START */\n";
+    $css_content .= ":is(body.theme-user-liquid-glass, body.theme-liquid-glass)::before {\n";
+    $css_content .= "  opacity: $opacity !important;\n";
+    $css_content .= "  filter: brightness($brightness) !important;\n";
+    $css_content .= "}\n";
+    $css_content .= "/* DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS END */\n";
 
     return $css_content;
 }
@@ -644,7 +679,7 @@ sub _save_protected_wallpaper_only {
         import_meta              => undef,
         wallpaper                => $wallpaper_ref,
         protected_wallpaper_only => JSON::PP::true,
-        studio_version           => 'V302_WallpaperHeaderCoreContract',
+        studio_version           => 'V309_LiquidGlassWallpaperPersistence',
         updated_at               => strftime('%Y-%m-%dT%H:%M:%S%z', localtime),
     };
 
@@ -666,7 +701,7 @@ sub _save_protected_wallpaper_only {
     });
 }
 
-if ($is_protected_studio_theme) {
+if ($protected_studio_theme_mode eq 'wallpaper-only') {
     _save_protected_wallpaper_only($id, $name, $version, $wallpaper);
 }
 # Avoid nested USER CUSTOM markers when importing/saving repeatedly.
@@ -864,26 +899,71 @@ $css .= "  border-color: var(--lb-active-border, var(--lb-btn-primary-border, va
 $css .= "  text-shadow: none !important;\n";
 $css .= "  box-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-input-text, body.$id .ui-input-search, body.$id .ui-textinput, body.$id .ui-select .ui-btn,\n";
-$css .= ".$id .ui-input-text, .$id .ui-input-search, .$id .ui-textinput, .$id .ui-select .ui-btn {\n";
+# V310: Keep the generated JQM/native control geometry aligned with the
+# Design Studio preview. Inputs, textareas and selects have separate radius
+# tokens; the old combined rule incorrectly fell back to --lb-radius and made
+# square controls rounded again in legacy plugins.
+$css .= "/* V310: Granular input, textarea and select token compatibility. */\n";
+$css .= "body.$id .ui-input-text, body.$id .ui-input-search, body.$id .ui-textinput,\n";
+$css .= ".$id .ui-input-text, .$id .ui-input-search, .$id .ui-textinput {\n";
 $css .= "  background-image: none !important;\n";
 $css .= "  background-color: var(--lb-input-bg, var(--lb-card-bg, #fff)) !important;\n";
 $css .= "  color: var(--lb-input-text, var(--lb-text, inherit)) !important;\n";
 $css .= "  border-color: var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;\n";
 $css .= "  border-style: solid !important;\n";
 $css .= "  border-width: 1px !important;\n";
-$css .= "  border-radius: var(--lb-radius, var(--lb-btn-radius, 4px)) !important;\n";
+$css .= "  border-radius: var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))) !important;\n";
 $css .= "  text-shadow: none !important;\n";
 $css .= "  box-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-input-text input, body.$id .ui-input-search input, body.$id .ui-textinput input, body.$id textarea, body.$id select,\n";
-$css .= ".$id .ui-input-text input, .$id .ui-input-search input, .$id .ui-textinput input, .$id textarea, .$id select {\n";
+$css .= "body.$id textarea.ui-input-text, body.$id textarea.ui-textinput, body.$id textarea.ui-input-search,\n";
+$css .= ".$id textarea.ui-input-text, .$id textarea.ui-textinput, .$id textarea.ui-input-search {\n";
+$css .= "  background-color: var(--lb-textarea-bg, var(--lb-input-bg, var(--lb-card-bg, #fff))) !important;\n";
+$css .= "  color: var(--lb-textarea-text, var(--lb-input-text, var(--lb-text, inherit))) !important;\n";
+$css .= "  border-color: var(--lb-textarea-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  border-radius: var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px))))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-select .ui-btn, .$id .ui-select .ui-btn {\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  background-color: var(--lb-select-bg, var(--lb-input-bg, var(--lb-card-bg, #fff))) !important;\n";
+$css .= "  color: var(--lb-select-text, var(--lb-input-text, var(--lb-text, inherit))) !important;\n";
+$css .= "  border-color: var(--lb-select-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 1px !important;\n";
+$css .= "  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id input:not([type]), body.$id input[type=\"text\"], body.$id input[type=\"password\"], body.$id input[type=\"email\"], body.$id input[type=\"number\"], body.$id input[type=\"search\"], body.$id input[type=\"tel\"], body.$id input[type=\"url\"], body.$id input[type=\"date\"], body.$id input[type=\"time\"], body.$id input[type=\"datetime-local\"], body.$id input[type=\"month\"], body.$id input[type=\"week\"],\n";
+$css .= ".$id input:not([type]), .$id input[type=\"text\"], .$id input[type=\"password\"], .$id input[type=\"email\"], .$id input[type=\"number\"], .$id input[type=\"search\"], .$id input[type=\"tel\"], .$id input[type=\"url\"], .$id input[type=\"date\"], .$id input[type=\"time\"], .$id input[type=\"datetime-local\"], .$id input[type=\"month\"], .$id input[type=\"week\"] {\n";
+$css .= "  border-radius: var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id textarea, .$id textarea {\n";
+$css .= "  border-radius: var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px))))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id select, .$id select {\n";
+$css .= "  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))))) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-input-text input, body.$id .ui-input-search input, body.$id .ui-textinput input,\n";
+$css .= ".$id .ui-input-text input, .$id .ui-input-search input, .$id .ui-textinput input {\n";
 $css .= "  color: var(--lb-input-text, var(--lb-text, inherit)) !important;\n";
 $css .= "  text-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-input-text:focus-within, body.$id .ui-input-search:focus-within, body.$id .ui-select .ui-btn:focus,\n";
-$css .= ".$id .ui-input-text:focus-within, .$id .ui-input-search:focus-within, .$id .ui-select .ui-btn:focus {\n";
+$css .= "body.$id textarea, .$id textarea {\n";
+$css .= "  color: var(--lb-textarea-text, var(--lb-input-text, var(--lb-text, inherit))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id select, .$id select {\n";
+$css .= "  color: var(--lb-select-text, var(--lb-input-text, var(--lb-text, inherit))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-input-text:focus-within, body.$id .ui-input-search:focus-within,\n";
+$css .= ".$id .ui-input-text:focus-within, .$id .ui-input-search:focus-within {\n";
 $css .= "  border-color: var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff))) !important;\n";
+$css .= "  box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;\n";
+$css .= "}\n";
+$css .= "body.$id .ui-select .ui-btn:focus, .$id .ui-select .ui-btn:focus {\n";
+$css .= "  border-color: var(--lb-select-focus-border, var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff)))) !important;\n";
 $css .= "  box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;\n";
 $css .= "}\n";
 $css .= "body.$id .ui-checkbox .ui-btn, body.$id .ui-radio .ui-btn, .$id .ui-checkbox .ui-btn, .$id .ui-radio .ui-btn {\n";

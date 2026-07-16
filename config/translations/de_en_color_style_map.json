@@ -1,5 +1,5 @@
 {
-  "version": "63.0.0",
+  "version": "303.0.0",
   "description": "German to English color/style normalization for Design Studio AI prompts. Technical prompt context only; not UI language.",
   "colors": [
     {
@@ -472,6 +472,26 @@
         "rounded"
       ],
       "en": "rounded"
+    },
+    {
+      "de": [
+        "eckig",
+        "eckige kanten",
+        "eckige karten",
+        "eckige buttons",
+        "kantig",
+        "rechtwinklig",
+        "ohne rundung",
+        "ohne rundungen",
+        "keine rundung",
+        "keine rundungen",
+        "nicht abgerundet",
+        "square corners",
+        "sharp corners",
+        "squared",
+        "angular"
+      ],
+      "en": "square corners"
     }
   ]
 }

@@ -1,0 +1,17 @@
+{
+   "custom_css": "",
+   "id": "theme-user-classic-mac",
+   "import_meta": null,
+   "name": "Classic Mac",
+   "protected_readonly": true,
+   "studio": {
+      "generator": "Package",
+      "mode": "readonly",
+      "protected": true
+   },
+   "studio_model": {},
+   "studio_version": "V311_ProtectedClassicMacPackage",
+   "tokens": {},
+   "version": "1.0.0",
+   "wallpaper": null
+}

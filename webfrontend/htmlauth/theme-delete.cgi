@@ -66,16 +66,19 @@ _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid JSON payl
 my $id = _safe_id($data->{id});
 _respond('400 Bad Request', { ok => JSON::PP::false, error => 'Invalid or missing theme id' }) if !$id;
 
-# V273: packaged Liquid Glass is protected in the Design Studio.
-# It may receive wallpaper-only updates via theme-save.cgi, but it must not be
-# deleted from Studio or by direct backend calls.
-if (lc($id) eq 'theme-user-liquid-glass') {
+# V311: package-owned themes are protected from Studio and direct backend
+# deletion. Liquid Glass remains wallpaper-only; Classic Mac is fully read-only.
+my %protected_package_theme = (
+    'theme-user-liquid-glass' => 'Liquid Glass',
+    'theme-user-classic-mac'  => 'Classic Mac',
+);
+if (exists $protected_package_theme{lc($id)}) {
     _respond('403 Forbidden', {
         ok => JSON::PP::false,
         error => 'Protected package theme cannot be deleted',
         error_key => 'protectedPackageTheme',
         message_key => 'protectedPackageTheme',
-        args => { theme => 'Liquid Glass', id => $id },
+        args => { theme => $protected_package_theme{lc($id)}, id => $id },
         id => $id,
     });
 }
