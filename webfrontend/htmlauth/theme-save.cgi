@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use lib "REPLACELBHOMEDIR/libs/perllib";
+use lib "/opt/loxberry/libs/perllib";
 use FindBin qw($Bin);
 use lib "$Bin/lib";
 
@@ -21,8 +21,8 @@ use LoxBerry::JSON;
 our ($lbpconfigdir, $lbpdatadir);
 
 my $plugin = 'cssframework';
-my $cfgdir = $lbpconfigdir || $ENV{LBPCONFIG} || "REPLACELBHOMEDIR/config/plugins/$plugin";
-my $datadir = $lbpdatadir || $ENV{LBPDATA} || "REPLACELBHOMEDIR/data/plugins/$plugin";
+my $cfgdir = $lbpconfigdir || $ENV{LBPCONFIG} || "/opt/loxberry/config/plugins/$plugin";
+my $datadir = $lbpdatadir || $ENV{LBPDATA} || "/opt/loxberry/data/plugins/$plugin";
 
 # V79 storage split:
 # - JSON/editable Studio state stays in config/plugins/cssframework/themes.

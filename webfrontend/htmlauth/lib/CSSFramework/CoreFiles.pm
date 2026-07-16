@@ -43,7 +43,7 @@ sub _read_manifest {
 sub scan_core_files {
     my ($opts) = @_;
     $opts ||= {};
-    my $lbhtml = $opts->{lbhtml} || $ENV{LBHTML} || 'REPLACELBHOMEDIR/webfrontend/html';
+    my $lbhtml = $opts->{lbhtml} || $ENV{LBHTML} || '/opt/loxberry/webfrontend/html';
     my $system_css_dir = $lbhtml . '/system/css';
 
     my %wanted = (

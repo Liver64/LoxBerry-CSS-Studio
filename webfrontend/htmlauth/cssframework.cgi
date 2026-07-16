@@ -68,7 +68,7 @@ sub cssframework_candidate_html_dirs {
 	}
 
 	# Last-resort common LoxBerry path.
-	push @dirs, 'REPLACELBHOMEDIR/webfrontend/html';
+	push @dirs, '/opt/loxberry/webfrontend/html';
 
 	my @unique;
 	my %seen;
@@ -113,7 +113,7 @@ sub cssframework_candidate_data_theme_dirs {
 
 	push @dirs, "$lbhomedir/data/plugins/cssframework/themes" if defined $lbhomedir && $lbhomedir ne '';
 	push @dirs, "$ENV{LBHOMEDIR}/data/plugins/cssframework/themes" if $ENV{LBHOMEDIR};
-	push @dirs, 'REPLACELBHOMEDIR/data/plugins/cssframework/themes';
+	push @dirs, '/opt/loxberry/data/plugins/cssframework/themes';
 
 	my @unique;
 	my %seen;

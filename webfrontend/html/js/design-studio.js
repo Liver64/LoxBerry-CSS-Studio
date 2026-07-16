@@ -126,6 +126,15 @@
   var previewHoverTarget = null;
   var appliedPreviewVars = [];
   var wallpaperState = { enabled: false, image: '', brightness: 100, opacity: 100 };
+  /* V327: Liquid Glass is a protected package theme whose JSON intentionally
+     contains only wallpaper settings. The real visual contract lives in the
+     packaged CSS. Load and fully scope that CSS to previewRoot and keep the
+     active LoxBerry runtime theme outside the preview. */
+  var liquidGlassPreviewStyle = null;
+  var liquidGlassPreviewLoad = null;
+  var liquidGlassPreviewTokens = {};
+  var liquidGlassPreviewCssUrl = '/admin/plugins/cssframework/theme-file.cgi?file=theme-user-liquid-glass.css';
+
 
   var i18nLanguage = (window.CFW_LANGUAGE || window.LBLANG || 'en').toLowerCase().indexOf('de') === 0 ? 'de' : 'en';
   var i18nDictionary = (window.LBDesignStudioLangs && (window.LBDesignStudioLangs[i18nLanguage] || window.LBDesignStudioLangs.de || window.LBDesignStudioLangs.en)) || {};
@@ -712,6 +721,278 @@
     return String(id || '').trim().toLowerCase() === 'theme-user-liquid-glass';
   }
 
+  function extractLiquidGlassRootDeclarations(cssText) {
+    var css = String(cssText || '');
+    var selectors = [
+      ':is(body.theme-user-liquid-glass, body.theme-liquid-glass)',
+      'body.theme-user-liquid-glass'
+    ];
+    var selectorIndex = -1;
+    var selector = '';
+
+    selectors.some(function (candidate) {
+      var found = css.indexOf(candidate);
+      if (found === -1) return false;
+      selectorIndex = found;
+      selector = candidate;
+      return true;
+    });
+
+    if (selectorIndex === -1) return '';
+
+    var open = css.indexOf('{', selectorIndex + selector.length);
+    if (open === -1) return '';
+
+    /* The package root block contains declarations only. Still scan strings and
+       comments so a future value cannot terminate the block accidentally. */
+    var depth = 1;
+    var quote = '';
+    var inComment = false;
+    var escaped = false;
+
+    for (var index = open + 1; index < css.length; index += 1) {
+      var ch = css.charAt(index);
+      var next = css.charAt(index + 1);
+
+      if (inComment) {
+        if (ch === '*' && next === '/') {
+          inComment = false;
+          index += 1;
+        }
+        continue;
+      }
+
+      if (quote) {
+        if (escaped) {
+          escaped = false;
+        } else if (ch === '\\') {
+          escaped = true;
+        } else if (ch === quote) {
+          quote = '';
+        }
+        continue;
+      }
+
+      if (ch === '/' && next === '*') {
+        inComment = true;
+        index += 1;
+        continue;
+      }
+
+      if (ch === '"' || ch === "'") {
+        quote = ch;
+        continue;
+      }
+
+      if (ch === '{') depth += 1;
+      if (ch === '}') {
+        depth -= 1;
+        if (depth === 0) return css.slice(open + 1, index);
+      }
+    }
+
+    return '';
+  }
+
+  function parseLiquidGlassPreviewTokens(declarations) {
+    var probe = document.createElement('div');
+    var tokens = {};
+    probe.style.cssText = String(declarations || '');
+    for (var index = 0; index < probe.style.length; index += 1) {
+      var name = probe.style.item(index);
+      if (!/^--lb-[a-z0-9-]+$/i.test(name)) continue;
+      var value = String(probe.style.getPropertyValue(name) || '').trim();
+      if (value) tokens[name] = value;
+    }
+    return tokens;
+  }
+
+  function splitLiquidGlassSelectorList(selectorText) {
+    var result = [];
+    var start = 0;
+    var roundDepth = 0;
+    var squareDepth = 0;
+    var quote = '';
+    var escaped = false;
+    var selector = String(selectorText || '');
+
+    for (var index = 0; index < selector.length; index += 1) {
+      var ch = selector.charAt(index);
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (ch === '\\') escaped = true;
+        else if (ch === quote) quote = '';
+        continue;
+      }
+      if (ch === '"' || ch === "'") { quote = ch; continue; }
+      if (ch === '(') roundDepth += 1;
+      else if (ch === ')' && roundDepth > 0) roundDepth -= 1;
+      else if (ch === '[') squareDepth += 1;
+      else if (ch === ']' && squareDepth > 0) squareDepth -= 1;
+      else if (ch === ',' && roundDepth === 0 && squareDepth === 0) {
+        result.push(selector.slice(start, index).trim());
+        start = index + 1;
+      }
+    }
+    result.push(selector.slice(start).trim());
+    return result.filter(Boolean);
+  }
+
+  function scopeLiquidGlassSelectorForPreview(selector) {
+    var previewSelector = '#previewRoot.theme-user-liquid-glass';
+    var original = String(selector || '').trim();
+    var scoped = original
+      .replace(/:is\(\s*body\.theme-user-liquid-glass\s*,\s*body\.theme-liquid-glass\s*\)/g, previewSelector)
+      .replace(/\bbody\.theme-user-liquid-glass\b/g, previewSelector)
+      .replace(/\bbody\.theme-liquid-glass\b/g, previewSelector);
+
+    if (scoped !== original) return scoped;
+    return previewSelector + ' ' + scoped;
+  }
+
+  function scopeLiquidGlassCssForPreview(cssText) {
+    var sourceStyle = document.createElement('style');
+    sourceStyle.setAttribute('media', 'not all');
+    sourceStyle.setAttribute('data-cfw-liquid-source', 'true');
+    sourceStyle.textContent = String(cssText || '');
+    document.head.appendChild(sourceStyle);
+
+    function serializeRule(rule) {
+      if (typeof rule.selectorText === 'string' && rule.style) {
+        var selectors = splitLiquidGlassSelectorList(rule.selectorText)
+          .map(scopeLiquidGlassSelectorForPreview);
+        return selectors.join(',\n') + ' {' + rule.style.cssText + '}';
+      }
+
+      if (rule.cssRules) {
+        var raw = String(rule.cssText || '');
+        var open = raw.indexOf('{');
+        var prelude = open >= 0 ? raw.slice(0, open).trim() : '';
+        var nested = [];
+        for (var childIndex = 0; childIndex < rule.cssRules.length; childIndex += 1) {
+          nested.push(serializeRule(rule.cssRules[childIndex]));
+        }
+        return prelude + ' {' + nested.join('\n') + '}';
+      }
+
+      return String(rule.cssText || '');
+    }
+
+    var output = [];
+    try {
+      var sheet = sourceStyle.sheet;
+      if (!sheet || !sheet.cssRules) return '';
+      for (var index = 0; index < sheet.cssRules.length; index += 1) {
+        output.push(serializeRule(sheet.cssRules[index]));
+      }
+    } finally {
+      sourceStyle.remove();
+    }
+    return output.join('\n');
+  }
+
+  function ensureLiquidGlassPreviewStyle() {
+    if (liquidGlassPreviewStyle && liquidGlassPreviewStyle.isConnected) {
+      return liquidGlassPreviewStyle;
+    }
+
+    liquidGlassPreviewStyle = document.createElement('style');
+    liquidGlassPreviewStyle.id = 'cfwLiquidGlassPackagePreviewStyle';
+    liquidGlassPreviewStyle.setAttribute('data-cfw-preview-theme', 'theme-user-liquid-glass');
+    document.head.appendChild(liquidGlassPreviewStyle);
+    return liquidGlassPreviewStyle;
+  }
+
+  function loadLiquidGlassPreviewCss() {
+    if (liquidGlassPreviewLoad) return liquidGlassPreviewLoad;
+
+    liquidGlassPreviewLoad = fetch(
+      liquidGlassPreviewCssUrl + '&_cfw_preview=' + Date.now(),
+      { cache: 'no-store', credentials: 'same-origin' }
+    )
+      .then(function (response) {
+        if (!response.ok) throw new Error('Liquid Glass preview CSS HTTP ' + response.status);
+        return response.text();
+      })
+      .then(function (cssText) {
+        var declarations = extractLiquidGlassRootDeclarations(cssText);
+        var scopedCss = scopeLiquidGlassCssForPreview(cssText);
+        if (!declarations) throw new Error('Liquid Glass root declarations not found');
+        if (!scopedCss) throw new Error('Liquid Glass preview CSS could not be scoped');
+
+        liquidGlassPreviewTokens = parseLiquidGlassPreviewTokens(declarations);
+        ensureLiquidGlassPreviewStyle().textContent = scopedCss;
+
+        if (previewRoot && previewRoot.classList.contains('theme-user-liquid-glass')) {
+          var packageTokens = effectivePreviewTokens();
+          applyTokensToPreviewRoot(packageTokens);
+          broadcastEmbeddedFrameTokens(packageTokens);
+          applyWallpaperPreview();
+          updatePreviewRangeFills();
+        }
+        return true;
+      })
+      .catch(function (error) {
+        liquidGlassPreviewLoad = null;
+        if (window.console && console.warn) {
+          console.warn('Liquid Glass package preview could not be loaded:', error);
+        }
+        return false;
+      });
+
+    return liquidGlassPreviewLoad;
+  }
+
+  function setLiquidGlassPreviewAliases(enabled) {
+    if (!previewRoot) return;
+
+    previewRoot.querySelectorAll('[data-cfw-liquid-preview-alias]').forEach(function (node) {
+      String(node.getAttribute('data-cfw-liquid-preview-alias') || '')
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach(function (className) { node.classList.remove(className); });
+      node.removeAttribute('data-cfw-liquid-preview-alias');
+    });
+
+    if (!enabled) return;
+
+    function addAlias(node, className) {
+      if (!node || node.classList.contains(className)) return;
+      node.classList.add(className);
+      var aliases = String(node.getAttribute('data-cfw-liquid-preview-alias') || '')
+        .split(/\s+/)
+        .filter(Boolean);
+      if (aliases.indexOf(className) === -1) aliases.push(className);
+      node.setAttribute('data-cfw-liquid-preview-alias', aliases.join(' '));
+    }
+
+    previewRoot.querySelectorAll('.lb-button, .lb-btn-group > button').forEach(function (node) {
+      addAlias(node, 'lb-btn');
+    });
+    previewRoot.querySelectorAll('select.lb-input').forEach(function (node) {
+      addAlias(node, 'lb-select');
+    });
+    previewRoot.querySelectorAll('textarea.lb-input').forEach(function (node) {
+      addAlias(node, 'lb-textarea');
+    });
+    previewRoot.querySelectorAll('input.cfw-range[type="range"]').forEach(function (node) {
+      addAlias(node, 'lb-slider');
+    });
+  }
+
+  function updateLiquidGlassPackagePreviewMode() {
+    if (!previewRoot) return;
+    var enabled = isLiquidGlassWallpaperEditorMode();
+
+    previewRoot.classList.toggle('theme-user-liquid-glass', enabled);
+    previewRoot.classList.toggle('cfw-liquid-glass-package-preview', enabled);
+    setLiquidGlassPreviewAliases(enabled);
+
+    if (enabled) {
+      loadLiquidGlassPreviewCss();
+    }
+  }
+
   function isReadOnlyProtectedStudioThemeId(id) {
     return String(id || '').trim().toLowerCase() === 'theme-user-classic-mac';
   }
@@ -746,6 +1027,7 @@
 
   function updateProtectedStudioThemeMode() {
     var page = document.querySelector('.cfw-page.cfw-design-studio');
+    updateLiquidGlassPackagePreviewMode();
     var liquidWallpaperOnly = isLiquidGlassWallpaperEditorMode();
     var readOnly = isReadOnlyProtectedStudioThemeMode();
     var saveThemeButton = document.getElementById('saveTheme');
@@ -1085,6 +1367,22 @@
 
   function effectivePreviewTokens(extraNames) {
     var tokens = {};
+
+    /* V327: A protected Liquid Glass JSON contains no normal token payload.
+       Never fill that intentional gap with tokens from the currently active
+       LoxBerry theme. Use the package CSS root tokens instead; otherwise an
+       active Rose/Rounded/etc. theme is written inline onto previewRoot and
+       wins over the Liquid Glass package preview. */
+    if (isLiquidGlassWallpaperEditorMode()) {
+      /* Start from the neutral Core contract, not from the active runtime theme.
+         Liquid Glass intentionally overrides only the tokens it needs; all
+         remaining values must therefore come from Core defaults. */
+      Object.assign(tokens, coreTokens || {});
+      Object.assign(tokens, liquidGlassPreviewTokens || {});
+      Object.assign(tokens, collectTokens() || {});
+      return applyDesignRules(tokens);
+    }
+
     // V224: Runtime/Core default colors are only the initial empty-workbench base.
     // Once a JSON/AI/imported theme is loaded, missing values must not pull the
     // current LoxBerry green back into slider tokens or the preview palette.
@@ -2663,6 +2961,7 @@
     setWallpaperFromTheme(theme);
     if (customCss) customCss.value = aiImportedCss || tx('customCss.defaultText');
     if (themeId) themeId.value = theme.id || 'theme-user-loaded';
+    updateLiquidGlassPackagePreviewMode();
     if (themeName) themeName.value = normalizeThemeDisplayName(theme.name || theme.id || 'User Theme');
     if (themeVersion) themeVersion.value = theme.version || '0.1.0';
 

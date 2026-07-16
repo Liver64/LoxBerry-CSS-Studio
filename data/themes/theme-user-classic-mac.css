@@ -1861,3 +1861,71 @@ html body.theme-classic-mac table.sonos-volume-profile-table tbody tr:hover inpu
   }
 }
 
+
+/* =========================================================
+   V325: Legacy JQM form surface grid bridge
+   ---------------------------------------------------------
+   Legacy LoxBerry/JQM pages place the complete form inside
+   #page_content > form > div.form-group > table.formtable.
+   On these pages a later JQM/plugin rule may repaint form-group
+   white even when transparent is requested. Therefore this final
+   compatibility layer paints the Classic-Mac grid directly on the
+   actual legacy form surface instead of relying on transparency
+   through several nested JQM layout layers.
+
+   Direct formtable structure stays transparent so real component
+   surfaces (.lb-table, inputs, buttons, cards) keep their own style.
+   ========================================================= */
+html body.theme-user-classic-mac #page_content.lb-content.page_content > form > div.form-group,
+html body.theme-classic-mac #page_content.lb-content.page_content > form > div.form-group,
+html body.theme-user-classic-mac #page_content.lb-content.page_content form div.form-group,
+html body.theme-classic-mac #page_content.lb-content.page_content form div.form-group {
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px),
+    linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px) !important;
+  background-size: 22px 22px !important;
+  background-position: 0 0 !important;
+  background-repeat: repeat !important;
+  background-clip: border-box !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html body.theme-user-classic-mac #page_content.lb-content.page_content > form,
+html body.theme-classic-mac #page_content.lb-content.page_content > form,
+html body.theme-user-classic-mac #page_content.lb-content.page_content form,
+html body.theme-classic-mac #page_content.lb-content.page_content form,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > th,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > th,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > td,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > td,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > th,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > th,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > td,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > td,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > th,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > th,
+html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > td,
+html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > td {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
