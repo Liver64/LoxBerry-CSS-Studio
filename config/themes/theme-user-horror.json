@@ -184,7 +184,7 @@
       "--lb-tooltip-bg" : "#0e7490",
       "--lb-tooltip-text" : "#ffffff"
    },
-   "version" : "0.1.76",
+   "version" : "0.1.0",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

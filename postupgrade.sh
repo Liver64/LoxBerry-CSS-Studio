@@ -234,16 +234,18 @@ restore_theme_master_incremental() {
     mkdir -p "$DST"
 
     # CSS user themes are generated/user-editable output. Preserve them.
-    # Exception: Liquid Glass CSS is package-owned/protected. Keep the freshly
-    # installed package version, but restore its user wallpaper assets below.
+    # Exceptions: Liquid Glass and Classic Mac are package-owned/protected.
+    # Keep the freshly installed package versions, but restore user assets below.
     find "$SRC" -maxdepth 1 -type f -name 'theme-user-*.css' -print | while IFS= read -r CSSFILE; do
         BASENAME="$(basename "$CSSFILE")"
         TARGET="$DST/$BASENAME"
 
-        if [ "$BASENAME" = "theme-user-liquid-glass.css" ]; then
-            echo "<INFO> Keeping upgraded protected package theme CSS: $BASENAME"
-            continue
-        fi
+        case "$BASENAME" in
+            theme-user-liquid-glass.css|theme-user-classic-mac.css)
+                echo "<INFO> Keeping upgraded protected package theme CSS: $BASENAME"
+                continue
+                ;;
+        esac
 
         if cp -p "$CSSFILE" "$TARGET"; then
             echo "<OK> Restored user theme CSS: $BASENAME"

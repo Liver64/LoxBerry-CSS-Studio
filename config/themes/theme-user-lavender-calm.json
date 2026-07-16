@@ -17,7 +17,7 @@
          "shadow" : 1
       }
    },
-   "studio_version" : "V305_SquarePreviewContract",
+   "studio_version" : "V311_ProtectedClassicMacPackage",
    "tokens" : {
       "--lb-active-bg" : "#a78bfa",
       "--lb-active-text" : "#fbf7ff",
@@ -125,7 +125,7 @@
       "--lb-tooltip-bg" : "#8b5cf6",
       "--lb-tooltip-text" : "#fbf7ff"
    },
-   "version" : "0.1.14",
+   "version" : "0.1.0",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,

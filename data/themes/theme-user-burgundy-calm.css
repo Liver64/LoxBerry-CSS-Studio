@@ -157,26 +157,67 @@ body.theme-user-burgundy-calm .ui-btn.ui-btn-active, body.theme-user-burgundy-ca
   text-shadow: none !important;
   box-shadow: none !important;
 }
-body.theme-user-burgundy-calm .ui-input-text, body.theme-user-burgundy-calm .ui-input-search, body.theme-user-burgundy-calm .ui-textinput, body.theme-user-burgundy-calm .ui-select .ui-btn,
-.theme-user-burgundy-calm .ui-input-text, .theme-user-burgundy-calm .ui-input-search, .theme-user-burgundy-calm .ui-textinput, .theme-user-burgundy-calm .ui-select .ui-btn {
+/* V310: Granular input, textarea and select token compatibility. */
+body.theme-user-burgundy-calm .ui-input-text, body.theme-user-burgundy-calm .ui-input-search, body.theme-user-burgundy-calm .ui-textinput,
+.theme-user-burgundy-calm .ui-input-text, .theme-user-burgundy-calm .ui-input-search, .theme-user-burgundy-calm .ui-textinput {
   background-image: none !important;
   background-color: var(--lb-input-bg, var(--lb-card-bg, #fff)) !important;
   color: var(--lb-input-text, var(--lb-text, inherit)) !important;
   border-color: var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18))) !important;
   border-style: solid !important;
   border-width: 1px !important;
-  border-radius: var(--lb-radius, var(--lb-btn-radius, 4px)) !important;
+  border-radius: var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))) !important;
   text-shadow: none !important;
   box-shadow: none !important;
 }
-body.theme-user-burgundy-calm .ui-input-text input, body.theme-user-burgundy-calm .ui-input-search input, body.theme-user-burgundy-calm .ui-textinput input, body.theme-user-burgundy-calm textarea, body.theme-user-burgundy-calm select,
-.theme-user-burgundy-calm .ui-input-text input, .theme-user-burgundy-calm .ui-input-search input, .theme-user-burgundy-calm .ui-textinput input, .theme-user-burgundy-calm textarea, .theme-user-burgundy-calm select {
+body.theme-user-burgundy-calm textarea.ui-input-text, body.theme-user-burgundy-calm textarea.ui-textinput, body.theme-user-burgundy-calm textarea.ui-input-search,
+.theme-user-burgundy-calm textarea.ui-input-text, .theme-user-burgundy-calm textarea.ui-textinput, .theme-user-burgundy-calm textarea.ui-input-search {
+  background-color: var(--lb-textarea-bg, var(--lb-input-bg, var(--lb-card-bg, #fff))) !important;
+  color: var(--lb-textarea-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  border-color: var(--lb-textarea-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;
+  border-radius: var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px))))) !important;
+}
+body.theme-user-burgundy-calm .ui-select .ui-btn, .theme-user-burgundy-calm .ui-select .ui-btn {
+  background-image: none !important;
+  background-color: var(--lb-select-bg, var(--lb-input-bg, var(--lb-card-bg, #fff))) !important;
+  color: var(--lb-select-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  border-color: var(--lb-select-border, var(--lb-input-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))))) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-user-burgundy-calm input:not([type]), body.theme-user-burgundy-calm input[type="text"], body.theme-user-burgundy-calm input[type="password"], body.theme-user-burgundy-calm input[type="email"], body.theme-user-burgundy-calm input[type="number"], body.theme-user-burgundy-calm input[type="search"], body.theme-user-burgundy-calm input[type="tel"], body.theme-user-burgundy-calm input[type="url"], body.theme-user-burgundy-calm input[type="date"], body.theme-user-burgundy-calm input[type="time"], body.theme-user-burgundy-calm input[type="datetime-local"], body.theme-user-burgundy-calm input[type="month"], body.theme-user-burgundy-calm input[type="week"],
+.theme-user-burgundy-calm input:not([type]), .theme-user-burgundy-calm input[type="text"], .theme-user-burgundy-calm input[type="password"], .theme-user-burgundy-calm input[type="email"], .theme-user-burgundy-calm input[type="number"], .theme-user-burgundy-calm input[type="search"], .theme-user-burgundy-calm input[type="tel"], .theme-user-burgundy-calm input[type="url"], .theme-user-burgundy-calm input[type="date"], .theme-user-burgundy-calm input[type="time"], .theme-user-burgundy-calm input[type="datetime-local"], .theme-user-burgundy-calm input[type="month"], .theme-user-burgundy-calm input[type="week"] {
+  border-radius: var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))) !important;
+}
+body.theme-user-burgundy-calm textarea, .theme-user-burgundy-calm textarea {
+  border-radius: var(--lb-textarea-radius, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px))))) !important;
+}
+body.theme-user-burgundy-calm select, .theme-user-burgundy-calm select {
+  border-radius: var(--lb-select-radius, var(--lb-radius-select, var(--lb-input-radius, var(--lb-radius-input, var(--lb-radius-sm, var(--lb-radius, 4px)))))) !important;
+}
+body.theme-user-burgundy-calm .ui-input-text input, body.theme-user-burgundy-calm .ui-input-search input, body.theme-user-burgundy-calm .ui-textinput input,
+.theme-user-burgundy-calm .ui-input-text input, .theme-user-burgundy-calm .ui-input-search input, .theme-user-burgundy-calm .ui-textinput input {
   color: var(--lb-input-text, var(--lb-text, inherit)) !important;
   text-shadow: none !important;
 }
-body.theme-user-burgundy-calm .ui-input-text:focus-within, body.theme-user-burgundy-calm .ui-input-search:focus-within, body.theme-user-burgundy-calm .ui-select .ui-btn:focus,
-.theme-user-burgundy-calm .ui-input-text:focus-within, .theme-user-burgundy-calm .ui-input-search:focus-within, .theme-user-burgundy-calm .ui-select .ui-btn:focus {
+body.theme-user-burgundy-calm textarea, .theme-user-burgundy-calm textarea {
+  color: var(--lb-textarea-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm select, .theme-user-burgundy-calm select {
+  color: var(--lb-select-text, var(--lb-input-text, var(--lb-text, inherit))) !important;
+  text-shadow: none !important;
+}
+body.theme-user-burgundy-calm .ui-input-text:focus-within, body.theme-user-burgundy-calm .ui-input-search:focus-within,
+.theme-user-burgundy-calm .ui-input-text:focus-within, .theme-user-burgundy-calm .ui-input-search:focus-within {
   border-color: var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff))) !important;
+  box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;
+}
+body.theme-user-burgundy-calm .ui-select .ui-btn:focus, .theme-user-burgundy-calm .ui-select .ui-btn:focus {
+  border-color: var(--lb-select-focus-border, var(--lb-focus-border, var(--lb-input-focus-border, var(--lb-primary, #007aff)))) !important;
   box-shadow: 0 0 0 3px var(--lb-focus-ring, rgba(0,122,255,.18)) !important;
 }
 body.theme-user-burgundy-calm .ui-checkbox .ui-btn, body.theme-user-burgundy-calm .ui-radio .ui-btn, .theme-user-burgundy-calm .ui-checkbox .ui-btn, .theme-user-burgundy-calm .ui-radio .ui-btn {

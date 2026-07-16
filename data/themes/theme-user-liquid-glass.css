@@ -2810,6 +2810,7 @@ body.theme-user-liquid-glass .lb-lg-native-glass.lb-lg-is-disabled > select {
 
 
 
+
 /* DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS START */
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass)::before {
   opacity: 0.91 !important;
