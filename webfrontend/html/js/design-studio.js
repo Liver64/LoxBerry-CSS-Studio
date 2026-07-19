@@ -9,6 +9,7 @@
   var themeState = window.CFWThemeStateManager || null;
 
   var previewRoot = document.getElementById('previewRoot');
+  var liquidGlassWallpaperPreview = document.getElementById('liquidGlassWallpaperPreview');
   var statusBox = document.getElementById('status');
   var statusModal = document.getElementById('statusModal');
   var statusModalCard = statusModal ? statusModal.querySelector('.cfw-status-modal-card') : null;
@@ -72,6 +73,13 @@
   var mappedTokenCount = document.getElementById('mappedTokenCount');
   var previewCaption = document.getElementById('previewCaption');
   var aiColorPresetPalette = document.getElementById('aiColorPresetPalette');
+  var newThemeColorPanel = document.getElementById('newThemeColorPanel');
+  var newThemeColorToggle = document.getElementById('newThemeColorToggle');
+  var newThemeColorControls = document.getElementById('newThemeColorControls');
+  var newThemeColorPalette = document.getElementById('newThemeColorPalette');
+  var newThemeColorPicker = document.getElementById('newThemeColorPicker');
+  var applyNewThemeColorButton = document.getElementById('applyNewThemeColor');
+  var cancelNewThemeColorButton = document.getElementById('cancelNewThemeColor');
   var aiImportedTokens = {};
   var colorPresetValues = [
     // V141: 3 rows × 7 colors. Swatch size/spacing remains CSS-controlled.
@@ -79,9 +87,9 @@
     '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#a16207', '#78350f', '#6b7280',
     '#000000', '#f8fafc', '#fde68a', '#dc2626', '#16a34a', '#0891b2', '#7c3aed'
   ];
+  // V331: One shared set of 28 color directions for both the AI Designer and
+  // the local "New Theme" colorizer. The order is fixed at two rows of 14.
   var aiColorPresetMeta = [
-    // V170: 2 rows × 15 visible color directions, based on the Studio coarse palette.
-    { color: '#ffffff', de: 'klares Weiß', en: 'clear white' },
     { color: '#f5ead7', de: 'warmes Beige', en: 'warm beige' },
     { color: '#111827', de: 'dunkles Anthrazit', en: 'dark anthracite' },
     { color: '#ef4444', de: 'kräftiges Rot', en: 'strong red' },
@@ -96,7 +104,6 @@
     { color: '#78350f', de: 'dunkles Braun', en: 'dark brown' },
     { color: '#6b7280', de: 'neutrales Grau', en: 'neutral gray' },
     { color: '#000000', de: 'tiefes Schwarz', en: 'deep black' },
-    { color: '#f8fafc', de: 'helles Eisgrau', en: 'light ice gray' },
     { color: '#fde68a', de: 'sanftes Cremegelb', en: 'soft cream yellow' },
     { color: '#dc2626', de: 'dunkles Rot', en: 'dark red' },
     { color: '#16a34a', de: 'sattes Grün', en: 'rich green' },
@@ -126,15 +133,14 @@
   var previewHoverTarget = null;
   var appliedPreviewVars = [];
   var wallpaperState = { enabled: false, image: '', brightness: 100, opacity: 100 };
-  /* V327: Liquid Glass is a protected package theme whose JSON intentionally
-     contains only wallpaper settings. The real visual contract lives in the
-     packaged CSS. Load and fully scope that CSS to previewRoot and keep the
-     active LoxBerry runtime theme outside the preview. */
+  /* V333: Restore the V327 Liquid Glass package-preview isolation after the
+     later local colorizer changes. The protected JSON intentionally contains
+     wallpaper settings only; its complete visual contract comes from the
+     packaged CSS and must never inherit the active runtime theme. */
   var liquidGlassPreviewStyle = null;
   var liquidGlassPreviewLoad = null;
   var liquidGlassPreviewTokens = {};
   var liquidGlassPreviewCssUrl = '/admin/plugins/cssframework/theme-file.cgi?file=theme-user-liquid-glass.css';
-
 
   var i18nLanguage = (window.CFW_LANGUAGE || window.LBLANG || 'en').toLowerCase().indexOf('de') === 0 ? 'de' : 'en';
   var i18nDictionary = (window.LBDesignStudioLangs && (window.LBDesignStudioLangs[i18nLanguage] || window.LBDesignStudioLangs.de || window.LBDesignStudioLangs.en)) || {};
@@ -1025,6 +1031,213 @@
     return isReadOnlyProtectedStudioThemeId(id);
   }
 
+  function updateNewThemeColorPanelVisibility() {
+    if (!newThemeColorPanel) return;
+    var id = themeId && themeId.value ? themeId.value : currentStudioThemeId();
+    var hidden = isProtectedStudioThemeId(id);
+    newThemeColorPanel.hidden = hidden;
+    newThemeColorPanel.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+    if (hidden && newThemeColorControls) newThemeColorControls.hidden = true;
+  }
+
+  function renderNewThemeColorPalette() {
+    if (!newThemeColorPalette || !newThemeColorPicker) return;
+    newThemeColorPalette.innerHTML = '';
+    // V331: Use exactly the same 28 directions, order and labels as the AI Designer.
+    aiColorPresetMeta.forEach(function (item) {
+      var color = item.color;
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'cfw-color-swatch';
+      button.style.background = color;
+      button.setAttribute('data-role', 'none');
+      button.setAttribute('aria-label', aiColorDirectionLabel(item));
+      button.title = aiColorDirectionLabel(item);
+      button.addEventListener('click', function () {
+        newThemeColorPicker.value = normalizeHexColor(color) || color;
+        updateNewThemeColorPresetSelection();
+      });
+      newThemeColorPalette.appendChild(button);
+    });
+    updateNewThemeColorPresetSelection();
+  }
+
+  function updateNewThemeColorPresetSelection() {
+    if (!newThemeColorPalette || !newThemeColorPicker) return;
+    var current = String(newThemeColorPicker.value || '').toLowerCase();
+    newThemeColorPalette.querySelectorAll('.cfw-color-swatch').forEach(function (button) {
+      var bg = normalizeHexColor(button.style.backgroundColor || button.style.background || '');
+      button.classList.toggle('is-active', String(bg || '').toLowerCase() === current);
+    });
+  }
+
+  function blendThemeColor(a, b, amount) {
+    var ca = parseHexColor(a);
+    var cb = parseHexColor(b);
+    if (!ca || !cb) return a || b;
+    amount = Math.max(0, Math.min(1, Number(amount) || 0));
+    return rgbToHex({
+      r: ca.r + (cb.r - ca.r) * amount,
+      g: ca.g + (cb.g - ca.g) * amount,
+      b: ca.b + (cb.b - ca.b) * amount
+    });
+  }
+
+  function resolvedColorToken(tokens, names, fallback) {
+    var value = firstResolvedToken(tokens || {}, names || []);
+    var hex = colorToPickerHex(value, '');
+    return normalizeHexColor(hex) || fallback;
+  }
+
+  function nearestAiColorDirection(baseColor) {
+    var target = parseHexColor(normalizeHexColor(baseColor));
+    if (!target || !aiColorPresetMeta.length) return null;
+    var best = null;
+    var bestDistance = Infinity;
+    aiColorPresetMeta.forEach(function (item) {
+      var rgb = parseHexColor(item.color);
+      if (!rgb) return;
+      var distance = Math.pow(target.r - rgb.r, 2) + Math.pow(target.g - rgb.g, 2) + Math.pow(target.b - rgb.b, 2);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = item;
+      }
+    });
+    return best;
+  }
+
+  function localThemePaletteFromAiDirection(baseColor) {
+    baseColor = normalizeHexColor(baseColor) || '#2563eb';
+    var direction = nearestAiColorDirection(baseColor);
+    var family = direction ? detectPaletteFamilyFromText((direction.de || '') + ' ' + (direction.en || '')) : '';
+    var palette = aiPaletteDefaults(family) || aiPaletteDefaults('blue') || {};
+    var primaryHover = mixColor(baseColor, -12);
+    var primaryDark = mixColor(baseColor, -24);
+    var focusRgb = parseHexColor(baseColor) || { r: 37, g: 99, b: 235 };
+    return Object.assign({}, palette, {
+      primary: baseColor,
+      primaryHover: primaryHover,
+      primaryDark: primaryDark,
+      focusShadow: '0 0 0 3px rgba(' + Math.round(focusRgb.r) + ', ' + Math.round(focusRgb.g) + ', ' + Math.round(focusRgb.b) + ', 0.25)'
+    });
+  }
+
+  function buildLocalThemeColorDraft(baseColor, sourceTokens) {
+    baseColor = normalizeHexColor(baseColor) || '#2563eb';
+    sourceTokens = sourceTokens || {};
+    // V330: The local Design Studio colorizer now uses the same semantic color
+    // directions and palette surfaces as the AI Studio. The selected swatch is
+    // kept as the exact primary color; the remaining roles follow the nearest
+    // AI color direction instead of using a separate generic tint algorithm.
+    var palette = localThemePaletteFromAiDirection(baseColor);
+    var bg = palette.bg || '#f7f7f7';
+    var surface = palette.surface || bg;
+    var surfaceAlt = palette.surfaceAlt || blendThemeColor(surface, baseColor, 0.08);
+    var text = palette.text || readableTextFor(bg, '#f8fafc', '#172033');
+    var muted = palette.muted || blendThemeColor(text, bg, 0.42);
+    var border = palette.border || blendThemeColor(baseColor, '#ffffff', 0.62);
+    var onPrimary = readableTextFor(baseColor, '#ffffff', '#111827');
+    var primaryHover = palette.primaryHover || mixColor(baseColor, -12);
+    var sidebar = palette.sidebar || blendThemeColor(baseColor, '#111827', 0.70);
+
+    return {
+      design: {
+        colors: {
+          primary: baseColor,
+          primary_hover: primaryHover,
+          on_primary: onPrimary,
+          background: bg,
+          surface: surface,
+          surface_alt: surfaceAlt,
+          text: text,
+          muted_text: muted,
+          border: border,
+          sidebar: sidebar,
+          sidebar_text: palette.sidebarText || '#ffffff'
+        },
+        components: {
+          table: { background: surface, header: surfaceAlt, header_text: text, text: text, hover: blendThemeColor(baseColor, surface, 0.74), border: border, radius: '10px' },
+          slider: { active: baseColor, track: surfaceAlt, thumb: '#ffffff', thumb_border: border, focus: baseColor },
+          toggle: { off: surfaceAlt, active: baseColor, border: border, thumb: '#ffffff', radius: '10px' },
+          button: { background: surfaceAlt, text: text, hover: primaryHover, hover_text: onPrimary, border: border, radius: '10px' },
+          header_button: { background: baseColor, text: onPrimary, hover: primaryHover, hover_text: onPrimary },
+          button_group: { background: surfaceAlt, text: text, active: baseColor, active_text: onPrimary, hover: primaryHover, hover_text: onPrimary, border: border, radius: '10px' },
+          card: { background: surface, text: text, border: border, radius: '10px' },
+          input: { background: surface, text: text, border: border, hover: surfaceAlt, focus: baseColor, radius: '10px' },
+          select: { background: surface, text: text, border: border, hover: surfaceAlt, hover_text: text, radius: '10px' },
+          dropdown: { background: surface, text: text, border: border, hover: primaryHover, radius: '10px' }
+        }
+      }
+    };
+  }
+
+  function isThemeColorToken(name, value) {
+    if (!/^--lb-[a-z0-9-]+$/.test(name || '') || isBlockedToken(name)) return false;
+    if (/(radius|width|height|size|padding|margin|gap|font|shadow|z-index|opacity|blur|line-height|weight|overflow|spacing|duration|transform)/.test(name)) return false;
+    return /(^#|^rgba?\(|^hsla?\(|^transparent$|^var\()/i.test(String(value || '').trim());
+  }
+
+  function applyLocalThemeDefaults(tokens) {
+    var radiusTokens = [
+      '--lb-radius', '--lb-radius-sm', '--lb-radius-lg', '--lb-radius-card', '--lb-card-radius',
+      '--lb-header-radius', '--lb-panel-radius', '--lb-note-radius',
+      '--lb-btn-radius', '--lb-radius-button', '--lb-btn-group-radius', '--lb-btn-group-item-radius',
+      '--lb-input-radius', '--lb-radius-input', '--lb-textarea-radius',
+      '--lb-select-radius', '--lb-radius-select',
+      '--lb-table-radius', '--lb-radius-table', '--lb-table-compact-radius',
+      '--lb-sidebar-link-radius', '--lb-dialog-radius', '--lb-modal-radius', '--lb-checkbox-radius',
+      '--lb-badge-radius', '--lb-notify-radius', '--lb-validation-radius'
+    ];
+    radiusTokens.forEach(function (name) {
+      if (coreTokens[name] !== undefined && !isBlockedToken(name)) tokens[name] = '10px';
+    });
+    return tokens;
+  }
+
+  function applyLocalThemeColor() {
+    if (!newThemeColorPicker || isProtectedStudioThemeId(themeId && themeId.value)) return;
+    var sourceInfo = selectedUserThemeInfo();
+    var sourceName = sourceInfo && sourceInfo.theme ? (sourceInfo.theme.name || sourceInfo.theme.id) : (themeName && themeName.value ? themeName.value : tx('toolbar.currentPreviewNewTheme'));
+    var sourceTokens = effectivePreviewTokens();
+    var draftTokens = applyLocalThemeDefaults(compileSemanticDraftToTokens(buildLocalThemeColorDraft(newThemeColorPicker.value, sourceTokens)));
+    var recolored = Object.assign({}, aiImportedTokens || {});
+    Object.keys(draftTokens).forEach(function (name) {
+      if (isThemeColorToken(name, draftTokens[name])) recolored[name] = draftTokens[name];
+    });
+    applyLocalThemeDefaults(recolored);
+
+    pushUndoSnapshot('global-theme-color');
+    studioModel = {};
+    aiImportedTokens = enforceForcedOpaqueTokens(recolored);
+    // V330: Legacy .formtable containers are layout wrappers, not visual cards.
+    // Keep them transparent in newly colorized themes while preserving any
+    // source custom CSS. Theme CSS is loaded only for the active theme.
+    var formtableCss = '/* DESIGN STUDIO NEW THEME FORMTABLE */\n.formtable { background: transparent !important; }';
+    var sourceCustomCss = normalizeCustomCssValue(customCss && customCss.value ? customCss.value : aiImportedCss);
+    sourceCustomCss = sourceCustomCss.replace(/\n?\/\* DESIGN STUDIO NEW THEME FORMTABLE \*\/\s*\n?\.formtable\s*\{[^}]*\}\s*/ig, '\n').trim();
+    aiImportedCss = (sourceCustomCss ? sourceCustomCss + '\n\n' : '') + formtableCss;
+    if (customCss) customCss.value = aiImportedCss;
+    var formtablePreviewStyle = document.getElementById('cfwNewThemeFormtablePreviewStyle');
+    if (!formtablePreviewStyle) {
+      formtablePreviewStyle = document.createElement('style');
+      formtablePreviewStyle.id = 'cfwNewThemeFormtablePreviewStyle';
+      document.head.appendChild(formtablePreviewStyle);
+    }
+    formtablePreviewStyle.textContent = '#previewRoot.theme-user-neues-theme .formtable { background: transparent !important; }';
+    hasActiveEditorSelection = false;
+    if (userThemeSelect) userThemeSelect.value = '';
+    if (themeName) themeName.value = tx('globalColor.newTheme');
+    if (themeId) themeId.value = 'theme-user-neues-theme';
+    if (themeVersion) themeVersion.value = '0.1.0';
+    var previewTokens = applyDesignRules(Object.assign({}, aiImportedTokens));
+    syncCurrentControlsFromAiTokens(aiImportedTokens);
+    applyTokensToPreviewRoot(previewTokens);
+    broadcastEmbeddedFrameTokens(previewTokens);
+    updateAll(false);
+    updateProtectedStudioThemeMode();
+    setStatus(t('globalColor.applied', 'globalColor.applied', { source: sourceName, color: newThemeColorPicker.value }), false, 'success');
+  }
+
   function updateProtectedStudioThemeMode() {
     var page = document.querySelector('.cfw-page.cfw-design-studio');
     updateLiquidGlassPackagePreviewMode();
@@ -1062,11 +1275,13 @@
       }
     }
 
+    updateNewThemeColorPanelVisibility();
     updateDeleteThemeButton();
   }
 
   function updateLiquidGlassWallpaperEditorMode() {
     updateProtectedStudioThemeMode();
+    updateLiquidGlassPackagePreviewMode();
   }
 
   function isProtectedStudioWallpaperOnlySave() {
@@ -1368,28 +1583,26 @@
   function effectivePreviewTokens(extraNames) {
     var tokens = {};
 
-    /* V327: A protected Liquid Glass JSON contains no normal token payload.
-       Never fill that intentional gap with tokens from the currently active
-       LoxBerry theme. Use the package CSS root tokens instead; otherwise an
-       active Rose/Rounded/etc. theme is written inline onto previewRoot and
-       wins over the Liquid Glass package preview. */
+    /* V334 preview contract:
+       - Empty workbench may reflect the current runtime theme.
+       - Every loaded/generated/saved user theme starts from neutral Core tokens
+         and overlays its explicit tokens, never the active runtime theme.
+       - Liquid Glass additionally overlays its complete package-root token set. */
     if (isLiquidGlassWallpaperEditorMode()) {
-      /* Start from the neutral Core contract, not from the active runtime theme.
-         Liquid Glass intentionally overrides only the tokens it needs; all
-         remaining values must therefore come from Core defaults. */
       Object.assign(tokens, coreTokens || {});
       Object.assign(tokens, liquidGlassPreviewTokens || {});
       Object.assign(tokens, collectTokens() || {});
       return applyDesignRules(tokens);
     }
 
-    // V224: Runtime/Core default colors are only the initial empty-workbench base.
-    // Once a JSON/AI/imported theme is loaded, missing values must not pull the
-    // current LoxBerry green back into slider tokens or the preview palette.
-    if (!hasExplicitPreviewThemeTokens()) {
+    if (hasExplicitPreviewThemeTokens()) {
       Object.assign(tokens, coreTokens || {});
-      Object.assign(tokens, readRuntimeThemeTokens(extraNames) || {});
+      Object.assign(tokens, collectTokens() || {});
+      return applyDesignRules(tokens);
     }
+
+    Object.assign(tokens, coreTokens || {});
+    Object.assign(tokens, readRuntimeThemeTokens(extraNames) || {});
     Object.assign(tokens, collectTokens() || {});
     return applyDesignRules(tokens);
   }
@@ -1780,9 +1993,39 @@
 
   function applyWallpaperPreview() {
     if (!previewRoot) return;
+
     var wallpaper = buildWallpaperPayload();
     var hasWallpaper = !!(wallpaper.enabled && wallpaper.image);
     previewRoot.classList.toggle('cfw-wallpaper-enabled', hasWallpaper);
+
+    /* V347: The Liquid Glass workbench preview is deliberately independent
+       from the global theme preview and from pseudo-elements. Only this real
+       child layer receives the selected image, brightness and opacity. */
+    if (liquidGlassWallpaperPreview) {
+      liquidGlassWallpaperPreview.hidden = !hasWallpaper;
+      liquidGlassWallpaperPreview.setAttribute('aria-hidden', hasWallpaper ? 'false' : 'true');
+
+      if (hasWallpaper) {
+        liquidGlassWallpaperPreview.style.backgroundImage =
+          'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")';
+        liquidGlassWallpaperPreview.style.backgroundSize = 'cover';
+        liquidGlassWallpaperPreview.style.backgroundRepeat = 'no-repeat';
+        liquidGlassWallpaperPreview.style.backgroundPosition = 'center center';
+        liquidGlassWallpaperPreview.style.filter = 'brightness(' + (wallpaper.brightness / 100) + ')';
+        liquidGlassWallpaperPreview.style.opacity = String(wallpaper.opacity / 100);
+      } else {
+        liquidGlassWallpaperPreview.style.removeProperty('background-image');
+        liquidGlassWallpaperPreview.style.removeProperty('background-size');
+        liquidGlassWallpaperPreview.style.removeProperty('background-repeat');
+        liquidGlassWallpaperPreview.style.removeProperty('background-position');
+        liquidGlassWallpaperPreview.style.removeProperty('filter');
+        liquidGlassWallpaperPreview.style.removeProperty('opacity');
+      }
+    }
+
+    /* Keep the legacy variables for normal themes and existing save/preview
+       integrations, but the Liquid Glass wallpaper-only canvas no longer
+       renders from them. */
     if (hasWallpaper) {
       previewRoot.style.setProperty('--cfw-wallpaper-image', 'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")');
       previewRoot.style.setProperty('--cfw-wallpaper-opacity', String(wallpaper.opacity / 100));
@@ -1800,17 +2043,50 @@
     }
   }
 
+  function wallpaperNumber(value, fallback, min, max) {
+    var parsed = parseInt(value, 10);
+    if (!isFinite(parsed)) parsed = fallback;
+    return clamp(parsed, min, max);
+  }
+
   function setWallpaperFromTheme(theme) {
     var wallpaper = theme && typeof theme === 'object' && theme.wallpaper && typeof theme.wallpaper === 'object' ? theme.wallpaper : null;
+
+    // V346: The JSON wallpaper object is authoritative whenever a theme is
+    // loaded. Accept the canonical keys and the older aliases, but never keep
+    // slider values from the previously selected theme.
+    var brightness = wallpaper && wallpaper.brightness != null
+      ? wallpaper.brightness
+      : (wallpaper && wallpaper.wallpaper_brightness != null ? wallpaper.wallpaper_brightness : 100);
+    var opacity = wallpaper && wallpaper.opacity != null
+      ? wallpaper.opacity
+      : (wallpaper && wallpaper.transparency != null
+          ? wallpaper.transparency
+          : (wallpaper && wallpaper.wallpaper_opacity != null ? wallpaper.wallpaper_opacity : 100));
+
     wallpaperState = {
       enabled: !!(wallpaper && wallpaper.enabled),
       image: wallpaper && wallpaper.image ? String(wallpaper.image) : '',
-      brightness: clamp(parseInt(wallpaper && wallpaper.brightness != null ? wallpaper.brightness : 100, 10), 0, 150),
-      opacity: clamp(parseInt(wallpaper && wallpaper.opacity != null ? wallpaper.opacity : 100, 10), 0, 100)
+      brightness: wallpaperNumber(brightness, 100, 0, 150),
+      opacity: wallpaperNumber(opacity, 100, 0, 100)
     };
+
+    // Write the loaded JSON values directly to the controls before any preview
+    // update can read them back into wallpaperState.
     loadWallpaperStateToControls();
     updateWallpaperLabels();
     updateWallpaperControlVisibility();
+    applyWallpaperPreview();
+  }
+
+  function reapplyLoadedWallpaperState() {
+    // Theme-mode changes and asynchronously loaded package CSS may trigger
+    // additional preview updates. Reassert the already loaded JSON values so
+    // both sliders and the wallpaper-only workbench remain in exact sync.
+    loadWallpaperStateToControls();
+    updateWallpaperLabels();
+    updateWallpaperControlVisibility();
+    applyWallpaperPreview();
   }
 
   function updateLabels() {
@@ -2955,7 +3231,7 @@
     // frame refresh catches browser-computed token values after the DOM update.
     studioModel = {};
     aiImportedTokens = enforceForcedOpaqueTokens(themeTokensFromJson(theme));
-    var loadedPreviewTokens = applyDesignRules(Object.assign({}, aiImportedTokens || {}));
+    var loadedPreviewTokens = effectivePreviewTokens();
     aiImportedCss = normalizeCustomCssValue(theme.custom_css || theme.css || '');
     lastImportMeta = importMetaHasVisibleContent(theme.import_meta) ? theme.import_meta : null;
     setWallpaperFromTheme(theme);
@@ -2998,6 +3274,12 @@
     }
 
     updateLiquidGlassWallpaperEditorMode();
+    reapplyLoadedWallpaperState();
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(reapplyLoadedWallpaperState);
+    } else {
+      setTimeout(reapplyLoadedWallpaperState, 0);
+    }
     setStatus(t('messages.userThemeLoaded', 'messages.userThemeLoaded', { theme: (theme.name || theme.id) }), false);
   }
 
@@ -3882,6 +4164,17 @@
     putRaw(['--lb-table-cell-border-width'], normalizeBorderWidth(componentValue(table, ['cell_border_width', 'cell_line_width', 'cell_lines_width', 'inner_border_width', 'inner_lines_width'], '0px'), '0px'));
     putRaw(['--lb-table-radius'], normalizeRadius(componentValue(table, ['radius'], ''), '12px'));
 
+    var slider = componentsDesign.slider || componentsDesign.range || {};
+    var sliderActive = componentValue(slider, ['active', 'fill', 'background', 'bg'], primary);
+    var sliderTrack = componentValue(slider, ['track', 'track_background', 'inactive'], surfaceAlt);
+    var sliderThumb = componentValue(slider, ['thumb', 'thumb_bg'], '#ffffff');
+    var sliderThumbBorder = componentValue(slider, ['thumb_border', 'border'], border);
+    put(['--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg', '--lb-slider-compact-active-bg'], sliderActive);
+    put(['--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg', '--lb-slider-compact-bg'], sliderTrack);
+    put(['--lb-slider-thumb-bg', '--lb-slider-compact-thumb-bg'], sliderThumb);
+    put(['--lb-slider-thumb-border-color', '--lb-slider-thumb-border', '--lb-slider-compact-thumb-border'], sliderThumbBorder);
+    put(['--lb-slider-focus-shadow'], componentValue(slider, ['focus'], primary));
+
     var toggle = componentsDesign.toggle || componentsDesign.switch || {};
     put(['--lb-toggle-bg', '--lb-switch-off-bg'], componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt));
     put(['--lb-toggle-hover-bg'], componentValue(toggle, ['hover'], mixColor(componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt), -5)));
@@ -4318,6 +4611,16 @@
   applyI18n(document);
 
   renderColorPresetPalette();
+  renderNewThemeColorPalette();
+  if (newThemeColorToggle && newThemeColorControls) {
+    newThemeColorToggle.addEventListener('click', function () {
+      newThemeColorControls.hidden = !newThemeColorControls.hidden;
+      if (!newThemeColorControls.hidden) updateNewThemeColorPresetSelection();
+    });
+  }
+  if (newThemeColorPicker) newThemeColorPicker.addEventListener('input', updateNewThemeColorPresetSelection);
+  if (applyNewThemeColorButton) applyNewThemeColorButton.addEventListener('click', applyLocalThemeColor);
+  if (cancelNewThemeColorButton && newThemeColorControls) cancelNewThemeColorButton.addEventListener('click', function () { newThemeColorControls.hidden = true; });
 
   ['cfwPreviewFrame'].forEach(function (id) {
     var frame = document.getElementById(id);

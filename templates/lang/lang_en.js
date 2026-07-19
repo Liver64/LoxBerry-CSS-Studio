@@ -89,6 +89,15 @@ window.LBDesignStudioLangs.en = {
       "form": "Form"
     }
   },
+  "globalColor": {
+    "newTheme": "New theme",
+    "title": "Recolor entire theme",
+    "hint": "Choose a color direction. The Studio recolors all semantic color roles locally. Radii, shadows, spacing and custom CSS remain unchanged.",
+    "color": "Base color",
+    "paletteAria": "Color direction for the entire theme",
+    "apply": "Apply color to theme",
+    "applied": "Created a new theme from {source} and recolored it completely with {color}. Please review and save."
+  },
   "componentInspector": {
     "mapping": "Mapping:",
     "hint": "A normal click selects the element in Design Studio.",

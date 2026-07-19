@@ -89,6 +89,15 @@ window.LBDesignStudioLangs.de = {
       "form": "Formular"
     }
   },
+  "globalColor": {
+    "newTheme": "Neues Theme",
+    "title": "Gesamtes Theme einfärben",
+    "hint": "Wähle eine Farbrichtung. Das Studio färbt alle semantischen Farbrollen lokal neu ein. Radien, Schatten, Abstände und Custom CSS bleiben erhalten.",
+    "color": "Grundfarbe",
+    "paletteAria": "Farbrichtung für das gesamte Theme",
+    "apply": "Farbe auf Theme anwenden",
+    "applied": "Neues Theme aus {source} erstellt und vollständig in {color} eingefärbt. Bitte prüfen und speichern."
+  },
   "componentInspector": {
     "mapping": "Mapping:",
     "hint": "Normaler Klick wählt das Element im Design Studio aus.",

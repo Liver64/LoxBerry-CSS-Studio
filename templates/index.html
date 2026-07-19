@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=<TMPL_VAR VERSION>-v326-liquid-glass-package-preview">
+<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=<TMPL_VAR VERSION>-v347-direct-wallpaper-preview">
 <script>window.LBLANG = "<TMPL_VAR LBLANG>"; window.CFW_LANGUAGE = window.LBLANG;</script>
 <script><TMPL_VAR LANG_DE_JS ESCAPE=NONE></script>
 <script><TMPL_VAR LANG_EN_JS ESCAPE=NONE></script>
@@ -10,7 +10,6 @@
     <div class="cfw-toolbar-title">
       <div class="cfw-title-line">
         <h1 data-i18n="studio.title"></h1>
-        <span class="cfw-powered-by" data-i18n="ai.poweredBy"></span>
       </div>
       <p data-i18n="studio.subtitle"></p>
     </div>
@@ -27,13 +26,12 @@
   </div>
 
   <nav class="cfw-tabs" aria-label="Design Studio Bereiche" data-i18n-attr="aria-label:tabs.ariaLabel">
-    <button type="button" class="cfw-tab is-active" data-cfw-tab="ai" data-role="none" data-i18n="tabs.aiDesigner"></button>
-    <button type="button" class="cfw-tab" data-cfw-tab="workbench" data-role="none" data-i18n="tabs.designStudio"></button>
+    <button type="button" class="cfw-tab is-active" data-cfw-tab="workbench" data-role="none" data-i18n="tabs.designStudio"></button>
+    <button type="button" class="cfw-tab" data-cfw-tab="ai" data-role="none" data-i18n="tabs.aiDesigner" hidden aria-hidden="true"></button>
     <button type="button" class="cfw-tab" data-cfw-tab="preview" data-role="none" data-i18n="tabs.preview"></button>
-    <button type="button" class="cfw-tab" data-cfw-tab="documentation" data-role="none" data-i18n="tabs.documentation"></button>
   </nav>
 
-  <section id="cfwTabWorkbench" class="cfw-tab-panel" hidden>
+  <section id="cfwTabWorkbench" class="cfw-tab-panel is-active">
   <div class="cfw-workbench">
     <aside class="cfw-left">
       <section class="cfw-panel cfw-step-panel cfw-selection-inspector">
@@ -67,6 +65,22 @@
       <section class="cfw-panel cfw-palette-panel">
         <h2 data-i18n="palette.title"></h2>
         <div id="paletteGrid" class="cfw-palette-grid"></div>
+      </section>
+
+      <section id="newThemeColorPanel" class="cfw-panel cfw-new-theme-color-panel">
+        <button type="button" id="newThemeColorToggle" class="cfw-button cfw-button-primary cfw-new-theme-color-toggle" data-role="none" data-i18n="globalColor.newTheme"></button>
+        <div id="newThemeColorControls" class="cfw-new-theme-color-controls" hidden>
+          <h2 data-i18n="globalColor.title"></h2>
+          <p class="cfw-hint" data-i18n="globalColor.hint"></p>
+          <div id="newThemeColorPalette" class="cfw-color-preset-palette" aria-label="" data-i18n-attr="aria-label:globalColor.paletteAria"></div>
+          <label class="cfw-label cfw-global-color-picker"><span data-i18n="globalColor.color"></span>
+            <input id="newThemeColorPicker" class="cfw-native-color-input" type="color" value="#2563eb" data-role="none">
+          </label>
+          <div class="cfw-new-theme-color-actions">
+            <button type="button" id="applyNewThemeColor" class="cfw-button cfw-button-primary" data-role="none" data-i18n="globalColor.apply"></button>
+            <button type="button" id="cancelNewThemeColor" class="cfw-button" data-role="none" data-i18n="main.buttons.cancel"></button>
+          </div>
+        </div>
       </section>
 
       <section class="cfw-panel cfw-slider-panel">
@@ -154,6 +168,7 @@
       </div>
 
       <div id="previewRoot" class="cfw-preview theme-user-demo" data-cfw-area="Background" data-cfw-element="System Hintergrund" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.background">
+        <div id="liquidGlassWallpaperPreview" class="cfw-liquid-wallpaper-preview" aria-hidden="true"></div>
         <div class="cfw-app-preview">
           <aside class="cfw-app-sidebar" data-cfw-area="Layout" data-cfw-element="Sidebar" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.sidebar">
             <div class="cfw-logo-dot"></div>
@@ -213,7 +228,7 @@
   </section>
   </section>
 
-  <section id="cfwTabAi" class="cfw-tab-panel cfw-ai-panel is-active">
+  <section id="cfwTabAi" class="cfw-tab-panel cfw-ai-panel" hidden>
     <div class="cfw-ai-layout">
       <aside class="cfw-ai-left">
         <section class="cfw-panel">
@@ -296,9 +311,6 @@
     <iframe id="cfwPreviewFrame" class="cfw-embedded-frame" src="/admin/plugins/cssframework/cssframework.cgi?page=preview" title="Preview" data-i18n-attr="title:tabs.preview"></iframe>
   </section>
 
-  <section id="cfwTabDocumentation" class="cfw-tab-panel cfw-embedded-panel" hidden>
-    <iframe id="cfwHelpFrame" class="cfw-embedded-frame" src="/admin/plugins/cssframework/cssframework.cgi?page=help" title="Documentation" data-i18n-attr="title:tabs.documentation"></iframe>
-  </section>
 
 </div>
 
@@ -360,4 +372,4 @@ window.CFW_COLOR_STYLE_MAP = <TMPL_VAR COLOR_STYLE_MAP_JSON ESCAPE=NONE>;
 <script src="/plugins/cssframework/js/ai-guard.js?v=<TMPL_VAR VERSION>"></script>
 <script src="/plugins/cssframework/js/ai-assistant.js?v=<TMPL_VAR VERSION>-v305"></script>
 <script src="/plugins/cssframework/js/cfw-theme-state.js?v=<TMPL_VAR VERSION>"></script>
-<script src="/plugins/cssframework/js/design-studio.js?v=<TMPL_VAR VERSION>-v327-liquid-glass-preview-isolation"></script>
+<script src="/plugins/cssframework/js/design-studio.js?v=v347-direct-wallpaper-preview"></script>

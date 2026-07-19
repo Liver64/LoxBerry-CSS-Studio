@@ -2249,15 +2249,12 @@
    the expanded Wallpaper Editor and the in-page Live Preview stay visible.
    The toolbar remains visible so the wallpaper can be saved.
    ============================================================ */
-.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-tabs,
+/* V341: Keep the tab bar and the full Preview available for Liquid Glass.
+   The AI and documentation panels stay hidden; Workbench/Preview visibility
+   is controlled exclusively by switchTab(), exactly as for the other tabs. */
 .cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabAi,
-.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabPreview,
 .cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabDocumentation {
   display: none !important;
-}
-
-.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabWorkbench {
-  display: block !important;
 }
 
 .cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-workbench {
@@ -2430,129 +2427,491 @@
   display: none !important;
 }
 
+/* V328: Local full-theme recoloring for normal user/template themes. */
+.cfw-page.cfw-design-studio .cfw-new-theme-color-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-panel[hidden] {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-toggle {
+  width: 100%;
+  justify-content: center;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-controls {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-controls[hidden] {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-controls h2,
+.cfw-page.cfw-design-studio .cfw-new-theme-color-controls p {
+  margin: 0;
+}
+
+.cfw-page.cfw-design-studio .cfw-global-color-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-actions .cfw-button {
+  flex: 1 1 180px;
+}
+
+/* V331: AI Designer and local New Theme share exactly 28 directions: 2 × 14. */
+.cfw-page.cfw-design-studio .cfw-ai-color-preset-palette {
+  max-width: calc(70mm + 78px);
+  min-height: calc(2 * 5mm + 1 * 6px);
+}
+
+.cfw-page.cfw-design-studio #newThemeColorPalette {
+  max-width: 344px;
+  min-height: calc(2 * 19px + 1 * 6px);
+}
 
 /* ============================================================
-   V326 Liquid Glass package CSS parity in Studio preview
-   ------------------------------------------------------------
-   The protected Liquid Glass JSON intentionally stores only wallpaper
-   settings. design-studio.js reads the actual package CSS, extracts its root token
-   declarations into #previewRoot and applies these preview-only visual bridges.
-   Nothing here changes the packaged theme or normal LoxBerry pages.
+   V337 Liquid Glass compact preview bridge
+   Keep the Studio demo layout compact, but render its shell like
+   the real package theme: wallpaper is the page background, the
+   content canvas is transparent and the sidebar is dark glass.
    ============================================================ */
 .cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview {
-  isolation: isolate;
-  min-height: 760px !important;
-  overflow: hidden !important;
   background: transparent !important;
   background-color: transparent !important;
-  color: var(--lb-text, #e8eef8) !important;
 }
 
-/* Keep the theme wallpaper inside the Studio preview instead of allowing the
-   body-scoped fixed pseudo element to cover the whole browser window. */
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview::before {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 0 !important;
-  pointer-events: none !important;
-  background-image:
-    linear-gradient(
-      135deg,
-      rgba(3, 8, 16, var(--lb-liquid-wallpaper-dim-primary, 0.68)),
-      rgba(10, 24, 38, var(--lb-liquid-wallpaper-dim-secondary, 0.58))
-    ),
-    var(--cfw-wallpaper-image, none) !important;
-  background-position: center center !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
-  background-attachment: scroll !important;
-  opacity: var(--cfw-wallpaper-opacity, 1) !important;
-  filter: brightness(var(--cfw-wallpaper-brightness, 1)) !important;
-}
-
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview::after {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 0 !important;
-  pointer-events: none !important;
-}
-
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview > * {
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-/* The miniature preview uses cfw-* structural classes rather than the real
-   lb-header/lb-sidebar/lb-content shells. Bridge only their visual surfaces. */
 .cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-app-preview,
 .cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-app-main {
   background: transparent !important;
   background-color: transparent !important;
-  color: var(--lb-text, #e8eef8) !important;
-}
-
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-app-preview {
-  border-color: rgba(255, 255, 255, var(--lb-glass-border-alpha, 0.085)) !important;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.18) !important;
 }
 
 .cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-app-sidebar {
   background: rgba(7, 16, 28, 0.68) !important;
   color: var(--lb-sidebar-text, rgba(232, 238, 248, 0.72)) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(10px) saturate(130%) !important;
-  -webkit-backdrop-filter: blur(10px) saturate(130%) !important;
+  border-right: 1px solid var(--lb-sidebar-border, rgba(255, 255, 255, 0.08)) !important;
+  -webkit-backdrop-filter: var(--lb-glass-nav-blur, blur(18px)) !important;
+  backdrop-filter: var(--lb-glass-nav-blur, blur(18px)) !important;
 }
 
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-app-header {
-  background: rgba(255, 255, 255, 0.075) !important;
+.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-logo-dot {
+  background: var(--lb-primary, #8fc7ff) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-nav-item {
+  color: var(--lb-sidebar-text, rgba(232, 238, 248, 0.72)) !important;
+  background: transparent !important;
+  border-left-color: transparent !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-nav-item:hover,
+.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-nav-item.active {
+  background: var(--lb-sidebar-active-bg, rgba(143, 199, 255, 0.22)) !important;
+  color: var(--lb-sidebar-active-text, #ffffff) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-nav-item.active {
+  border-left-color: var(--lb-primary, #8fc7ff) !important;
+  box-shadow: inset 0 0 18px rgba(143, 199, 255, 0.12) !important;
+}
+
+/* ============================================================
+   V338 Liquid Glass runtime-theme isolation bridge
+   The Studio itself intentionally follows the active LoxBerry theme. The
+   compact preview must not. Active themes can contain highly specific cfw-*
+   component rules, so Liquid Glass receives a complete, preview-local shell
+   contract with higher specificity. All surfaces remain inside previewRoot;
+   the outer Studio is untouched.
+   ============================================================ */
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview {
   color: var(--lb-text, #e8eef8) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 10px 28px rgba(0, 0, 0, 0.14) !important;
-  backdrop-filter: blur(10px) saturate(135%) !important;
-  -webkit-backdrop-filter: blur(10px) saturate(135%) !important;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
-/* The package theme deliberately uses no CSS blur because real pages receive
-   the optional liquid-glass runtime. The miniature Studio preview has no such
-   DOM runtime, so use a restrained visual fallback only inside previewRoot. */
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-card,
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-input,
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-select,
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-textarea,
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-btn,
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-btn-group,
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview table.lb-table {
-  backdrop-filter: blur(7px) saturate(135%) !important;
-  -webkit-backdrop-filter: blur(7px) saturate(135%) !important;
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-app-preview {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--lb-text, #e8eef8) !important;
+  border-color: rgba(255,255,255,.12) !important;
 }
 
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-button {
-  background: var(--lb-btn-bg, rgba(255, 255, 255, 0.08)) !important;
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-app-main {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--lb-text, #e8eef8) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-app-sidebar {
+  background: rgba(7,16,28,.68) !important;
+  background-color: rgba(7,16,28,.68) !important;
+  color: var(--lb-sidebar-text, rgba(232,238,248,.72)) !important;
+  border-right-color: var(--lb-sidebar-border, rgba(255,255,255,.08)) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  backdrop-filter: blur(18px) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-nav-item {
+  color: var(--lb-sidebar-text, rgba(232,238,248,.72)) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-left-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-nav-item:hover,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-nav-item.active {
+  color: var(--lb-sidebar-active-text, #fff) !important;
+  background: var(--lb-sidebar-active-bg, rgba(143,199,255,.18)) !important;
+  background-color: var(--lb-sidebar-active-bg, rgba(143,199,255,.18)) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-nav-item.active {
+  border-left-color: var(--lb-primary, #8fc7ff) !important;
+  box-shadow: inset 0 0 18px rgba(143,199,255,.12) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-app-header {
+  color: var(--lb-text, #e8eef8) !important;
+  background: rgba(255,255,255,.10) !important;
+  background-color: rgba(255,255,255,.10) !important;
+  border-color: rgba(255,255,255,.14) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.08), 0 10px 28px rgba(0,0,0,.09) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  backdrop-filter: blur(18px) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-header-btn {
+  color: var(--lb-header-btn-text, #e8eef8) !important;
+  background: var(--lb-header-btn-bg, rgba(255,255,255,.10)) !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-hero-card,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-form-card,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview .lb-card {
+  color: var(--lb-text, #e8eef8) !important;
+  background: rgba(7,16,28,.58) !important;
+  background-color: rgba(7,16,28,.58) !important;
+  border-color: rgba(255,255,255,.10) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.04), 0 12px 28px rgba(0,0,0,.09) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview h1,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview h2,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview h3,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview label,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview p,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview td,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview th {
+  color: var(--lb-text, #e8eef8) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview input.lb-input,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview select.lb-input,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview textarea.lb-input {
+  color: var(--lb-input-text, #fff) !important;
+  background: var(--lb-input-bg, rgba(255,255,255,.20)) !important;
+  background-color: var(--lb-input-bg, rgba(255,255,255,.20)) !important;
+  border-color: var(--lb-input-border, rgba(255,255,255,.085)) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.04) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-button,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button {
   color: var(--lb-btn-text, #e8eef8) !important;
-  border-color: var(--lb-btn-border, rgba(255, 255, 255, 0.14)) !important;
-  border-radius: var(--lb-btn-radius, 14px) !important;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 8px 18px rgba(0, 0, 0, 0.12) !important;
+  background: var(--lb-btn-bg, rgba(255,255,255,.012)) !important;
+  background-color: var(--lb-btn-bg, rgba(255,255,255,.012)) !important;
+  border-color: var(--lb-btn-border, rgba(255,255,255,.085)) !important;
 }
 
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .lb-button:hover {
-  background: var(--lb-btn-hover-bg, var(--lb-primary, #8fc7ff)) !important;
-  color: #ffffff !important;
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-button.is-active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn.is-active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button.active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button[aria-pressed="true"] {
+  color: var(--lb-btn-group-active-text, #fff) !important;
+  background: var(--lb-btn-group-active-bg, #8fc7ff) !important;
+  background-color: var(--lb-btn-group-active-bg, #8fc7ff) !important;
+  border-color: var(--lb-btn-group-active-border, #b7dcff) !important;
 }
 
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-preview-table th,
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-preview-table td {
-  background: rgba(255, 255, 255, var(--lb-glass-table-cell-alpha, 0)) !important;
-  background-color: rgba(255, 255, 255, var(--lb-glass-table-cell-alpha, 0)) !important;
-  color: var(--lb-text, #e8eef8) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview table,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .formtable,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview thead,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview tbody,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview tr,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview th,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview td {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-preview-table th {
-  font-weight: 600 !important;
+/* ============================================================
+   V339 Liquid Glass preview buttons
+   All compact-preview buttons use the Liquid Glass light-blue
+   action surface in every state. No inactive/active black fill.
+   ============================================================ */
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-header-btn,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-button,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-button:hover,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-button:focus,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-button:active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-button.lb-button-active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn:hover,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn:focus,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn:active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn.is-active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button:hover,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button:focus,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button:active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button.active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button.is-active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button.lb-active,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .lb-btn-group > button[aria-pressed="true"] {
+  color: #102033 !important;
+  background: var(--lb-primary, #8fc7ff) !important;
+  background-color: var(--lb-primary, #8fc7ff) !important;
+  border-color: var(--lb-btn-group-active-border, #b7dcff) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.38), 0 4px 14px rgba(143,199,255,.18) !important;
 }
 
-.cfw-page.cfw-design-studio #previewRoot.cfw-liquid-glass-package-preview .cfw-preview-table tbody tr:hover td {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
+/* ============================================================
+   V340 Liquid Glass solid preview surfaces + wallpaper background
+   The compact preview uses its own wallpaper as the visible canvas.
+   Header, cards and table use one opaque graphite surface so active
+   runtime themes cannot turn them white or translucent.
+   ============================================================ */
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview.cfw-wallpaper-enabled::before {
+  display: block !important;
+  background-image: var(--cfw-wallpaper-image, none) !important;
+  background-size: var(--cfw-wallpaper-size, cover) !important;
+  background-repeat: var(--cfw-wallpaper-repeat, no-repeat) !important;
+  background-position: var(--cfw-wallpaper-position, center center) !important;
+  opacity: var(--cfw-wallpaper-opacity, 1) !important;
+  filter: brightness(var(--cfw-wallpaper-brightness, 1)) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-app-preview,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-app-main {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview {
+  --cfw-liquid-preview-surface: #59616d;
+  --cfw-liquid-preview-surface-border: rgba(255,255,255,.14);
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-app-header,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-hero-card,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-form-card,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table {
+  color: #f4f7fb !important;
+  background: var(--cfw-liquid-preview-surface) !important;
+  background-color: var(--cfw-liquid-preview-surface) !important;
+  border-color: var(--cfw-liquid-preview-surface-border) !important;
+  opacity: 1 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table thead,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table tbody,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table tr,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table th,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table td {
+  color: #f4f7fb !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table th,
+.cfw-page.cfw-design-studio #previewRoot.theme-user-liquid-glass.cfw-liquid-glass-package-preview .cfw-preview-table td {
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+
+/* ============================================================
+   V342 Liquid Glass wallpaper-only Workbench canvas
+   ------------------------------------------------------------
+   In the Design Studio workbench, protected Liquid Glass shows only
+   the wallpaper inside "Arbeitsbereich / Vorschau". The full Live
+   Preview tab remains untouched. Wallpaper brightness and opacity are
+   driven by the existing live CSS variables updated by the sliders.
+   ============================================================ */
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass {
+  min-height: clamp(420px, 58vh, 760px);
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: var(--lb-radius-lg, 18px);
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass > .cfw-app-preview {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass.cfw-wallpaper-enabled::before {
+  display: block !important;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--cfw-wallpaper-image, none) !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  opacity: var(--cfw-wallpaper-opacity, 1) !important;
+  filter: brightness(var(--cfw-wallpaper-brightness, 1)) !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only #cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass:not(.cfw-wallpaper-enabled)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* ============================================================
+   V344 Liquid Glass wallpaper-only preview containment
+   ------------------------------------------------------------
+   Only #previewRoot becomes the wallpaper canvas. The surrounding
+   Design Studio, Wallpaper Editor and all controls continue to use
+   the currently active LoxBerry theme exactly like every other theme.
+   The Live Preview iframe is not affected.
+   ============================================================ */
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  contain: paint !important;
+  min-height: clamp(420px, 58vh, 760px);
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass > .cfw-app-preview {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass.cfw-wallpaper-enabled::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  pointer-events: none !important;
+  /* V345: Mirror the real Liquid Glass body::before wallpaper stack.
+     The saved brightness and opacity now produce the same visual result
+     in the compact wallpaper canvas as on the active Liquid Glass page. */
+  background:
+    linear-gradient(
+      135deg,
+      rgba(3, 8, 16, var(--lb-liquid-wallpaper-dim-primary, 0.68)),
+      rgba(10, 24, 38, var(--lb-liquid-wallpaper-dim-secondary, 0.58))
+    ),
+    radial-gradient(
+      900px 500px at 15% 10%,
+      rgba(96, 130, 165, 0.10),
+      transparent 52%
+    ),
+    radial-gradient(
+      900px 500px at 85% 90%,
+      rgba(73, 102, 133, 0.08),
+      transparent 54%
+    ),
+    radial-gradient(
+      700px 420px at 65% 15%,
+      rgba(109, 172, 32, 0.035),
+      transparent 58%
+    ),
+    var(--cfw-wallpaper-image, none) !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  opacity: var(--cfw-wallpaper-opacity, 1) !important;
+  filter: brightness(var(--cfw-wallpaper-brightness, 1)) !important;
+  transform: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass:not(.cfw-wallpaper-enabled)::before {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* ============================================================
+   V347 Direct Liquid Glass wallpaper workbench preview
+   ------------------------------------------------------------
+   A real child layer receives the image, brightness and opacity directly
+   from JavaScript. This prevents the active theme, body wallpaper and older
+   pseudo-element stacks from applying the values a second time.
+   ============================================================ */
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass::before,
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  opacity: 0 !important;
+  filter: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  contain: paint !important;
+  background-image: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass > .cfw-liquid-wallpaper-preview {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform: none;
+  transform-origin: center center;
+  will-change: filter, opacity;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass > .cfw-liquid-wallpaper-preview[hidden] {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass > .cfw-app-preview {
+  display: none !important;
 }
