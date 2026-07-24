@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=<TMPL_VAR VERSION>-v347-direct-wallpaper-preview">
+<link rel="stylesheet" href="/plugins/cssframework/css/design-studio.css?v=v420-wiki-frame-card-text">
 <script>window.LBLANG = "<TMPL_VAR LBLANG>"; window.CFW_LANGUAGE = window.LBLANG;</script>
 <script><TMPL_VAR LANG_DE_JS ESCAPE=NONE></script>
 <script><TMPL_VAR LANG_EN_JS ESCAPE=NONE></script>
@@ -6,6 +6,7 @@
 <script><TMPL_VAR GUARD_EN_JS ESCAPE=NONE></script>
 
 <div class="cfw-page cfw-design-studio">
+  <div id="liquidGlassStudioWallpaper" class="cfw-liquid-studio-wallpaper" hidden aria-hidden="true"></div>
   <div class="cfw-toolbar">
     <div class="cfw-toolbar-title">
       <div class="cfw-title-line">
@@ -25,136 +26,153 @@
     </div>
   </div>
 
-  <nav class="cfw-tabs" aria-label="Design Studio Bereiche" data-i18n-attr="aria-label:tabs.ariaLabel">
+  <nav class="cfw-tabs" aria-label="" data-i18n-attr="aria-label:tabs.ariaLabel">
     <button type="button" class="cfw-tab is-active" data-cfw-tab="workbench" data-role="none" data-i18n="tabs.designStudio"></button>
     <button type="button" class="cfw-tab" data-cfw-tab="ai" data-role="none" data-i18n="tabs.aiDesigner" hidden aria-hidden="true"></button>
     <button type="button" class="cfw-tab" data-cfw-tab="preview" data-role="none" data-i18n="tabs.preview"></button>
+    <button type="button" class="cfw-tab" data-cfw-tab="wiki" data-role="none" data-i18n="tabs.wiki"></button>
   </nav>
 
   <section id="cfwTabWorkbench" class="cfw-tab-panel is-active">
   <div class="cfw-workbench">
     <aside class="cfw-left">
-      <section class="cfw-panel cfw-step-panel cfw-selection-inspector">
-        <h2 data-i18n="inspector.selectedElement"></h2>
-        <div class="cfw-selected-component-card" data-i18n-attr="title:inspector.selectedCardTitle">
-          <div class="cfw-selected-eyebrow" data-i18n="inspector.selectedEyebrow"></div>
-          <div id="selectedElementTitle" class="cfw-selected-title" data-i18n="components.inputText"></div>
-          <div id="selectedElementMeta" class="cfw-selected-meta" data-i18n="inspector.emptyMeta"></div>
-        </div>
-
-        <div id="propertyInspector" class="cfw-property-list" data-i18n-attr="aria-label:properties.ariaLabel"></div>
-
-        <details class="cfw-advanced cfw-token-details" id="selectedTokenDetails">
-          <summary data-i18n="tokens.showAffected"></summary>
-          <div id="selectedTokenList" class="cfw-token-list"></div>
-        </details>
-
-        <div class="cfw-legacy-selects" aria-hidden="true">
-          <label class="cfw-label"><span data-i18n="properties.area"></span>
-            <select id="areaSelect" data-role="none" tabindex="-1"></select>
-          </label>
-          <label class="cfw-label"><span data-i18n="properties.elementVariant"></span>
-            <select id="elementSelect" data-role="none" tabindex="-1"></select>
-          </label>
-          <label class="cfw-label"><span data-i18n="properties.property"></span>
-            <select id="colorGroupSelect" data-role="none" tabindex="-1"></select>
-          </label>
-        </div>
-      </section>
-
-      <section class="cfw-panel cfw-palette-panel">
-        <h2 data-i18n="palette.title"></h2>
-        <div id="paletteGrid" class="cfw-palette-grid"></div>
-      </section>
-
-      <section id="newThemeColorPanel" class="cfw-panel cfw-new-theme-color-panel">
-        <button type="button" id="newThemeColorToggle" class="cfw-button cfw-button-primary cfw-new-theme-color-toggle" data-role="none" data-i18n="globalColor.newTheme"></button>
-        <div id="newThemeColorControls" class="cfw-new-theme-color-controls" hidden>
-          <h2 data-i18n="globalColor.title"></h2>
-          <p class="cfw-hint" data-i18n="globalColor.hint"></p>
-          <div id="newThemeColorPalette" class="cfw-color-preset-palette" aria-label="" data-i18n-attr="aria-label:globalColor.paletteAria"></div>
-          <label class="cfw-label cfw-global-color-picker"><span data-i18n="globalColor.color"></span>
-            <input id="newThemeColorPicker" class="cfw-native-color-input" type="color" value="#2563eb" data-role="none">
-          </label>
-          <div class="cfw-new-theme-color-actions">
-            <button type="button" id="applyNewThemeColor" class="cfw-button cfw-button-primary" data-role="none" data-i18n="globalColor.apply"></button>
-            <button type="button" id="cancelNewThemeColor" class="cfw-button" data-role="none" data-i18n="main.buttons.cancel"></button>
+      <div class="cfw-left-primary-stack">
+        <section id="newThemeColorPanel" class="cfw-panel cfw-new-theme-color-panel">
+          <button type="button" id="newThemeColorToggle" class="cfw-button cfw-button-primary cfw-new-theme-color-toggle" data-role="none" data-i18n="globalColor.newTheme"></button>
+          <div id="newThemeColorControls" class="cfw-new-theme-color-controls" hidden>
+            <h2 data-i18n="globalColor.title"></h2>
+            <p class="cfw-hint" data-i18n="globalColor.hint"></p>
+            <div id="newThemeColorPalette" class="cfw-color-preset-palette" aria-label="" data-i18n-attr="aria-label:globalColor.paletteAria"></div>
+            <label class="cfw-label cfw-global-color-picker"><span data-i18n="globalColor.color"></span>
+              <input id="newThemeColorPicker" class="cfw-native-color-input" type="color" value="#2563eb" data-role="none">
+            </label>
+            <div class="cfw-global-color-mode">
+              <select id="newThemeColorMode" data-role="none" aria-label="" data-i18n-attr="aria-label:globalColor.mode">
+                <option value="auto" data-i18n="globalColor.modeAuto"></option>
+                <option value="light" data-i18n="globalColor.modeLight"></option>
+                <option value="dark" data-i18n="globalColor.modeDark"></option>
+              </select>
+            </div>
+            <section id="newThemeColorAnalysis" class="cfw-new-theme-color-analysis" aria-live="polite" hidden aria-hidden="true">
+              <div><span data-i18n="globalColor.brightness"></span><strong id="newThemeBrightnessValue">–</strong></div>
+              <div><span data-i18n="globalColor.resolvedMode"></span><strong id="newThemeResolvedModeValue">–</strong></div>
+              <div><span data-i18n="globalColor.onPrimary"></span><strong id="newThemeOnPrimaryValue">–</strong></div>
+              <div><span data-i18n="globalColor.contrast"></span><strong id="newThemeContrastValue">–</strong></div>
+            </section>
+            <div class="cfw-new-theme-color-actions">
+              <button type="button" id="applyNewThemeColor" class="cfw-button cfw-button-primary" data-role="none" data-i18n="globalColor.apply"></button>
+              <button type="button" id="cancelNewThemeColor" class="cfw-button" data-role="none" data-i18n="main.buttons.cancel"></button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="cfw-panel cfw-slider-panel">
-        <h2 data-i18n="settings.title"></h2>
-        <div class="cfw-control-grid cfw-control-grid-simple">
-          <div class="cfw-label cfw-color-setting"><span data-i18n="settings.color"></span>
-            <div id="colorPresetPalette" class="cfw-color-preset-palette" aria-label="" data-i18n-attr="aria-label:palette.ariaLabel"></div>
-            <input id="colorPicker" class="cfw-native-color-input" type="color" value="#007aff" data-role="none" aria-label="" data-i18n-attr="aria-label:palette.customColorAria">
+        <section class="cfw-panel cfw-step-panel cfw-selection-inspector">
+          <h2 data-i18n="inspector.selectedElement"></h2>
+          <div class="cfw-selected-component-card" data-i18n-attr="title:inspector.selectedCardTitle">
+            <div class="cfw-selected-eyebrow" data-i18n="inspector.selectedEyebrow"></div>
+            <div id="selectedElementTitle" class="cfw-selected-title" data-i18n="components.inputText"></div>
+            <div id="selectedElementMeta" class="cfw-selected-meta" data-i18n="inspector.emptyMeta"></div>
           </div>
-          <label class="cfw-label"><span data-i18n="settings.radius"></span>
-            <input id="radiusRange" type="range" min="0" max="36" value="12" data-role="none">
-            <span id="radiusValue" class="cfw-small-value">12px</span>
-          </label>
-          <label class="cfw-label cfw-border-width-setting" hidden><span data-i18n="settings.borderWidth"></span>
-            <input id="borderWidthRange" type="range" min="0" max="8" value="1" data-role="none">
-            <span id="borderWidthValue" class="cfw-small-value">1px</span>
-          </label>
 
-          <!-- V127: Advanced value channels stay in the internal model, but are no longer shown in the basic settings UI. -->
-          <input id="alphaRange" type="hidden" value="100" data-role="none">
-          <input id="brightnessRange" type="hidden" value="0" data-role="none">
-          <input id="shadowRange" type="hidden" value="1" data-role="none">
-          <span id="alphaValue" hidden>100%</span>
-          <span id="brightnessValue" hidden>0</span>
-          <span id="shadowValue" hidden>1</span>
-        </div>
-      </section>
+          <div id="propertyInspector" class="cfw-property-list" data-i18n-attr="aria-label:properties.ariaLabel"></div>
 
-      <section id="wallpaperControls" class="cfw-panel cfw-wallpaper-panel" hidden>
-        <h2 data-i18n="wallpaper.title"></h2>
-        <div class="cfw-control-grid cfw-wallpaper-grid">
-          <label class="cfw-label cfw-check"><input id="wallpaperEnabled" type="checkbox" data-role="none"> <span data-i18n="wallpaper.enabled"></span></label>
-          <div id="wallpaperAdvancedControls" class="cfw-wallpaper-advanced" aria-hidden="true">
-            <label class="cfw-label"><span data-i18n="wallpaper.image"></span>
-              <input id="wallpaperImage" type="text" placeholder="theme-file.cgi?file=assets%2Fimages%2Ftheme%2Fwallpaper.jpg" data-role="none" data-i18n-attr="placeholder:wallpaper.imagePlaceholder">
+          <details class="cfw-advanced cfw-token-details" id="selectedTokenDetails">
+            <summary data-i18n="tokens.showAffected"></summary>
+            <div class="cfw-affected-token-picker">
+              <select id="affectedTokenSelect" data-role="none" aria-label="" data-i18n-attr="aria-label:tokens.selectAria"></select>
+              <div id="affectedTokenDescription" class="cfw-small-note"></div>
+            </div>
+            <div id="selectedTokenList" class="cfw-token-list cfw-clickable-token-list"></div>
+          </details>
+
+          <div class="cfw-legacy-selects" aria-hidden="true">
+            <label class="cfw-label"><span data-i18n="properties.area"></span>
+              <select id="areaSelect" data-role="none" tabindex="-1"></select>
             </label>
-            <label class="cfw-label"><span data-i18n="wallpaper.file"></span>
-              <input id="wallpaperFile" class="cfw-file-native" type="file" accept="image/*" data-role="none">
-              <span class="cfw-file-picker">
-                <button id="wallpaperFileButton" class="lb-btn cfw-file-button" type="button" data-i18n="wallpaper.chooseFile"></button>
-                <span id="wallpaperFileName" class="cfw-file-name" data-i18n="wallpaper.noFile"></span>
-              </span>
+            <label class="cfw-label"><span data-i18n="properties.elementVariant"></span>
+              <select id="elementSelect" data-role="none" tabindex="-1"></select>
             </label>
-            <label class="cfw-label"><span data-i18n="wallpaper.brightness"></span>
-              <input id="wallpaperBrightness" type="range" min="0" max="150" value="100" data-role="none">
-              <span id="wallpaperBrightnessValue" class="cfw-small-value">100%</span>
-            </label>
-            <label class="cfw-label"><span data-i18n="wallpaper.opacity"></span>
-              <input id="wallpaperOpacity" type="range" min="0" max="100" value="100" data-role="none">
-              <span id="wallpaperOpacityValue" class="cfw-small-value">100%</span>
+            <label class="cfw-label"><span data-i18n="properties.property"></span>
+              <select id="colorGroupSelect" data-role="none" tabindex="-1"></select>
             </label>
           </div>
-        </div>
-      </section>
+        </section>
 
+        <section class="cfw-panel cfw-slider-panel">
+          <h2 data-i18n="settings.title"></h2>
+          <div class="cfw-control-grid cfw-control-grid-simple">
+            <div class="cfw-label cfw-color-setting"><span data-i18n="settings.color"></span>
+              <div id="colorPresetPalette" class="cfw-color-preset-palette" aria-label="" data-i18n-attr="aria-label:palette.ariaLabel"></div>
+              <input id="colorPicker" class="cfw-native-color-input" type="color" value="#007aff" data-role="none" aria-label="" data-i18n-attr="aria-label:palette.customColorAria">
+            </div>
+            <label class="cfw-label"><span data-i18n="settings.radius"></span>
+              <input id="radiusRange" type="range" min="0" max="36" value="12" data-role="none">
+              <span id="radiusValue" class="cfw-small-value">12px</span>
+            </label>
+            <label class="cfw-label cfw-border-width-setting" hidden><span data-i18n="settings.borderWidth"></span>
+              <input id="borderWidthRange" type="range" min="0" max="8" value="1" data-role="none">
+              <span id="borderWidthValue" class="cfw-small-value">1px</span>
+            </label>
 
+            <!-- V127: Advanced value channels stay in the internal model, but are no longer shown in the basic settings UI. -->
+            <input id="alphaRange" type="hidden" value="100" data-role="none">
+            <input id="brightnessRange" type="hidden" value="0" data-role="none">
+            <input id="shadowRange" type="hidden" value="1" data-role="none">
+            <span id="alphaValue" hidden>100%</span>
+            <span id="brightnessValue" hidden>0</span>
+            <span id="shadowValue" hidden>1</span>
+          </div>
+        </section>
 
+        <section id="wallpaperControls" class="cfw-panel cfw-wallpaper-panel" hidden>
+          <h2 data-i18n="wallpaper.title"></h2>
+          <div class="cfw-control-grid cfw-wallpaper-grid">
+            <label class="cfw-label cfw-check"><input id="wallpaperEnabled" type="checkbox" data-role="none"> <span data-i18n="wallpaper.enabled"></span></label>
+            <div id="wallpaperAdvancedControls" class="cfw-wallpaper-advanced" aria-hidden="true">
+              <label class="cfw-label"><span data-i18n="wallpaper.image"></span>
+                <input id="wallpaperImage" type="text" placeholder="theme-file.cgi?file=assets%2Fimages%2Ftheme%2Fwallpaper.jpg" data-role="none" data-i18n-attr="placeholder:wallpaper.imagePlaceholder">
+              </label>
+              <label class="cfw-label"><span data-i18n="wallpaper.file"></span>
+                <input id="wallpaperFile" class="cfw-file-native" type="file" accept="image/*" data-role="none">
+                <span class="cfw-file-picker">
+                  <button id="wallpaperFileButton" class="lb-btn cfw-file-button" type="button" data-i18n="wallpaper.chooseFile"></button>
+                  <span id="wallpaperFileName" class="cfw-file-name" data-i18n="wallpaper.noFile"></span>
+                </span>
+              </label>
+              <label class="cfw-label"><span data-i18n="wallpaper.brightness"></span>
+                <input id="wallpaperBrightness" type="range" min="0" max="150" value="100" data-role="none">
+                <span id="wallpaperBrightnessValue" class="cfw-small-value">100%</span>
+              </label>
+              <label class="cfw-label"><span data-i18n="wallpaper.opacity"></span>
+                <input id="wallpaperOpacity" type="range" min="0" max="100" value="100" data-role="none">
+                <span id="wallpaperOpacityValue" class="cfw-small-value">100%</span>
+              </label>
+            </div>
+          </div>
+        </section>
 
+        <section class="cfw-panel cfw-import-panel" hidden>
+          <h2 data-i18n="import.title"></h2>
+          <input id="cssImport" class="cfw-file-native" type="file" accept=".css,text/css" data-role="none">
+          <span class="cfw-file-picker">
+            <button id="cssImportButton" class="lb-btn cfw-file-button" type="button" data-i18n="wallpaper.chooseFile"></button>
+            <span id="cssImportFileName" class="cfw-file-name" data-i18n="wallpaper.noFile"></span>
+          </span>
+          <p class="cfw-hint" data-i18n="import.hint"></p>
+          <div id="importSummary" class="cfw-status cfw-import-summary" hidden></div>
+          <details class="cfw-advanced">
+            <summary data-i18n="import.showCustomCss"></summary>
+            <textarea id="customCss" rows="8" spellcheck="false" data-role="none" data-i18n="customCss.defaultText"></textarea>
+          </details>
+        </section>
+      </div>
 
-
-      <section class="cfw-panel cfw-import-panel" hidden>
-        <h2 data-i18n="import.title"></h2>
-        <input id="cssImport" class="cfw-file-native" type="file" accept=".css,text/css" data-role="none">
-        <span class="cfw-file-picker">
-          <button id="cssImportButton" class="lb-btn cfw-file-button" type="button" data-i18n="wallpaper.chooseFile"></button>
-          <span id="cssImportFileName" class="cfw-file-name" data-i18n="wallpaper.noFile"></span>
-        </span>
-        <p class="cfw-hint" data-i18n="import.hint"></p>
-        <div id="importSummary" class="cfw-status cfw-import-summary" hidden></div>
-        <details class="cfw-advanced">
-          <summary data-i18n="import.showCustomCss"></summary>
-          <textarea id="customCss" rows="8" spellcheck="false" data-role="none" data-i18n="customCss.defaultText"></textarea>
-        </details>
-      </section>
+      <div class="cfw-left-secondary-stack">
+        <section class="cfw-panel cfw-palette-panel">
+          <h2 data-i18n="palette.title"></h2>
+          <div id="paletteGrid" class="cfw-palette-grid"></div>
+        </section>
+      </div>
     </aside>
 
     <main class="cfw-right cfw-panel">
@@ -169,6 +187,17 @@
 
       <div id="previewRoot" class="cfw-preview theme-user-demo" data-cfw-area="Background" data-cfw-element="System Hintergrund" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.background">
         <div id="liquidGlassWallpaperPreview" class="cfw-liquid-wallpaper-preview" aria-hidden="true"></div>
+
+        <button id="previewWallpaperShortcut" class="cfw-preview-wallpaper-shortcut" type="button" data-role="none" data-i18n-attr="aria-label:wallpaper.shortcutAria;title:wallpaper.shortcutTitle">
+          <span class="cfw-preview-wallpaper-shortcut-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M4 5.5h16v13H4zM7 15l3.2-3.5 2.6 2.7 2.2-2.2 2 3M8.2 9.2h.01"/></svg>
+          </span>
+          <span data-i18n="wallpaper.shortcutLabel"></span>
+        </button>
+
+        <div class="cfw-preview-wallpaper-watermark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M4 5.5h16v13H4zM7 15l3.2-3.5 2.6 2.7 2.2-2.2 2 3M8.2 9.2h.01"/></svg>
+        </div>
         <div class="cfw-app-preview">
           <aside class="cfw-app-sidebar" data-cfw-area="Layout" data-cfw-element="Sidebar" data-cfw-group="Grundfarbe" data-i18n-attr="title:preview.edit.sidebar">
             <div class="cfw-logo-dot"></div>
@@ -308,7 +337,243 @@
   </section>
 
   <section id="cfwTabPreview" class="cfw-tab-panel cfw-embedded-panel" hidden>
-    <iframe id="cfwPreviewFrame" class="cfw-embedded-frame" src="/admin/plugins/cssframework/cssframework.cgi?page=preview" title="Preview" data-i18n-attr="title:tabs.preview"></iframe>
+    <iframe id="cfwPreviewFrame" class="cfw-embedded-frame" src="/admin/plugins/cssframework/cssframework.cgi?page=preview" title="" data-i18n-attr="title:tabs.preview"></iframe>
+  </section>
+
+  <section id="cfwTabWiki" class="cfw-tab-panel cfw-wiki-panel" hidden>
+    <div class="cfw-wiki-hero cfw-panel">
+      <div class="cfw-wiki-hero-copy">
+        <span class="cfw-wiki-eyebrow" data-i18n="wiki.eyebrow"></span>
+        <h2 data-i18n="wiki.title"></h2>
+        <p data-i18n="wiki.intro"></p>
+      </div>
+      <div class="cfw-wiki-hero-symbol" aria-hidden="true">
+        <svg viewBox="0 0 64 64" focusable="false">
+          <path d="M13 11h31a7 7 0 0 1 7 7v35H20a7 7 0 0 1-7-7z"/>
+          <path d="M20 53a7 7 0 0 1 0-14h31M22 21h18M22 29h14"/>
+        </svg>
+      </div>
+    </div>
+
+    <nav class="cfw-wiki-nav cfw-panel" aria-label="" data-i18n-attr="aria-label:wiki.navigationAria">
+      <a href="#wiki-new-theme" data-i18n="wiki.nav.newTheme"></a>
+      <a href="#wiki-edit" data-i18n="wiki.nav.edit"></a>
+      <a href="#wiki-wallpaper" data-i18n="wiki.nav.wallpaper"></a>
+      <a href="#wiki-save" data-i18n="wiki.nav.save"></a>
+      <a href="#wiki-special-themes" data-i18n="wiki.nav.specialThemes"></a>
+      <a href="#wiki-custom-css" data-i18n="wiki.nav.customCss"></a>
+      <a href="#wiki-faq" data-i18n="wiki.nav.faq"></a>
+    </nav>
+
+    <div class="cfw-wiki-grid">
+      <article id="wiki-new-theme" class="cfw-wiki-card cfw-panel">
+        <div class="cfw-wiki-card-number">1</div>
+        <div class="cfw-wiki-card-content">
+          <h3 data-i18n="wiki.newTheme.title"></h3>
+          <p data-i18n="wiki.newTheme.intro"></p>
+          <ol class="cfw-wiki-steps">
+            <li data-i18n-html="wiki.newTheme.step1"></li>
+            <li data-i18n-html="wiki.newTheme.step2"></li>
+            <li data-i18n-html="wiki.newTheme.step3"></li>
+            <li data-i18n-html="wiki.newTheme.step4"></li>
+            <li data-i18n-html="wiki.newTheme.step5"></li>
+          </ol>
+          <div class="cfw-wiki-tip"><strong data-i18n="wiki.tipLabel"></strong> <span data-i18n="wiki.newTheme.tip"></span></div>
+        </div>
+      </article>
+
+      <article id="wiki-edit" class="cfw-wiki-card cfw-panel">
+        <div class="cfw-wiki-card-number">2</div>
+        <div class="cfw-wiki-card-content">
+          <h3 data-i18n="wiki.edit.title"></h3>
+          <p data-i18n="wiki.edit.intro"></p>
+          <ol class="cfw-wiki-steps">
+            <li data-i18n-html="wiki.edit.step1"></li>
+            <li data-i18n-html="wiki.edit.step2"></li>
+            <li data-i18n-html="wiki.edit.step3"></li>
+            <li data-i18n-html="wiki.edit.step4"></li>
+          </ol>
+          <div class="cfw-wiki-property-list">
+            <span data-i18n="wiki.edit.color"></span>
+            <span data-i18n="wiki.edit.text"></span>
+            <span data-i18n="wiki.edit.border"></span>
+            <span data-i18n="wiki.edit.hover"></span>
+            <span data-i18n="wiki.edit.radius"></span>
+          </div>
+          <div class="cfw-wiki-note" data-i18n="wiki.edit.advanced"></div>
+        </div>
+      </article>
+
+      <article class="cfw-wiki-card cfw-panel">
+        <div class="cfw-wiki-card-number">3</div>
+        <div class="cfw-wiki-card-content">
+          <h3 data-i18n="wiki.values.title"></h3>
+          <ul class="cfw-wiki-checklist">
+            <li data-i18n="wiki.values.color"></li>
+            <li data-i18n="wiki.values.radius"></li>
+            <li data-i18n="wiki.values.border"></li>
+            <li data-i18n="wiki.values.undo"></li>
+          </ul>
+        </div>
+      </article>
+
+      <article id="wiki-wallpaper" class="cfw-wiki-card cfw-panel">
+        <div class="cfw-wiki-card-number">4</div>
+        <div class="cfw-wiki-card-content">
+          <h3 data-i18n="wiki.wallpaper.title"></h3>
+          <ol class="cfw-wiki-steps">
+            <li data-i18n-html="wiki.wallpaper.step1"></li>
+            <li data-i18n-html="wiki.wallpaper.step2"></li>
+            <li data-i18n-html="wiki.wallpaper.step3"></li>
+            <li data-i18n-html="wiki.wallpaper.step4"></li>
+          </ol>
+        </div>
+      </article>
+
+      <article id="wiki-save" class="cfw-wiki-card cfw-panel">
+        <div class="cfw-wiki-card-number">5</div>
+        <div class="cfw-wiki-card-content">
+          <h3 data-i18n="wiki.save.title"></h3>
+          <p data-i18n="wiki.save.text"></p>
+          <ul class="cfw-wiki-checklist">
+            <li data-i18n="wiki.save.name"></li>
+            <li data-i18n="wiki.save.generate"></li>
+            <li data-i18n="wiki.save.reload"></li>
+            <li data-i18n="wiki.save.delete"></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="cfw-wiki-card cfw-panel">
+        <div class="cfw-wiki-card-number">6</div>
+        <div class="cfw-wiki-card-content">
+          <h3 data-i18n="wiki.preview.title"></h3>
+          <p data-i18n="wiki.preview.text"></p>
+          <div class="cfw-wiki-tip"><strong data-i18n="wiki.tipLabel"></strong> <span data-i18n="wiki.preview.tip"></span></div>
+        </div>
+      </article>
+
+      <section id="wiki-special-themes" class="cfw-wiki-special cfw-wiki-card-wide">
+        <article class="cfw-wiki-special-card cfw-panel">
+          <div class="cfw-wiki-special-icon" aria-hidden="true">◌</div>
+          <h3 data-i18n="wiki.liquidGlass.title"></h3>
+          <p data-i18n="wiki.liquidGlass.text"></p>
+          <p class="cfw-wiki-special-hint" data-i18n="wiki.liquidGlass.hint"></p>
+        </article>
+        <article class="cfw-wiki-special-card cfw-panel">
+          <div class="cfw-wiki-special-icon cfw-wiki-special-icon-mac" aria-hidden="true">⌘</div>
+          <h3 data-i18n="wiki.classicMac.title"></h3>
+          <p data-i18n="wiki.classicMac.text"></p>
+          <p class="cfw-wiki-special-hint" data-i18n="wiki.classicMac.hint"></p>
+        </article>
+      </section>
+
+      <article id="wiki-custom-css" class="cfw-wiki-card cfw-wiki-card-wide cfw-wiki-contract cfw-wiki-contract-collapsible">
+        <details class="cfw-wiki-contract-details">
+          <summary class="cfw-wiki-contract-summary">
+            <span class="cfw-wiki-card-number">CSS</span>
+            <span data-i18n="wiki.customCss.title"></span>
+          </summary>
+          <div class="cfw-wiki-card-content cfw-wiki-contract-content">
+            <p data-i18n="wiki.customCss.intro"></p>
+
+          <div class="cfw-wiki-contract-grid">
+            <section>
+              <h4 data-i18n="wiki.customCss.namingTitle"></h4>
+              <ul class="cfw-wiki-checklist">
+                <li data-i18n-html="wiki.customCss.namingFile"></li>
+                <li data-i18n-html="wiki.customCss.namingId"></li>
+                <li data-i18n="wiki.customCss.namingChars"></li>
+              </ul>
+            </section>
+            <section>
+              <h4 data-i18n="wiki.customCss.headerTitle"></h4>
+              <ul class="cfw-wiki-checklist">
+                <li data-i18n="wiki.customCss.headerInfo"></li>
+                <li data-i18n="wiki.customCss.headerMarker"></li>
+                <li data-i18n="wiki.customCss.headerEncoding"></li>
+              </ul>
+            </section>
+            <section>
+              <h4 data-i18n="wiki.customCss.structureTitle"></h4>
+              <ul class="cfw-wiki-checklist">
+                <li data-i18n-html="wiki.customCss.structureScope"></li>
+                <li data-i18n="wiki.customCss.structureTokens"></li>
+                <li data-i18n="wiki.customCss.structureGlobal"></li>
+                <li data-i18n="wiki.customCss.structureContrast"></li>
+              </ul>
+            </section>
+            <section>
+              <h4 data-i18n="wiki.customCss.installTitle"></h4>
+              <ul class="cfw-wiki-checklist">
+                <li data-i18n-html="wiki.customCss.installPath"></li>
+                <li data-i18n="wiki.customCss.installRefresh"></li>
+                <li data-i18n="wiki.customCss.installSelect"></li>
+                <li data-i18n="wiki.customCss.installJson"></li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="cfw-wiki-code-example">
+            <div class="cfw-wiki-code-title" data-i18n="wiki.customCss.exampleTitle"></div>
+            <pre><code>/*
+ * LoxBerry CSS Framework User Theme
+ * Theme: Mein Theme
+ * Theme ID: theme-user-mein-theme
+ * Version: 1.0.0
+ * Author: Dein Name
+ */
+body.theme-user-mein-theme,
+.theme-user-mein-theme {
+  --lb-bg: #101d2b;
+  --lb-text: #f8fafc;
+  --lb-primary: #166534;
+  --lb-primary-hover: #377b50;
+  --lb-border-color: #78a689;
+  --lb-card-bg: #122129;
+  --lb-btn-bg: #263b42;
+  --lb-btn-text: #f8fafc;
+  --lb-input-bg: #122129;
+  --lb-input-text: #f8fafc;
+  --lb-sidebar-bg: #05131b;
+  --lb-sidebar-text: #ffffff;
+}</code></pre>
+          </div>
+
+            <div class="cfw-wiki-note"><strong data-i18n="wiki.customCss.aiPromptLabel"></strong> <span data-i18n="wiki.customCss.aiPrompt"></span></div>
+            <div class="cfw-wiki-tip"><strong data-i18n="wiki.customCss.checkLabel"></strong> <span data-i18n="wiki.customCss.checkText"></span></div>
+          </div>
+        </details>
+      </article>
+
+      <article id="wiki-faq" class="cfw-wiki-card cfw-panel cfw-wiki-card-wide">
+        <div class="cfw-wiki-card-number">?</div>
+        <div class="cfw-wiki-card-content">
+          <h3 data-i18n="wiki.faq.title"></h3>
+          <details>
+            <summary data-i18n="wiki.faq.multipleQuestion"></summary>
+            <p data-i18n="wiki.faq.multipleAnswer"></p>
+          </details>
+          <details>
+            <summary data-i18n="wiki.faq.undoQuestion"></summary>
+            <p data-i18n="wiki.faq.undoAnswer"></p>
+          </details>
+          <details>
+            <summary data-i18n="wiki.faq.protectedQuestion"></summary>
+            <p data-i18n="wiki.faq.protectedAnswer"></p>
+          </details>
+          <details>
+            <summary data-i18n="wiki.faq.wallpaperQuestion"></summary>
+            <p data-i18n="wiki.faq.wallpaperAnswer"></p>
+          </details>
+          <details>
+            <summary data-i18n="wiki.faq.activateThemeQuestion"></summary>
+            <p data-i18n="wiki.faq.activateThemeAnswer"></p>
+            <p class="cfw-wiki-special-hint" data-i18n="wiki.faq.activateThemeHint"></p>
+          </details>
+        </div>
+      </article>
+    </div>
   </section>
 
 
@@ -372,4 +637,11 @@ window.CFW_COLOR_STYLE_MAP = <TMPL_VAR COLOR_STYLE_MAP_JSON ESCAPE=NONE>;
 <script src="/plugins/cssframework/js/ai-guard.js?v=<TMPL_VAR VERSION>"></script>
 <script src="/plugins/cssframework/js/ai-assistant.js?v=<TMPL_VAR VERSION>-v305"></script>
 <script src="/plugins/cssframework/js/cfw-theme-state.js?v=<TMPL_VAR VERSION>"></script>
-<script src="/plugins/cssframework/js/design-studio.js?v=v347-direct-wallpaper-preview"></script>
+<script src="/plugins/cssframework/js/design-studio/color-utils.js?v=v362-slider-value-colors"></script>
+<script src="/plugins/cssframework/js/design-studio/theme-identity.js?v=v362-slider-value-colors"></script>
+<script src="/plugins/cssframework/js/design-studio/protected-themes.js?v=v362-slider-value-colors"></script>
+<script src="/plugins/cssframework/js/design-studio/wallpaper-range.js?v=v362-slider-value-colors"></script>
+<script src="/plugins/cssframework/js/design-studio/color-directions.js?v=v362-slider-value-colors"></script>
+<script src="/plugins/cssframework/js/design-studio.js?v=v420-wiki-frame-card-text"></script>
+<script src="/plugins/cssframework/js/design-studio/sticky-edit-panels.js?v=v369-preview-palette-scroll-follow"></script>
+<script src="/plugins/cssframework/js/design-studio/wallpaper-shortcut.js?v=v379-wallpaper-shortcut"></script>

@@ -1,0 +1,21 @@
+{
+   "assets" : {
+      "icons" : "assets/icons/theme-user-horror/",
+      "wallpaper" : "assets/images/theme-user-horror/wallpaper.jpg"
+   },
+   "css" : "theme-user-horror.css",
+   "features" : {
+      "css_import" : true,
+      "custom_css" : true,
+      "hybrid_import" : true,
+      "token_editor" : true,
+      "wallpaper" : true,
+      "workbench_ui" : true
+   },
+   "id" : "theme-user-horror",
+   "loxberry_min" : "4.0",
+   "name" : "Horror",
+   "plugin" : "cssframework",
+   "type" : "user-theme",
+   "version" : "0.1.78"
+}

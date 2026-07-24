@@ -1,6 +1,15 @@
 (function () {
   'use strict';
 
+  // V361: Stable service modules. This release is a structural split only.
+  var colorUtils = window.CFWDesignStudioColorUtils;
+  var themeIdentity = window.CFWDesignStudioThemeIdentity;
+  var protectedThemes = window.CFWDesignStudioProtectedThemes;
+  var wallpaperRange = window.CFWDesignStudioWallpaperRange;
+  if (!colorUtils || !themeIdentity || !protectedThemes || !wallpaperRange) {
+    throw new Error('Design Studio service modules are missing or loaded in the wrong order.');
+  }
+
   // V287: Embedded Preview/Documentation now use the shared Core renderer via cssframework.cgi.
 
   var coreTokens = window.CFW_CORE_TOKENS || {};
@@ -10,6 +19,7 @@
 
   var previewRoot = document.getElementById('previewRoot');
   var liquidGlassWallpaperPreview = document.getElementById('liquidGlassWallpaperPreview');
+  var liquidGlassStudioWallpaper = document.getElementById('liquidGlassStudioWallpaper');
   var statusBox = document.getElementById('status');
   var statusModal = document.getElementById('statusModal');
   var statusModalCard = statusModal ? statusModal.querySelector('.cfw-status-modal-card') : null;
@@ -28,6 +38,8 @@
   var selectedElementMeta = document.getElementById('selectedElementMeta');
   var propertyInspector = document.getElementById('propertyInspector');
   var selectedTokenList = document.getElementById('selectedTokenList');
+  var affectedTokenSelect = document.getElementById('affectedTokenSelect');
+  var affectedTokenDescription = document.getElementById('affectedTokenDescription');
   var paletteGrid = document.getElementById('paletteGrid');
   var monoPreview = document.getElementById('monoPreview');
   var colorPicker = document.getElementById('colorPicker');
@@ -78,6 +90,11 @@
   var newThemeColorControls = document.getElementById('newThemeColorControls');
   var newThemeColorPalette = document.getElementById('newThemeColorPalette');
   var newThemeColorPicker = document.getElementById('newThemeColorPicker');
+  var newThemeColorMode = document.getElementById('newThemeColorMode');
+  var newThemeBrightnessValue = document.getElementById('newThemeBrightnessValue');
+  var newThemeResolvedModeValue = document.getElementById('newThemeResolvedModeValue');
+  var newThemeOnPrimaryValue = document.getElementById('newThemeOnPrimaryValue');
+  var newThemeContrastValue = document.getElementById('newThemeContrastValue');
   var applyNewThemeColorButton = document.getElementById('applyNewThemeColor');
   var cancelNewThemeColorButton = document.getElementById('cancelNewThemeColor');
   var aiImportedTokens = {};
@@ -89,40 +106,14 @@
   ];
   // V331: One shared set of 28 color directions for both the AI Designer and
   // the local "New Theme" colorizer. The order is fixed at two rows of 14.
-  var aiColorPresetMeta = [
-    { color: '#f5ead7', de: 'warmes Beige', en: 'warm beige' },
-    { color: '#111827', de: 'dunkles Anthrazit', en: 'dark anthracite' },
-    { color: '#ef4444', de: 'kräftiges Rot', en: 'strong red' },
-    { color: '#f97316', de: 'warmes Orange', en: 'warm orange' },
-    { color: '#facc15', de: 'sonniges Gelb', en: 'sunny yellow' },
-    { color: '#22c55e', de: 'frisches Grün', en: 'fresh green' },
-    { color: '#06b6d4', de: 'klares Cyan', en: 'clear cyan' },
-    { color: '#3b82f6', de: 'ruhiges Blau', en: 'calm blue' },
-    { color: '#8b5cf6', de: 'weiches Violett', en: 'soft violet' },
-    { color: '#ec4899', de: 'kräftiges Pink', en: 'strong pink' },
-    { color: '#a16207', de: 'warmes Ocker', en: 'warm ochre' },
-    { color: '#78350f', de: 'dunkles Braun', en: 'dark brown' },
-    { color: '#6b7280', de: 'neutrales Grau', en: 'neutral gray' },
-    { color: '#000000', de: 'tiefes Schwarz', en: 'deep black' },
-    { color: '#fde68a', de: 'sanftes Cremegelb', en: 'soft cream yellow' },
-    { color: '#dc2626', de: 'dunkles Rot', en: 'dark red' },
-    { color: '#16a34a', de: 'sattes Grün', en: 'rich green' },
-    { color: '#0891b2', de: 'tiefes Türkis', en: 'deep turquoise' },
-    { color: '#7c3aed', de: 'dunkles Violett', en: 'dark violet' },
-    { color: '#fbcfe8', de: 'helles Rosé', en: 'light rose' },
-    { color: '#bbf7d0', de: 'helles Mintgrün', en: 'light mint green' },
-    { color: '#bae6fd', de: 'helles Himmelblau', en: 'light sky blue' },
-    { color: '#e9d5ff', de: 'helles Lavendel', en: 'light lavender' },
-    { color: '#cbd5e1', de: 'kühles Grau', en: 'cool gray' },
-    { color: '#fef3c7', de: 'warmes Creme', en: 'warm cream' },
-    { color: '#991b1b', de: 'tiefes Weinrot', en: 'deep wine red' },
-    { color: '#166534', de: 'dunkles Waldgrün', en: 'dark forest green' },
-    { color: '#1e3a8a', de: 'dunkles Marineblau', en: 'dark navy blue' }
-  ];  var aiImportedCss = '';
+  var aiColorPresetMeta = (window.CFWDesignStudioColorDirections || []).slice();
+  var aiImportedCss = '';
   var lastImportMeta = null;
   // V129: Color swatches only edit an explicitly selected Preview/Inspector target.
   var hasActiveEditorSelection = false;
   var expandedPropertyTokenKeys = {};
+  var activeDirectToken = '';
+  var directTokenOverrides = {};
   var aiValidatedDraft = null;
   var aiResultSignature = '';
   var selectedComponentTarget = null;
@@ -180,11 +171,117 @@
   }
 
   var studioDisplayLabelKeys = {
-    groups: {
-      '__tableCellLines': 'properties.tableCellLines',
-      '__tableCellLineWidth': 'properties.tableCellLineWidth'
-    }
-  };
+  "areas": {
+    "Input": "labels.areas.0",
+    "Selects": "labels.areas.1",
+    "Checkboxen": "labels.areas.2",
+    "Radio": "labels.areas.3",
+    "Dropdowns": "labels.areas.4",
+    "Slider": "labels.areas.5",
+    "Toggle": "labels.areas.6",
+    "Buttons": "labels.areas.7",
+    "Cards/Notes": "labels.areas.8",
+    "tabellen": "labels.areas.9",
+    "Layout": "labels.areas.10",
+    "hover": "labels.areas.11",
+    "Validation": "labels.areas.12",
+    "Modal": "labels.areas.13",
+    "Background": "labels.areas.14"
+  },
+  "elements": {
+    "Active Button": "labels.elements.0",
+    "Button Gruppe": "labels.elements.1",
+    "Card Hover": "labels.elements.2",
+    "Checkbox Gruppe": "labels.elements.3",
+    "Compact Slider": "labels.elements.4",
+    "Compact Tabelle": "labels.elements.5",
+    "Dropdown Button": "labels.elements.6",
+    "Dropdown Menü": "labels.elements.7",
+    "Error": "labels.elements.8",
+    "Glass Background": "labels.elements.9",
+    "Glass Card": "labels.elements.10",
+    "Global Hover": "labels.elements.11",
+    "Header": "labels.elements.12",
+    "Header Buttons": "labels.elements.13",
+    "Input Text": "labels.elements.14",
+    "Input mit Fokus": "labels.elements.15",
+    "Modal Overlay": "labels.elements.16",
+    "Native Select": "labels.elements.17",
+    "Note / Hinweis": "labels.elements.18",
+    "Radio Gruppe": "labels.elements.19",
+    "Seitenlayout": "labels.elements.20",
+    "Select Menü offen": "labels.elements.21",
+    "Sidebar": "labels.elements.22",
+    "Sidebar Einträge": "labels.elements.23",
+    "Standard Button": "labels.elements.24",
+    "Standard Card": "labels.elements.25",
+    "Standard Checkbox": "labels.elements.26",
+    "Standard Modal": "labels.elements.27",
+    "Standard Radio": "labels.elements.28",
+    "Standard Select": "labels.elements.29",
+    "Standard Slider": "labels.elements.30",
+    "Standard Tabelle": "labels.elements.31",
+    "Standard Toggle": "labels.elements.32",
+    "Success": "labels.elements.33",
+    "System Hintergrund": "labels.elements.34",
+    "Tabelle mit Buttons": "labels.elements.35",
+    "Tabelle mit Selects": "labels.elements.36",
+    "Table Hover": "labels.elements.37",
+    "Textarea": "labels.elements.38",
+    "Toggle Disabled": "labels.elements.39",
+    "Wallpaper": "labels.elements.40",
+    "Warning": "labels.elements.41"
+  },
+  "groups": {
+    "Abdunklung": "labels.groups.0",
+    "Active": "labels.groups.1",
+    "Active Hover": "labels.groups.2",
+    "Active Hover Textfarbe": "labels.groups.3",
+    "Active Textfarbe": "labels.groups.4",
+    "Button Hover": "labels.groups.5",
+    "Button Hover Textfarbe": "labels.groups.6",
+    "Button Rahmen": "labels.groups.7",
+    "Button-Textfarbe": "labels.groups.8",
+    "Buttonfarbe": "labels.groups.9",
+    "Disabled": "labels.groups.10",
+    "Focus": "labels.groups.11",
+    "Focus-Ring": "labels.groups.12",
+    "Grundfarbe": "labels.groups.13",
+    "Header": "labels.groups.14",
+    "Header Textfarbe": "labels.groups.15",
+    "Hintergrund": "labels.groups.16",
+    "Hover": "labels.groups.17",
+    "Hover Textfarbe": "labels.groups.18",
+    "Knopf": "labels.groups.19",
+    "Knopf Farbe": "labels.groups.20",
+    "Knopf Hover-Ring": "labels.groups.21",
+    "Knopf Rahmenfarbe": "labels.groups.22",
+    "Knopf Rahmenstärke": "labels.groups.23",
+    "Knopf Schatten": "labels.groups.24",
+    "Radius": "labels.groups.25",
+    "Rahmen": "labels.groups.26",
+    "Rahmenstärke": "labels.groups.27",
+    "Schatten": "labels.groups.28",
+    "Select Grundfarbe": "labels.groups.29",
+    "Select Hover": "labels.groups.30",
+    "Select Rahmen": "labels.groups.31",
+    "Select Textfarbe": "labels.groups.32",
+    "Textfarbe": "labels.groups.33",
+    "Transparenz": "labels.groups.34",
+    "Unschärfe": "labels.groups.35",
+    "Wert Hintergrund": "labels.groups.36",
+    "Wert Schriftfarbe": "labels.groups.37",
+    "__tableCellLineWidth": "labels.groups.38",
+    "__tableCellLines": "labels.groups.39",
+    "Active Rahmen": "labels.groups.40",
+    "Active Symbol": "labels.groups.41",
+    "Hover Rahmen": "labels.groups.42",
+    "Option Grundfarbe": "labels.groups.43",
+    "Option Textfarbe": "labels.groups.44",
+    "Option Hover": "labels.groups.45",
+    "Option Hover Textfarbe": "labels.groups.46"
+  }
+};
 
   function displayStudioLabel(kind, name) {
     var keys = studioDisplayLabelKeys[kind] || {};
@@ -270,6 +367,13 @@
         'Textfarbe': ['--lb-select-text', '--lb-input-text'],
         'Rahmen': ['--lb-select-border', '--lb-input-border'],
         'Hover': ['--lb-select-hover-bg'],
+        'Hover Textfarbe': ['--lb-select-hover-text'],
+        'Hover Rahmen': ['--lb-select-hover-border'],
+        'Focus': ['--lb-select-focus-border'],
+        'Option Grundfarbe': ['--lb-select-option-bg', '--lb-select-bg'],
+        'Option Textfarbe': ['--lb-select-option-text', '--lb-select-text'],
+        'Option Hover': ['--lb-select-option-hover-bg', '--lb-select-hover-bg'],
+        'Option Hover Textfarbe': ['--lb-select-option-hover-text', '--lb-select-hover-text'],
         'Radius': ['--lb-select-radius', '--lb-radius-select', '--lb-input-radius', '--lb-radius-input']
       },
       'Native Select': {
@@ -286,10 +390,13 @@
     },
     'Checkboxen': {
       'Standard Checkbox': {
-        'Grundfarbe': ['--lb-checkbox-bg'],
-        'Active': ['--lb-checkbox-checked-bg'],
-        'Rahmen': ['--lb-checkbox-border'],
-        'Textfarbe': ['--lb-checkbox-text']
+        'Grundfarbe': ['--lb-checkbox-bg', '--lb-input-bg'],
+        'Active': ['--lb-checkbox-checked-bg', '--lb-active-bg', '--lb-primary'],
+        'Active Rahmen': ['--lb-checkbox-checked-border', '--lb-checkbox-checked-bg', '--lb-active-bg', '--lb-primary'],
+        'Active Symbol': ['--lb-checkbox-checkmark-text', '--lb-active-text', '--lb-btn-primary-text'],
+        'Rahmen': ['--lb-checkbox-border', '--lb-input-border', '--lb-border-color'],
+        'Textfarbe': ['--lb-checkbox-text', '--lb-text'],
+        'Radius': ['--lb-checkbox-radius']
       },
       'Checkbox Gruppe': {
         'Grundfarbe': ['--lb-checkbox-group-bg', '--lb-card-bg'],
@@ -299,10 +406,12 @@
     },
     'Radio': {
       'Standard Radio': {
-        'Grundfarbe': ['--lb-radio-bg'],
-        'Active': ['--lb-radio-checked-bg'],
-        'Rahmen': ['--lb-radio-border'],
-        'Textfarbe': ['--lb-radio-text']
+        'Grundfarbe': ['--lb-radio-bg', '--lb-checkbox-bg', '--lb-input-bg'],
+        'Active': ['--lb-radio-checked-bg', '--lb-active-bg', '--lb-primary'],
+        'Active Rahmen': ['--lb-radio-checked-border', '--lb-radio-checked-bg', '--lb-active-bg', '--lb-primary'],
+        'Active Punkt': ['--lb-radio-dot-bg', '--lb-active-text', '--lb-btn-primary-text'],
+        'Rahmen': ['--lb-radio-border', '--lb-checkbox-border', '--lb-input-border', '--lb-border-color'],
+        'Textfarbe': ['--lb-radio-text', '--lb-text']
       },
       'Radio Gruppe': {
         'Grundfarbe': ['--lb-radio-group-bg', '--lb-card-bg'],
@@ -312,16 +421,17 @@
     },
     'Dropdowns': {
       'Dropdown Menü': {
-        'Grundfarbe': ['--lb-dropdown-bg'],
-        'Textfarbe': ['--lb-dropdown-text'],
-        'Hover': ['--lb-dropdown-hover-bg'],
-        'Rahmen': ['--lb-dropdown-border'],
-        'Schatten': ['--lb-dropdown-shadow']
+        'Grundfarbe': ['--lb-dropdown-menu-bg', '--lb-multiselect-bg'],
+        'Textfarbe': ['--lb-dropdown-menu-text', '--lb-multiselect-text'],
+        'Hover': ['--lb-multiselect-option-hover-bg', '--lb-tab-popup-item-hover-bg'],
+        'Rahmen': ['--lb-multiselect-menu-border', '--lb-multiselect-border'],
+        'Schatten': ['--lb-multiselect-shadow']
       },
       'Dropdown Button': {
-        'Grundfarbe': ['--lb-dropdown-button-bg', '--lb-btn-bg'],
-        'Textfarbe': ['--lb-dropdown-button-text', '--lb-btn-text'],
-        'Rahmen': ['--lb-dropdown-button-border', '--lb-btn-border']
+        'Grundfarbe': ['--lb-multiselect-summary-bg', '--lb-select-bg'],
+        'Textfarbe': ['--lb-multiselect-text', '--lb-select-text'],
+        'Rahmen': ['--lb-multiselect-border', '--lb-select-border'],
+        'Radius': ['--lb-select-radius', '--lb-radius-select']
       }
     },
     'Slider': {
@@ -333,21 +443,25 @@
         'Knopf Rahmenstärke': ['--lb-slider-thumb-border-width'],
         'Knopf Schatten': ['--lb-slider-thumb-shadow'],
         'Knopf Hover-Ring': ['--lb-slider-thumb-hover-shadow'],
-        'Focus-Ring': ['--lb-slider-focus-shadow']
+        'Focus-Ring': ['--lb-slider-focus-shadow'],
+        'Wert Hintergrund': ['--lb-slider-value-bg'],
+        'Wert Schriftfarbe': ['--lb-slider-value-text']
       },
       'Compact Slider': {
         'Grundfarbe': ['--lb-slider-compact-active-bg', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg'],
         'Hintergrund': ['--lb-slider-compact-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg'],
         'Knopf Farbe': ['--lb-slider-compact-thumb-bg', '--lb-slider-thumb-bg'],
         'Knopf Rahmenfarbe': ['--lb-slider-compact-thumb-border', '--lb-slider-thumb-border-color', '--lb-slider-thumb-border'],
-        'Knopf Rahmenstärke': ['--lb-slider-thumb-border-width']
+        'Knopf Rahmenstärke': ['--lb-slider-thumb-border-width'],
+        'Wert Hintergrund': ['--lb-slider-value-bg'],
+        'Wert Schriftfarbe': ['--lb-slider-value-text']
       }
     },
     'Toggle': {
       'Standard Toggle': {
-        'Active': ['--lb-switch-on-bg', '--lb-toggle-active-bg'],
-        'Hintergrund': ['--lb-switch-off-bg', '--lb-toggle-bg'],
-        'Rahmen': ['--lb-switch-border', '--lb-toggle-border'],
+        'Active': ['--lb-switch-on-bg', '--lb-toggle-active-bg', '--lb-active-bg', '--lb-primary'],
+        'Hintergrund': ['--lb-switch-off-bg', '--lb-toggle-bg', '--lb-input-bg'],
+        'Rahmen': ['--lb-switch-border', '--lb-toggle-border', '--lb-border-color', '--lb-border'],
         'Knopf': ['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'],
         'Radius': ['--lb-switch-radius', '--lb-toggle-radius', '--lb-toggle-slider-radius', '--lb-toggle-thumb-radius', '--lb-toggle-knob-radius']
       },
@@ -708,23 +822,15 @@
 
 
   function normalizeThemeDisplayName(name) {
-    name = String(name || '').trim();
-    name = name.replace(/^loxberry[\s_-]*/i, '').trim();
-    return name || 'User Theme';
+    return themeIdentity.normalizeDisplayName(name);
   }
 
   function slugifyThemeName(name) {
-    var slug = normalizeThemeDisplayName(name)
-      .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-    return 'theme-user-' + (slug || 'theme');
+    return themeIdentity.slugify(name);
   }
 
   function isLiquidGlassThemeId(id) {
-    return String(id || '').trim().toLowerCase() === 'theme-user-liquid-glass';
+    return protectedThemes.isLiquidGlass(id);
   }
 
   function extractLiquidGlassRootDeclarations(cssText) {
@@ -989,7 +1095,9 @@
   function updateLiquidGlassPackagePreviewMode() {
     if (!previewRoot) return;
     var enabled = isLiquidGlassWallpaperEditorMode();
+    var studioPage = document.querySelector('.cfw-page.cfw-design-studio');
 
+    if (studioPage) studioPage.classList.toggle('cfw-studio-aurora-disabled', enabled);
     previewRoot.classList.toggle('theme-user-liquid-glass', enabled);
     previewRoot.classList.toggle('cfw-liquid-glass-package-preview', enabled);
     setLiquidGlassPreviewAliases(enabled);
@@ -1000,25 +1108,21 @@
   }
 
   function isReadOnlyProtectedStudioThemeId(id) {
-    return String(id || '').trim().toLowerCase() === 'theme-user-classic-mac';
+    return protectedThemes.isReadOnly(id);
   }
 
   function isProtectedStudioThemeId(id) {
-    return isLiquidGlassThemeId(id) || isReadOnlyProtectedStudioThemeId(id);
+    return protectedThemes.isProtected(id);
   }
 
   function protectedStudioThemeDisplayName(id) {
-    if (isLiquidGlassThemeId(id)) return tx('saveModal.baseLiquidGlass');
-    if (isReadOnlyProtectedStudioThemeId(id)) return 'Classic Mac';
-    return String(id || 'Package Theme');
+    return protectedThemes.displayName(id, function (key) { return tx(key); });
   }
 
   function protectedStudioThemeMessage(id) {
-    return t(
-      'messages.protectedPackageTheme',
-      'messages.protectedPackageTheme',
-      { theme: protectedStudioThemeDisplayName(id), id: id || 'protected-package-theme' }
-    );
+    return protectedThemes.message(id, function (key, values) {
+      return t(key, key, values || {});
+    });
   }
 
   function isLiquidGlassWallpaperEditorMode() {
@@ -1106,39 +1210,133 @@
     return best;
   }
 
-  function localThemePaletteFromAiDirection(baseColor) {
-    baseColor = normalizeHexColor(baseColor) || '#2563eb';
-    var direction = nearestAiColorDirection(baseColor);
-    var family = direction ? detectPaletteFamilyFromText((direction.de || '') + ' ' + (direction.en || '')) : '';
-    var palette = aiPaletteDefaults(family) || aiPaletteDefaults('blue') || {};
-    var primaryHover = mixColor(baseColor, -12);
-    var primaryDark = mixColor(baseColor, -24);
-    var focusRgb = parseHexColor(baseColor) || { r: 37, g: 99, b: 235 };
-    return Object.assign({}, palette, {
-      primary: baseColor,
-      primaryHover: primaryHover,
-      primaryDark: primaryDark,
-      focusShadow: '0 0 0 3px rgba(' + Math.round(focusRgb.r) + ', ' + Math.round(focusRgb.g) + ', ' + Math.round(focusRgb.b) + ', 0.25)'
-    });
+  function themeRelativeLuminance(color) {
+    var rgb = parseHexColor(normalizeHexColor(color));
+    if (!rgb) return 0;
+    function channel(value) {
+      value = value / 255;
+      return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * channel(rgb.r) + 0.7152 * channel(rgb.g) + 0.0722 * channel(rgb.b);
   }
 
-  function buildLocalThemeColorDraft(baseColor, sourceTokens) {
+  function themeContrastRatio(a, b) {
+    var light = themeRelativeLuminance(a);
+    var dark = themeRelativeLuminance(b);
+    if (dark > light) {
+      var swap = light;
+      light = dark;
+      dark = swap;
+    }
+    return (light + 0.05) / (dark + 0.05);
+  }
+
+  function bestTextOnThemeColor(color) {
+    var dark = '#111827';
+    var light = '#ffffff';
+    var darkRatio = themeContrastRatio(color, dark);
+    var lightRatio = themeContrastRatio(color, light);
+    return darkRatio >= lightRatio
+      ? { color: dark, ratio: darkRatio, kind: 'dark' }
+      : { color: light, ratio: lightRatio, kind: 'light' };
+  }
+
+  function classifyThemeBrightness(color) {
+    var luminance = themeRelativeLuminance(color);
+    if (luminance < 0.08) return { key: 'globalColor.brightnessVeryDark', fallback: 'Very dark', luminance: luminance };
+    if (luminance < 0.22) return { key: 'globalColor.brightnessDark', fallback: 'Dark', luminance: luminance };
+    if (luminance < 0.48) return { key: 'globalColor.brightnessMedium', fallback: 'Medium', luminance: luminance };
+    if (luminance < 0.75) return { key: 'globalColor.brightnessLight', fallback: 'Light', luminance: luminance };
+    return { key: 'globalColor.brightnessVeryLight', fallback: 'Very light', luminance: luminance };
+  }
+
+  function resolveNewThemeColorMode(baseColor, requestedMode) {
+    if (requestedMode === 'light' || requestedMode === 'dark') return requestedMode;
+    return themeRelativeLuminance(baseColor) >= 0.34 ? 'light' : 'dark';
+  }
+
+  function updateNewThemeColorAnalysis() {
+    if (!newThemeColorPicker) return;
+    var baseColor = normalizeHexColor(newThemeColorPicker.value) || '#2563eb';
+    var requestedMode = newThemeColorMode ? newThemeColorMode.value : 'auto';
+    var resolvedMode = resolveNewThemeColorMode(baseColor, requestedMode);
+    var brightness = classifyThemeBrightness(baseColor);
+    var onPrimary = bestTextOnThemeColor(baseColor);
+    if (newThemeBrightnessValue) newThemeBrightnessValue.textContent = t(brightness.key, brightness.fallback);
+    if (newThemeResolvedModeValue) newThemeResolvedModeValue.textContent = t('globalColor.mode' + (resolvedMode === 'dark' ? 'Dark' : 'Light'), resolvedMode);
+    if (newThemeOnPrimaryValue) {
+      newThemeOnPrimaryValue.textContent = t(onPrimary.kind === 'dark' ? 'globalColor.textDark' : 'globalColor.textLight', onPrimary.kind) + ' · ' + onPrimary.color.toUpperCase();
+      newThemeOnPrimaryValue.style.color = onPrimary.color;
+      newThemeOnPrimaryValue.style.background = baseColor;
+      newThemeOnPrimaryValue.style.padding = '2px 6px';
+      newThemeOnPrimaryValue.style.borderRadius = '5px';
+    }
+    if (newThemeContrastValue) newThemeContrastValue.textContent = onPrimary.ratio.toFixed(2).replace('.', ',') + ' : 1';
+  }
+
+  function localThemePaletteFromAiDirection(baseColor, requestedMode) {
+    baseColor = normalizeHexColor(baseColor) || '#2563eb';
+    var mode = resolveNewThemeColorMode(baseColor, requestedMode || 'auto');
+    var onPrimaryInfo = bestTextOnThemeColor(baseColor);
+    var focusRgb = parseHexColor(baseColor) || { r: 37, g: 99, b: 235 };
+    var palette;
+
+    if (mode === 'dark') {
+      var darkBase = '#0f172a';
+      var darkSurface = blendThemeColor('#111827', baseColor, 0.12);
+      palette = {
+        mode: mode,
+        primary: baseColor,
+        primaryHover: blendThemeColor(baseColor, '#ffffff', 0.14),
+        primaryDark: blendThemeColor(baseColor, '#000000', 0.20),
+        bg: blendThemeColor(darkBase, baseColor, 0.08),
+        surface: darkSurface,
+        surfaceAlt: blendThemeColor('#1e293b', baseColor, 0.16),
+        text: '#f8fafc',
+        muted: '#b7c2d0',
+        border: blendThemeColor(baseColor, '#ffffff', 0.42),
+        sidebar: blendThemeColor('#020617', baseColor, 0.14),
+        sidebarText: '#ffffff',
+        onPrimary: onPrimaryInfo.color
+      };
+    } else {
+      var lightSurface = blendThemeColor('#ffffff', baseColor, 0.025);
+      palette = {
+        mode: mode,
+        primary: baseColor,
+        primaryHover: blendThemeColor(baseColor, '#000000', 0.12),
+        primaryDark: blendThemeColor(baseColor, '#000000', 0.24),
+        bg: blendThemeColor('#f8fafc', baseColor, 0.035),
+        surface: lightSurface,
+        surfaceAlt: blendThemeColor('#f1f5f9', baseColor, 0.10),
+        text: '#172033',
+        muted: '#566274',
+        border: blendThemeColor(baseColor, '#334155', 0.52),
+        sidebar: blendThemeColor(baseColor, '#111827', 0.70),
+        sidebarText: '#ffffff',
+        onPrimary: onPrimaryInfo.color
+      };
+    }
+
+    palette.focusShadow = '0 0 0 3px rgba(' + Math.round(focusRgb.r) + ', ' + Math.round(focusRgb.g) + ', ' + Math.round(focusRgb.b) + ', 0.25)';
+    return palette;
+  }
+
+  function buildLocalThemeColorDraft(baseColor, sourceTokens, requestedMode) {
     baseColor = normalizeHexColor(baseColor) || '#2563eb';
     sourceTokens = sourceTokens || {};
-    // V330: The local Design Studio colorizer now uses the same semantic color
-    // directions and palette surfaces as the AI Studio. The selected swatch is
-    // kept as the exact primary color; the remaining roles follow the nearest
-    // AI color direction instead of using a separate generic tint algorithm.
-    var palette = localThemePaletteFromAiDirection(baseColor);
-    var bg = palette.bg || '#f7f7f7';
-    var surface = palette.surface || bg;
-    var surfaceAlt = palette.surfaceAlt || blendThemeColor(surface, baseColor, 0.08);
-    var text = palette.text || readableTextFor(bg, '#f8fafc', '#172033');
-    var muted = palette.muted || blendThemeColor(text, bg, 0.42);
-    var border = palette.border || blendThemeColor(baseColor, '#ffffff', 0.62);
-    var onPrimary = readableTextFor(baseColor, '#ffffff', '#111827');
-    var primaryHover = palette.primaryHover || mixColor(baseColor, -12);
-    var sidebar = palette.sidebar || blendThemeColor(baseColor, '#111827', 0.70);
+    var palette = localThemePaletteFromAiDirection(baseColor, requestedMode || 'auto');
+    var bg = palette.bg;
+    var surface = palette.surface;
+    var surfaceAlt = palette.surfaceAlt;
+    var text = palette.text;
+    var muted = palette.muted;
+    var border = palette.border;
+    var onPrimary = palette.onPrimary;
+    var primaryHover = palette.primaryHover;
+    var isDark = palette.mode === 'dark';
+    var neutralButton = isDark ? blendThemeColor(surfaceAlt, '#ffffff', 0.04) : '#ffffff';
+    var neutralHover = isDark ? blendThemeColor(surfaceAlt, baseColor, 0.18) : blendThemeColor(baseColor, '#ffffff', 0.88);
 
     return {
       design: {
@@ -1152,22 +1350,32 @@
           text: text,
           muted_text: muted,
           border: border,
-          sidebar: sidebar,
-          sidebar_text: palette.sidebarText || '#ffffff'
+          sidebar: palette.sidebar,
+          sidebar_text: palette.sidebarText
         },
         components: {
-          table: { background: surface, header: surfaceAlt, header_text: text, text: text, hover: blendThemeColor(baseColor, surface, 0.74), border: border, radius: '10px' },
-          slider: { active: baseColor, track: surfaceAlt, thumb: '#ffffff', thumb_border: border, focus: baseColor },
-          toggle: { off: surfaceAlt, active: baseColor, border: border, thumb: '#ffffff', radius: '10px' },
-          button: { background: surfaceAlt, text: text, hover: primaryHover, hover_text: onPrimary, border: border, radius: '10px' },
+          table: { background: surface, header: surfaceAlt, header_text: text, text: text, hover: blendThemeColor(surfaceAlt, baseColor, isDark ? 0.20 : 0.12), border: border, radius: '10px' },
+          slider: { active: baseColor, track: surfaceAlt, thumb: isDark ? '#f8fafc' : '#ffffff', thumb_border: border, focus: baseColor, value_background: surfaceAlt, value_text: text },
+          toggle: { off: surfaceAlt, active: baseColor, border: border, thumb: isDark ? '#f8fafc' : '#ffffff', radius: '10px' },
+          button: { background: neutralButton, text: text, hover: primaryHover, hover_text: onPrimary, border: border, radius: '10px' },
           header_button: { background: baseColor, text: onPrimary, hover: primaryHover, hover_text: onPrimary },
-          button_group: { background: surfaceAlt, text: text, active: baseColor, active_text: onPrimary, hover: primaryHover, hover_text: onPrimary, border: border, radius: '10px' },
+          button_group: {
+            background: neutralButton,
+            text: text,
+            active: baseColor,
+            active_text: onPrimary,
+            hover: primaryHover,
+            hover_text: onPrimary,
+            border: border,
+            radius: '10px'
+          },
           card: { background: surface, text: text, border: border, radius: '10px' },
           input: { background: surface, text: text, border: border, hover: surfaceAlt, focus: baseColor, radius: '10px' },
           select: { background: surface, text: text, border: border, hover: surfaceAlt, hover_text: text, radius: '10px' },
           dropdown: { background: surface, text: text, border: border, hover: primaryHover, radius: '10px' }
         }
-      }
+      },
+      meta: { resolvedMode: palette.mode }
     };
   }
 
@@ -1199,16 +1407,30 @@
     var sourceInfo = selectedUserThemeInfo();
     var sourceName = sourceInfo && sourceInfo.theme ? (sourceInfo.theme.name || sourceInfo.theme.id) : (themeName && themeName.value ? themeName.value : tx('toolbar.currentPreviewNewTheme'));
     var sourceTokens = effectivePreviewTokens();
-    var draftTokens = applyLocalThemeDefaults(compileSemanticDraftToTokens(buildLocalThemeColorDraft(newThemeColorPicker.value, sourceTokens)));
+    var requestedThemeMode = newThemeColorMode ? newThemeColorMode.value : 'auto';
+    var localThemeDraft = buildLocalThemeColorDraft(newThemeColorPicker.value, sourceTokens, requestedThemeMode);
+    var draftTokens = applyLocalThemeDefaults(compileSemanticDraftToTokens(localThemeDraft));
     var recolored = Object.assign({}, aiImportedTokens || {});
     Object.keys(draftTokens).forEach(function (name) {
       if (isThemeColorToken(name, draftTokens[name])) recolored[name] = draftTokens[name];
     });
+    // V355: Final deterministic contract for the local colorizer. This is kept
+    // after the merge so no source-theme value can restore a black inactive state.
+    var localGroupPrimary = normalizeHexColor(newThemeColorPicker.value) || '#2563eb';
+    var localResolvedMode = localThemeDraft.meta && localThemeDraft.meta.resolvedMode ? localThemeDraft.meta.resolvedMode : resolveNewThemeColorMode(localGroupPrimary, requestedThemeMode);
+    var localGroupBorder = localResolvedMode === 'dark' ? blendThemeColor(localGroupPrimary, '#ffffff', 0.42) : blendThemeColor(localGroupPrimary, '#334155', 0.52);
+    // V382: inactive Button Group follows the normal Button.
+    recolored['--lb-btn-group-inactive-bg'] = recolored['--lb-btn-bg'] || draftTokens['--lb-btn-bg'] || (localResolvedMode === 'dark' ? blendThemeColor('#1e293b', localGroupPrimary, 0.10) : '#ffffff');
+    recolored['--lb-btn-group-inactive-text'] = recolored['--lb-btn-text'] || draftTokens['--lb-btn-text'] || (localResolvedMode === 'dark' ? '#f8fafc' : '#0f172a');
+    recolored['--lb-btn-group-border'] = localGroupBorder;
+    recolored['--lb-btn-group-inactive-border'] = localGroupBorder;
     applyLocalThemeDefaults(recolored);
 
     pushUndoSnapshot('global-theme-color');
     studioModel = {};
     aiImportedTokens = enforceForcedOpaqueTokens(recolored);
+    directTokenOverrides = {};
+    activeDirectToken = '';
     // V330: Legacy .formtable containers are layout wrappers, not visual cards.
     // Keep them transparent in newly colorized themes while preserving any
     // source custom CSS. Theme CSS is loaded only for the active theme.
@@ -1235,7 +1457,7 @@
     broadcastEmbeddedFrameTokens(previewTokens);
     updateAll(false);
     updateProtectedStudioThemeMode();
-    setStatus(t('globalColor.applied', 'globalColor.applied', { source: sourceName, color: newThemeColorPicker.value }), false, 'success');
+    setStatus(t('globalColor.applied', 'globalColor.applied', { source: sourceName, color: newThemeColorPicker.value, mode: t(localResolvedMode === 'dark' ? 'globalColor.modeDark' : 'globalColor.modeLight', localResolvedMode) }), false, 'success');
   }
 
   function updateProtectedStudioThemeMode() {
@@ -1282,6 +1504,7 @@
   function updateLiquidGlassWallpaperEditorMode() {
     updateProtectedStudioThemeMode();
     updateLiquidGlassPackagePreviewMode();
+    configureWallpaperSliderRanges();
   }
 
   function isProtectedStudioWallpaperOnlySave() {
@@ -1344,58 +1567,17 @@
     return element[currentGroup()] || [];
   }
 
-  function hexToRgb(hex) {
-    hex = String(hex || '#007aff').replace('#', '');
-    if (hex.length === 3) hex = hex.split('').map(function (c) { return c + c; }).join('');
-    var num = parseInt(hex || '007aff', 16);
-    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
-  }
+  function hexToRgb(hex) { return colorUtils.hexToRgb(hex); }
 
-  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+  function clamp(n, min, max) { return colorUtils.clamp(n, min, max); }
 
-  function rgbToHex(rgb) {
-    return '#' + [rgb.r, rgb.g, rgb.b].map(function (v) {
-      return clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0');
-    }).join('');
-  }
+  function rgbToHex(rgb) { return colorUtils.rgbToHex(rgb); }
 
-  function adjustBrightness(hex, amount) {
-    var rgb = hexToRgb(hex);
-    return rgbToHex({ r: rgb.r + amount * 2.2, g: rgb.g + amount * 2.2, b: rgb.b + amount * 2.2 });
-  }
+  function adjustBrightness(hex, amount) { return colorUtils.adjustBrightness(hex, amount); }
 
-  function rgba(hex, alpha, brightness) {
-    var adjusted = adjustBrightness(hex, parseInt(brightness || 0, 10));
-    var rgb = hexToRgb(adjusted);
-    if (alpha >= 100) return adjusted;
-    return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + (alpha / 100).toFixed(2) + ')';
-  }
+  function rgba(hex, alpha, brightness) { return colorUtils.rgba(hex, alpha, brightness); }
 
-  function makeCssColorOpaque(value) {
-    value = String(value || '').trim();
-    if (!value) return value;
-
-    var hex8 = value.match(/^#([0-9a-f]{8})$/i);
-    if (hex8) return '#' + hex8[1].slice(0, 6).toLowerCase();
-
-    var hex4 = value.match(/^#([0-9a-f]{4})$/i);
-    if (hex4) {
-      var h = hex4[1];
-      return ('#' + h[0] + h[0] + h[1] + h[1] + h[2] + h[2]).toLowerCase();
-    }
-
-    var rgbaMatch = value.match(/^rgba?\s*\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)/i);
-    if (rgbaMatch) {
-      return 'rgb(' + Math.round(parseFloat(rgbaMatch[1])) + ', ' + Math.round(parseFloat(rgbaMatch[2])) + ', ' + Math.round(parseFloat(rgbaMatch[3])) + ')';
-    }
-
-    var hslaMatch = value.match(/^hsla?\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)/i);
-    if (hslaMatch) {
-      return 'hsl(' + hslaMatch[1].trim() + ', ' + hslaMatch[2].trim() + ', ' + hslaMatch[3].trim() + ')';
-    }
-
-    return value;
-  }
+  function makeCssColorOpaque(value) { return colorUtils.makeCssColorOpaque(value); }
 
   function isForcedOpaqueToken(token) {
     return token === '--lb-sidebar-bg';
@@ -1412,16 +1594,7 @@
   }
 
 
-  function normalizeHexColor(value) {
-    value = String(value || '').trim();
-    if (/^#[0-9a-f]{3}$/i.test(value)) {
-      return '#' + value.slice(1).split('').map(function (c) { return c + c; }).join('').toLowerCase();
-    }
-    if (/^#[0-9a-f]{6}$/i.test(value)) return value.toLowerCase();
-    var rgb = value.match(/^rgba?\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i);
-    if (rgb) return rgbToHex({ r: parseInt(rgb[1], 10), g: parseInt(rgb[2], 10), b: parseInt(rgb[3], 10) }).toLowerCase();
-    return '';
-  }
+  function normalizeHexColor(value) { return colorUtils.normalizeHexColor(value); }
 
   function canEditCurrentColorTarget() {
     return !!hasActiveEditorSelection;
@@ -1538,9 +1711,17 @@
   }
 
   var preferredPaletteTokens = [
-    '--lb-bg', '--lb-content-bg', '--lb-card-bg', '--lb-card-text', '--lb-primary', '--lb-primary-hover', '--lb-primary-dark',
-    '--lb-active-bg', '--lb-active-text', '--lb-btn-primary-bg', '--lb-btn-primary-text', '--lb-btn-bg', '--lb-btn-text',
-    '--lb-sidebar-bg', '--lb-sidebar-text', '--lb-sidebar-active-bg', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-bg', '--lb-sidebar-link-hover-text', '--lb-text', '--lb-text-secondary', '--lb-text-muted', '--lb-border-color',
+    /* V398: Start with the base color and its semantic derivatives. */
+    '--lb-primary', '--lb-primary-hover', '--lb-primary-dark',
+    '--lb-active-bg', '--lb-active-border', '--lb-hover-bg',
+    '--lb-btn-primary-bg', '--lb-btn-primary-border', '--lb-btn-hover-bg',
+    '--lb-btn-group-active-bg', '--lb-btn-group-active-border', '--lb-btn-group-hover-bg',
+    '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg',
+    '--lb-slider-thumb-bg', '--lb-slider-value-bg', '--lb-slider-value-border',
+    '--lb-section-border', '--lb-sidebar-active-bg', '--lb-sidebar-link-hover-bg',
+    '--lb-bg', '--lb-content-bg', '--lb-card-bg', '--lb-card-text',
+    '--lb-active-text', '--lb-btn-primary-text', '--lb-btn-bg', '--lb-btn-text',
+    '--lb-sidebar-bg', '--lb-sidebar-text', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-text', '--lb-text', '--lb-text-secondary', '--lb-text-muted', '--lb-border-color',
     '--lb-border', '--lb-card-border', '--lb-input-bg', '--lb-input-text', '--lb-input-border', '--lb-table-header-bg',
     '--lb-table-header-text', '--lb-table-bg', '--lb-table-border-color', '--lb-slider-active-bg', '--lb-slider-fill-bg', '--lb-range-active-bg', '--lb-slider-bg', '--lb-slider-track-bg', '--lb-range-track-bg', '--lb-slider-thumb-bg', '--lb-slider-thumb-border-color', '--lb-slider-thumb-border-width', '--lb-slider-thumb-border', '--lb-slider-thumb-shadow', '--lb-slider-thumb-hover-shadow', '--lb-slider-focus-shadow', '--lb-slider-compact-active-bg', '--lb-slider-compact-bg', '--lb-slider-compact-thumb-bg', '--lb-slider-compact-thumb-border', '--lb-success', '--lb-warning', '--lb-danger'
   ];
@@ -1655,7 +1836,42 @@
     }[normalized] === true;
   }
 
-  function addPaletteSample(out, seen, sourceTokens, name, label) {
+  function isGreenPalettePrimary(value) {
+    var hex = normalizeHexColor(value);
+    var rgb = hex ? hexToRgb(hex) : null;
+    if (!rgb) return false;
+
+    var r = rgb.r / 255;
+    var g = rgb.g / 255;
+    var b = rgb.b / 255;
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    var delta = max - min;
+    if (delta === 0) return false;
+
+    var hue;
+    if (max === r) hue = 60 * (((g - b) / delta) % 6);
+    else if (max === g) hue = 60 * (((b - r) / delta) + 2);
+    else hue = 60 * (((r - g) / delta) + 4);
+    if (hue < 0) hue += 360;
+
+    var saturation = max === 0 ? 0 : delta / max;
+    return hue >= 70 && hue <= 165 && saturation >= 0.22;
+  }
+
+  function previewPaletteExcludedAccentColors(sourceTokens) {
+    // V401: The legacy/classic green #4a7a12 is visually distracting in
+    // non-green themes. Hide it from the preview palette unless the selected
+    // primary color itself belongs to the green hue family.
+    var excluded = {};
+    var primary = resolvedTokenValue(sourceTokens || {}, '--lb-primary');
+    if (!isGreenPalettePrimary(primary)) {
+      excluded['#4a7a12'] = true;
+    }
+    return excluded;
+  }
+
+  function addPaletteSample(out, seen, sourceTokens, name, label, excludedColors) {
     if (!sourceTokens || !name) return;
     // V165: Reine Status-/Semantikfarben gehören nicht in die Vorschaufarben.
     // Der Block dient der nutzerorientierten Farbzuordnung, nicht der Anzeige
@@ -1666,6 +1882,10 @@
     if (!isColorLikeValue(value) || isPreviewPaletteHelperColor(value)) return;
     var normalized = normalizeHexColor(value) || String(value).trim().toLowerCase();
     if (!normalized) return;
+    // V356: Primary accent colors are internal generator guidance and add no
+    // useful choice to the user-facing Vorschaufarben palette. Exclude the
+    // primary family by color, so aliases with the same value cannot re-add it.
+    if (excludedColors && excludedColors[normalized]) return;
     var role = label || paletteRoleLabel(name) || name;
     if (seen[normalized]) {
       if (role && seen[normalized].roles.indexOf(role) < 0) seen[normalized].roles.push(role);
@@ -1680,13 +1900,14 @@
     var source = effectivePreviewTokens(mappedTokens || []);
     var samples = [];
     var seen = {};
+    var excludedAccentColors = previewPaletteExcludedAccentColors(source);
 
     // V163: Vorschaufarben sind farbzentriert. Gleiche Farbcodes werden
     // zusammengefasst, weil der Nutzer hier Farben zuordnet, nicht Tokens prüft.
-    (mappedTokens || []).forEach(function (name) { addPaletteSample(samples, seen, source, name); });
-    preferredPaletteTokens.forEach(function (name) { addPaletteSample(samples, seen, source, name); });
+    preferredPaletteTokens.forEach(function (name) { addPaletteSample(samples, seen, source, name, '', excludedAccentColors); });
+    (mappedTokens || []).forEach(function (name) { addPaletteSample(samples, seen, source, name, '', excludedAccentColors); });
     Object.keys(source || {}).forEach(function (name) {
-      if (samples.length < 12) addPaletteSample(samples, seen, source, name);
+      if (samples.length < 24) addPaletteSample(samples, seen, source, name, '', excludedAccentColors);
     });
 
     samples.forEach(function (sample) {
@@ -1699,7 +1920,7 @@
     if (!samples.length) {
       var fallback = propertyPaletteDefaults[group] || propertyPaletteDefaults.Grundfarbe;
       var fallbackIndex = 0;
-      while (samples.length < 12 && fallback.length) {
+      while (samples.length < 24 && fallback.length) {
         var fallbackColor = fallback[fallbackIndex % fallback.length];
         var fallbackKey = normalizeHexColor(fallbackColor) || String(fallbackColor).trim().toLowerCase();
         if (!seen[fallbackKey]) {
@@ -1714,7 +1935,7 @@
         if (fallbackIndex > fallback.length * 2) break;
       }
     }
-    return samples.slice(0, 12);
+    return samples.slice(0, 24);
   }
 
   function shadowValueToCss(level, color) {
@@ -1813,6 +2034,10 @@
     field = field || 'all';
 
     if (field === 'radius') {
+      if (activeDirectToken && tokenEditorKind(activeDirectToken) === 'radius') {
+        directTokenOverrides[activeDirectToken] = parseInt(radiusRange.value || '0', 10) + 'px';
+        return true;
+      }
       var radiusGroup = resolveRadiusGroupForCurrentElement();
       if (!radiusGroup) {
         setStatus(tx('messages.noRadiusForElement'), false, 'info', { modal: 'manual' });
@@ -1834,6 +2059,10 @@
     }
 
     if (field === 'borderWidth') {
+      if (activeDirectToken && tokenEditorKind(activeDirectToken) === 'borderWidth') {
+        directTokenOverrides[activeDirectToken] = parseInt((borderWidthRange && borderWidthRange.value) || '0', 10) + 'px';
+        return true;
+      }
       var borderWidthGroup = resolveBorderWidthGroupForCurrentElement();
       if (!borderWidthGroup) {
         setStatus(tx('messages.noBorderWidthForElement'), false, 'info', { modal: 'manual' });
@@ -1853,6 +2082,23 @@
     }
 
     if (field === 'color') {
+      if (activeDirectToken && tokenEditorKind(activeDirectToken) === 'color') {
+        directTokenOverrides[activeDirectToken] = colorPicker.value || '#007aff';
+        return true;
+      }
+
+      // V399: A property mapped to exactly one color token must be written to
+      // that exact token. This prevents adjacent singleton properties such as
+      // slider value background/text from sharing a stale group entry.
+      var exactColorMapping = currentMapping();
+      if (exactColorMapping.length === 1 &&
+          /^--lb-[a-z0-9-]+$/.test(exactColorMapping[0]) &&
+          !isBlockedToken(exactColorMapping[0]) &&
+          tokenEditorKind(exactColorMapping[0]) === 'color') {
+        directTokenOverrides[exactColorMapping[0]] = colorPicker.value || '#007aff';
+        return true;
+      }
+
       var colorEntry = getEntry();
       colorEntry.color = colorPicker.value || colorEntry.color || '#007aff';
       colorEntry.alpha = 100;
@@ -1885,20 +2131,74 @@
     return hasActiveEditorSelection && currentArea() === 'Background' && currentElement() === 'System Hintergrund';
   }
 
+  var LIQUID_GLASS_BRIGHTNESS_MIN = wallpaperRange.BRIGHTNESS_MIN;
+  var LIQUID_GLASS_BRIGHTNESS_MAX = wallpaperRange.BRIGHTNESS_MAX;
+  var LIQUID_GLASS_OPACITY_MIN = wallpaperRange.OPACITY_MIN;
+  var LIQUID_GLASS_OPACITY_MAX = wallpaperRange.OPACITY_MAX;
+
+  function sliderPercentToRange(value, min, max) {
+    return wallpaperRange.sliderPercentToRange(value, min, max);
+  }
+
+  function rangeToSliderPercent(value, min, max) {
+    return wallpaperRange.rangeToSliderPercent(value, min, max);
+  }
+
+  function configureWallpaperSliderRanges() {
+    if (!wallpaperBrightness || !wallpaperOpacity) return;
+    var liquidGlass = isLiquidGlassWallpaperEditorMode();
+
+    wallpaperBrightness.min = '0';
+    wallpaperBrightness.max = liquidGlass ? '100' : '150';
+    wallpaperBrightness.step = '1';
+    wallpaperOpacity.min = '0';
+    wallpaperOpacity.max = '100';
+    wallpaperOpacity.step = '1';
+  }
+
   function syncWallpaperStateFromControls() {
     if (!wallpaperEnabled || !wallpaperImage || !wallpaperBrightness || !wallpaperOpacity) return;
     wallpaperState.enabled = !!wallpaperEnabled.checked;
     wallpaperState.image = String(wallpaperImage.value || '').trim();
-    wallpaperState.brightness = clamp(parseInt(wallpaperBrightness.value || '100', 10), 0, 150);
-    wallpaperState.opacity = clamp(parseInt(wallpaperOpacity.value || '100', 10), 0, 100);
+
+    if (isLiquidGlassWallpaperEditorMode()) {
+      wallpaperState.brightness = sliderPercentToRange(
+        wallpaperBrightness.value,
+        LIQUID_GLASS_BRIGHTNESS_MIN,
+        LIQUID_GLASS_BRIGHTNESS_MAX
+      );
+      wallpaperState.opacity = sliderPercentToRange(
+        wallpaperOpacity.value,
+        LIQUID_GLASS_OPACITY_MIN,
+        LIQUID_GLASS_OPACITY_MAX
+      );
+    } else {
+      wallpaperState.brightness = clamp(parseInt(wallpaperBrightness.value || '100', 10), 0, 150);
+      wallpaperState.opacity = clamp(parseInt(wallpaperOpacity.value || '100', 10), 0, 100);
+    }
   }
 
   function loadWallpaperStateToControls() {
     if (!wallpaperEnabled || !wallpaperImage || !wallpaperBrightness || !wallpaperOpacity) return;
+    configureWallpaperSliderRanges();
     wallpaperEnabled.checked = !!wallpaperState.enabled;
     wallpaperImage.value = wallpaperState.image || '';
-    wallpaperBrightness.value = wallpaperState.brightness == null ? 100 : wallpaperState.brightness;
-    wallpaperOpacity.value = wallpaperState.opacity == null ? 100 : wallpaperState.opacity;
+
+    if (isLiquidGlassWallpaperEditorMode()) {
+      wallpaperBrightness.value = rangeToSliderPercent(
+        wallpaperState.brightness == null ? 100 : wallpaperState.brightness,
+        LIQUID_GLASS_BRIGHTNESS_MIN,
+        LIQUID_GLASS_BRIGHTNESS_MAX
+      );
+      wallpaperOpacity.value = rangeToSliderPercent(
+        wallpaperState.opacity == null ? 100 : wallpaperState.opacity,
+        LIQUID_GLASS_OPACITY_MIN,
+        LIQUID_GLASS_OPACITY_MAX
+      );
+    } else {
+      wallpaperBrightness.value = wallpaperState.brightness == null ? 100 : wallpaperState.brightness;
+      wallpaperOpacity.value = wallpaperState.opacity == null ? 100 : wallpaperState.opacity;
+    }
   }
 
   function updateWallpaperLabels() {
@@ -1983,12 +2283,80 @@
 
   function buildWallpaperPayload() {
     syncWallpaperStateFromControls();
+    var liquidGlass = isLiquidGlassWallpaperEditorMode();
     return {
       enabled: !!wallpaperState.enabled,
       image: normalizeWallpaperImageForPayload(wallpaperState.image || ''),
-      brightness: clamp(parseInt(wallpaperState.brightness == null ? 100 : wallpaperState.brightness, 10), 0, 150),
-      opacity: clamp(parseInt(wallpaperState.opacity == null ? 100 : wallpaperState.opacity, 10), 0, 100)
+      brightness: liquidGlass
+        ? clamp(parseFloat(wallpaperState.brightness == null ? 100 : wallpaperState.brightness), LIQUID_GLASS_BRIGHTNESS_MIN, LIQUID_GLASS_BRIGHTNESS_MAX)
+        : clamp(parseInt(wallpaperState.brightness == null ? 100 : wallpaperState.brightness, 10), 0, 150),
+      opacity: liquidGlass
+        ? clamp(parseFloat(wallpaperState.opacity == null ? 100 : wallpaperState.opacity), LIQUID_GLASS_OPACITY_MIN, LIQUID_GLASS_OPACITY_MAX)
+        : clamp(parseInt(wallpaperState.opacity == null ? 100 : wallpaperState.opacity, 10), 0, 100)
     };
+  }
+
+  function liquidGlassWallpaperDimToken(name, fallback) {
+    var raw = liquidGlassPreviewTokens && liquidGlassPreviewTokens[name];
+    var parsed = parseFloat(raw);
+    return isFinite(parsed) ? clamp(parsed, 0, 1) : fallback;
+  }
+
+  /*
+   * Central wallpaper renderer for the Design Studio.
+   *
+   * Liquid Glass is rendered with the same layer order as the packaged theme:
+   * dark diagonal gradient, three radial light accents, then the wallpaper.
+   * Brightness and opacity are applied to the complete composed layer, exactly
+   * like body.theme-user-liquid-glass::before in the real theme CSS.
+   *
+   * Normal themes keep the plain wallpaper renderer used by the compact
+   * component preview. Keeping both modes behind one function prevents the
+   * Studio background, JSON values and slider updates from drifting apart.
+   */
+  function renderWallpaperLayer(layer, wallpaper, options) {
+    if (!layer) return;
+
+    options = options || {};
+    var visible = !!options.visible;
+    var liquidGlass = !!options.liquidGlass;
+
+    layer.hidden = !visible;
+    layer.setAttribute('aria-hidden', visible ? 'false' : 'true');
+
+    if (!visible) {
+      [
+        '--cfw-wallpaper-image',
+        '--cfw-wallpaper-brightness',
+        '--cfw-wallpaper-opacity',
+        '--cfw-liquid-wallpaper-dim-primary',
+        '--cfw-liquid-wallpaper-dim-secondary'
+      ].forEach(function (name) { layer.style.removeProperty(name); });
+      layer.classList.remove('cfw-wallpaper-render-liquid-glass');
+      layer.classList.remove('cfw-wallpaper-render-plain');
+      return;
+    }
+
+    var image = 'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")';
+    layer.style.setProperty('--cfw-wallpaper-image', image);
+    layer.style.setProperty('--cfw-wallpaper-brightness', String(wallpaper.brightness / 100));
+    layer.style.setProperty('--cfw-wallpaper-opacity', String(wallpaper.opacity / 100));
+    layer.classList.toggle('cfw-wallpaper-render-liquid-glass', liquidGlass);
+    layer.classList.toggle('cfw-wallpaper-render-plain', !liquidGlass);
+
+    if (liquidGlass) {
+      layer.style.setProperty(
+        '--cfw-liquid-wallpaper-dim-primary',
+        String(liquidGlassWallpaperDimToken('--lb-liquid-wallpaper-dim-primary', 0.68))
+      );
+      layer.style.setProperty(
+        '--cfw-liquid-wallpaper-dim-secondary',
+        String(liquidGlassWallpaperDimToken('--lb-liquid-wallpaper-dim-secondary', 0.58))
+      );
+    } else {
+      layer.style.removeProperty('--cfw-liquid-wallpaper-dim-primary');
+      layer.style.removeProperty('--cfw-liquid-wallpaper-dim-secondary');
+    }
   }
 
   function applyWallpaperPreview() {
@@ -1996,37 +2364,24 @@
 
     var wallpaper = buildWallpaperPayload();
     var hasWallpaper = !!(wallpaper.enabled && wallpaper.image);
-    previewRoot.classList.toggle('cfw-wallpaper-enabled', hasWallpaper);
+    var liquidGlass = isLiquidGlassWallpaperEditorMode();
 
-    /* V347: The Liquid Glass workbench preview is deliberately independent
-       from the global theme preview and from pseudo-elements. Only this real
-       child layer receives the selected image, brightness and opacity. */
-    if (liquidGlassWallpaperPreview) {
-      liquidGlassWallpaperPreview.hidden = !hasWallpaper;
-      liquidGlassWallpaperPreview.setAttribute('aria-hidden', hasWallpaper ? 'false' : 'true');
+    /* V350: Liquid Glass uses the Design Studio background itself as the
+       wallpaper editor preview. The compact component preview is removed from
+       the workbench in this mode. Normal user themes continue to render their
+       wallpaper and all theme tokens inside #previewRoot. */
+    renderWallpaperLayer(liquidGlassStudioWallpaper, wallpaper, {
+      visible: liquidGlass && hasWallpaper,
+      liquidGlass: true
+    });
+    renderWallpaperLayer(liquidGlassWallpaperPreview, wallpaper, {
+      visible: false,
+      liquidGlass: true
+    });
 
-      if (hasWallpaper) {
-        liquidGlassWallpaperPreview.style.backgroundImage =
-          'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")';
-        liquidGlassWallpaperPreview.style.backgroundSize = 'cover';
-        liquidGlassWallpaperPreview.style.backgroundRepeat = 'no-repeat';
-        liquidGlassWallpaperPreview.style.backgroundPosition = 'center center';
-        liquidGlassWallpaperPreview.style.filter = 'brightness(' + (wallpaper.brightness / 100) + ')';
-        liquidGlassWallpaperPreview.style.opacity = String(wallpaper.opacity / 100);
-      } else {
-        liquidGlassWallpaperPreview.style.removeProperty('background-image');
-        liquidGlassWallpaperPreview.style.removeProperty('background-size');
-        liquidGlassWallpaperPreview.style.removeProperty('background-repeat');
-        liquidGlassWallpaperPreview.style.removeProperty('background-position');
-        liquidGlassWallpaperPreview.style.removeProperty('filter');
-        liquidGlassWallpaperPreview.style.removeProperty('opacity');
-      }
-    }
+    previewRoot.classList.toggle('cfw-wallpaper-enabled', !liquidGlass && hasWallpaper);
 
-    /* Keep the legacy variables for normal themes and existing save/preview
-       integrations, but the Liquid Glass wallpaper-only canvas no longer
-       renders from them. */
-    if (hasWallpaper) {
+    if (!liquidGlass && hasWallpaper) {
       previewRoot.style.setProperty('--cfw-wallpaper-image', 'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")');
       previewRoot.style.setProperty('--cfw-wallpaper-opacity', String(wallpaper.opacity / 100));
       previewRoot.style.setProperty('--cfw-wallpaper-brightness', String(wallpaper.brightness / 100));
@@ -2064,11 +2419,22 @@
           ? wallpaper.transparency
           : (wallpaper && wallpaper.wallpaper_opacity != null ? wallpaper.wallpaper_opacity : 100));
 
+    var liquidGlass = isLiquidGlassWallpaperEditorMode();
     wallpaperState = {
       enabled: !!(wallpaper && wallpaper.enabled),
       image: wallpaper && wallpaper.image ? String(wallpaper.image) : '',
-      brightness: wallpaperNumber(brightness, 100, 0, 150),
-      opacity: wallpaperNumber(opacity, 100, 0, 100)
+      brightness: wallpaperNumber(
+        brightness,
+        100,
+        liquidGlass ? LIQUID_GLASS_BRIGHTNESS_MIN : 0,
+        liquidGlass ? LIQUID_GLASS_BRIGHTNESS_MAX : 150
+      ),
+      opacity: wallpaperNumber(
+        opacity,
+        100,
+        liquidGlass ? LIQUID_GLASS_OPACITY_MIN : 0,
+        liquidGlass ? LIQUID_GLASS_OPACITY_MAX : 100
+      )
     };
 
     // Write the loaded JSON values directly to the controls before any preview
@@ -2130,6 +2496,7 @@
       controls: currentControlSnapshot(),
       studioModel: cloneStudioObject(studioModel || {}),
       aiImportedTokens: cloneStudioObject(aiImportedTokens || {}),
+      directTokenOverrides: cloneStudioObject(directTokenOverrides || {}),
       aiImportedCss: aiImportedCss || '',
       customCssValue: customCss ? (customCss.value || '') : '',
       lastImportMeta: cloneStudioObject(lastImportMeta || null),
@@ -2158,6 +2525,8 @@
     undoRestoring = true;
     studioModel = cloneStudioObject(snapshot.studioModel || {});
     aiImportedTokens = cloneStudioObject(snapshot.aiImportedTokens || {});
+    directTokenOverrides = cloneStudioObject(snapshot.directTokenOverrides || {});
+    activeDirectToken = '';
     aiImportedCss = snapshot.aiImportedCss || '';
     lastImportMeta = cloneStudioObject(snapshot.lastImportMeta || null);
     wallpaperState = cloneStudioObject(snapshot.wallpaperState || { enabled: false, image: '', brightness: 100, opacity: 100 });
@@ -2309,6 +2678,178 @@
     updateAll();
   }
 
+  function tokenPropertyForVariant(areaName, variantName, token) {
+    var variant = (areas[areaName] || {})[variantName] || {};
+    var names = Object.keys(variant);
+    for (var i = 0; i < names.length; i += 1) {
+      if ((variant[names[i]] || []).indexOf(token) >= 0) return names[i];
+    }
+    return '';
+  }
+
+  function affectedTokenRoleLabel(token, property) {
+    var de = i18nLanguage === 'de';
+    var lower = String(token || '').toLowerCase();
+    var detail = '';
+    if (/(?:-on|-active)(?:-|$)/.test(lower)) detail = de ? 'Aktiv' : 'Active';
+    else if (/(?:-off|-inactive)(?:-|$)/.test(lower)) detail = de ? 'Inaktiv' : 'Inactive';
+    else if (/-hover(?:-|$)/.test(lower)) detail = 'Hover';
+    else if (/-focus(?:-|$)/.test(lower)) detail = 'Focus';
+    else if (/(?:-thumb|-knob)(?:-|$)/.test(lower)) detail = de ? 'Knopf' : 'Thumb';
+    else if (/-placeholder(?:-|$)/.test(lower)) detail = 'Placeholder';
+    if (/-text(?:-|$)/.test(lower) || /-color$/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Textfarbe' : 'Text color');
+    else if (/-bg(?:-|$)/.test(lower) || /background/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Hintergrund' : 'Background');
+    else if (/-border(?:-|$)/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Rahmen' : 'Border');
+    else if (/-radius(?:-|$)/.test(lower)) detail += (detail ? ' · ' : '') + 'Radius';
+    else if (/border-width/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Rahmenstärke' : 'Border width');
+    else if (/-shadow(?:-|$)/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Schatten' : 'Shadow');
+    return [displayGroupName(property || ''), detail].filter(Boolean).join(' – ') || token;
+  }
+
+  function affectedTokenValue(token) {
+    if (Object.prototype.hasOwnProperty.call(directTokenOverrides, token)) return directTokenOverrides[token];
+    var working = collectTokens();
+    if (Object.prototype.hasOwnProperty.call(working, token)) return working[token];
+    if (Object.prototype.hasOwnProperty.call(aiImportedTokens || {}, token)) return aiImportedTokens[token];
+    if (Object.prototype.hasOwnProperty.call(coreTokens || {}, token)) return coreTokens[token];
+    return '';
+  }
+
+  function tokenEditorKind(token) {
+    if (/border-width/.test(token)) return 'borderWidth';
+    if (/radius/.test(token)) return 'radius';
+    return 'color';
+  }
+
+  function updateAffectedTokenDescription(token) {
+    if (!affectedTokenDescription) return;
+    if (!token) {
+      affectedTokenDescription.textContent = tx('tokens.selectHint');
+      return;
+    }
+    var property = tokenPropertyForVariant(currentArea(), currentElement(), token);
+    var value = affectedTokenValue(token);
+    affectedTokenDescription.textContent = affectedTokenRoleLabel(token, property) + ' · ' + token + (value ? ' = ' + value : '');
+  }
+
+  function focusAffectedToken(token) {
+    token = String(token || '');
+    if (!token || isProtectedStudioThemeId(themeId && themeId.value)) return;
+    var property = tokenPropertyForVariant(currentArea(), currentElement(), token);
+    if (!property) return;
+    activeDirectToken = token;
+    hasActiveEditorSelection = true;
+    colorGroupSelect.value = property;
+    var value = affectedTokenValue(token);
+    var kind = tokenEditorKind(token);
+    if (kind === 'radius') {
+      var radius = parseFloat(value);
+      if (!isNaN(radius)) radiusRange.value = clamp(radius, parseFloat(radiusRange.min || 0), parseFloat(radiusRange.max || 36));
+    } else if (kind === 'borderWidth') {
+      var width = parseFloat(value);
+      if (!isNaN(width) && borderWidthRange) borderWidthRange.value = clamp(width, parseFloat(borderWidthRange.min || 0), parseFloat(borderWidthRange.max || 8));
+    } else {
+      var hex = normalizeHexColor(value);
+      if (hex) colorPicker.value = hex;
+    }
+    updateLabels();
+    updateConditionalSettingVisibility();
+    renderPropertyInspector();
+    updateAffectedTokenDescription(token);
+    var control = kind === 'radius' ? radiusRange : (kind === 'borderWidth' ? borderWidthRange : colorPicker);
+    if (control) {
+      control.focus({ preventScroll: true });
+      control.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  function renderAffectedTokenPicker(tokens) {
+    tokens = (tokens || []).filter(function (token, index, list) { return list.indexOf(token) === index; });
+    if (affectedTokenSelect) {
+      affectedTokenSelect.innerHTML = '';
+      var placeholder = makeOption('', tx('tokens.selectPlaceholder'));
+      affectedTokenSelect.appendChild(placeholder);
+      tokens.forEach(function (token) {
+        var property = tokenPropertyForVariant(currentArea(), currentElement(), token);
+        affectedTokenSelect.appendChild(makeOption(token, affectedTokenRoleLabel(token, property) + ' — ' + token));
+      });
+      affectedTokenSelect.value = tokens.indexOf(activeDirectToken) >= 0 ? activeDirectToken : '';
+      affectedTokenSelect.disabled = isProtectedStudioThemeId(themeId && themeId.value);
+    }
+    updateAffectedTokenDescription(tokens.indexOf(activeDirectToken) >= 0 ? activeDirectToken : '');
+  }
+
+  function propertyInspectorColorStyle(tokens) {
+    // Use the complete effective Working State, not only explicitly changed
+    // tokens. This lets the inspector show the colors currently used by the
+    // selected control even when they come from Core defaults or an imported
+    // theme (notably select, checkbox and radio selected states).
+    var state = effectivePreviewTokens(tokens || []);
+    var color = normalizeHexColor(firstThemeResolvedToken(state, tokens || [])) || '';
+    if (!color) return null;
+    return {
+      background: color,
+      foreground: readableTextFor(color, '#ffffff', '#111827')
+    };
+  }
+
+  function contrastRatioForColors(a, b) {
+    var la = relativeLuminance(normalizeHexColor(a));
+    var lb = relativeLuminance(normalizeHexColor(b));
+    if (la == null || lb == null) return null;
+    var lighter = Math.max(la, lb);
+    var darker = Math.min(la, lb);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
+
+  function propertyTokenChipHtml(token) {
+    token = String(token || '');
+    var classes = 'cfw-inline-token-action' + (token === activeDirectToken ? ' is-active' : '');
+    var state = effectivePreviewTokens([token]);
+    var rawValue = resolvedTokenValue(state, token, 0);
+    var color = normalizeHexColor(rawValue);
+
+    if (!color) {
+      return '<span class="' + classes + '" role="button" tabindex="0" data-token="' +
+        escapeHtml(token) + '" title="' + escapeHtml(token + (rawValue ? '\n' + rawValue : '')) +
+        '"><code>' + escapeHtml(token) + '</code></span>';
+    }
+
+    var foreground = readableTextFor(color, '#ffffff', '#111827');
+    classes += ' has-token-color';
+    return '<span class="' + classes + '" role="button" tabindex="0" data-token="' +
+      escapeHtml(token) + '" style="--cfw-token-chip-bg:' + escapeHtml(color) +
+      ';--cfw-token-chip-text:' + escapeHtml(foreground) + ';" title="' +
+      escapeHtml(token + '\n' + color) + '"><code>' + escapeHtml(token) + '</code></span>';
+  }
+
+  function affectedTokenChipHtml(token, property) {
+    token = String(token || '');
+    var classes = 'cfw-token-action' + (token === activeDirectToken ? ' is-active' : '');
+    var effective = effectivePreviewTokens();
+    var rawValue = resolvedTokenValue(effective, token, 0);
+    var color = normalizeHexColor(rawValue);
+    var title = affectedTokenRoleLabel(token, property) +
+      (rawValue ? '\n' + rawValue : '');
+
+    if (!color) {
+      return '<button type="button" class="' + classes +
+        '" data-token="' + escapeHtml(token) +
+        '" title="' + escapeHtml(title) +
+        '"><code>' + escapeHtml(token) + '</code></button>';
+    }
+
+    var foreground = readableTextFor(color, '#ffffff', '#111827');
+    classes += ' has-token-color';
+
+    return '<button type="button" class="' + classes +
+      '" data-token="' + escapeHtml(token) +
+      '" style="--cfw-token-chip-bg:' + escapeHtml(color) +
+      ';--cfw-token-chip-text:' + escapeHtml(foreground) +
+      ';" title="' + escapeHtml(title) +
+      '"><code>' + escapeHtml(token) + '</code></button>';
+  }
+
   function renderPropertyInspector() {
     if (!propertyInspector) return;
     var areaName = currentArea();
@@ -2318,10 +2859,15 @@
     var variantTokens = tokensForVariant(areaName, variantName);
 
     if (selectedElementTitle) selectedElementTitle.textContent = displayElementName(variantName) || tx('inspector.noElement');
-    if (selectedElementMeta) selectedElementMeta.textContent = props.length + ' ' + tx('properties.property') + ' · ' + variantTokens.length + ' ' + tx('tokens.tokens');
+    if (selectedElementMeta) selectedElementMeta.textContent = props.length + ' ' + tx(props.length === 1 ? 'properties.property' : 'properties.properties') + ' · ' + variantTokens.length + ' ' + tx(variantTokens.length === 1 ? 'tokens.token' : 'tokens.tokens');
+    if (variantTokens.indexOf(activeDirectToken) < 0) activeDirectToken = '';
+    renderAffectedTokenPicker(variantTokens);
     if (selectedTokenList) {
       selectedTokenList.innerHTML = variantTokens.length
-        ? variantTokens.map(function (token) { return '<code>' + token + '</code>'; }).join(' ')
+        ? variantTokens.map(function (token) {
+            var property = tokenPropertyForVariant(areaName, variantName, token);
+            return affectedTokenChipHtml(token, property);
+          }).join(' ')
         : '<em>' + tx('inspector.noMapping') + '</em>';
     }
 
@@ -2334,6 +2880,12 @@
       item.className = 'cfw-property-item' + (isActive ? ' is-active' : '');
       item.setAttribute('data-role', 'none');
       item.setAttribute('title', tokens.join('\n'));
+      var colorStyle = propertyInspectorColorStyle(tokens);
+      if (colorStyle) {
+        item.classList.add('has-current-color');
+        item.style.setProperty('--cfw-property-current-bg', colorStyle.background);
+        item.style.setProperty('--cfw-property-current-text', colorStyle.foreground);
+      }
       var first = primaryToken(tokens);
       var expansionKey = propertyTokenExpansionKey(areaName, variantName, prop);
       var isExpanded = !!expandedPropertyTokenKeys[expansionKey];
@@ -2345,13 +2897,26 @@
           + '</span>';
       }
       var extra = isExpanded && extraTokens.length
-        ? '<span class="cfw-property-extra">' + extraTokens.map(function (token) { return '<code>' + escapeHtml(token) + '</code>'; }).join('') + '</span>'
+        ? '<span class="cfw-property-extra">' + extraTokens.map(function (token) {
+            return propertyTokenChipHtml(token);
+          }).join('') + '</span>'
         : '';
+      var firstTokenHtml = first
+        ? propertyTokenChipHtml(first)
+        : '<code>' + escapeHtml(tx('inspector.noToken')) + '</code>';
       item.innerHTML = '' +
         '<span class="cfw-property-icon">' + propertyIcon(prop) + '</span>' +
-        '<span class="cfw-property-body"><strong>' + escapeHtml(displayGroupName(prop)) + '</strong><code>' + escapeHtml(first || tx('inspector.noToken')) + '</code>' + more + extra + '</span>';
+        '<span class="cfw-property-body"><strong>' + escapeHtml(displayGroupName(prop)) + '</strong>' + firstTokenHtml + more + extra + '</span>';
       item.addEventListener('click', function (event) {
         var toggle = event.target && event.target.closest ? event.target.closest('.cfw-property-more') : null;
+        var tokenAction = event.target && event.target.closest ? event.target.closest('.cfw-inline-token-action') : null;
+        if (tokenAction) {
+          event.preventDefault();
+          event.stopPropagation();
+          focusAffectedToken(tokenAction.getAttribute('data-token'));
+          return;
+        }
+        activeDirectToken = '';
         hasActiveEditorSelection = true;
         colorGroupSelect.value = prop;
         loadEntryToControls();
@@ -2384,10 +2949,11 @@
       tile.className = 'cfw-palette-tile';
       tile.style.background = value;
       tile.setAttribute('data-role', 'none');
-      var label = sample.token || sample.label || value;
-      tile.innerHTML = '<span class="cfw-palette-token"></span><small class="cfw-palette-value"></small>';
-      tile.querySelector('.cfw-palette-token').textContent = label;
-      tile.querySelector('.cfw-palette-value').textContent = value;
+      var hexValue = normalizeHexColor(value) || normalizeHexColor(color) || String(value).trim();
+      tile.innerHTML = '<small class="cfw-palette-value"></small>';
+      tile.querySelector('.cfw-palette-value').textContent = hexValue;
+      tile.setAttribute('aria-label', hexValue);
+      tile.setAttribute('title', hexValue);
       tile.addEventListener('click', function () {
         pushUndoSnapshot('palette');
         var normalized = normalizeHexColor(color);
@@ -2461,6 +3027,9 @@
             : rgba(entry.color, entry.alpha, entry.brightness);
         }
       });
+    });
+    Object.keys(directTokenOverrides || {}).forEach(function (token) {
+      if (/^--lb-[a-z0-9-]+$/.test(token) && !isBlockedToken(token)) tokens[token] = directTokenOverrides[token];
     });
     enforceForcedOpaqueTokens(tokens);
     return tokens;
@@ -2565,6 +3134,21 @@
     return '';
   }
 
+
+  /* V417: Resolve a visual property from the current theme before consulting
+     neutral Core defaults. A missing high-priority component token must not
+     mask a lower semantic token that the selected theme actually defines. */
+  function firstThemeResolvedToken(tokens, names) {
+    var explicit = collectTokens();
+    var merged = Object.assign({}, tokens || {}, explicit || {});
+    for (var i = 0; i < names.length; i += 1) {
+      if (!Object.prototype.hasOwnProperty.call(explicit, names[i])) continue;
+      var preferred = resolvedTokenValue(merged, names[i], 0);
+      if (preferred) return preferred;
+    }
+    return firstResolvedToken(tokens || {}, names || []);
+  }
+
   function isZeroRadiusValue(value) {
     value = String(value == null ? '' : value).trim().toLowerCase();
     return /^(?:0|0\.0+)(?:px|rem|em|%|vh|vw)?$/.test(value);
@@ -2662,15 +3246,15 @@
       '--cfw-preview-dialog-radius': previewRadiusValue(tokens, ['--lb-dialog-radius', '--lb-radius-card', '--lb-card-radius', '--lb-radius', '--lb-radius-sm']),
       '--cfw-preview-checkbox-radius': previewRadiusValue(tokens, ['--lb-checkbox-radius', '--lb-input-radius', '--lb-radius-input', '--lb-radius-sm', '--lb-radius']),
       '--cfw-preview-badge-radius': previewRadiusValue(tokens, ['--lb-badge-radius', '--lb-notify-radius', '--lb-validation-radius', '--lb-radius-sm', '--lb-radius']),
-      '--cfw-preview-input-bg': tokens['--lb-input-bg'] || tokens['--lb-select-bg'],
-      '--cfw-preview-input-text': tokens['--lb-input-text'] || tokens['--lb-text'],
-      '--cfw-preview-input-border': tokens['--lb-input-border'] || tokens['--lb-border'] || tokens['--lb-border-color'],
-      '--cfw-preview-select-bg': tokens['--lb-select-bg'] || tokens['--lb-input-bg'],
-      '--cfw-preview-select-text': tokens['--lb-select-text'] || tokens['--lb-input-text'] || tokens['--lb-text'],
-      '--cfw-preview-select-border': tokens['--lb-select-border'] || tokens['--lb-input-border'] || tokens['--lb-border'],
-      '--cfw-preview-textarea-bg': tokens['--lb-textarea-bg'] || tokens['--lb-input-bg'] || tokens['--lb-card-bg'],
-      '--cfw-preview-textarea-text': tokens['--lb-textarea-text'] || tokens['--lb-input-text'] || tokens['--lb-text'],
-      '--cfw-preview-textarea-border': tokens['--lb-textarea-border'] || tokens['--lb-input-border'] || tokens['--lb-border'],
+      '--cfw-preview-input-bg': firstThemeResolvedToken(tokens, ['--lb-input-bg', '--lb-select-bg']),
+      '--cfw-preview-input-text': firstThemeResolvedToken(tokens, ['--lb-input-text', '--lb-text']),
+      '--cfw-preview-input-border': firstThemeResolvedToken(tokens, ['--lb-input-border', '--lb-border', '--lb-border-color']),
+      '--cfw-preview-select-bg': firstThemeResolvedToken(tokens, ['--lb-select-bg', '--lb-input-bg']),
+      '--cfw-preview-select-text': tokens['--lb-select-text'] || firstThemeResolvedToken(tokens, ['--lb-input-text', '--lb-text']),
+      '--cfw-preview-select-border': firstThemeResolvedToken(tokens, ['--lb-select-border', '--lb-input-border', '--lb-border']),
+      '--cfw-preview-textarea-bg': firstThemeResolvedToken(tokens, ['--lb-textarea-bg', '--lb-input-bg', '--lb-card-bg']),
+      '--cfw-preview-textarea-text': tokens['--lb-textarea-text'] || firstThemeResolvedToken(tokens, ['--lb-input-text', '--lb-text']),
+      '--cfw-preview-textarea-border': firstThemeResolvedToken(tokens, ['--lb-textarea-border', '--lb-input-border', '--lb-border']),
       '--cfw-preview-slider-active': sliderPreviewActive,
       '--cfw-preview-slider-track': firstResolvedToken(tokens, ['--lb-slider-track-bg', '--lb-slider-bg', '--lb-range-track-bg']),
       '--cfw-preview-slider-thumb': resolvedTokenValue(tokens, '--lb-slider-thumb-bg') || sliderPreviewActive,
@@ -2679,16 +3263,16 @@
       '--cfw-preview-slider-thumb-shadow': tokens['--lb-slider-thumb-shadow'],
       '--cfw-preview-slider-thumb-hover-shadow': tokens['--lb-slider-thumb-hover-shadow'],
       '--cfw-preview-slider-focus-shadow': tokens['--lb-slider-focus-shadow'],
-      '--cfw-preview-checkbox-bg': tokens['--lb-checkbox-bg'] || tokens['--lb-input-bg'],
-      '--cfw-preview-checkbox-border': tokens['--lb-checkbox-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
-      '--cfw-preview-checkbox-checked-bg': tokens['--lb-checkbox-checked-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'],
-      '--cfw-preview-radio-bg': tokens['--lb-radio-bg'] || tokens['--lb-input-bg'],
-      '--cfw-preview-radio-border': tokens['--lb-radio-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
-      '--cfw-preview-radio-checked-bg': tokens['--lb-radio-checked-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'],
-      '--cfw-preview-switch-on-bg': tokens['--lb-switch-on-bg'] || tokens['--lb-toggle-active-bg'] || tokens['--lb-active-bg'] || tokens['--lb-primary'],
-      '--cfw-preview-switch-off-bg': tokens['--lb-switch-off-bg'] || tokens['--lb-toggle-bg'] || tokens['--lb-input-bg'],
-      '--cfw-preview-switch-border': tokens['--lb-switch-border'] || tokens['--lb-toggle-border'] || tokens['--lb-border-color'] || tokens['--lb-border'],
-      '--cfw-preview-switch-thumb-bg': tokens['--lb-switch-thumb-bg'] || tokens['--lb-toggle-thumb-bg'] || tokens['--lb-toggle-knob-bg'],
+      '--cfw-preview-checkbox-bg': firstThemeResolvedToken(tokens, ['--lb-checkbox-bg', '--lb-input-bg']),
+      '--cfw-preview-checkbox-border': firstThemeResolvedToken(tokens, ['--lb-checkbox-border', '--lb-border-color', '--lb-border']),
+      '--cfw-preview-checkbox-checked-bg': firstThemeResolvedToken(tokens, ['--lb-checkbox-checked-bg', '--lb-active-bg', '--lb-primary']),
+      '--cfw-preview-radio-bg': firstThemeResolvedToken(tokens, ['--lb-radio-bg', '--lb-checkbox-bg', '--lb-input-bg']),
+      '--cfw-preview-radio-border': firstThemeResolvedToken(tokens, ['--lb-radio-border', '--lb-checkbox-border', '--lb-border-color', '--lb-border']),
+      '--cfw-preview-radio-checked-bg': firstThemeResolvedToken(tokens, ['--lb-radio-checked-bg', '--lb-active-bg', '--lb-primary']),
+      '--cfw-preview-switch-on-bg': firstThemeResolvedToken(tokens, ['--lb-switch-on-bg', '--lb-toggle-active-bg', '--lb-active-bg', '--lb-primary']),
+      '--cfw-preview-switch-off-bg': firstThemeResolvedToken(tokens, ['--lb-switch-off-bg', '--lb-toggle-bg', '--lb-input-bg']),
+      '--cfw-preview-switch-border': firstThemeResolvedToken(tokens, ['--lb-switch-border', '--lb-toggle-border', '--lb-border-color', '--lb-border']),
+      '--cfw-preview-switch-thumb-bg': firstThemeResolvedToken(tokens, ['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg', '--lb-slider-thumb-bg']),
       '--cfw-preview-table-bg': tokens['--lb-table-bg'] || tokens['--lb-table-row-bg'] || tokens['--lb-table-body-bg'],
       '--cfw-preview-table-text': tokens['--lb-table-text'] || tokens['--lb-table-row-text'],
       '--cfw-preview-table-border': tokens['--lb-table-border-color'] || tokens['--lb-table-border'],
@@ -2731,7 +3315,7 @@
       var groupBorder = tokens['--lb-btn-group-border'] || tokens['--lb-btn-group-inactive-border'] || tokens['--lb-btn-group-active-border'] || tokens['--lb-border-color'] || tokens['--lb-border'] || activeBg;
       var inactiveBorder = tokens['--lb-btn-group-inactive-border'] || groupBorder;
       var hoverBg = tokens['--lb-btn-group-hover-bg'] || activeBg;
-      var hoverText = activeText;
+      var hoverText = tokens['--lb-btn-group-hover-text'] || activeText;
       var activeHoverText = tokens['--lb-btn-group-active-hover-text'] || activeText;
 
       setRuleToken(tokens, '--lb-btn-group-active-hover-bg', activeHoverBg);
@@ -2759,11 +3343,21 @@
     // systems that already installed the temporary V230 Core slider-value rule.
     var currentPrimary = resolvedTokenValue(tokens, '--lb-primary');
     var derivedPrimary = themePrimaryCandidate(tokens);
-    if (derivedPrimary && (!currentPrimary || (isClassicLoxBerryGreen(currentPrimary) && !isClassicLoxBerryGreen(derivedPrimary)))) {
+    // V402 persistence contract: explicit values are authoritative.
+    // Derive a primary only for legacy themes that do not define one at all.
+    if (derivedPrimary && !currentPrimary) {
       setRuleToken(tokens, '--lb-primary', derivedPrimary);
     }
-    if (resolvedTokenValue(tokens, '--lb-primary')) {
+    if (resolvedTokenValue(tokens, '--lb-primary') && !resolvedTokenValue(tokens, '--lb-slider-value-text')) {
       setRuleToken(tokens, '--lb-slider-value-text', 'var(--lb-primary)');
+    }
+
+    // V402 persistence contract: automatic contrast is a fallback only.
+    // An explicitly selected text color is never replaced during save/preview.
+    var sliderValueBg = normalizeHexColor(resolvedTokenValue(tokens, '--lb-slider-value-bg'));
+    var sliderValueTextRaw = String(tokens['--lb-slider-value-text'] || '').trim();
+    if (sliderValueBg && !sliderValueTextRaw) {
+      setRuleToken(tokens, '--lb-slider-value-text', readableTextFor(sliderValueBg, '#ffffff', '#111827'));
     }
 
     // V102/V224/V225: Slider colors stay scoped to slider tokens, but older
@@ -2811,12 +3405,57 @@
     setRuleToken(tokens, '--lb-input-disabled-bg', tokens['--lb-input-disabled-bg'] || tokens['--lb-card-bg'] || tokens['--lb-bg']);
     setRuleToken(tokens, '--lb-input-disabled-text', tokens['--lb-input-disabled-text'] || tokens['--lb-text-muted'] || tokens['--lb-text-secondary']);
 
+    // V419: Card content must reflect the effective theme text color. Core
+    // components use --lb-card-text when present, but generated themes may not
+    // define it. A dark card must therefore never fall through to a hard light-
+    // theme default. Keep the semantic card/note values in the Working State so
+    // preview, inspector and saved CSS all expose the same effective value.
+    var cardBg = firstResolvedToken(tokens, ['--lb-card-bg', '--lb-bg']);
+    var pageText = firstResolvedToken(tokens, ['--lb-text']);
+    var cardText = firstResolvedToken(tokens, ['--lb-card-text', '--lb-text']);
+    if (cardBg && (!cardText || contrastRatioForColors(normalizeHexColor(resolvedTokenValue(tokens, '--lb-card-text')) || cardText, normalizeHexColor(cardBg) || cardBg) < 4.5)) {
+      cardText = readableTextFor(cardBg, '#f8fafc', '#111827');
+    }
+    if (!cardText) cardText = pageText;
+    if (cardText) tokens['--lb-card-text'] = cardText;
+
+    var noteText = firstResolvedToken(tokens, ['--lb-note-text', '--lb-card-text', '--lb-text']);
+    if (noteText) tokens['--lb-note-text'] = noteText;
+
     // V28: Tooltip colors are protected from AI creativity but still
     // deterministically themed by the rules engine.
     var tooltipBg = tokens['--lb-primary-hover'] || tokens['--lb-btn-primary-hover-bg'] || tokens['--lb-primary'] || primary;
     var tooltipText = tokens['--lb-sidebar-text'] || tokens['--lb-on-dark-text'] || (tooltipBg ? readableTextFor(tooltipBg) : '');
-    if (tooltipBg) tokens['--lb-tooltip-bg'] = tooltipBg;
-    if (tooltipText) tokens['--lb-tooltip-text'] = tooltipText;
+    if (tooltipBg && !tokens['--lb-tooltip-bg']) tokens['--lb-tooltip-bg'] = tooltipBg;
+    if (tooltipText && !tokens['--lb-tooltip-text']) tokens['--lb-tooltip-text'] = tooltipText;
+
+    // V414: Readability is a hard safety contract for the actual LoxBerry UI.
+    // Explicit color choices remain authoritative only while they preserve
+    // sufficient contrast against the corresponding surface. This prevents
+    // dark page/sidebar/header backgrounds from being saved with dark labels.
+    function forceReadableText(textToken, bgToken, minimumRatio, light, dark) {
+      var bg = normalizeHexColor(resolvedTokenValue(tokens, bgToken));
+      if (!bg) return;
+      var current = normalizeHexColor(resolvedTokenValue(tokens, textToken));
+      if (!current || contrastRatioForColors(current, bg) < minimumRatio) {
+        tokens[textToken] = readableTextFor(bg, light || '#ffffff', dark || '#111827');
+      }
+    }
+
+    forceReadableText('--lb-text', '--lb-bg', 4.5);
+    forceReadableText('--lb-text-secondary', '--lb-bg', 3.0, '#e5e7eb', '#374151');
+    forceReadableText('--lb-text-muted', '--lb-bg', 3.0, '#cbd5e1', '#4b5563');
+
+    forceReadableText('--lb-sidebar-text', '--lb-sidebar-bg', 4.5);
+    forceReadableText('--lb-sidebar-item-text', '--lb-sidebar-bg', 4.5);
+    forceReadableText('--lb-sidebar-active-text', '--lb-sidebar-active-bg', 4.5);
+    forceReadableText('--lb-sidebar-link-hover-text', '--lb-sidebar-link-hover-bg', 4.5);
+    forceReadableText('--lb-sidebar-hover-text', '--lb-sidebar-hover-bg', 4.5);
+
+    forceReadableText('--lb-header-text', '--lb-header-bg', 4.5);
+    forceReadableText('--lb-header-btn-text', '--lb-header-btn-bg', 4.5);
+    forceReadableText('--lb-header-btn-hover-text', '--lb-header-btn-hover-bg', 4.5);
+
     return tokens;
   }
 
@@ -2856,21 +3495,65 @@
   }
 
 
-  function broadcastEmbeddedFrameTokens(tokens) {
-    if (themeState && typeof themeState.updateTokens === 'function') {
-      themeState.update({ tokens: tokens || {}, wallpaper: buildWallpaperPayload(), dirty: true }, { source: 'design-studio.preview' });
-      return;
+  function syncEmbeddedPreviewDocument(tokens) {
+    var frame = document.getElementById('cfwPreviewFrame');
+    if (!frame || !frame.contentWindow) return false;
+    try {
+      var doc = frame.contentDocument || frame.contentWindow.document;
+      if (!doc || !doc.documentElement) return false;
+      var style = doc.getElementById('cfwStudioWorkingThemeStyle');
+      if (!style) {
+        style = doc.createElement('style');
+        style.id = 'cfwStudioWorkingThemeStyle';
+        (doc.head || doc.documentElement).appendChild(style);
+      }
+      var declarations = Object.keys(tokens || {}).filter(function (name) {
+        return /^--lb-[a-z0-9-]+$/i.test(name);
+      }).map(function (name) {
+        return name + ':' + String(tokens[name]).replace(/[;}]/g, '') + ' !important';
+      }).join(';');
+      var extraCss = customCss ? normalizeCustomCssValue(customCss.value || '') : '';
+      style.textContent = ':root,html,body{' + declarations + ';}' + (extraCss ? '\n' + extraCss : '');
+
+      var wallpaper = buildWallpaperPayload();
+      [doc.documentElement, doc.body].forEach(function (node) {
+        if (!node) return;
+        node.style.setProperty('--cfw-studio-wallpaper-image', wallpaper && wallpaper.image ? 'url("' + wallpaperPreviewUrl(wallpaper.image).replace(/"/g, '%22') + '")' : 'none');
+        node.style.setProperty('--cfw-studio-wallpaper-brightness', String((wallpaper && wallpaper.brightness != null ? wallpaper.brightness : 100) / 100));
+        node.style.setProperty('--cfw-studio-wallpaper-opacity', String((wallpaper && wallpaper.opacity != null ? wallpaper.opacity : 100) / 100));
+      });
+      return true;
+    } catch (e) {
+      return false;
     }
-    var payload = {
-      type: 'CFW_STUDIO_TOKENS',
-      tokens: tokens || {},
-      wallpaper: buildWallpaperPayload()
-    };
-    ['cfwPreviewFrame'].forEach(function (id) {
-      var frame = document.getElementById(id);
-      if (!frame || !frame.contentWindow) return;
-      try { frame.contentWindow.postMessage(payload, window.location.origin); } catch (e) {}
-    });
+  }
+
+  function broadcastEmbeddedFrameTokens(tokens) {
+    tokens = tokens || {};
+    if (themeState && typeof themeState.update === 'function') {
+      themeState.update({
+        themeId: themeId ? themeId.value : '',
+        themeName: themeName ? themeName.value : '',
+        version: themeVersion ? themeVersion.value : '',
+        tokens: tokens,
+        customCss: customCss ? normalizeCustomCssValue(customCss.value || '') : '',
+        wallpaper: buildWallpaperPayload(),
+        dirty: true
+      }, { source: 'design-studio.preview' });
+    } else {
+      var payload = {
+        type: 'CFW_STUDIO_TOKENS',
+        tokens: tokens,
+        wallpaper: buildWallpaperPayload()
+      };
+      var frame = document.getElementById('cfwPreviewFrame');
+      if (frame && frame.contentWindow) {
+        try { frame.contentWindow.postMessage(payload, window.location.origin); } catch (e) {}
+      }
+    }
+    // The Preview page may not have the Studio message receiver loaded yet.
+    // Because it is same-origin, also apply the complete Working State directly.
+    syncEmbeddedPreviewDocument(tokens);
   }
 
   function updatePreviewRangeFills() {
@@ -3047,6 +3730,21 @@
         payload.id = json.id || payload.id;
         payload.name = json.name || payload.name;
         payload.version = json.version || payload.version;
+        /* V349: The server response is authoritative. This keeps the in-memory
+           theme, controls and a subsequent re-selection aligned with the exact
+           values written to config/plugins/cssframework/themes/*.json. */
+        if (json.wallpaper && typeof json.wallpaper === 'object') {
+          payload.wallpaper = json.wallpaper;
+          wallpaperState = {
+            enabled: !!json.wallpaper.enabled,
+            image: String(json.wallpaper.image || ''),
+            brightness: parseFloat(json.wallpaper.brightness),
+            opacity: parseFloat(json.wallpaper.opacity)
+          };
+          loadWallpaperStateToControls();
+          updateWallpaperLabels();
+          applyWallpaperPreview();
+        }
         rememberSavedTheme(payload);
         var msg = t('messages.themeSaved', 'messages.themeSaved', {
           theme: (json.name || payload.name),
@@ -3180,6 +3878,8 @@
       var count = meta.tokenCount;
       if (count) {
         studioModel = {};
+        directTokenOverrides = {};
+        activeDirectToken = '';
         aiImportedTokens = Object.assign({}, aiImportedTokens || {}, meta.tokens);
         syncCurrentControlsFromAiTokens(aiImportedTokens);
         refreshPreviewAndPalette();
@@ -3230,16 +3930,24 @@
     // then refresh inspector, preview and palette together. A second animation-
     // frame refresh catches browser-computed token values after the DOM update.
     studioModel = {};
+    directTokenOverrides = {};
+    activeDirectToken = '';
     aiImportedTokens = enforceForcedOpaqueTokens(themeTokensFromJson(theme));
-    var loadedPreviewTokens = effectivePreviewTokens();
     aiImportedCss = normalizeCustomCssValue(theme.custom_css || theme.css || '');
     lastImportMeta = importMetaHasVisibleContent(theme.import_meta) ? theme.import_meta : null;
-    setWallpaperFromTheme(theme);
-    if (customCss) customCss.value = aiImportedCss || tx('customCss.defaultText');
+
+    /* V349: Establish the selected theme identity before reading wallpaper JSON.
+       The Liquid-Glass slider mapping depends on themeId. Previously the JSON
+       was interpreted with the previous theme's ranges and later overwritten
+       by the UI controls. */
     if (themeId) themeId.value = theme.id || 'theme-user-loaded';
-    updateLiquidGlassPackagePreviewMode();
     if (themeName) themeName.value = normalizeThemeDisplayName(theme.name || theme.id || 'User Theme');
     if (themeVersion) themeVersion.value = theme.version || '0.1.0';
+    updateLiquidGlassPackagePreviewMode();
+    setWallpaperFromTheme(theme);
+
+    var loadedPreviewTokens = effectivePreviewTokens();
+    if (customCss) customCss.value = aiImportedCss || tx('customCss.defaultText');
 
     hasActiveEditorSelection = false;
     updateWallpaperControlVisibility();
@@ -3416,8 +4124,9 @@
     if (!nextSrc) return;
     if (frame.getAttribute('src') !== nextSrc) frame.setAttribute('src', nextSrc);
     if (tabName === 'preview') {
-      setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 80);
-      setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 260);
+      setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 40);
+      setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 180);
+      setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 500);
     }
   }
 
@@ -3426,7 +4135,7 @@
       button.classList.toggle('is-active', button.getAttribute('data-cfw-tab') === name);
     });
     document.querySelectorAll('.cfw-tab-panel').forEach(function (panel) {
-      var panelName = panel.id === 'cfwTabWorkbench' ? 'workbench' : (panel.id === 'cfwTabAi' ? 'ai' : (panel.id === 'cfwTabPreview' ? 'preview' : (panel.id === 'cfwTabDocumentation' ? 'documentation' : '')));
+      var panelName = panel.id === 'cfwTabWorkbench' ? 'workbench' : (panel.id === 'cfwTabAi' ? 'ai' : (panel.id === 'cfwTabPreview' ? 'preview' : (panel.id === 'cfwTabWiki' ? 'wiki' : (panel.id === 'cfwTabDocumentation' ? 'documentation' : ''))));
       var active = panelName === name;
       panel.hidden = !active;
       panel.classList.toggle('is-active', active);
@@ -3983,27 +4692,9 @@
   }
 
   function syncTintedSurfaceTokens(tokens) {
-    if (!tokens || typeof tokens !== 'object') return tokens;
-
-    var bg = String(tokens['--lb-bg'] || '').trim();
-    if (!bg || isPlainWhiteHex(bg)) return tokens;
-
-    [
-      '--lb-card-bg',
-      '--lb-table-bg',
-      '--lb-table-row-bg',
-      '--lb-input-bg',
-      '--lb-input-disabled-bg',
-      '--lb-select-bg',
-      '--lb-dropdown-menu-bg',
-      '--lb-multiselect-bg',
-      '--lb-multiselect-summary-bg'
-    ].forEach(function (name) {
-      if (Object.prototype.hasOwnProperty.call(tokens, name) && isPlainWhiteHex(tokens[name])) {
-        tokens[name] = bg;
-      }
-    });
-
+    // V402 persistence contract: saving is lossless. Earlier versions changed
+    // explicit white surface values to --lb-bg for tinted themes. Generation
+    // may still choose coordinated defaults, but Save must preserve user input.
     return tokens;
   }
 
@@ -4033,6 +4724,16 @@
     force(['--lb-border-color', '--lb-input-border', '--lb-select-border', '--lb-btn-border', '--lb-table-border-color', '--lb-table-cell-border-color', '--lb-multiselect-border', '--lb-multiselect-menu-border'], p.border);
     force(['--lb-sidebar-bg'], p.sidebar);
     force(['--lb-sidebar-text', '--lb-sidebar-active-text', '--lb-sidebar-link-hover-text', '--lb-active-text', '--lb-btn-primary-text', '--lb-btn-primary-hover-text', '--lb-header-btn-text', '--lb-header-btn-hover-text'], p.sidebarText);
+    // V354: The palette guard also owns the inactive button-group contract so
+    // AI-generated and locally recolored themes cannot inherit a black source
+    // background. Inactive segments are white with primary-colored labels.
+    // V355: These specialised button-group roles are valid generator tokens,
+    // but are not guaranteed to be listed by the current Core token registry.
+    // Write them directly so the local/AI palette cannot silently discard them.
+    tokens['--lb-btn-group-inactive-bg'] = '#ffffff';
+    tokens['--lb-btn-group-inactive-text'] = p.primary;
+    tokens['--lb-btn-group-border'] = p.border;
+    tokens['--lb-btn-group-inactive-border'] = p.border;
     force(['--lb-input-focus-border'], p.primary);
     force(['--lb-input-focus-shadow'], p.focusShadow);
     return tokens;
@@ -4108,8 +4809,18 @@
     put(['--lb-header-btn-hover-text'], componentValue(headerButton, ['hover_text'], componentValue(headerButton, ['text'], colorValue(colors.on_primary, readableTextFor(primary)))));
 
     var buttonGroup = componentsDesign.button_group || componentsDesign.buttonGroup || {};
-    var buttonGroupActiveText = componentValue(buttonGroup, ['active_text'], componentValue(buttonGroup, ['text'], colorValue(colors.on_primary, readableTextFor(primary))));
-    put(['--lb-btn-group-border', '--lb-btn-group-inactive-border'], componentValue(buttonGroup, ['border'], componentValue(button, ['border'], border)));
+    var buttonGroupActiveText = componentValue(buttonGroup, ['active_text'], colorValue(colors.on_primary, readableTextFor(primary)));
+    // V354: Explicitly compile the inactive button-group roles. Previously the
+    // colorizer supplied these values in the semantic draft, but the compiler
+    // ignored them and retained the source theme's (often black) tokens.
+    // V355: Do not route these roles through put(); put() intentionally filters
+    // against the Core token list, where these specialised aliases may be absent.
+    // The generated theme CSS already consumes them, so compile them directly.
+    out['--lb-btn-group-inactive-bg'] = colorValue(componentValue(buttonGroup, ['inactive_background', 'inactive_bg', 'background', 'bg'], '#ffffff'), '#ffffff');
+    out['--lb-btn-group-inactive-text'] = colorValue(componentValue(buttonGroup, ['inactive_text', 'text', 'text_color'], componentValue(button, ['text', 'text_color'], text)), componentValue(button, ['text', 'text_color'], text));
+    var buttonGroupBorder = colorValue(componentValue(buttonGroup, ['border'], componentValue(button, ['border'], border)), border);
+    out['--lb-btn-group-border'] = buttonGroupBorder;
+    out['--lb-btn-group-inactive-border'] = buttonGroupBorder;
     put(['--lb-btn-group-active-border'], componentValue(buttonGroup, ['active_border', 'border'], componentValue(button, ['border'], primary)));
     put(['--lb-btn-group-hover-bg'], componentValue(buttonGroup, ['hover', 'hover_background'], componentValue(button, ['hover'], primaryHover)));
     // V248: Button-group hover is a color-state only. As a fixed rule it uses the
@@ -4174,6 +4885,11 @@
     put(['--lb-slider-thumb-bg', '--lb-slider-compact-thumb-bg'], sliderThumb);
     put(['--lb-slider-thumb-border-color', '--lb-slider-thumb-border', '--lb-slider-compact-thumb-border'], sliderThumbBorder);
     put(['--lb-slider-focus-shadow'], componentValue(slider, ['focus'], primary));
+    // V362: Slider value badge is a first-class Studio target. These aliases
+    // are written directly because older Core token registries may not list
+    // them even though themes/components already consume them.
+    out['--lb-slider-value-bg'] = colorValue(componentValue(slider, ['value_background', 'value_bg'], surface), surface);
+    out['--lb-slider-value-text'] = colorValue(componentValue(slider, ['value_text', 'value_color'], primary), primary);
 
     var toggle = componentsDesign.toggle || componentsDesign.switch || {};
     put(['--lb-toggle-bg', '--lb-switch-off-bg'], componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt));
@@ -4305,6 +5021,8 @@
     // stale local selections (for example an old blue input background) do
     // not overwrite the AI draft on the first transfer.
     studioModel = {};
+    directTokenOverrides = {};
+    activeDirectToken = '';
     aiImportedTokens = compileSemanticDraftToTokens(draft);
     syncCurrentControlsFromAiTokens(aiImportedTokens);
     aiImportedCss = normalizeCustomCssValue(draft.custom_css || draft.css || '');
@@ -4612,13 +5330,21 @@
 
   renderColorPresetPalette();
   renderNewThemeColorPalette();
+  updateNewThemeColorAnalysis();
   if (newThemeColorToggle && newThemeColorControls) {
     newThemeColorToggle.addEventListener('click', function () {
       newThemeColorControls.hidden = !newThemeColorControls.hidden;
-      if (!newThemeColorControls.hidden) updateNewThemeColorPresetSelection();
+      if (!newThemeColorControls.hidden) {
+        updateNewThemeColorPresetSelection();
+        updateNewThemeColorAnalysis();
+      }
     });
   }
-  if (newThemeColorPicker) newThemeColorPicker.addEventListener('input', updateNewThemeColorPresetSelection);
+  if (newThemeColorPicker) newThemeColorPicker.addEventListener('input', function () {
+    updateNewThemeColorPresetSelection();
+    updateNewThemeColorAnalysis();
+  });
+  if (newThemeColorMode) newThemeColorMode.addEventListener('change', updateNewThemeColorAnalysis);
   if (applyNewThemeColorButton) applyNewThemeColorButton.addEventListener('click', applyLocalThemeColor);
   if (cancelNewThemeColorButton && newThemeColorControls) cancelNewThemeColorButton.addEventListener('click', function () { newThemeColorControls.hidden = true; });
 
@@ -4648,7 +5374,12 @@
   if (themeName) themeName.addEventListener('blur', updateThemeIdentityFromName);
   areaSelect.addEventListener('change', renderElements);
   elementSelect.addEventListener('change', renderColorGroups);
-  colorGroupSelect.addEventListener('change', function () { loadEntryToControls(); updateWallpaperControlVisibility(); updateAll(); });
+  if (affectedTokenSelect) affectedTokenSelect.addEventListener('change', function () { focusAffectedToken(affectedTokenSelect.value); });
+  if (selectedTokenList) selectedTokenList.addEventListener('click', function (event) {
+    var action = event.target && event.target.closest ? event.target.closest('.cfw-token-action') : null;
+    if (action) focusAffectedToken(action.getAttribute('data-token'));
+  });
+  colorGroupSelect.addEventListener('change', function () { activeDirectToken = ''; loadEntryToControls(); updateWallpaperControlVisibility(); updateAll(); });
   if (colorPicker) {
     colorPicker.addEventListener('input', function () {
       if (!requireColorEditTarget()) {
@@ -4769,6 +5500,150 @@
   if (themeState && typeof themeState.attachFrames === 'function') {
     themeState.attachFrames(['cfwPreviewFrame']);
   }
+  var livePreviewFrame = document.getElementById('cfwPreviewFrame');
+  if (livePreviewFrame) {
+    livePreviewFrame.addEventListener('load', function () {
+      window.setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 0);
+      window.setTimeout(function () { broadcastEmbeddedFrameTokens(effectivePreviewTokens()); }, 120);
+    });
+  }
+
+
+  function tokenPersistenceValueKind(token, group) {
+    token = String(token || '');
+    group = String(group || '');
+    if (/border-width/.test(token) || isBorderWidthGroup(group)) return 'borderWidth';
+    if (/radius/.test(token) || group === 'Radius') return 'radius';
+    if (/shadow/.test(token) || group === 'Schatten') return 'shadow';
+    if (/opacity/.test(token)) return 'opacity';
+    if (/blur/.test(token)) return 'blur';
+    return 'color';
+  }
+
+  function runTokenPersistenceAudit() {
+    var report = {
+      version: 'V402',
+      areas: 0,
+      elements: 0,
+      properties: 0,
+      mappedTokens: 0,
+      uniqueTokens: 0,
+      singleTokenProperties: 0,
+      multiTokenProperties: 0,
+      mixedTypeProperties: 0,
+      unknownCoreTokens: [],
+      invalidTokens: [],
+      mixedTypeMappings: [],
+      conflictingTokenKinds: [],
+      ok: true
+    };
+    var unique = {};
+    var tokenKinds = {};
+    var areaNames = Object.keys(areas || {});
+    report.areas = areaNames.length;
+
+    areaNames.forEach(function (areaName) {
+      var elements = areas[areaName] || {};
+      Object.keys(elements).forEach(function (elementName) {
+        report.elements += 1;
+        var properties = elements[elementName] || {};
+        Object.keys(properties).forEach(function (propertyName) {
+          report.properties += 1;
+          var mapped = properties[propertyName] || [];
+          if (mapped.length === 1) report.singleTokenProperties += 1;
+          else if (mapped.length > 1) report.multiTokenProperties += 1;
+          report.mappedTokens += mapped.length;
+          var kinds = {};
+          mapped.forEach(function (token) {
+            unique[token] = true;
+            var kind = tokenPersistenceValueKind(token, propertyName);
+            kinds[kind] = true;
+            tokenKinds[token] = tokenKinds[token] || {};
+            tokenKinds[token][kind] = true;
+            if (!/^--lb-[a-z0-9-]+$/.test(token)) {
+              report.invalidTokens.push({ area: areaName, element: elementName, property: propertyName, token: token });
+            }
+            if (coreTokens && Object.keys(coreTokens).length && coreTokens[token] === undefined) {
+              report.unknownCoreTokens.push({ area: areaName, element: elementName, property: propertyName, token: token });
+            }
+          });
+          if (Object.keys(kinds).length > 1) {
+            report.mixedTypeProperties += 1;
+            report.mixedTypeMappings.push({ area: areaName, element: elementName, property: propertyName, tokens: mapped.slice(), kinds: Object.keys(kinds) });
+          }
+        });
+      });
+    });
+
+    report.uniqueTokens = Object.keys(unique).length;
+    Object.keys(tokenKinds).forEach(function (token) {
+      var kinds = Object.keys(tokenKinds[token]);
+      if (kinds.length > 1) report.conflictingTokenKinds.push({ token: token, kinds: kinds });
+    });
+    report.ok = !report.invalidTokens.length && !report.conflictingTokenKinds.length;
+    window.CFW_TOKEN_PERSISTENCE_AUDIT = report;
+    if (window.console && typeof window.console.info === 'function') {
+      console.info('[CSS Framework] V402 token persistence audit', report);
+      if (!report.ok && typeof window.console.warn === 'function') console.warn('[CSS Framework] V402 audit findings', report);
+    }
+    return report;
+  }
+
+
+  /* V406: lightweight, Studio-local Aurora pointer response. */
+  (function initStudioAuroraPointer() {
+    var studioPage = document.querySelector('.cfw-page.cfw-design-studio');
+    if (!studioPage || studioPage.getAttribute('data-cfw-aurora-ready') === 'true') return;
+    studioPage.setAttribute('data-cfw-aurora-ready', 'true');
+
+    var targetX = 50, targetY = 18, currentX = 50, currentY = 18, frame = 0;
+
+    function render() {
+      frame = 0;
+      currentX += (targetX - currentX) * 0.14;
+      currentY += (targetY - currentY) * 0.14;
+      studioPage.style.setProperty('--cfw-aurora-pointer-x', currentX.toFixed(2) + '%');
+      studioPage.style.setProperty('--cfw-aurora-pointer-y', currentY.toFixed(2) + '%');
+      if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+        frame = window.requestAnimationFrame(render);
+      }
+    }
+
+    function schedule() {
+      if (!frame) frame = window.requestAnimationFrame(render);
+    }
+
+    studioPage.addEventListener('pointermove', function (event) {
+      var rect = studioPage.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      targetX = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+      targetY = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+      schedule();
+    }, { passive: true });
+
+    studioPage.addEventListener('pointerleave', function () {
+      targetX = 50;
+      targetY = 18;
+      schedule();
+    }, { passive: true });
+  }());
+
+
+  (function initWikiNavigation() {
+    var wikiPanel = document.getElementById('cfwTabWiki');
+    if (!wikiPanel) return;
+    wikiPanel.querySelectorAll('.cfw-wiki-nav a[href^="#"]').forEach(function (link) {
+      link.addEventListener('click', function (event) {
+        var target = document.querySelector(link.getAttribute('href'));
+        if (!target) return;
+        event.preventDefault();
+        target.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start'
+        });
+      });
+    });
+  }());
 
   setupPreviewClickToEdit();
   populateUserThemeSelect();
@@ -4777,5 +5652,6 @@
   buildComponentRegistry();
   renderAreas();
   renderElements();
+  runTokenPersistenceAudit();
   setStatus(t('messages.coreRead', 'messages.coreRead', { tokens: Object.keys(coreTokens).length, themes: ((coreData.themes || []).length) }), false);
 }());

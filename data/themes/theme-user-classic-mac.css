@@ -8,16 +8,16 @@
  * Filename: theme-user-classic-mac.css
  * Scope: body.theme-user-classic-mac
  * Legacy-Scope: body.theme-classic-mac
- * Version: V319_2026_07_16_CLASSIC_MAC_NATIVE_SELECT_OVERLAY
+ * Version: V327_2026_07_22_CLASSIC_MAC_DATA_ONLY_ASSETS
  * Compatible: LoxBerry >= 4
  * Storage: data/plugins/cssframework/themes/
  * Generated-By: LoxBerry CSS Framework / protected package theme
  * Protected: yes
  * Studio-Mode: readonly
- * Asset-Fonts-Web: /plugins/cssframework/themes/assets/fonts/mac-classic/fonts/
- * Asset-Fonts-Path: webfrontend/html/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/
- * Asset-Icons-Web: /plugins/cssframework/themes/assets/fonts/mac-classic/icon/
- * Asset-Icons-Path: webfrontend/html/plugins/cssframework/themes/assets/fonts/mac-classic/icon/
+ * Asset-Fonts-Web: /admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/
+ * Asset-Fonts-Path: data/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/
+ * Asset-Icons-Web: /admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/
+ * Asset-Icons-Path: data/plugins/cssframework/themes/assets/fonts/mac-classic/icon/
  *
  * Classic Mac / Apple System 6 inspired adapter for the LoxBerry Design
  * System and selected jQuery Mobile wrappers. The theme is package-owned and
@@ -25,9 +25,9 @@
  */
 
 @font-face {
-  font-family: "Chicago_12";
-  src: url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChiKareGo2.woff2?v=313") format("woff2"),
-       url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChiKareGo2.woff?v=313") format("woff");
+  font-family: "ChiKareGo2-DE";
+  src: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChiKareGo2-DE.woff2?v=378") format("woff2"),
+       url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChiKareGo2-DE.woff?v=378") format("woff");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -35,8 +35,8 @@
 
 @font-face {
   font-family: "Chicago";
-  src: url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChicagoFLF.woff2?v=313") format("woff2"),
-       url("/plugins/cssframework/themes/assets/fonts/mac-classic/fonts/ChicagoFLF.woff?v=313") format("woff");
+  src: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChicagoFLF.woff2?v=378") format("woff2"),
+       url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChicagoFLF.woff?v=378") format("woff");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -44,9 +44,9 @@
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) {
   /* === Base === */
-  --lb-font: "Chicago_12", "Chicago", Geneva, Arial, system-ui, sans-serif;
-  --lb-font-family: "Chicago_12", "Chicago", Geneva, Arial, system-ui, sans-serif;
-  --lb-font-heading: "Chicago", "Chicago_12", Geneva, Arial, system-ui, sans-serif;
+  --lb-font: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-family: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-heading: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
   --lb-font-mono: Monaco, Consolas, "Courier New", monospace;
 
   --lb-primary: #000000;
@@ -508,7 +508,7 @@
   font-weight: 400 !important;
   line-height: 1.25 !important;
   text-shadow: none !important;
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/select-button.svg?v=319") !important;
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/select-button.svg?v=378") !important;
   background-position: right 2px center !important;
   background-size: 17px 17px !important;
   background-repeat: no-repeat !important;
@@ -603,7 +603,7 @@
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="checkbox"]:checked {
   background-color: #ffffff !important;
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/checkmark.svg?v=315") !important;
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/checkmark.svg?v=378") !important;
   border-color: #000000 !important;
 }
 
@@ -612,27 +612,27 @@
   height: 18px !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-border.svg?v=378") !important;
   background-size: 12px 12px !important;
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:hover,
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:focus-visible {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=315") !important;
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=378") !important;
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:checked {
   background-image:
-    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-dot.svg?v=315"),
-    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+    url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-dot.svg?v=378"),
+    url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-border.svg?v=378") !important;
   background-size: 7px 7px, 12px 12px !important;
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:checked:hover,
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="radio"]:checked:focus-visible {
   background-image:
-    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-dot.svg?v=315"),
-    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=315") !important;
+    url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-dot.svg?v=378"),
+    url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=378") !important;
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .lb-content input[type="checkbox"]:focus-visible,
@@ -983,7 +983,7 @@
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox .ui-checkbox-on::after,
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-checkbox label.ui-btn-active::after {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/checkmark.svg?v=315") !important;
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/checkmark.svg?v=378") !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: 12px 12px !important;
@@ -991,7 +991,7 @@
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-btn::after {
   background-color: transparent !important;
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-border.svg?v=378") !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: 12px 12px !important;
@@ -1003,14 +1003,14 @@
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-btn:hover::after,
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-btn:focus::after {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=315") !important;
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-border-focused.svg?v=378") !important;
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio .ui-radio-on::after,
 :is(body.theme-user-classic-mac, body.theme-classic-mac) .ui-radio label.ui-btn-active::after {
   background-image:
-    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-dot.svg?v=315"),
-    url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/radio-border.svg?v=315") !important;
+    url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-dot.svg?v=378"),
+    url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/radio-border.svg?v=378") !important;
   background-size: 7px 7px, 12px 12px !important;
 }
 
@@ -1054,41 +1054,41 @@
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:decrement {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-up.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-up.svg?v=378");
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:decrement:active {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-up-active.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-up-active.svg?v=378");
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:increment {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-down.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-down.svg?v=378");
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:vertical:increment:active {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-down-active.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-down-active.svg?v=378");
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:decrement {
   width: 24px;
   height: 22px;
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-left.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-left.svg?v=378");
   background-size: 24px 22px;
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:decrement:active {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-left-active.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-left-active.svg?v=378");
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:increment {
   width: 24px;
   height: 22px;
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-right.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-right.svg?v=378");
   background-size: 24px 22px;
 }
 
 :is(body.theme-user-classic-mac, body.theme-classic-mac) ::-webkit-scrollbar-button:horizontal:increment:active {
-  background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/scrollbar-right-active.svg?v=315");
+  background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/scrollbar-right-active.svg?v=378");
 }
 
 /* =========================================================
@@ -1605,7 +1605,7 @@ html body.theme-user-classic-mac .ui-controlgroup-controls .ui-btn,
 html body.theme-classic-mac .ui-controlgroup-controls .ui-btn,
 html body.theme-user-classic-mac .ui-navbar .ui-btn,
 html body.theme-classic-mac .ui-navbar .ui-btn {
-  font-family: "Chicago_12", "Chicago", Geneva, Arial, system-ui, sans-serif !important;
+  font-family: "Chicago", "Chicago_12", Geneva, Arial, system-ui, sans-serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   letter-spacing: 0 !important;
@@ -1734,7 +1734,7 @@ html body.theme-classic-mac select.lb-select[size="1"]:focus {
   html body.theme-classic-mac select.lb-select:not([multiple]):not([size]),
   html body.theme-user-classic-mac select.lb-select[size="1"],
   html body.theme-classic-mac select.lb-select[size="1"] {
-    background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/select-button.svg?v=319") !important;
+    background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/select-button.svg?v=378") !important;
     background-position: right 2px center !important;
     background-size: 17px 17px !important;
     background-repeat: no-repeat !important;
@@ -1763,7 +1763,7 @@ html body.theme-classic-mac select.lb-select[size="1"]:focus {
     padding: 0 !important;
     transform: translateY(-50%) !important;
     background-color: #ffffff !important;
-    background-image: url("/plugins/cssframework/themes/assets/fonts/mac-classic/icon/select-button.svg?v=319") !important;
+    background-image: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/icon/select-button.svg?v=378") !important;
     background-position: center !important;
     background-size: 17px 17px !important;
     background-repeat: no-repeat !important;
@@ -1861,71 +1861,369 @@ html body.theme-classic-mac table.sonos-volume-profile-table tbody tr:hover inpu
   }
 }
 
-
 /* =========================================================
-   V325: Legacy JQM form surface grid bridge
+   V320 final override: German umlaut-safe labels
    ---------------------------------------------------------
-   Legacy LoxBerry/JQM pages place the complete form inside
-   #page_content > form > div.form-group > table.formtable.
-   On these pages a later JQM/plugin rule may repaint form-group
-   white even when transparent is requested. Therefore this final
-   compatibility layer paints the Classic-Mac grid directly on the
-   actual legacy form surface instead of relying on transparency
-   through several nested JQM layout layers.
-
-   Direct formtable structure stays transparent so real component
-   surfaces (.lb-table, inputs, buttons, cards) keep their own style.
+   ChiKareGo2 does not provide a Unicode-mapped lowercase ü (U+00FC).
+   Keep the pixel face for the general UI, but use ChicagoFLF for
+   normal labels, legends and form helper text so German umlauts are
+   rendered consistently without browser-dependent system fallbacks.
    ========================================================= */
-html body.theme-user-classic-mac #page_content.lb-content.page_content > form > div.form-group,
-html body.theme-classic-mac #page_content.lb-content.page_content > form > div.form-group,
-html body.theme-user-classic-mac #page_content.lb-content.page_content form div.form-group,
-html body.theme-classic-mac #page_content.lb-content.page_content form div.form-group {
-  background-color: #ffffff !important;
-  background-image:
-    linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px),
-    linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px) !important;
-  background-size: 22px 22px !important;
-  background-position: 0 0 !important;
-  background-repeat: repeat !important;
-  background-clip: border-box !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+html body.theme-user-classic-mac label:not(.lb-toggle),
+html body.theme-classic-mac label:not(.lb-toggle),
+html body.theme-user-classic-mac legend,
+html body.theme-classic-mac legend,
+html body.theme-user-classic-mac .lb-form-label,
+html body.theme-classic-mac .lb-form-label,
+html body.theme-user-classic-mac .lb-form-help,
+html body.theme-classic-mac .lb-form-help,
+html body.theme-user-classic-mac .form-error,
+html body.theme-classic-mac .form-error,
+html body.theme-user-classic-mac .form-error-message,
+html body.theme-classic-mac .form-error-message {
+  font-family: "Chicago", "Chicago_12", Geneva, Arial, system-ui, sans-serif !important;
 }
 
-html body.theme-user-classic-mac #page_content.lb-content.page_content > form,
-html body.theme-classic-mac #page_content.lb-content.page_content > form,
-html body.theme-user-classic-mac #page_content.lb-content.page_content form,
-html body.theme-classic-mac #page_content.lb-content.page_content form,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > th,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > th,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > td,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > thead > tr > td,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > th,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > th,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > td,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tbody > tr > td,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > th,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > th,
-html body.theme-user-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > td,
-html body.theme-classic-mac #page_content.lb-content.page_content div.form-group > table.formtable > tfoot > tr > td {
+/* =========================================================
+   V321 final override: unified smaller umlaut-safe typography
+   ---------------------------------------------------------
+   ChicagoFLF provides the complete German character set, including
+   lowercase ü. Use it consistently for normal UI text and controls.
+   PrimeIcons and other dedicated icon-font elements remain untouched.
+   ========================================================= */
+html body.theme-user-classic-mac,
+html body.theme-classic-mac {
+  --lb-font: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-family: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  font-family: var(--lb-font-family) !important;
+  font-size: 14px !important;
+}
+
+html body.theme-user-classic-mac :is(
+  a,
+  p,
+  li,
+  label,
+  legend,
+  button,
+  input,
+  select,
+  textarea,
+  table,
+  th,
+  td,
+  .ui-btn,
+  .ui-btn-inner,
+  .ui-btn-text,
+  .lb-btn,
+  .lb-input,
+  .lb-select,
+  .lb-textarea,
+  .lb-form-label,
+  .lb-form-help,
+  .form-error,
+  .form-error-message,
+  .icoclip
+):not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac :is(
+  a,
+  p,
+  li,
+  label,
+  legend,
+  button,
+  input,
+  select,
+  textarea,
+  table,
+  th,
+  td,
+  .ui-btn,
+  .ui-btn-inner,
+  .ui-btn-text,
+  .lb-btn,
+  .lb-input,
+  .lb-select,
+  .lb-textarea,
+  .lb-form-label,
+  .lb-form-help,
+  .form-error,
+  .form-error-message,
+  .icoclip
+):not(.pi):not([class^="pi-"]):not([class*=" pi-"]) {
+  font-family: var(--lb-font-family) !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+}
+
+/* Placeholder text must use the same umlaut-complete face as the control. */
+html body.theme-user-classic-mac :is(input, textarea)::placeholder,
+html body.theme-classic-mac :is(input, textarea)::placeholder {
+  font-family: var(--lb-font-family) !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+}
+
+/* =========================================================
+   V321 final override: transparent legacy form surfaces
+   ---------------------------------------------------------
+   The page/grid background must remain visible through legacy forms.
+   Only the form container and the direct structure of table.formtable
+   are cleared. Nested real components such as .lb-table keep their own
+   theme surfaces, borders and black/white Classic-Mac cells.
+   ========================================================= */
+html body.theme-user-classic-mac .lb-content > form,
+html body.theme-classic-mac .lb-content > form,
+html body.theme-user-classic-mac .lb-content form > .form-group,
+html body.theme-classic-mac .lb-content form > .form-group,
+html body.theme-user-classic-mac table.formtable,
+html body.theme-classic-mac table.formtable,
+html body.theme-user-classic-mac table.formtable > thead,
+html body.theme-classic-mac table.formtable > thead,
+html body.theme-user-classic-mac table.formtable > tbody,
+html body.theme-classic-mac table.formtable > tbody,
+html body.theme-user-classic-mac table.formtable > tfoot,
+html body.theme-classic-mac table.formtable > tfoot,
+html body.theme-user-classic-mac table.formtable > thead > tr,
+html body.theme-classic-mac table.formtable > thead > tr,
+html body.theme-user-classic-mac table.formtable > tbody > tr,
+html body.theme-classic-mac table.formtable > tbody > tr,
+html body.theme-user-classic-mac table.formtable > tfoot > tr,
+html body.theme-classic-mac table.formtable > tfoot > tr,
+html body.theme-user-classic-mac table.formtable > thead > tr > th,
+html body.theme-classic-mac table.formtable > thead > tr > th,
+html body.theme-user-classic-mac table.formtable > thead > tr > td,
+html body.theme-classic-mac table.formtable > thead > tr > td,
+html body.theme-user-classic-mac table.formtable > tbody > tr > th,
+html body.theme-classic-mac table.formtable > tbody > tr > th,
+html body.theme-user-classic-mac table.formtable > tbody > tr > td,
+html body.theme-classic-mac table.formtable > tbody > tr > td,
+html body.theme-user-classic-mac table.formtable > tfoot > tr > th,
+html body.theme-classic-mac table.formtable > tfoot > tr > th,
+html body.theme-user-classic-mac table.formtable > tfoot > tr > td,
+html body.theme-classic-mac table.formtable > tfoot > tr > td {
+  background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* =========================================================
+   V322 final override: genuinely compact, uniform typography
+   ---------------------------------------------------------
+   Earlier component and plugin rules still contain 14/16 px !important
+   declarations. This final bridge deliberately wins over them and applies
+   ChicagoFLF consistently. Dedicated icon-font elements remain untouched.
+   ========================================================= */
+html body.theme-user-classic-mac,
+html body.theme-classic-mac {
+  --lb-font: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-family: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  font-family: var(--lb-font-family) !important;
+  font-size: 14px !important;
+}
+
+html body.theme-user-classic-mac *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]) {
+  font-family: var(--lb-font-family) !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+}
+
+/* Keep hierarchy readable, but smaller than before. */
+html body.theme-user-classic-mac h1,
+html body.theme-classic-mac h1 {
+  font-size: 22px !important;
+}
+
+html body.theme-user-classic-mac h2,
+html body.theme-classic-mac h2,
+html body.theme-user-classic-mac .lb-section-title,
+html body.theme-classic-mac .lb-section-title {
+  font-size: 17px !important;
+}
+
+html body.theme-user-classic-mac h3,
+html body.theme-classic-mac h3 {
+  font-size: 14px !important;
+}
+
+html body.theme-user-classic-mac h4,
+html body.theme-classic-mac h4 {
+  font-size: 14px !important;
+}
+
+html body.theme-user-classic-mac :is(input, textarea)::placeholder,
+html body.theme-classic-mac :is(input, textarea)::placeholder {
+  font-family: var(--lb-font-family) !important;
+  font-size: 14px !important;
+}
+
+/* =========================================================
+   V322 final override: strong transparent legacy form contract
+   ---------------------------------------------------------
+   Sonos loads additional plugin CSS after the theme. Use the real page/form
+   IDs and the exact current template structure so the grid remains visible.
+   Only outer legacy layout surfaces are cleared. Nested .lb-table components
+   retain their own black/white Classic-Mac surfaces.
+   ========================================================= */
+html body.theme-user-classic-mac #page_content,
+html body.theme-classic-mac #page_content,
+html body.theme-user-classic-mac #page_content > form,
+html body.theme-classic-mac #page_content > form,
+html body.theme-user-classic-mac #page_content > form > .form-group,
+html body.theme-classic-mac #page_content > form > .form-group,
+html body.theme-user-classic-mac #page_content form#main_form > .form-group,
+html body.theme-classic-mac #page_content form#main_form > .form-group,
+html body.theme-user-classic-mac #page_content form#detail_form > .form-group,
+html body.theme-classic-mac #page_content form#detail_form > .form-group,
+html body.theme-user-classic-mac #page_content form#testing_form > .form-group,
+html body.theme-classic-mac #page_content form#testing_form > .form-group,
+html body.theme-user-classic-mac #page_content form#main_form > .form-group > table.formtable,
+html body.theme-classic-mac #page_content form#main_form > .form-group > table.formtable,
+html body.theme-user-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable,
+html body.theme-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable,
+html body.theme-user-classic-mac #page_content form#testing_form > .form-group > table.formtable,
+html body.theme-classic-mac #page_content form#testing_form > .form-group > table.formtable,
+html body.theme-user-classic-mac #page_content table.formtable-container,
+html body.theme-classic-mac #page_content table.formtable-container {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Browser inserts tbody even when it is omitted in the template. */
+html body.theme-user-classic-mac #page_content form#main_form > .form-group > table.formtable > :is(thead, tbody, tfoot),
+html body.theme-classic-mac #page_content form#main_form > .form-group > table.formtable > :is(thead, tbody, tfoot),
+html body.theme-user-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable > :is(thead, tbody, tfoot),
+html body.theme-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable > :is(thead, tbody, tfoot),
+html body.theme-user-classic-mac #page_content form#testing_form > .form-group > table.formtable > :is(thead, tbody, tfoot),
+html body.theme-classic-mac #page_content form#testing_form > .form-group > table.formtable > :is(thead, tbody, tfoot),
+html body.theme-user-classic-mac #page_content table.formtable-container > :is(thead, tbody, tfoot),
+html body.theme-classic-mac #page_content table.formtable-container > :is(thead, tbody, tfoot),
+html body.theme-user-classic-mac #page_content form#main_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr,
+html body.theme-classic-mac #page_content form#main_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr,
+html body.theme-user-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable > :is(thead, tbody, tfoot) > tr,
+html body.theme-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable > :is(thead, tbody, tfoot) > tr,
+html body.theme-user-classic-mac #page_content form#testing_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr,
+html body.theme-classic-mac #page_content form#testing_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr,
+html body.theme-user-classic-mac #page_content table.formtable-container > :is(thead, tbody, tfoot) > tr,
+html body.theme-classic-mac #page_content table.formtable-container > :is(thead, tbody, tfoot) > tr,
+html body.theme-user-classic-mac #page_content form#main_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr > :is(th, td),
+html body.theme-classic-mac #page_content form#main_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr > :is(th, td),
+html body.theme-user-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable > :is(thead, tbody, tfoot) > tr > :is(th, td),
+html body.theme-classic-mac #page_content form#detail_form > .form-group > table.formtable.s4lox-details-formtable > :is(thead, tbody, tfoot) > tr > :is(th, td),
+html body.theme-user-classic-mac #page_content form#testing_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr > :is(th, td),
+html body.theme-classic-mac #page_content form#testing_form > .form-group > table.formtable > :is(thead, tbody, tfoot) > tr > :is(th, td),
+html body.theme-user-classic-mac #page_content table.formtable-container > :is(thead, tbody, tfoot) > tr > :is(th, td),
+html body.theme-classic-mac #page_content table.formtable-container > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* =========================================================
+   V323 final override: repaired Unicode pixel font
+   ---------------------------------------------------------
+   ChiKareGo2-DE contains proper Unicode mappings for the complete German
+   character set, including lowercase ü (U+00FC). Keep the compact typography
+   and the V322 transparent legacy-form contract unchanged.
+   ========================================================= */
+html body.theme-user-classic-mac,
+html body.theme-classic-mac {
+  --lb-font: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-family: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+  --lb-font-heading: "ChiKareGo2-DE", "Chicago", Geneva, Arial, system-ui, sans-serif;
+}
+
+html body.theme-user-classic-mac *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]) {
+  font-family: var(--lb-font-family) !important;
+}
+
+/* =========================================================
+   V326 final override: unified 16 px base typography
+   ---------------------------------------------------------
+   Keep the repaired ChiKareGo2-DE Unicode font and all transparency
+   rules unchanged. Sidebar, Core chrome and plugin content use 16 px.
+   ========================================================= */
+html body.theme-user-classic-mac,
+html body.theme-classic-mac {
+  font-size: 16px !important;
+}
+
+html body.theme-user-classic-mac *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]) {
+  font-size: 16px !important;
+}
+
+html body.theme-user-classic-mac :is(input, textarea)::placeholder,
+html body.theme-classic-mac :is(input, textarea)::placeholder {
+  font-size: 16px !important;
+}
+
+/* =========================================================
+   V326 final override: plugin content and sidebar specificity bridge
+   ---------------------------------------------------------
+   Plugin stylesheets are loaded after the protected theme and may contain
+   their own 11/12/14 px !important declarations. Repeating the stable root
+   IDs deliberately raises specificity without changing plugin files.
+   ========================================================= */
+
+/* LoxBerry sidebar / Vue navigation */
+html body.theme-user-classic-mac #vuenavbar#vuenavbar,
+html body.theme-classic-mac #vuenavbar#vuenavbar,
+html body.theme-user-classic-mac #vuenavbar#vuenavbar *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac #vuenavbar#vuenavbar *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-user-classic-mac .lb-sidebar.lb-sidebar,
+html body.theme-classic-mac .lb-sidebar.lb-sidebar,
+html body.theme-user-classic-mac .lb-sidebar.lb-sidebar *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac .lb-sidebar.lb-sidebar *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]) {
+  font-family: var(--lb-font-family) !important;
+  font-size: 16px !important;
+}
+
+/* Current plugin page, including Design Studio and legacy plugin markup */
+html body.theme-user-classic-mac #page_content#page_content,
+html body.theme-classic-mac #page_content#page_content,
+html body.theme-user-classic-mac #page_content#page_content *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac #page_content#page_content *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]) {
+  font-family: var(--lb-font-family) !important;
+  font-size: 16px !important;
+}
+
+/* Design Studio uses a later plugin stylesheet with compact fixed sizes. */
+html body.theme-user-classic-mac #page_content#page_content .cfw-design-studio,
+html body.theme-classic-mac #page_content#page_content .cfw-design-studio,
+html body.theme-user-classic-mac #page_content#page_content .cfw-design-studio *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]),
+html body.theme-classic-mac #page_content#page_content .cfw-design-studio *:not(.pi):not([class^="pi-"]):not([class*=" pi-"]) {
+  font-family: var(--lb-font-family) !important;
+  font-size: 16px !important;
+}
+
+/* Native control placeholder text follows the same unified size. */
+html body.theme-user-classic-mac #page_content#page_content :is(input, textarea)::placeholder,
+html body.theme-classic-mac #page_content#page_content :is(input, textarea)::placeholder {
+  font-family: var(--lb-font-family) !important;
+  font-size: 16px !important;
+}
+
+/* =========================================================
+   V327 storage contract: data-only protected theme assets
+   ---------------------------------------------------------
+   The protected Classic-Mac CSS, fonts and icons live exclusively below
+   data/plugins/cssframework/themes/. Browser delivery is handled by
+   /admin/plugins/cssframework/theme-file.cgi; no public theme mirror is
+   required or referenced by this theme.
+   ========================================================= */
+

@@ -291,30 +291,10 @@ sub _is_plain_white_color {
 
 sub _sync_tinted_surface_tokens {
     my ($tokens) = @_;
-    return if ref($tokens) ne 'HASH';
-
-    my $bg = _first_clean_token_value($tokens, '--lb-bg');
-    return if $bg eq '' || _is_plain_white_color($bg);
-
-    # V272/V261 restored: backend safety net matching the Design Studio generator.
-    # If an already generated tinted user theme is loaded and saved unchanged,
-    # old pure-white surface tokens are mapped back to the theme background.
-    # Explicit non-white surface choices stay unchanged.
-    for my $token (qw(
-        --lb-card-bg
-        --lb-table-bg
-        --lb-table-row-bg
-        --lb-input-bg
-        --lb-input-disabled-bg
-        --lb-select-bg
-        --lb-dropdown-menu-bg
-        --lb-multiselect-bg
-        --lb-multiselect-summary-bg
-    )) {
-        next if !exists $tokens->{$token};
-        next if !_is_plain_white_color($tokens->{$token});
-        $tokens->{$token} = $bg;
-    }
+    # V402 persistence contract: Save is lossless. Do not replace explicit
+    # white surfaces with --lb-bg. Theme generation remains responsible for
+    # choosing coordinated defaults before the payload reaches this endpoint.
+    return;
 }
 
 sub _first_clean_token_value {
@@ -340,11 +320,19 @@ sub _sync_primary_slider_value_tokens {
         '--lb-range-active-bg'
     );
     my $primary = _first_clean_token_value($tokens, '--lb-primary');
-    if ($candidate ne '' && ($primary eq '' || (_is_classic_loxberry_green($primary) && !_is_classic_loxberry_green($candidate)))) {
+    # V402: Explicit primary values are authoritative and survive Save/Reload.
+    if ($candidate ne '' && $primary eq '') {
         $tokens->{'--lb-primary'} = $candidate;
         $primary = $candidate;
     }
-    if ($primary ne '') {
+    # V400: Preserve an explicitly selected slider value text color.
+    # Only provide the primary-color fallback when the token is genuinely
+    # absent or empty. Previous versions overwrote every saved user choice.
+    my $slider_value_text = _first_clean_token_value(
+        $tokens,
+        '--lb-slider-value-text'
+    );
+    if ($primary ne '' && $slider_value_text eq '') {
         $tokens->{'--lb-slider-value-text'} = 'var(--lb-primary)';
     }
 }
@@ -370,6 +358,16 @@ sub _clamp_int {
     $value = $min if $value < $min;
     $value = $max if $value > $max;
     return $value;
+}
+
+sub _clamp_num {
+    my ($value, $min, $max, $default) = @_;
+    $value = $default
+        if !defined $value || $value !~ /^-?(?:\d+(?:\.\d*)?|\.\d+)$/;
+    $value = 0 + $value;
+    $value = $min if $value < $min;
+    $value = $max if $value > $max;
+    return int($value * 10 + 0.5) / 10;
 }
 
 sub _css_string_escape {
@@ -525,11 +523,18 @@ my $wallpaper_src = ref($data->{wallpaper}) eq 'HASH' ? $data->{wallpaper} : {};
 my $wallpaper_image = defined $wallpaper_src->{image} ? "$wallpaper_src->{image}" : '';
 $wallpaper_image = _write_wallpaper_asset($wallpaper_image, $id) if $wallpaper_image ne '';
 
+my $wallpaper_is_liquid_glass = $id eq 'theme-user-liquid-glass' ? 1 : 0;
 my $wallpaper = {
     enabled    => ($wallpaper_src->{enabled} && $wallpaper_image ne '') ? JSON::PP::true : JSON::PP::false,
     image      => $wallpaper_image,
-    brightness => _clamp_int($wallpaper_src->{brightness}, 0, 150, 100),
-    opacity    => _clamp_int($wallpaper_src->{opacity}, 0, 100, 100),
+    # V349: Liquid Glass stores the mapped real values, not the 0-100 UI
+    # positions. The backend independently enforces the supported contract.
+    brightness => $wallpaper_is_liquid_glass
+        ? _clamp_num($wallpaper_src->{brightness}, 85, 140, 100)
+        : _clamp_num($wallpaper_src->{brightness}, 0, 150, 100),
+    opacity    => $wallpaper_is_liquid_glass
+        ? _clamp_num($wallpaper_src->{opacity}, 85, 100, 100)
+        : _clamp_num($wallpaper_src->{opacity}, 0, 100, 100),
 };
 
 sub _wallpaper_css_block {
@@ -571,8 +576,8 @@ sub _apply_protected_liquid_glass_wallpaper_css {
     return $css_content if ref($wallpaper_ref) ne 'HASH' || !$wallpaper_ref->{enabled} || !$wallpaper_ref->{image};
 
     my $img = _css_string_escape(_theme_file_url_for_css($wallpaper_ref->{image}));
-    my $opacity = sprintf('%.2f', _clamp_int($wallpaper_ref->{opacity}, 0, 100, 100) / 100);
-    my $brightness = sprintf('%.2f', _clamp_int($wallpaper_ref->{brightness}, 0, 150, 100) / 100);
+    my $opacity = sprintf('%.2f', _clamp_num($wallpaper_ref->{opacity}, 85, 100, 100) / 100);
+    my $brightness = sprintf('%.2f', _clamp_num($wallpaper_ref->{brightness}, 85, 140, 100) / 100);
 
     # Liquid Glass already owns the page wallpaper through body::before. Remove
     # every generic Studio layer and every older Liquid-Glass override block
@@ -741,6 +746,19 @@ for my $token (sort keys %{$tokens}) {
 _sync_primary_slider_value_tokens(\%clean_tokens) if keys(%clean_tokens);
 _sync_tinted_surface_tokens(\%clean_tokens) if keys(%clean_tokens);
 
+# V420: Cards in generated themes must never fall through to a light-theme
+# hard default. Keep the semantic card/note text tokens aligned with the
+# theme's effective text color when no dedicated value was supplied.
+if (!exists $clean_tokens{'--lb-card-text'} || $clean_tokens{'--lb-card-text'} eq '') {
+    my $card_text = _first_clean_token_value(\%clean_tokens, '--lb-text');
+    $clean_tokens{'--lb-card-text'} = $card_text ne '' ? $card_text : 'var(--lb-text)';
+}
+if (!exists $clean_tokens{'--lb-note-text'} || $clean_tokens{'--lb-note-text'} eq '') {
+    my $note_text = _first_clean_token_value(\%clean_tokens, '--lb-card-text', '--lb-text');
+    $clean_tokens{'--lb-note-text'} = $note_text ne '' ? $note_text : 'var(--lb-card-text, var(--lb-text))';
+}
+
+
 # V248: Backend safety net for Design Studio / AI-generated themes.
 # Keep inner table separators off by default unless the Studio/AI explicitly
 # sends another width. This is theme-generation logic, not a Core change.
@@ -755,10 +773,12 @@ my $btn_group_active_text = _first_clean_token_value(\%clean_tokens,
     '--lb-active-text',
     '--lb-btn-primary-text'
 );
-if ($btn_group_active_text ne '') {
-    $clean_tokens{'--lb-btn-group-hover-text'} = $btn_group_active_text;
-} else {
-    $clean_tokens{'--lb-btn-group-hover-text'} = 'var(--lb-btn-group-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))';
+if (!exists $clean_tokens{'--lb-btn-group-hover-text'} || $clean_tokens{'--lb-btn-group-hover-text'} eq '') {
+    if ($btn_group_active_text ne '') {
+        $clean_tokens{'--lb-btn-group-hover-text'} = $btn_group_active_text;
+    } else {
+        $clean_tokens{'--lb-btn-group-hover-text'} = 'var(--lb-btn-group-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))';
+    }
 }
 
 my $meaningful_custom_css = $custom_css;
@@ -1097,6 +1117,18 @@ $css .= "/* DESIGN STUDIO JQM COMPAT END */\n";
 
 # Design Studio generated compatibility helpers. These are scoped to the user
 # theme and keep protected/compound components consistent without touching Core.
+$css .= "/* V422: Generated LBV4 card content text compatibility. */\n";
+$css .= "body.$id .lb-card, .$id .lb-card,\n";
+$css .= "body.$id .lb-card .lb-card-body, .$id .lb-card .lb-card-body,\n";
+$css .= "body.$id .lb-card .lb-form-row, .$id .lb-card .lb-form-row,\n";
+$css .= "body.$id .lb-card .lb-form-field, .$id .lb-card .lb-form-field,\n";
+$css .= "body.$id .lb-card .lb-form-value, .$id .lb-card .lb-form-value,\n";
+$css .= "body.$id .lb-card p, .$id .lb-card p,\n";
+$css .= "body.$id .lb-card li, .$id .lb-card li,\n";
+$css .= "body.$id .lb-card small, .$id .lb-card small {\n";
+$css .= "  color: var(--lb-card-text, var(--lb-text, inherit)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
 $css .= "\n/* DESIGN STUDIO RULES START */\n";
 $css .= "/* V188: Table border width/color apply to the complete outer frame. Cell separators remain thin and do not cover the outer frame. */\n";
 $css .= "body.$id table.lb-table, body.$id .lb-table,\n";
@@ -1331,6 +1363,89 @@ $css .= "  opacity: .82 !important;\n";
 $css .= "  pointer-events: none !important;\n";
 $css .= "}\n";
 $css .= "/* DESIGN STUDIO RULES END */\n";
+
+# V416: Legacy Core overview widgets use a.nolinkstyle for their captions.
+# Those links can retain the old jQuery-Mobile/Core link color instead of the
+# generated theme text token. Bind only widget captions to the effective theme
+# text color; keep ordinary links and plugin content untouched.
+$css .= "\n/* DESIGN STUDIO CORE WIDGET LABEL COMPAT START */\n";
+$css .= "/* V416: Core plugin/system widget labels follow the generated theme text tokens. */\n";
+$css .= "body.$id .widget a.nolinkstyle,\n";
+$css .= "body.$id .widget a.nolinkstyle:link,\n";
+$css .= "body.$id .widget a.nolinkstyle:visited,\n";
+$css .= ".$id .widget a.nolinkstyle,\n";
+$css .= ".$id .widget a.nolinkstyle:link,\n";
+$css .= ".$id .widget a.nolinkstyle:visited {\n";
+$css .= "  color: var(--lb-text, inherit) !important;\n";
+$css .= "  -webkit-text-fill-color: var(--lb-text, inherit) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id .widget a.nolinkstyle:hover,\n";
+$css .= "body.$id .widget a.nolinkstyle:focus-visible,\n";
+$css .= ".$id .widget a.nolinkstyle:hover,\n";
+$css .= ".$id .widget a.nolinkstyle:focus-visible {\n";
+$css .= "  color: var(--lb-primary-hover, var(--lb-primary, var(--lb-text, inherit))) !important;\n";
+$css .= "  -webkit-text-fill-color: var(--lb-primary-hover, var(--lb-primary, var(--lb-text, inherit))) !important;\n";
+$css .= "}\n";
+$css .= "/* DESIGN STUDIO CORE WIDGET LABEL COMPAT END */\n";
+
+# V367: Legacy LoxBerry page/content wrappers are layout surfaces and must
+# always remain transparent. The generated JQM bridge above intentionally
+# paints .ui-page and legacy body classes with --lb-bg, but #page_content is
+# often also a .ui-content/.ui-body-* element. Without this final rule the
+# content wrapper becomes an opaque color block although table.formtable
+# itself is already transparent. Keep real components such as .lb-table,
+# .lb-card, inputs and buttons untouched; only the legacy wrapper chain and
+# the direct structure of table.formtable are reset here.
+$css .= "\n/* DESIGN STUDIO LEGACY CONTENT TRANSPARENCY START */\n";
+$css .= "/* V367: Default legacy content/form surfaces are always transparent. */\n";
+$css .= "html body.$id #page_content,\n";
+$css .= "html body.$id #page_content.page_content,\n";
+$css .= "html body.$id #page_content.lb-content,\n";
+$css .= "html body.$id #page_content.ui-content,\n";
+$css .= "html body.$id .page_content,\n";
+$css .= "html body.$id .lb-content,\n";
+$css .= "body.$id #page_content, body.$id .page_content, body.$id .lb-content,\n";
+$css .= ".$id #page_content, .$id .page_content, .$id .lb-content,\n";
+$css .= "html body.$id #page_content > form,\n";
+$css .= "html body.$id #page_content form,\n";
+$css .= "html body.$id #page_content > form > div.form-group,\n";
+$css .= "html body.$id #page_content form div.form-group,\n";
+$css .= "body.$id #page_content form, body.$id #page_content div.form-group,\n";
+$css .= ".$id #page_content form, .$id #page_content div.form-group,\n";
+$css .= "html body.$id #page_content table.formtable,\n";
+$css .= "html body.$id #page_content table.formtable > thead,\n";
+$css .= "html body.$id #page_content table.formtable > tbody,\n";
+$css .= "html body.$id #page_content table.formtable > tfoot,\n";
+$css .= "html body.$id #page_content table.formtable > thead > tr,\n";
+$css .= "html body.$id #page_content table.formtable > tbody > tr,\n";
+$css .= "html body.$id #page_content table.formtable > tfoot > tr,\n";
+$css .= "html body.$id #page_content table.formtable > thead > tr > th,\n";
+$css .= "html body.$id #page_content table.formtable > thead > tr > td,\n";
+$css .= "html body.$id #page_content table.formtable > tbody > tr > th,\n";
+$css .= "html body.$id #page_content table.formtable > tbody > tr > td,\n";
+$css .= "html body.$id #page_content table.formtable > tfoot > tr > th,\n";
+$css .= "html body.$id #page_content table.formtable > tfoot > tr > td,\n";
+$css .= "body.$id table.formtable,\n";
+$css .= "body.$id table.formtable > thead, body.$id table.formtable > tbody, body.$id table.formtable > tfoot,\n";
+$css .= "body.$id table.formtable > thead > tr, body.$id table.formtable > tbody > tr, body.$id table.formtable > tfoot > tr,\n";
+$css .= "body.$id table.formtable > thead > tr > th, body.$id table.formtable > thead > tr > td,\n";
+$css .= "body.$id table.formtable > tbody > tr > th, body.$id table.formtable > tbody > tr > td,\n";
+$css .= "body.$id table.formtable > tfoot > tr > th, body.$id table.formtable > tfoot > tr > td,\n";
+$css .= ".$id table.formtable,\n";
+$css .= ".$id table.formtable > thead, .$id table.formtable > tbody, .$id table.formtable > tfoot,\n";
+$css .= ".$id table.formtable > thead > tr, .$id table.formtable > tbody > tr, .$id table.formtable > tfoot > tr,\n";
+$css .= ".$id table.formtable > thead > tr > th, .$id table.formtable > thead > tr > td,\n";
+$css .= ".$id table.formtable > tbody > tr > th, .$id table.formtable > tbody > tr > td,\n";
+$css .= ".$id table.formtable > tfoot > tr > th, .$id table.formtable > tfoot > tr > td {\n";
+$css .= "  background: transparent !important;\n";
+$css .= "  background-color: transparent !important;\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  backdrop-filter: none !important;\n";
+$css .= "  -webkit-backdrop-filter: none !important;\n";
+$css .= "}\n";
+$css .= "/* DESIGN STUDIO LEGACY CONTENT TRANSPARENCY END */\n";
 
 sub _read_file_head {
     my ($file, $limit) = @_;

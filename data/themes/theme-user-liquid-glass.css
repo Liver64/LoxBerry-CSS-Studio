@@ -14,8 +14,8 @@
    - Plugin-specific compatibility fixes are grouped at the end and intentionally override
      the generic theme rules where needed.
  * Wallpaper-URL: assets/images/theme-user-liquid-glass/wallpaper.png
- * Wallpaper-Brightness: 79
- * Wallpaper-Opacity: 91
+ * Wallpaper-Brightness: 100
+ * Wallpaper-Opacity: 100
 */
 
 /* =========================================================
@@ -2811,9 +2811,79 @@ body.theme-user-liquid-glass .lb-lg-native-glass.lb-lg-is-disabled > select {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS START */
 :is(body.theme-user-liquid-glass, body.theme-liquid-glass)::before {
-  opacity: 0.91 !important;
-  filter: brightness(0.79) !important;
+  opacity: 0.95 !important;
+  filter: brightness(1.16) !important;
 }
 /* DESIGN STUDIO LIQUID GLASS WALLPAPER SETTINGS END */

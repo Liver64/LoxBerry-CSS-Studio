@@ -1,0 +1,21 @@
+{
+   "assets" : {
+      "icons" : "assets/icons/theme-user-creme/",
+      "wallpaper" : "assets/images/theme-user-creme/wallpaper.jpg"
+   },
+   "css" : "theme-user-creme.css",
+   "features" : {
+      "css_import" : true,
+      "custom_css" : true,
+      "hybrid_import" : true,
+      "token_editor" : true,
+      "wallpaper" : true,
+      "workbench_ui" : true
+   },
+   "id" : "theme-user-creme",
+   "loxberry_min" : "4.0",
+   "name" : "Creme",
+   "plugin" : "cssframework",
+   "type" : "user-theme",
+   "version" : "0.1.0"
+}

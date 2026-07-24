@@ -2265,7 +2265,7 @@
   display: block !important;
 }
 
-.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-left > .cfw-panel:not(.cfw-wallpaper-panel) {
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only .cfw-left .cfw-panel:not(.cfw-wallpaper-panel) {
   display: none !important;
 }
 
@@ -2914,4 +2914,1630 @@
 .cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
 #cfwTabWorkbench:not([hidden]) #previewRoot.theme-user-liquid-glass > .cfw-app-preview {
   display: none !important;
+}
+
+
+/* ============================================================
+   V350 Liquid Glass direct Studio-background editing
+   ------------------------------------------------------------
+   Liquid Glass has no compact "Arbeitsbereich / Vorschau" canvas. Its
+   wallpaper is edited directly behind the Design Studio controls. Normal user
+   themes keep the complete component preview and its live token/wallpaper
+   updates unchanged.
+   ============================================================ */
+.cfw-page.cfw-design-studio {
+  position: relative;
+  isolation: isolate;
+}
+
+.cfw-page.cfw-design-studio > .cfw-liquid-studio-wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform: none;
+  transform-origin: center center;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: brightness(var(--cfw-wallpaper-brightness, 1));
+  opacity: var(--cfw-wallpaper-opacity, 1);
+  will-change: filter, opacity;
+}
+
+/* Shared Studio wallpaper-rendering contract. Liquid Glass mirrors the exact
+   layer order of body.theme-user-liquid-glass::before in the packaged theme. */
+.cfw-page.cfw-design-studio > .cfw-liquid-studio-wallpaper.cfw-wallpaper-render-liquid-glass {
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(3, 8, 16, var(--cfw-liquid-wallpaper-dim-primary, 0.68)),
+      rgba(10, 24, 38, var(--cfw-liquid-wallpaper-dim-secondary, 0.58))
+    ),
+    radial-gradient(
+      900px 500px at 15% 10%,
+      rgba(96, 130, 165, 0.10),
+      transparent 52%
+    ),
+    radial-gradient(
+      900px 500px at 85% 90%,
+      rgba(73, 102, 133, 0.08),
+      transparent 54%
+    ),
+    radial-gradient(
+      700px 420px at 65% 15%,
+      rgba(109, 172, 32, 0.035),
+      transparent 58%
+    ),
+    var(--cfw-wallpaper-image);
+}
+
+.cfw-page.cfw-design-studio > .cfw-liquid-studio-wallpaper.cfw-wallpaper-render-plain {
+  background-image: var(--cfw-wallpaper-image);
+}
+
+.cfw-page.cfw-design-studio > .cfw-liquid-studio-wallpaper[hidden] {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio > :not(.cfw-liquid-studio-wallpaper) {
+  position: relative;
+  z-index: 1;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) .cfw-workbench {
+  grid-template-columns: minmax(360px, 520px) !important;
+}
+
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#cfwTabWorkbench:not([hidden]) .cfw-right {
+  display: none !important;
+}
+
+/* The old compact Liquid Glass wallpaper canvas is intentionally disabled. */
+.cfw-page.cfw-design-studio.cfw-liquid-glass-wallpaper-only
+#liquidGlassWallpaperPreview {
+  display: none !important;
+}
+
+/* =========================================================
+   V352: Liquid Glass wallpaper opacity must not reveal the
+   already active system wallpaper underneath. The fixed Studio
+   layer therefore owns an opaque Liquid Glass base surface,
+   while brightness and opacity are applied only to its composed
+   wallpaper pseudo-layer.
+   ========================================================= */
+.cfw-page.cfw-design-studio > .cfw-liquid-studio-wallpaper.cfw-wallpaper-render-liquid-glass {
+  background: var(--lb-bg, #07101c) !important;
+  filter: none !important;
+  opacity: 1 !important;
+  overflow: hidden;
+}
+
+.cfw-page.cfw-design-studio > .cfw-liquid-studio-wallpaper.cfw-wallpaper-render-liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(3, 8, 16, var(--cfw-liquid-wallpaper-dim-primary, 0.68)),
+      rgba(10, 24, 38, var(--cfw-liquid-wallpaper-dim-secondary, 0.58))
+    ),
+    radial-gradient(
+      900px 500px at 15% 10%,
+      rgba(96, 130, 165, 0.10),
+      transparent 52%
+    ),
+    radial-gradient(
+      900px 500px at 85% 90%,
+      rgba(73, 102, 133, 0.08),
+      transparent 54%
+    ),
+    radial-gradient(
+      700px 420px at 65% 15%,
+      rgba(109, 172, 32, 0.035),
+      transparent 58%
+    ),
+    var(--cfw-wallpaper-image);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: brightness(var(--cfw-wallpaper-brightness, 1));
+  opacity: var(--cfw-wallpaper-opacity, 1);
+  will-change: filter, opacity;
+}
+
+
+/* ============================================================
+   V355 - deterministic inactive ButtonGroup preview
+   ------------------------------------------------------------
+   The active LoxBerry runtime theme can style the temporary
+   .lb-btn-group alias with !important. Keep the compact Studio
+   preview bound to its own bridge variables instead.
+   ============================================================ */
+.cfw-page.cfw-design-studio #previewRoot .cfw-preview-btn-group > button:not(.is-active):not(.lb-active):not([aria-pressed="true"]),
+.cfw-page.cfw-design-studio #previewRoot .lb-btn-group > button:not(.is-active):not(.lb-active):not([aria-pressed="true"]) {
+  background: var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-group-inactive-bg, #ffffff)) !important;
+  background-color: var(--cfw-preview-btn-group-inactive-bg, var(--lb-btn-group-inactive-bg, #ffffff)) !important;
+  color: var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-group-inactive-text, var(--cfw-preview-btn-group-active-bg, var(--lb-btn-group-active-bg, var(--lb-primary, #2563eb))))) !important;
+  -webkit-text-fill-color: var(--cfw-preview-btn-group-inactive-text, var(--lb-btn-group-inactive-text, var(--cfw-preview-btn-group-active-bg, var(--lb-btn-group-active-bg, var(--lb-primary, #2563eb))))) !important;
+}
+
+
+/* V359: Independent left-column stacks.
+   Neues Theme stays beside Vorschaufarben; Ausgewähltes Element and
+   Einstellungen follow directly below Neues Theme without waiting for
+   the height of the Vorschaufarben panel. */
+.cfw-page.cfw-design-studio .cfw-left {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.cfw-page.cfw-design-studio .cfw-left-primary-stack,
+.cfw-page.cfw-design-studio .cfw-left-secondary-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.cfw-page.cfw-design-studio .cfw-left-primary-stack { grid-column: 1; }
+.cfw-page.cfw-design-studio .cfw-left-secondary-stack { grid-column: 2; }
+.cfw-page.cfw-design-studio .cfw-left-primary-stack > .cfw-panel,
+.cfw-page.cfw-design-studio .cfw-left-secondary-stack > .cfw-panel {
+  width: 100%;
+  min-width: 0;
+}
+@media (max-width:760px) {
+  .cfw-page.cfw-design-studio .cfw-left { grid-template-columns: 1fr; }
+  .cfw-page.cfw-design-studio .cfw-left-primary-stack,
+  .cfw-page.cfw-design-studio .cfw-left-secondary-stack { grid-column: 1; }
+}
+
+/* V360: Interactive affected-token selector. Scoped to the Studio inspector. */
+.cfw-affected-token-picker {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.cfw-affected-token-picker select {
+  width: 100%;
+  min-height: 38px;
+}
+
+.cfw-token-action,
+.cfw-inline-token-action {
+  cursor: pointer;
+}
+
+.cfw-token-action {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  padding: 2px;
+  margin: 2px;
+  font: inherit;
+}
+
+.cfw-token-action:hover,
+.cfw-token-action:focus-visible,
+.cfw-token-action.is-active,
+.cfw-inline-token-action:hover,
+.cfw-inline-token-action:focus-visible,
+.cfw-inline-token-action.is-active {
+  outline: none;
+  border-color: var(--lb-primary, #007aff);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.22);
+}
+
+.cfw-inline-token-action {
+  display: inline-flex;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 1px 2px;
+}
+
+.cfw-clickable-token-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Protected package themes remain view-only. */
+.cfw-protected-theme-readonly .cfw-affected-token-picker,
+.cfw-protected-theme-readonly .cfw-clickable-token-list,
+.cfw-protected-theme-readonly .cfw-inline-token-action {
+  pointer-events: none;
+}
+
+/* ============================================================
+   V369 - vertical browser-scroll follow for Preview + palette
+   ------------------------------------------------------------
+   The JavaScript module keeps the two requested Workbench blocks visible
+   while the document scrolls vertically:
+     - "4. Vorschaufarben" (.cfw-palette-panel)
+     - "Arbeitsbereich / Vorschau" (.cfw-right)
+   Transform-based movement preserves their original grid space and width.
+   ============================================================ */
+@media (min-width: 761px) and (min-height: 480px) {
+  #cfwTabWorkbench:not([hidden]) .cfw-palette-panel.cfw-scroll-follow-target,
+  #cfwTabWorkbench:not([hidden]) .cfw-right.cfw-scroll-follow-target {
+    position: relative;
+    z-index: 4;
+    transform: translate3d(0, var(--cfw-scroll-follow-y, 0px), 0);
+    will-change: transform;
+  }
+}
+
+
+/* =========================================================
+   V379 Permanent Wallpaper shortcut in Live Preview
+   ========================================================= */
+.cfw-page.cfw-design-studio #previewRoot {
+  position: relative;
+}
+
+.cfw-page.cfw-design-studio #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut {
+  position: absolute;
+  z-index: 35;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 11px;
+  border: 1px solid color-mix(in srgb, var(--lb-border-color, #7b8794) 72%, transparent);
+  border-radius: var(--lb-radius-control, 8px);
+  background: color-mix(in srgb, var(--lb-surface, #ffffff) 88%, transparent);
+  color: var(--lb-text, #1f2933);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.16);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.86;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.cfw-page.cfw-design-studio #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut:hover,
+.cfw-page.cfw-design-studio #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut:focus-visible {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.22);
+  outline: 2px solid var(--lb-primary, #007aff);
+  outline-offset: 2px;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-wallpaper-shortcut-icon,
+.cfw-page.cfw-design-studio .cfw-preview-wallpaper-shortcut-icon svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-wallpaper-shortcut-icon svg,
+.cfw-page.cfw-design-studio .cfw-preview-wallpaper-watermark svg {
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-wallpaper-watermark {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: clamp(72px, 11vw, 132px);
+  height: clamp(72px, 11vw, 132px);
+  transform: translate(-50%, -50%);
+  color: var(--lb-text, #1f2933);
+  opacity: 0.055;
+  pointer-events: none;
+}
+
+.cfw-page.cfw-design-studio .cfw-preview-wallpaper-watermark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cfw-page.cfw-design-studio #previewRoot.cfw-wallpaper-shortcut-active #previewWallpaperShortcut {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--lb-primary, #007aff), 0 5px 16px rgba(0, 0, 0, 0.22);
+}
+
+@media (max-width: 720px) {
+  .cfw-page.cfw-design-studio #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut {
+    top: 8px;
+    right: 8px;
+    min-height: 32px;
+    padding: 5px 9px;
+  }
+}
+
+/* V380: automatic light/dark theme derivation for New Theme. */
+.cfw-page.cfw-design-studio .cfw-global-color-mode {
+  display: block;
+  width: 100%;
+}
+
+.cfw-page.cfw-design-studio .cfw-global-color-mode select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-analysis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--lb-border, #cbd5e1);
+  border-radius: var(--lb-radius, 10px);
+  background: var(--lb-surface-alt, rgba(255,255,255,.55));
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-analysis > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-analysis span {
+  color: var(--lb-text-muted, #64748b);
+  font-size: .9em;
+}
+
+.cfw-page.cfw-design-studio .cfw-new-theme-color-analysis strong {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .cfw-page.cfw-design-studio .cfw-new-theme-color-analysis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* V383: Berechnung bleibt intern aktiv, Analysebox ist optisch ausgeblendet. */
+.cfw-page.cfw-design-studio #newThemeColorAnalysis[hidden] {
+  display: none !important;
+}
+
+/* =========================================================
+   V384: Studio and Live Preview follow active theme text roles
+   ---------------------------------------------------------
+   Studio chrome and the Live Preview tab use the active theme's semantic
+   text colors. The preview canvas itself keeps its isolated preview tokens.
+   ========================================================= */
+.cfw-page.cfw-design-studio,
+.cfw-page.cfw-design-studio #studioTabDesign,
+.cfw-page.cfw-design-studio #studioTabPreview,
+.cfw-page.cfw-design-studio [data-studio-tab-panel],
+.cfw-page.cfw-design-studio .cfw-live-preview,
+.cfw-page.cfw-design-studio .cfw-preview-page {
+  color: var(--lb-text, var(--lb-text-color, #1f2933));
+}
+
+.cfw-page.cfw-design-studio .cfw-toolbar,
+.cfw-page.cfw-design-studio .cfw-toolbar-title,
+.cfw-page.cfw-design-studio .cfw-toolbar-title h1,
+.cfw-page.cfw-design-studio .cfw-toolbar-title h2,
+.cfw-page.cfw-design-studio .cfw-toolbar-title p,
+.cfw-page.cfw-design-studio .cfw-panel,
+.cfw-page.cfw-design-studio .cfw-panel h1,
+.cfw-page.cfw-design-studio .cfw-panel h2,
+.cfw-page.cfw-design-studio .cfw-panel h3,
+.cfw-page.cfw-design-studio .cfw-panel h4,
+.cfw-page.cfw-design-studio .cfw-panel label,
+.cfw-page.cfw-design-studio .cfw-label,
+.cfw-page.cfw-design-studio .cfw-label > span,
+.cfw-page.cfw-design-studio .cfw-advanced summary,
+.cfw-page.cfw-design-studio .cfw-selection-title,
+.cfw-page.cfw-design-studio .cfw-token-title,
+.cfw-page.cfw-design-studio .cfw-preview-heading,
+.cfw-page.cfw-design-studio .cfw-preview-breadcrumb,
+.cfw-page.cfw-design-studio .cfw-live-preview h1,
+.cfw-page.cfw-design-studio .cfw-live-preview h2,
+.cfw-page.cfw-design-studio .cfw-live-preview h3,
+.cfw-page.cfw-design-studio .cfw-live-preview h4,
+.cfw-page.cfw-design-studio .cfw-live-preview label,
+.cfw-page.cfw-design-studio #studioTabPreview h1,
+.cfw-page.cfw-design-studio #studioTabPreview h2,
+.cfw-page.cfw-design-studio #studioTabPreview h3,
+.cfw-page.cfw-design-studio #studioTabPreview h4,
+.cfw-page.cfw-design-studio #studioTabPreview label {
+  color: var(--lb-text, var(--lb-text-color, #1f2933)) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-help,
+.cfw-page.cfw-design-studio .cfw-help-text,
+.cfw-page.cfw-design-studio .cfw-small-note,
+.cfw-page.cfw-design-studio .cfw-muted,
+.cfw-page.cfw-design-studio .cfw-toolbar-title p,
+.cfw-page.cfw-design-studio .cfw-preview-help,
+.cfw-page.cfw-design-studio .cfw-live-preview .cfw-help,
+.cfw-page.cfw-design-studio #studioTabPreview .cfw-help,
+.cfw-page.cfw-design-studio #studioTabPreview .cfw-small-note {
+  color: var(--lb-text-muted, var(--lb-muted-text, var(--lb-text, #64748b))) !important;
+}
+
+/* Preserve component-specific text colors inside the isolated preview canvas. */
+.cfw-page.cfw-design-studio #previewRoot,
+.cfw-page.cfw-design-studio #previewRoot *,
+.cfw-page.cfw-design-studio .cfw-preview-canvas,
+.cfw-page.cfw-design-studio .cfw-preview-canvas * {
+  /* Intentionally no inherited Studio override here. */
+}
+
+/* =========================================================
+   V384: mandatory legacy form transparency regression guard
+   ---------------------------------------------------------
+   Legacy plugin structures must never paint their own layout surface.
+   This applies to Studio and Live Preview tab wrappers as well as plugin
+   form markup rendered inside them.
+   ========================================================= */
+.cfw-page.cfw-design-studio .form-group,
+.cfw-page.cfw-design-studio .form-group > font,
+.cfw-page.cfw-design-studio table.formtable,
+.cfw-page.cfw-design-studio table.formtable > tbody,
+.cfw-page.cfw-design-studio table.formtable > tbody > tr,
+.cfw-page.cfw-design-studio table.formtable > tbody > tr > th,
+.cfw-page.cfw-design-studio table.formtable > tbody > tr > td,
+.cfw-page.cfw-design-studio #studioTabDesign .form-group,
+.cfw-page.cfw-design-studio #studioTabDesign table.formtable,
+.cfw-page.cfw-design-studio #studioTabPreview .form-group,
+.cfw-page.cfw-design-studio #studioTabPreview table.formtable,
+.cfw-page.cfw-design-studio #studioTabPreview table.formtable > tbody,
+.cfw-page.cfw-design-studio #studioTabPreview table.formtable > tbody > tr,
+.cfw-page.cfw-design-studio #studioTabPreview table.formtable > tbody > tr > th,
+.cfw-page.cfw-design-studio #studioTabPreview table.formtable > tbody > tr > td {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   V396: Compact preview palette — 3 columns × 6 rows
+   ---------------------------------------------------------
+   Show up to 18 effective theme colors. Tiles display only their
+   hexadecimal color value; token/role labels remain intentionally hidden.
+   ========================================================= */
+.cfw-page.cfw-design-studio .cfw-palette-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-palette-tile {
+  min-width: 0 !important;
+  min-height: 58px !important;
+  height: 58px !important;
+  padding: 7px !important;
+  gap: 0 !important;
+  justify-content: flex-end !important;
+  align-items: flex-start !important;
+  border-radius: calc(var(--lb-radius, 14px) * .72) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-token {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-value {
+  display: inline-block !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 2px 5px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+  font-size: .72rem !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@media (max-width: 520px) {
+  .cfw-page.cfw-design-studio .cfw-palette-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .cfw-page.cfw-design-studio .cfw-palette-tile {
+    min-height: 52px !important;
+    height: 52px !important;
+    padding: 5px !important;
+  }
+
+  .cfw-page.cfw-design-studio .cfw-palette-tile .cfw-palette-value {
+    padding: 2px 4px !important;
+    font-size: .66rem !important;
+  }
+}
+
+/* =========================================================
+   V397: Property cards show their current color
+   ---------------------------------------------------------
+   Color-backed settings use the resolved token color as their card surface.
+   Foreground, token chips and icons automatically switch between dark/light
+   text according to luminance. Non-color properties keep the normal card UI.
+   ========================================================= */
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color {
+  background: var(--cfw-property-current-bg) !important;
+  color: var(--cfw-property-current-text) !important;
+  border-color: color-mix(in srgb, var(--cfw-property-current-text) 38%, transparent) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color:hover,
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color.is-active {
+  background: var(--cfw-property-current-bg) !important;
+  color: var(--cfw-property-current-text) !important;
+  border-color: var(--cfw-property-current-text) !important;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--cfw-property-current-text) 24%, transparent),
+    0 7px 18px rgba(0, 0, 0, .12) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-property-body strong,
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-property-more {
+  color: var(--cfw-property-current-text) !important;
+  -webkit-text-fill-color: var(--cfw-property-current-text) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-property-icon {
+  background: color-mix(in srgb, var(--cfw-property-current-text) 15%, transparent) !important;
+  color: var(--cfw-property-current-text) !important;
+  border: 1px solid color-mix(in srgb, var(--cfw-property-current-text) 30%, transparent) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-inline-token-action,
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-property-body code {
+  background: color-mix(in srgb, var(--cfw-property-current-text) 14%, transparent) !important;
+  color: var(--cfw-property-current-text) !important;
+  -webkit-text-fill-color: var(--cfw-property-current-text) !important;
+  border-color: color-mix(in srgb, var(--cfw-property-current-text) 38%, transparent) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-inline-token-action.is-active {
+  outline-color: var(--cfw-property-current-text) !important;
+}
+
+/* =========================================================
+   V398: Preview palette — 3 columns × 8 rows
+   ---------------------------------------------------------
+   Up to 24 colors are shown. The compact hex-only presentation from V396
+   remains unchanged; the additional two rows fit into the same panel width.
+   ========================================================= */
+.cfw-page.cfw-design-studio .cfw-palette-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-palette-tile {
+  min-height: 54px !important;
+  height: 54px !important;
+}
+
+/* V399: Slider value background/text persistence is corrected in JS.
+   Existing V397 color-card styling remains unchanged. */
+/* V400: theme-save.cgi now preserves an explicitly selected
+   --lb-slider-value-text value instead of replacing it with --lb-primary. */
+/* V401: Preview palette conditionally hides #4a7a12 for non-green primary themes. */
+
+
+/* V402: Complete token persistence audit and lossless Save/Reload contract. */
+
+/* =========================================================
+   V403: Token chips display their current resolved color
+   ---------------------------------------------------------
+   Color tokens replace the neutral yellow chip surface with their current
+   effective color. Text and border contrast adapt automatically. Values that
+   are not colors (width, radius, opacity, shadow, blur, etc.) keep the existing
+   neutral token-chip presentation.
+   ========================================================= */
+.cfw-page.cfw-design-studio .cfw-inline-token-action.has-token-color,
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-inline-token-action.has-token-color {
+  background: var(--cfw-token-chip-bg) !important;
+  background-color: var(--cfw-token-chip-bg) !important;
+  color: var(--cfw-token-chip-text) !important;
+  -webkit-text-fill-color: var(--cfw-token-chip-text) !important;
+  border-color: color-mix(in srgb, var(--cfw-token-chip-text) 48%, transparent) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--cfw-token-chip-text) 18%, transparent),
+    0 1px 2px rgba(0, 0, 0, .10) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-inline-token-action.has-token-color code,
+.cfw-page.cfw-design-studio .cfw-property-item.has-current-color .cfw-inline-token-action.has-token-color code {
+  background: transparent !important;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-inline-token-action.has-token-color:hover,
+.cfw-page.cfw-design-studio .cfw-inline-token-action.has-token-color:focus-visible {
+  outline: 2px solid var(--cfw-token-chip-text) !important;
+  outline-offset: 2px !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-inline-token-action.has-token-color.is-active {
+  outline: 2px solid var(--cfw-token-chip-text) !important;
+  outline-offset: 2px !important;
+  box-shadow:
+    0 0 0 2px var(--cfw-token-chip-bg),
+    0 0 0 4px var(--cfw-token-chip-text) !important;
+}
+
+/* =========================================================
+   V404: Color-coded chips in "All affected tokens"
+   ---------------------------------------------------------
+   This is the dedicated renderer below the affected-token dropdown.
+   Color tokens use their current effective value as the complete chip
+   background. Text and borders adapt to luminance. Non-color values retain
+   the established neutral yellow token style.
+   ========================================================= */
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.has-token-color {
+  background: var(--cfw-token-chip-bg) !important;
+  background-color: var(--cfw-token-chip-bg) !important;
+  color: var(--cfw-token-chip-text) !important;
+  -webkit-text-fill-color: var(--cfw-token-chip-text) !important;
+  border: 1px solid color-mix(in srgb, var(--cfw-token-chip-text) 48%, transparent) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--cfw-token-chip-text) 18%, transparent),
+    0 1px 2px rgba(0, 0, 0, .10) !important;
+  text-shadow: none !important;
+}
+
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.has-token-color code {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.has-token-color:hover,
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.has-token-color:focus-visible {
+  outline: 2px solid var(--cfw-token-chip-text) !important;
+  outline-offset: 2px !important;
+}
+
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.has-token-color.is-active {
+  outline: 2px solid var(--cfw-token-chip-text) !important;
+  outline-offset: 2px !important;
+  box-shadow:
+    0 0 0 2px var(--cfw-token-chip-bg),
+    0 0 0 4px var(--cfw-token-chip-text) !important;
+}
+
+/* V405: Complete German/English Design Studio language audit. */
+
+/* V406 – Studio Aurora Background */
+.cfw-page.cfw-design-studio {
+  --cfw-aurora-pointer-x: 50%;
+  --cfw-aurora-pointer-y: 18%;
+  --cfw-aurora-primary: var(--lb-primary, var(--lb-active-bg, #5b7cfa));
+  --cfw-aurora-secondary: var(--lb-primary-hover, var(--lb-btn-active-bg, #8b5cf6));
+  --cfw-aurora-accent: var(--lb-slider-active-bg, var(--lb-primary, #22b8cf));
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100vh - 28px);
+  overflow: clip;
+  border-radius: max(var(--lb-radius-card, 16px), 18px);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--lb-bg, #10131d) 92%, #07111f 8%),
+      color-mix(in srgb, var(--lb-bg, #10131d) 82%, var(--cfw-aurora-primary) 18%)
+    );
+}
+
+.cfw-page.cfw-design-studio::before,
+.cfw-page.cfw-design-studio::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.cfw-page.cfw-design-studio::before {
+  background:
+    radial-gradient(circle at var(--cfw-aurora-pointer-x) var(--cfw-aurora-pointer-y),
+      color-mix(in srgb, var(--cfw-aurora-primary) 28%, transparent) 0,
+      color-mix(in srgb, var(--cfw-aurora-primary) 13%, transparent) 21%,
+      transparent 48%),
+    radial-gradient(ellipse at 12% 15%,
+      color-mix(in srgb, var(--cfw-aurora-secondary) 22%, transparent) 0,
+      transparent 44%),
+    radial-gradient(ellipse at 90% 28%,
+      color-mix(in srgb, var(--cfw-aurora-accent) 18%, transparent) 0,
+      transparent 46%),
+    radial-gradient(ellipse at 52% 94%,
+      color-mix(in srgb, var(--cfw-aurora-primary) 15%, transparent) 0,
+      transparent 48%);
+  filter: saturate(118%);
+  transform: translate3d(0,0,0) scale(1.04);
+  transform-origin: center;
+  animation: cfw-studio-aurora-drift 24s ease-in-out infinite alternate;
+}
+
+.cfw-page.cfw-design-studio::after {
+  z-index: -1;
+  opacity: .72;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--lb-text, #fff) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--lb-text, #fff) 3%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at center, color-mix(in srgb, var(--lb-text, #fff) 5%, transparent) 0 1px, transparent 1.5px);
+  background-size: 34px 34px, 34px 34px, 17px 17px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.86), rgba(0,0,0,.18));
+}
+
+.cfw-page.cfw-design-studio > * { position: relative; z-index: 1; }
+
+.cfw-page.cfw-design-studio .cfw-toolbar,
+.cfw-page.cfw-design-studio .cfw-tabs {
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+}
+
+.cfw-page.cfw-design-studio .cfw-panel {
+  box-shadow:
+    0 16px 42px color-mix(in srgb, #000 18%, transparent),
+    0 1px 0 color-mix(in srgb, #fff 14%, transparent) inset;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .cfw-page.cfw-design-studio .cfw-workbench .cfw-panel:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--cfw-aurora-primary) 36%, var(--lb-border, rgba(0,0,0,.16)));
+    box-shadow:
+      0 22px 54px color-mix(in srgb, #000 22%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--cfw-aurora-primary) 10%, transparent),
+      0 1px 0 color-mix(in srgb, #fff 17%, transparent) inset;
+  }
+}
+
+.cfw-page.cfw-design-studio.cfw-studio-aurora-disabled { background: transparent; }
+.cfw-page.cfw-design-studio.cfw-studio-aurora-disabled::before,
+.cfw-page.cfw-design-studio.cfw-studio-aurora-disabled::after { content: none; }
+.cfw-page.cfw-design-studio.cfw-studio-aurora-disabled .cfw-panel { transform: none; }
+
+@keyframes cfw-studio-aurora-drift {
+  0% { transform: translate3d(-1.5%,-1%,0) scale(1.04) rotate(-.25deg); }
+  50% { transform: translate3d(1.2%,.8%,0) scale(1.075) rotate(.2deg); }
+  100% { transform: translate3d(-.4%,1.5%,0) scale(1.055) rotate(-.1deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfw-page.cfw-design-studio::before { animation: none; transform: none; }
+  .cfw-page.cfw-design-studio .cfw-panel { transition: none; }
+  .cfw-page.cfw-design-studio .cfw-workbench .cfw-panel:hover { transform: none; }
+}
+
+@supports not (background: color-mix(in srgb, red, blue)) {
+  .cfw-page.cfw-design-studio { background: var(--lb-bg, #10131d); }
+  .cfw-page.cfw-design-studio::before {
+    background:
+      radial-gradient(circle at var(--cfw-aurora-pointer-x) var(--cfw-aurora-pointer-y), rgba(82,120,255,.22), transparent 46%),
+      radial-gradient(ellipse at 14% 16%, rgba(139,92,246,.18), transparent 44%),
+      radial-gradient(ellipse at 88% 28%, rgba(34,184,207,.14), transparent 46%);
+  }
+}
+
+/* ==========================================================================
+   V407 – Aurora Tab Integration
+   Tabs use the active theme contract instead of hard-coded white/gray text.
+   ========================================================================== */
+
+.cfw-page.cfw-design-studio .cfw-tabs {
+  align-items: end;
+  gap: 8px;
+  padding: 0 0 1px;
+  border-bottom-color:
+    color-mix(in srgb, var(--lb-border, var(--lb-btn-border, rgba(120,130,150,.28))) 72%, transparent);
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--lb-bg, transparent) 16%, transparent)
+    );
+}
+
+.cfw-page.cfw-design-studio .cfw-tab {
+  position: relative;
+  overflow: hidden;
+  border-color:
+    color-mix(in srgb, var(--lb-btn-border, var(--lb-border, rgba(120,130,150,.28))) 82%, transparent);
+  border-bottom: 0;
+  background:
+    color-mix(in srgb, var(--lb-btn-bg, var(--lb-card-bg, rgba(255,255,255,.55))) 82%, transparent);
+  color:
+    var(--lb-btn-text, var(--lb-text, var(--lb-card-text, inherit)));
+  text-shadow: none;
+  opacity: .88;
+  box-shadow:
+    0 6px 18px color-mix(in srgb, #000 10%, transparent),
+    0 1px 0 color-mix(in srgb, #fff 12%, transparent) inset;
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  transition:
+    color .2s ease,
+    background-color .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease,
+    opacity .2s ease,
+    transform .2s ease;
+}
+
+.cfw-page.cfw-design-studio .cfw-tab::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  bottom: 0;
+  left: 14px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--lb-primary, var(--lb-active-bg, #007aff));
+  opacity: 0;
+  transform: scaleX(.35);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.cfw-page.cfw-design-studio .cfw-tab:hover {
+  background:
+    color-mix(
+      in srgb,
+      var(--lb-btn-hover-bg, var(--lb-hover-bg, var(--lb-btn-bg, var(--lb-card-bg, transparent)))) 88%,
+      transparent
+    );
+  color:
+    var(--lb-btn-hover-text, var(--lb-hover-text, var(--lb-btn-text, var(--lb-text, inherit))));
+  border-color:
+    color-mix(in srgb, var(--lb-primary, var(--lb-active-bg, #007aff)) 42%, var(--lb-btn-border, var(--lb-border, transparent)));
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.cfw-page.cfw-design-studio .cfw-tab:focus-visible {
+  outline: 2px solid var(--lb-focus-ring, var(--lb-primary, var(--lb-active-bg, #007aff)));
+  outline-offset: 2px;
+}
+
+.cfw-page.cfw-design-studio .cfw-tab.is-active {
+  background:
+    color-mix(
+      in srgb,
+      var(--lb-active-bg, var(--lb-primary, var(--lb-btn-active-bg, #007aff))) 92%,
+      transparent
+    );
+  color:
+    var(--lb-active-text, var(--lb-on-primary, var(--lb-btn-active-text, #fff)));
+  border-color:
+    color-mix(in srgb, var(--lb-active-bg, var(--lb-primary, #007aff)) 74%, var(--lb-border, transparent));
+  opacity: 1;
+  box-shadow:
+    0 10px 28px color-mix(in srgb, var(--lb-primary, var(--lb-active-bg, #007aff)) 22%, transparent),
+    0 1px 0 color-mix(in srgb, #fff 18%, transparent) inset;
+}
+
+.cfw-page.cfw-design-studio .cfw-tab.is-active::after {
+  opacity: .95;
+  transform: scaleX(1);
+  background:
+    var(--lb-active-text, var(--lb-on-primary, var(--lb-btn-active-text, #fff)));
+}
+
+/* Protected Liquid Glass keeps its own surfaces but still receives readable,
+   token-based tab text. */
+.cfw-page.cfw-design-studio.cfw-studio-aurora-disabled .cfw-tab {
+  color: var(--lb-btn-text, var(--lb-text, inherit));
+}
+
+.cfw-page.cfw-design-studio.cfw-studio-aurora-disabled .cfw-tab.is-active {
+  color: var(--lb-active-text, var(--lb-on-primary, #fff));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfw-page.cfw-design-studio .cfw-tab,
+  .cfw-page.cfw-design-studio .cfw-tab::after {
+    transition: none;
+  }
+
+  .cfw-page.cfw-design-studio .cfw-tab:hover {
+    transform: none;
+  }
+}
+
+@supports not (background: color-mix(in srgb, red, blue)) {
+  .cfw-page.cfw-design-studio .cfw-tab {
+    background: var(--lb-btn-bg, var(--lb-card-bg, rgba(255,255,255,.72)));
+    color: var(--lb-btn-text, var(--lb-text, inherit));
+    border-color: var(--lb-btn-border, var(--lb-border, rgba(120,130,150,.28)));
+  }
+
+  .cfw-page.cfw-design-studio .cfw-tab:hover {
+    background: var(--lb-btn-hover-bg, var(--lb-hover-bg, var(--lb-btn-bg, rgba(255,255,255,.82))));
+    color: var(--lb-btn-hover-text, var(--lb-hover-text, var(--lb-btn-text, inherit)));
+  }
+
+  .cfw-page.cfw-design-studio .cfw-tab.is-active {
+    background: var(--lb-active-bg, var(--lb-primary, #007aff));
+    color: var(--lb-active-text, var(--lb-on-primary, #fff));
+    border-color: var(--lb-active-bg, var(--lb-primary, #007aff));
+  }
+}
+
+/* ==========================================================================
+   V408 – Dark Theme Contrast Repair
+   Wallpaper shortcut and Studio modals use their semantic theme text tokens.
+   ========================================================================== */
+
+/* The shortcut lives inside the isolated Preview and therefore follows the
+   Preview theme's button contract, not the surrounding Studio surface. */
+.cfw-page.cfw-design-studio #previewRoot #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut {
+  background:
+    color-mix(
+      in srgb,
+      var(--lb-btn-bg, var(--lb-button-bg, var(--lb-card-bg, #ffffff))) 94%,
+      transparent
+    ) !important;
+  color:
+    var(--lb-btn-text, var(--lb-button-text, var(--lb-text, var(--lb-card-text, #1f2933)))) !important;
+  border-color:
+    var(--lb-btn-border, var(--lb-button-border, var(--lb-border, rgba(0,0,0,.24)))) !important;
+  text-shadow: none !important;
+  opacity: .96;
+}
+
+.cfw-page.cfw-design-studio #previewRoot #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut:hover,
+.cfw-page.cfw-design-studio #previewRoot #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut:focus-visible {
+  background:
+    var(--lb-btn-hover-bg, var(--lb-button-hover-bg, var(--lb-hover-bg, var(--lb-btn-bg, #ffffff)))) !important;
+  color:
+    var(--lb-btn-hover-text, var(--lb-button-hover-text, var(--lb-hover-text, var(--lb-btn-text, #1f2933)))) !important;
+  border-color:
+    var(--lb-primary, var(--lb-active-bg, var(--lb-btn-border, #007aff))) !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot #previewWallpaperShortcut .cfw-preview-wallpaper-shortcut-icon,
+.cfw-page.cfw-design-studio #previewRoot #previewWallpaperShortcut .cfw-preview-wallpaper-shortcut-icon svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+}
+
+/* Studio dialogs are siblings of .cfw-design-studio in index.html. They need
+   their own complete token inheritance instead of relying on page selectors. */
+body > .cfw-modal {
+  color: var(--lb-text, var(--lb-body-text, inherit));
+  background:
+    color-mix(in srgb, var(--lb-overlay-bg, #000000) 58%, transparent);
+  backdrop-filter: blur(7px) saturate(110%);
+  -webkit-backdrop-filter: blur(7px) saturate(110%);
+}
+
+body > .cfw-modal .cfw-modal-card {
+  background:
+    var(--lb-modal-bg, var(--lb-card-bg, var(--lb-surface, #ffffff))) !important;
+  color:
+    var(--lb-modal-text, var(--lb-card-text, var(--lb-text, #1f2933))) !important;
+  border:
+    1px solid var(--lb-modal-border, var(--lb-card-border, var(--lb-border, rgba(0,0,0,.18))));
+  border-radius:
+    var(--lb-modal-radius, var(--lb-radius-modal, var(--lb-radius-card, 18px)));
+  box-shadow:
+    var(--lb-modal-shadow, 0 24px 70px rgba(0,0,0,.38));
+}
+
+body > .cfw-modal .cfw-modal-card h1,
+body > .cfw-modal .cfw-modal-card h2,
+body > .cfw-modal .cfw-modal-card h3,
+body > .cfw-modal .cfw-modal-card label,
+body > .cfw-modal .cfw-modal-card .cfw-label,
+body > .cfw-modal .cfw-modal-card strong {
+  color:
+    var(--lb-modal-text, var(--lb-card-text, var(--lb-text, #1f2933))) !important;
+}
+
+body > .cfw-modal .cfw-modal-card .cfw-help,
+body > .cfw-modal .cfw-modal-card .cfw-help-text,
+body > .cfw-modal .cfw-modal-card .cfw-small-note,
+body > .cfw-modal .cfw-modal-card .cfw-status-modal-hint {
+  color:
+    var(--lb-modal-muted-text, var(--lb-text-muted, var(--lb-muted-text, var(--lb-modal-text, var(--lb-text, #64748b))))) !important;
+  opacity: 1;
+}
+
+body > .cfw-modal .cfw-modal-card input,
+body > .cfw-modal .cfw-modal-card select,
+body > .cfw-modal .cfw-modal-card textarea {
+  background:
+    var(--lb-input-bg, var(--lb-control-bg, #ffffff)) !important;
+  color:
+    var(--lb-input-text, var(--lb-control-text, var(--lb-text, #111111))) !important;
+  border-color:
+    var(--lb-input-border, var(--lb-control-border, var(--lb-border, rgba(0,0,0,.25)))) !important;
+  caret-color:
+    var(--lb-input-text, var(--lb-control-text, var(--lb-text, #111111)));
+}
+
+body > .cfw-modal .cfw-modal-card input::placeholder,
+body > .cfw-modal .cfw-modal-card textarea::placeholder {
+  color:
+    var(--lb-input-placeholder, var(--lb-text-muted, var(--lb-input-text, #64748b))) !important;
+  opacity: .78;
+}
+
+@supports not (background: color-mix(in srgb, red, blue)) {
+  body > .cfw-modal {
+    background: rgba(0,0,0,.58);
+  }
+
+  .cfw-page.cfw-design-studio #previewRoot #previewWallpaperShortcut.cfw-preview-wallpaper-shortcut {
+    background: var(--lb-btn-bg, var(--lb-card-bg, #ffffff)) !important;
+  }
+}
+
+/* ==========================================================================
+   V409 – Studio Modal Text Contract
+   The Studio template may be injected into another container, so modal styling
+   must not depend on the modal being a direct child of <body>.
+   ========================================================================== */
+
+#saveModal,
+#deleteModal,
+#statusModal {
+  color: var(--lb-text, var(--lb-body-text, #1f2933));
+  background: color-mix(in srgb, var(--lb-overlay-bg, #000) 58%, transparent);
+  backdrop-filter: blur(7px) saturate(110%);
+  -webkit-backdrop-filter: blur(7px) saturate(110%);
+}
+
+#saveModal .cfw-modal-card,
+#deleteModal .cfw-modal-card,
+#statusModal .cfw-modal-card {
+  background:
+    var(--lb-modal-bg, var(--lb-card-bg, var(--lb-surface, #fff))) !important;
+  color:
+    var(--lb-modal-text, var(--lb-card-text, var(--lb-text, #1f2933))) !important;
+  border:
+    1px solid var(--lb-modal-border, var(--lb-card-border, var(--lb-border, rgba(0,0,0,.18)))) !important;
+}
+
+/* Force all textual modal descendants to inherit the modal text contract.
+   Inputs and buttons are excluded because they have their own component tokens. */
+#saveModal .cfw-modal-card h1,
+#saveModal .cfw-modal-card h2,
+#saveModal .cfw-modal-card h3,
+#saveModal .cfw-modal-card p,
+#saveModal .cfw-modal-card label,
+#saveModal .cfw-modal-card label > span,
+#saveModal .cfw-modal-card strong,
+#deleteModal .cfw-modal-card h1,
+#deleteModal .cfw-modal-card h2,
+#deleteModal .cfw-modal-card h3,
+#deleteModal .cfw-modal-card p,
+#deleteModal .cfw-modal-card label,
+#deleteModal .cfw-modal-card label > span,
+#deleteModal .cfw-modal-card strong,
+#statusModal .cfw-modal-card h1,
+#statusModal .cfw-modal-card h2,
+#statusModal .cfw-modal-card h3,
+#statusModal .cfw-modal-card p,
+#statusModal .cfw-modal-card label,
+#statusModal .cfw-modal-card label > span,
+#statusModal .cfw-modal-card strong {
+  color: inherit !important;
+  text-shadow: none !important;
+}
+
+/* Secondary copy gets the semantic muted color but never falls back to black. */
+#saveModal .cfw-help,
+#deleteModal .cfw-help,
+#statusModal .cfw-help,
+#statusModal .cfw-status-modal-hint {
+  color:
+    var(--lb-modal-muted-text, var(--lb-text-muted, var(--lb-muted-text, var(--lb-card-text, var(--lb-text, #64748b))))) !important;
+  opacity: 1 !important;
+}
+
+/* Labels stay on the stronger main text color. */
+#saveModal .cfw-label,
+#saveModal .cfw-label > span,
+#deleteModal .cfw-label,
+#deleteModal .cfw-label > span,
+#statusModal .cfw-label,
+#statusModal .cfw-label > span {
+  color:
+    var(--lb-modal-text, var(--lb-card-text, var(--lb-text, #1f2933))) !important;
+}
+
+/* Explicit component contract for form controls inside Studio modals. */
+#saveModal input,
+#saveModal select,
+#saveModal textarea,
+#deleteModal input,
+#deleteModal select,
+#deleteModal textarea,
+#statusModal input,
+#statusModal select,
+#statusModal textarea {
+  background:
+    var(--lb-input-bg, var(--lb-control-bg, #fff)) !important;
+  color:
+    var(--lb-input-text, var(--lb-control-text, var(--lb-text, #111))) !important;
+  border-color:
+    var(--lb-input-border, var(--lb-control-border, var(--lb-border, rgba(0,0,0,.25)))) !important;
+  -webkit-text-fill-color:
+    var(--lb-input-text, var(--lb-control-text, var(--lb-text, #111))) !important;
+}
+
+#saveModal input[readonly],
+#deleteModal input[readonly],
+#statusModal input[readonly] {
+  background:
+    var(--lb-input-disabled-bg, var(--lb-input-bg, #fff)) !important;
+  color:
+    var(--lb-input-disabled-text, var(--lb-input-text, var(--lb-text, #111))) !important;
+  -webkit-text-fill-color:
+    var(--lb-input-disabled-text, var(--lb-input-text, var(--lb-text, #111))) !important;
+  opacity: 1 !important;
+}
+
+@supports not (background: color-mix(in srgb, red, blue)) {
+  #saveModal,
+  #deleteModal,
+  #statusModal {
+    background: rgba(0,0,0,.58);
+  }
+}
+
+/* ==========================================================================
+   V410 – Studio User Wiki
+   Simple, non-technical guide using the existing Studio visual language.
+   ========================================================================== */
+
+.cfw-page.cfw-design-studio .cfw-wiki-panel {
+  display: block;
+  padding: 2px 0 28px;
+  scroll-behavior: smooth;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-panel[hidden] {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: clamp(22px, 3vw, 38px);
+  margin-bottom: 14px;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--lb-card-bg, #fff) 86%, transparent),
+      color-mix(in srgb, var(--cfw-aurora-primary, var(--lb-primary, #007aff)) 14%, var(--lb-card-bg, #fff))
+    );
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--lb-primary, var(--lb-active-bg, #007aff));
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-hero h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.65rem, 3vw, 2.55rem);
+  line-height: 1.08;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-hero p {
+  max-width: 850px;
+  margin: 0;
+  color: var(--lb-text-muted, var(--lb-card-text, inherit));
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-hero-symbol {
+  width: clamp(76px, 9vw, 122px);
+  color: var(--lb-primary, var(--lb-active-bg, #007aff));
+  opacity: .72;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-hero-symbol svg {
+  display: block;
+  width: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-nav {
+  position: sticky;
+  top: 8px;
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 10px;
+  background: color-mix(in srgb, var(--lb-card-bg, #fff) 88%, transparent);
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid var(--lb-btn-border, var(--lb-border, rgba(0,0,0,.18)));
+  border-radius: 999px;
+  background: var(--lb-btn-bg, transparent);
+  color: var(--lb-btn-text, var(--lb-text, inherit));
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-nav a:hover,
+.cfw-page.cfw-design-studio .cfw-wiki-nav a:focus-visible {
+  background: var(--lb-btn-hover-bg, var(--lb-hover-bg, var(--lb-btn-bg, transparent)));
+  color: var(--lb-btn-hover-text, var(--lb-hover-text, var(--lb-btn-text, inherit)));
+  border-color: var(--lb-primary, var(--lb-active-bg, #007aff));
+  outline: none;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-card-wide {
+  grid-column: 1 / -1;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  scroll-margin-top: 88px;
+}
+
+
+.cfw-page.cfw-design-studio .cfw-wiki-card-number {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--lb-active-bg, var(--lb-primary, #007aff));
+  color: var(--lb-active-text, var(--lb-on-primary, #fff));
+  font-size: 1.1rem;
+  font-weight: 900;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--lb-primary, #007aff) 24%, transparent);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-card h3,
+.cfw-page.cfw-design-studio .cfw-wiki-special-card h3 {
+  margin: 2px 0 9px;
+  font-size: 1.22rem;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-card p,
+.cfw-page.cfw-design-studio .cfw-wiki-special-card p {
+  line-height: 1.55;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-steps,
+.cfw-page.cfw-design-studio .cfw-wiki-checklist {
+  margin: 13px 0 0;
+  padding-left: 1.35rem;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-steps li,
+.cfw-page.cfw-design-studio .cfw-wiki-checklist li {
+  margin: 0 0 9px;
+  line-height: 1.5;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-property-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-property-list span {
+  padding: 5px 9px;
+  border: 1px solid var(--lb-border, rgba(0,0,0,.18));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lb-primary, #007aff) 9%, var(--lb-card-bg, transparent));
+  font-size: .86rem;
+  font-weight: 700;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-tip,
+.cfw-page.cfw-design-studio .cfw-wiki-note {
+  margin-top: 14px;
+  padding: 11px 13px;
+  border-left: 4px solid var(--lb-primary, var(--lb-active-bg, #007aff));
+  border-radius: 0 var(--lb-radius-input, 10px) var(--lb-radius-input, 10px) 0;
+  background: color-mix(in srgb, var(--lb-primary, #007aff) 9%, transparent);
+  line-height: 1.45;
+}
+
+
+
+.cfw-page.cfw-design-studio .cfw-wiki-contract .cfw-wiki-card-number {
+  width: 54px;
+  font-size: .84rem;
+  letter-spacing: .04em;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-contract-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-contract-grid section {
+  padding: 14px 16px;
+  border: 1px solid var(--lb-border, rgba(0,0,0,.16));
+  border-radius: var(--lb-radius-input, 10px);
+  background: color-mix(in srgb, var(--lb-card-bg, #fff) 78%, transparent);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-contract-grid h4 {
+  margin: 0 0 8px;
+  color: var(--lb-text, inherit);
+  font-size: 1rem;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-contract-grid .cfw-wiki-checklist {
+  margin-top: 8px;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-contract code,
+.cfw-page.cfw-design-studio .cfw-wiki-code-example code {
+  font-family: var(--lb-font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-contract :not(pre) > code {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--lb-primary, #007aff) 10%, var(--lb-card-bg, transparent));
+  color: var(--lb-text, inherit);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-code-example {
+  margin-top: 16px;
+  overflow: hidden;
+  border: 1px solid var(--lb-border, rgba(0,0,0,.16));
+  border-radius: var(--lb-radius-input, 10px);
+  background: color-mix(in srgb, var(--lb-bg, #111827) 92%, #000);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-code-title {
+  padding: 10px 13px;
+  border-bottom: 1px solid var(--lb-border, rgba(255,255,255,.12));
+  color: var(--lb-text, #fff);
+  font-weight: 800;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-code-example pre {
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  color: var(--lb-text, #f8fafc);
+  line-height: 1.45;
+  tab-size: 2;
+  white-space: pre;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-special {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  scroll-margin-top: 88px;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-special-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 190px;
+  padding-left: 84px;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-special-icon {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--lb-primary, #007aff) 70%, #fff),
+      color-mix(in srgb, var(--lb-primary, #007aff) 72%, #7c3aed));
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 900;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--lb-primary, #007aff) 24%, transparent);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-special-icon-mac {
+  border-radius: 8px;
+  background: var(--lb-active-bg, var(--lb-primary, #111));
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-special-hint {
+  color: var(--lb-text-muted, var(--lb-card-text, inherit));
+  font-weight: 700;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-card details {
+  margin-top: 8px;
+  border: 1px solid var(--lb-border, rgba(0,0,0,.16));
+  border-radius: var(--lb-radius-input, 10px);
+  background: color-mix(in srgb, var(--lb-card-bg, #fff) 76%, transparent);
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-card details summary {
+  padding: 11px 13px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.cfw-page.cfw-design-studio .cfw-wiki-card details p {
+  margin: 0;
+  padding: 0 13px 13px;
+  color: var(--lb-text-muted, var(--lb-card-text, inherit));
+}
+
+@media (max-width: 980px) {
+  .cfw-page.cfw-design-studio .cfw-wiki-grid,
+  .cfw-page.cfw-design-studio .cfw-wiki-special,
+  .cfw-page.cfw-design-studio .cfw-wiki-contract-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 620px) {
+  .cfw-page.cfw-design-studio .cfw-wiki-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .cfw-page.cfw-design-studio .cfw-wiki-hero-symbol {
+    display: none;
+  }
+
+  .cfw-page.cfw-design-studio .cfw-wiki-card,
+  .cfw-page.cfw-design-studio .cfw-wiki-card-wide.cfw-wiki-card {
+    grid-template-columns: 1fr;
+  }
+
+  .cfw-page.cfw-design-studio .cfw-wiki-card-number {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cfw-page.cfw-design-studio .cfw-wiki-special-card {
+    padding-left: 14px;
+    padding-top: 80px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfw-page.cfw-design-studio .cfw-wiki-panel {
+    scroll-behavior: auto;
+  }
+}
+
+
+/* V419: Keep the optional AI/CSS contract compact by default. */
+.cfw-page.cfw-design-studio .cfw-wiki-contract-collapsible {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+.cfw-page.cfw-design-studio .cfw-wiki-contract-details {
+  margin: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+}
+.cfw-page.cfw-design-studio .cfw-wiki-contract-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 12px 16px;
+  cursor: pointer;
+  color: var(--lb-card-text, var(--lb-text, inherit));
+  font-size: 1.08rem;
+  font-weight: 900;
+  list-style: none;
+}
+.cfw-page.cfw-design-studio .cfw-wiki-contract-summary::-webkit-details-marker { display: none; }
+.cfw-page.cfw-design-studio .cfw-wiki-contract-summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--lb-primary, currentColor);
+}
+.cfw-page.cfw-design-studio .cfw-wiki-contract-details[open] > .cfw-wiki-contract-summary::after { content: "−"; }
+.cfw-page.cfw-design-studio .cfw-wiki-contract-summary .cfw-wiki-card-number {
+  position: static;
+  flex: 0 0 auto;
+}
+.cfw-page.cfw-design-studio .cfw-wiki-contract-content {
+  padding: 0 18px 18px;
+}
+
+
+/* V420: The collapsible custom-CSS contract owns exactly one frame. */
+.cfw-page.cfw-design-studio .cfw-wiki-contract-collapsible {
+  border: 0 !important;
+  border-radius: var(--lb-radius-card, 16px);
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+.cfw-page.cfw-design-studio .cfw-wiki-contract-collapsible > .cfw-wiki-contract-details {
+  margin: 0 !important;
+  border: 1px solid var(--lb-border, var(--lb-border-color, rgba(0,0,0,.16))) !important;
+  border-radius: var(--lb-radius-card, 16px) !important;
+  background: var(--lb-card-bg, rgba(255,255,255,.88)) !important;
+  color: var(--lb-card-text, var(--lb-text, inherit)) !important;
+  box-shadow: var(--lb-card-shadow, none);
+  overflow: hidden;
+}
+.cfw-page.cfw-design-studio .cfw-wiki-contract-summary::after {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--lb-card-text, var(--lb-text, #ffffff)) !important;
+  background: color-mix(in srgb, var(--lb-primary, #007aff) 20%, transparent);
+  font-size: 1.55rem;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 1;
 }

@@ -7,33 +7,6 @@
       "generator" : "CSS-Studio"
    },
    "studio_model" : {
-      "Buttons|Active Button|Grundfarbe" : {
-         "alpha" : 100,
-         "borderWidth" : 1,
-         "brightness" : 0,
-         "color" : "#f97316",
-         "dirty" : false,
-         "radius" : 12,
-         "shadow" : 1
-      },
-      "Buttons|Standard Button|Grundfarbe" : {
-         "alpha" : 100,
-         "borderWidth" : 1,
-         "brightness" : 0,
-         "color" : "#f97316",
-         "dirty" : false,
-         "radius" : 12,
-         "shadow" : 1
-      },
-      "Buttons|Standard Button|Radius" : {
-         "alpha" : 100,
-         "borderWidth" : 1,
-         "brightness" : 0,
-         "color" : "#f97316",
-         "dirty" : true,
-         "radius" : 23,
-         "shadow" : 1
-      },
       "Input|Input Text|Grundfarbe" : {
          "alpha" : 100,
          "borderWidth" : 1,
@@ -44,7 +17,7 @@
          "shadow" : 1
       }
    },
-   "studio_version" : "V305_SquarePreviewContract",
+   "studio_version" : "V311_ProtectedClassicMacPackage",
    "tokens" : {
       "--lb-active-bg" : "#c4b8e0",
       "--lb-active-text" : "#ecfeff",
@@ -184,7 +157,7 @@
       "--lb-tooltip-bg" : "#0e7490",
       "--lb-tooltip-text" : "#ffffff"
    },
-   "version" : "0.1.0",
+   "version" : "0.1.78",
    "wallpaper" : {
       "brightness" : 100,
       "enabled" : false,
