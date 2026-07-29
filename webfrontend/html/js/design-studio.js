@@ -12,7 +12,22 @@
 
   // V287: Embedded Preview/Documentation now use the shared Core renderer via cssframework.cgi.
 
-  var coreTokens = window.CFW_CORE_TOKENS || {};
+  var coreTokens = Object.assign({}, window.CFW_CORE_TOKENS || {});
+  /* V466: These jQM foreground aliases are first-class Studio contract tokens.
+     Older Core token registries do not list them yet, which previously caused
+     CSS imports, token audits and rule helpers to treat them as unknown even
+     though generated themes already consume them. Register local defaults
+     without changing any Core file; theme-specific semantic derivation below
+     materialises the actual readable values in Working State. */
+  var studioContractTokenDefaults = {
+    '--lb-switch-on-text': '#f8fafc',
+    '--lb-toggle-active-text': '#f8fafc',
+    '--lb-switch-off-text': '#111827',
+    '--lb-toggle-text': '#111827'
+  };
+  Object.keys(studioContractTokenDefaults).forEach(function (name) {
+    if (coreTokens[name] === undefined) coreTokens[name] = studioContractTokenDefaults[name];
+  });
   var coreData = window.CFW_CORE_DATA || {};
   // V456: A genuinely new theme must use the canonical design-token baseline.
   // components.css/utilities.css may repeat compatibility values, while the
@@ -38,6 +53,10 @@
   var statusModalBack = document.getElementById('statusModalBack');
   var statusModalActions = document.getElementById('statusModalActions');
   var statusModalTimer = null;
+  var unsavedModal = document.getElementById('unsavedChangesModal');
+  var unsavedModalCancel = document.getElementById('unsavedChangesCancel');
+  var unsavedModalDiscard = document.getElementById('unsavedChangesDiscard');
+  var pendingThemeSelection = null;
   var areaSelect = document.getElementById('areaSelect');
   var elementSelect = document.getElementById('elementSelect');
   var colorGroupSelect = document.getElementById('colorGroupSelect');
@@ -80,9 +99,15 @@
   var cssImportFileName = document.getElementById('cssImportFileName');
   var importSummary = document.getElementById('importSummary');
   var saveModal = document.getElementById('saveModal');
+  var themeDirtyIndicator = document.getElementById('themeDirtyIndicator');
+  var savedThemeSignature = '';
+  var savedThemeSnapshot = null;
+  var themeDirty = false;
+  var pendingThemeSelectionValue = null;
   var userThemeSelect = document.getElementById('userThemeSelect');
   var deleteThemeButton = document.getElementById('deleteTheme');
   var undoThemeButton = document.getElementById('undoTheme');
+  var redoThemeButton = document.getElementById('redoTheme');
   var deleteModal = document.getElementById('deleteModal');
   var cancelDeleteButton = document.getElementById('cancelDelete');
   var confirmDeleteButton = document.getElementById('confirmDelete');
@@ -472,7 +497,9 @@
     'Toggle': {
       'Standard Toggle': {
         'Active': ['--lb-switch-on-bg', '--lb-toggle-active-bg', '--lb-active-bg', '--lb-primary'],
+        'Active Textfarbe': ['--lb-switch-on-text', '--lb-toggle-active-text'],
         'Hintergrund': ['--lb-switch-off-bg', '--lb-toggle-bg'],
+        'Textfarbe': ['--lb-switch-off-text', '--lb-toggle-text'],
         'Rahmen': ['--lb-switch-border', '--lb-toggle-border', '--lb-border-color', '--lb-border'],
         'Knopf': ['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'],
         'Radius': ['--lb-switch-radius', '--lb-toggle-radius', '--lb-toggle-slider-radius', '--lb-toggle-thumb-radius', '--lb-toggle-knob-radius']
@@ -1368,7 +1395,15 @@
         components: {
           table: { background: surface, header: surfaceAlt, header_text: text, text: text, hover: blendThemeColor(surfaceAlt, baseColor, isDark ? 0.20 : 0.12), border: border, radius: '10px' },
           slider: { active: baseColor, track: surfaceAlt, thumb: isDark ? '#f8fafc' : '#ffffff', thumb_border: border, focus: baseColor, value_background: surfaceAlt, value_text: text },
-          toggle: { off: surfaceAlt, active: baseColor, border: border, thumb: isDark ? '#f8fafc' : '#ffffff', radius: '10px' },
+          toggle: {
+            off: surfaceAlt,
+            off_text: readableTextFor(surfaceAlt, '#f8fafc', '#111827'),
+            active: baseColor,
+            active_text: onPrimary,
+            border: border,
+            thumb: isDark ? '#f8fafc' : '#ffffff',
+            radius: '10px'
+          },
           button: { background: neutralButton, text: text, hover: primaryHover, hover_text: onPrimary, border: border, radius: '10px' },
           header_button: { background: baseColor, text: onPrimary, hover: primaryHover, hover_text: onPrimary },
           button_group: {
@@ -1478,7 +1513,19 @@
     updateLiquidGlassPackagePreviewMode();
     var liquidWallpaperOnly = isLiquidGlassWallpaperEditorMode();
     var readOnly = isReadOnlyProtectedStudioThemeMode();
+    var protectedTheme = isProtectedStudioThemeId(themeId && themeId.value ? themeId.value : currentStudioThemeId());
     var saveThemeButton = document.getElementById('saveTheme');
+    var validateButton = document.getElementById('validateTheme');
+
+    /* V478: Package-owned themes are not editable theme drafts. Their fixed
+       CSS must therefore not expose the Studio token validator. Keep the
+       action entirely out of the toolbar for Liquid Glass and Classic Mac,
+       and restore it immediately for every normal or newly created theme. */
+    if (validateButton) {
+      validateButton.hidden = protectedTheme;
+      validateButton.setAttribute('aria-hidden', protectedTheme ? 'true' : 'false');
+      validateButton.disabled = protectedTheme;
+    }
 
     if (page) {
       page.classList.toggle('cfw-liquid-glass-wallpaper-only', liquidWallpaperOnly);
@@ -1884,6 +1931,21 @@
     return excluded;
   }
 
+  function addPaletteColorSample(out, seen, value, label, excludedColors) {
+    if (!isColorLikeValue(value) || isPreviewPaletteHelperColor(value)) return;
+    var normalized = normalizeHexColor(value) || String(value).trim().toLowerCase();
+    if (!normalized) return;
+    if (excludedColors && excludedColors[normalized]) return;
+    var role = String(label || '').trim();
+    if (seen[normalized]) {
+      if (role && seen[normalized].roles.indexOf(role) < 0) seen[normalized].roles.push(role);
+      return;
+    }
+    var sample = { token: '', label: role, roles: role ? [role] : [], color: String(value).trim() };
+    seen[normalized] = sample;
+    out.push(sample);
+  }
+
   function addPaletteSample(out, seen, sourceTokens, name, label, excludedColors) {
     if (!sourceTokens || !name) return;
     // V165: Reine Status-/Semantikfarben gehören nicht in die Vorschaufarben.
@@ -1892,21 +1954,58 @@
     // keine leeren Kacheln oder CSS-Ausblendungen entstehen.
     if (isSemanticPaletteToken(name) || isPreviewPaletteHelperToken(name)) return;
     var value = sourceTokens[name];
-    if (!isColorLikeValue(value) || isPreviewPaletteHelperColor(value)) return;
-    var normalized = normalizeHexColor(value) || String(value).trim().toLowerCase();
-    if (!normalized) return;
-    // V356: Primary accent colors are internal generator guidance and add no
-    // useful choice to the user-facing Vorschaufarben palette. Exclude the
-    // primary family by color, so aliases with the same value cannot re-add it.
-    if (excludedColors && excludedColors[normalized]) return;
     var role = label || paletteRoleLabel(name) || name;
-    if (seen[normalized]) {
-      if (role && seen[normalized].roles.indexOf(role) < 0) seen[normalized].roles.push(role);
-      return;
+    addPaletteColorSample(out, seen, value, role, excludedColors);
+  }
+
+  function primarySemanticPaletteSamples(sourceTokens) {
+    sourceTokens = sourceTokens || {};
+    var primary = resolvedColorToken(sourceTokens, [
+      '--lb-primary',
+      '--lb-btn-primary-bg',
+      '--lb-active-bg',
+      '--lb-sidebar-active-bg'
+    ], '');
+    primary = normalizeHexColor(primary);
+    if (!primary) return [];
+
+    var de = i18nLanguage === 'de';
+    var primaryHover = resolvedColorToken(sourceTokens, [
+      '--lb-primary-hover',
+      '--lb-btn-primary-hover-bg'
+    ], '');
+    var primaryActive = resolvedColorToken(sourceTokens, [
+      '--lb-primary-dark',
+      '--lb-btn-primary-active-bg'
+    ], '');
+
+    var darkPrimary = themeRelativeLuminance(primary) < 0.22;
+    if (!primaryHover) {
+      primaryHover = blendThemeColor(primary, darkPrimary ? '#ffffff' : '#000000', darkPrimary ? 0.16 : 0.12);
     }
-    var sample = { token: '', label: role, roles: role ? [role] : [], color: String(value).trim() };
-    seen[normalized] = sample;
-    out.push(sample);
+    if (!primaryActive) {
+      primaryActive = blendThemeColor(primary, darkPrimary ? '#ffffff' : '#000000', darkPrimary ? 0.28 : 0.24);
+    }
+
+    // V463: Reserve half of the 24 preview swatches for useful semantic
+    // derivatives of the chosen primary color. Generated themes often expose
+    // only primary/hover/dark as chromatic colors while the remaining tokens
+    // are neutral. These additional variants make the selected color usable
+    // for focus, borders, tinted surfaces and subtle backgrounds as well.
+    return [
+      { label: de ? 'Hauptfarbe' : 'Primary', color: primary },
+      { label: 'Hover', color: primaryHover },
+      { label: de ? 'Aktiv' : 'Active', color: primaryActive },
+      { label: de ? 'Fokus-Akzent' : 'Focus accent', color: blendThemeColor(primary, '#ffffff', 0.16) },
+      { label: de ? 'Heller Akzent' : 'Light accent', color: blendThemeColor(primary, '#ffffff', 0.32) },
+      { label: de ? 'Weicher Akzent' : 'Soft accent', color: blendThemeColor(primary, '#ffffff', 0.50) },
+      { label: de ? 'Akzentfläche' : 'Accent surface', color: blendThemeColor(primary, '#ffffff', 0.68) },
+      { label: de ? 'Getönter Hintergrund' : 'Tinted background', color: blendThemeColor(primary, '#ffffff', 0.84) },
+      { label: de ? 'Gedämpfter Akzent' : 'Muted accent', color: blendThemeColor(primary, '#64748b', 0.34) },
+      { label: de ? 'Kräftiger Rahmen' : 'Strong border', color: blendThemeColor(primary, '#334155', 0.42) },
+      { label: de ? 'Dunkler Akzent' : 'Dark accent', color: blendThemeColor(primary, '#000000', 0.36) },
+      { label: de ? 'Tiefer Akzent' : 'Deep accent', color: blendThemeColor(primary, '#000000', 0.52) }
+    ];
   }
 
   function themePaletteSamples(group, mappedTokens) {
@@ -1917,6 +2016,9 @@
 
     // V163: Vorschaufarben sind farbzentriert. Gleiche Farbcodes werden
     // zusammengefasst, weil der Nutzer hier Farben zuordnet, nicht Tokens prüft.
+    primarySemanticPaletteSamples(source).forEach(function (sample) {
+      addPaletteColorSample(samples, seen, sample.color, sample.label, excludedAccentColors);
+    });
     preferredPaletteTokens.forEach(function (name) { addPaletteSample(samples, seen, source, name, '', excludedAccentColors); });
     (mappedTokens || []).forEach(function (name) { addPaletteSample(samples, seen, source, name, '', excludedAccentColors); });
     Object.keys(source || {}).forEach(function (name) {
@@ -2481,10 +2583,15 @@
   }
 
 
+  // V470: Multi-step history. The loaded/new theme is the fixed baseline and
+  // is deliberately not stored as an undo step. Both controls stay hidden
+  // until the first real edit. A new edit after Undo clears the Redo branch.
   var undoStack = [];
-  var undoLimit = 40;
+  var redoStack = [];
+  var undoLimit = 20;
   var undoRestoring = false;
   var undoArmedControl = null;
+  var undoArmedSnapshot = null;
 
   function cloneStudioObject(value) {
     try { return JSON.parse(JSON.stringify(value == null ? null : value)); } catch (e) { return value; }
@@ -2520,20 +2627,124 @@
     };
   }
 
-  function updateUndoButton() {
-    if (!undoThemeButton) return;
-    undoThemeButton.disabled = undoStack.length === 0;
-    undoThemeButton.title = undoStack.length ? tx('undo.availableTitle') : tx('undo.emptyTitle');
+  function snapshotSignature(snapshot) {
+    if (!snapshot) return '';
+    var comparable = cloneStudioObject(snapshot);
+    // Moving through the inspector is navigation, not a theme modification.
+    delete comparable.selection;
+    delete comparable.controls;
+    return JSON.stringify(comparable);
   }
 
-  function pushUndoSnapshot(label) {
+  function currentThemeSignature() {
+    return snapshotSignature(makeUndoSnapshot('dirty-check'));
+  }
+
+  function setDirtyIndicator(isDirty) {
+    themeDirty = !!isDirty;
+    if (themeDirtyIndicator) {
+      themeDirtyIndicator.hidden = !themeDirty;
+      themeDirtyIndicator.setAttribute('aria-hidden', themeDirty ? 'false' : 'true');
+      themeDirtyIndicator.textContent = tx('messages.unsavedChanges');
+    }
+    var saveButton = document.getElementById('saveTheme');
+    if (saveButton) saveButton.classList.toggle('is-dirty', themeDirty);
+  }
+
+  function updateDirtyState() {
+    if ((!undoStack.length && !redoStack.length) || !savedThemeSignature) {
+      setDirtyIndicator(false);
+      return false;
+    }
+    var dirty = currentThemeSignature() !== savedThemeSignature;
+    setDirtyIndicator(dirty);
+    return dirty;
+  }
+
+  function markCurrentStateAsSaved() {
+    savedThemeSnapshot = makeUndoSnapshot('saved-baseline');
+    savedThemeSignature = snapshotSignature(savedThemeSnapshot);
+    setDirtyIndicator(false);
+  }
+
+  function hasPendingStudioEdits() {
+    if (!undoStack.length && !redoStack.length) {
+      setDirtyIndicator(false);
+      return false;
+    }
+    return updateDirtyState();
+  }
+
+  function closeUnsavedChangesModal() {
+    if (unsavedModal) unsavedModal.hidden = true;
+    pendingThemeSelection = null;
+  }
+
+  function requestThemeSelection(value) {
+    if (!hasPendingStudioEdits()) {
+      applyThemeSelection(value);
+      return;
+    }
+    pendingThemeSelection = value;
+    if (unsavedModal) unsavedModal.hidden = false;
+  }
+
+  function applyThemeSelection(requestedValue) {
+    updateDeleteThemeButton();
+    if (requestedValue === '') {
+      resetToNeutralNewTheme();
+      return;
+    }
+    loadUserThemeByIndex(requestedValue);
+    window.setTimeout(function () {
+      refreshEmbeddedFrame('preview');
+      refreshEmbeddedFrame('documentation');
+    }, 120);
+  }
+
+  function updateHistoryButtons() {
+    var historyStarted = undoStack.length > 0 || redoStack.length > 0;
+    if (undoThemeButton) {
+      undoThemeButton.hidden = !historyStarted;
+      undoThemeButton.setAttribute('aria-hidden', historyStarted ? 'false' : 'true');
+      undoThemeButton.disabled = undoStack.length === 0;
+      undoThemeButton.title = undoStack.length ? tx('undo.availableTitle') : tx('undo.emptyTitle');
+    }
+    if (redoThemeButton) {
+      redoThemeButton.hidden = !historyStarted;
+      redoThemeButton.setAttribute('aria-hidden', historyStarted ? 'false' : 'true');
+      redoThemeButton.disabled = redoStack.length === 0;
+      redoThemeButton.title = redoStack.length ? tx('redo.availableTitle') : tx('redo.emptyTitle');
+    }
+    updateDirtyState();
+  }
+
+  function resetHistory() {
+    undoStack = [];
+    redoStack = [];
+    undoArmedControl = null;
+    undoArmedSnapshot = null;
+    updateHistoryButtons();
+  }
+
+  function pushHistorySnapshot(stack, snapshot) {
+    if (!snapshot) return;
+    stack.push(snapshot);
+    if (stack.length > undoLimit) stack.shift();
+  }
+
+  function pushUndoSnapshot(label, preparedSnapshot) {
     if (undoRestoring) return;
-    undoStack.push(makeUndoSnapshot(label));
-    if (undoStack.length > undoLimit) undoStack.shift();
-    updateUndoButton();
+    var snapshot = preparedSnapshot || makeUndoSnapshot(label);
+    snapshot.label = label || snapshot.label || '';
+    var previous = undoStack.length ? undoStack[undoStack.length - 1] : null;
+    if (previous && snapshotSignature(previous) === snapshotSignature(snapshot)) return;
+    pushHistorySnapshot(undoStack, snapshot);
+    redoStack = [];
+    updateHistoryButtons();
   }
 
-  function restoreUndoSnapshot(snapshot) {
+  function restoreUndoSnapshot(snapshot, messageKey) {
     if (!snapshot) return;
     undoRestoring = true;
     studioModel = cloneStudioObject(snapshot.studioModel || {});
@@ -2568,24 +2779,58 @@
     renderPropertyInspector();
     refreshPreviewAndPalette();
     undoRestoring = false;
-    updateUndoButton();
-    setStatus(tx('messages.undoDone'), false);
+    updateHistoryButtons();
+    setStatus(tx(messageKey || 'messages.undoDone'), false);
   }
 
   function undoLastChange() {
-    var snapshot = undoStack.pop();
-    restoreUndoSnapshot(snapshot);
+    if (!undoStack.length) return;
+    var target = undoStack.pop();
+    pushHistorySnapshot(redoStack, makeUndoSnapshot('redo'));
+
+    // V484: When the last history entry is undone, restore the exact loaded
+    // or last-saved baseline. The first pre-change snapshot can differ from
+    // that baseline after asynchronous token normalization/preview updates.
+    // Using the canonical saved snapshot makes the dirty indicator reliably
+    // disappear when all edits have been undone.
+    if (!undoStack.length && savedThemeSnapshot) {
+      target = cloneStudioObject(savedThemeSnapshot);
+    }
+
+    restoreUndoSnapshot(target, 'messages.undoDone');
+  }
+
+  function redoLastChange() {
+    if (!redoStack.length) return;
+    var target = redoStack.pop();
+    pushHistorySnapshot(undoStack, makeUndoSnapshot('undo'));
+    restoreUndoSnapshot(target, 'messages.redoDone');
   }
 
   function armUndoForControl(control) {
     if (!control || undoRestoring) return;
     if (undoArmedControl === control) return;
-    pushUndoSnapshot('control');
     undoArmedControl = control;
+    undoArmedSnapshot = makeUndoSnapshot('control');
+  }
+
+  function commitUndoForControl(control) {
+    if (undoArmedControl !== control || !undoArmedSnapshot) return;
+    var before = undoArmedSnapshot;
+    var after = makeUndoSnapshot('control-current');
+    if (snapshotSignature(before) !== snapshotSignature(after)) {
+      pushUndoSnapshot('control', before);
+      // Keep the same snapshot armed during a continuous slider drag so it
+      // remains exactly one history step until pointerup/change/blur.
+      undoArmedSnapshot = before;
+    }
   }
 
   function disarmUndoForControl(control) {
-    if (undoArmedControl === control) undoArmedControl = null;
+    if (undoArmedControl === control) {
+      undoArmedControl = null;
+      undoArmedSnapshot = null;
+    }
   }
 
   function bindUndoControl(control) {
@@ -2593,7 +2838,10 @@
     ['pointerdown', 'focus', 'keydown'].forEach(function (eventName) {
       control.addEventListener(eventName, function () { armUndoForControl(control); });
     });
-    ['change', 'blur'].forEach(function (eventName) {
+    ['input', 'change'].forEach(function (eventName) {
+      control.addEventListener(eventName, function () { commitUndoForControl(control); });
+    });
+    ['pointerup', 'change', 'blur'].forEach(function (eventName) {
       control.addEventListener(eventName, function () { disarmUndoForControl(control); });
     });
   }
@@ -3029,8 +3277,9 @@
       var hexValue = normalizeHexColor(value) || normalizeHexColor(color) || String(value).trim();
       tile.innerHTML = '<small class="cfw-palette-value"></small>';
       tile.querySelector('.cfw-palette-value').textContent = hexValue;
-      tile.setAttribute('aria-label', hexValue);
-      tile.setAttribute('title', hexValue);
+      var sampleLabel = String(sample.label || '').trim();
+      tile.setAttribute('aria-label', sampleLabel ? (sampleLabel + ': ' + hexValue) : hexValue);
+      tile.setAttribute('title', sampleLabel ? (sampleLabel + '\n' + hexValue) : hexValue);
       tile.addEventListener('click', function () {
         pushUndoSnapshot('palette');
         var normalized = normalizeHexColor(color);
@@ -3371,6 +3620,219 @@
     tokens[name] = value;
   }
 
+  /* V468: jQuery-Mobile slider-switches and flipswitches require dedicated
+     ON/OFF foreground tokens. Contrast must be evaluated against the rendered
+     color, not the opaque RGB channels of a translucent token. rgba() and
+     transparent state surfaces are therefore composited over the inactive
+     switch and page background before derivation or validation. */
+  function parseCssRgba(value) {
+    value = String(value == null ? '' : value).trim().toLowerCase();
+    if (!value) return null;
+    if (value === 'transparent') return { r:0, g:0, b:0, a:0 };
+
+    var hex = value.match(/^#([0-9a-f]{3,8})$/i);
+    if (hex) {
+      var h = hex[1];
+      if (h.length === 3 || h.length === 4) h = h.split('').map(function (c) { return c + c; }).join('');
+      if (h.length !== 6 && h.length !== 8) return null;
+      return {
+        r:parseInt(h.slice(0, 2), 16),
+        g:parseInt(h.slice(2, 4), 16),
+        b:parseInt(h.slice(4, 6), 16),
+        a:h.length === 8 ? parseInt(h.slice(6, 8), 16) / 255 : 1
+      };
+    }
+
+    var rgb = value.match(/^rgba?\(\s*([+-]?(?:\d+\.?\d*|\.\d+)%?)\s*,\s*([+-]?(?:\d+\.?\d*|\.\d+)%?)\s*,\s*([+-]?(?:\d+\.?\d*|\.\d+)%?)(?:\s*,\s*([+-]?(?:\d+\.?\d*|\.\d+)%?))?\s*\)$/i);
+    if (!rgb) return null;
+    function channel(raw) {
+      var n = parseFloat(raw);
+      if (!isFinite(n)) return 0;
+      if (/%$/.test(raw)) n = n * 2.55;
+      return Math.max(0, Math.min(255, n));
+    }
+    function alpha(raw) {
+      if (raw == null || raw === '') return 1;
+      var n = parseFloat(raw);
+      if (!isFinite(n)) return 1;
+      if (/%$/.test(raw)) n /= 100;
+      return Math.max(0, Math.min(1, n));
+    }
+    return { r:channel(rgb[1]), g:channel(rgb[2]), b:channel(rgb[3]), a:alpha(rgb[4]) };
+  }
+
+  function compositeCssRgba(top, bottom) {
+    top = top || { r:0, g:0, b:0, a:0 };
+    bottom = bottom || { r:255, g:255, b:255, a:1 };
+    var outA = top.a + bottom.a * (1 - top.a);
+    if (outA <= 0.000001) return { r:0, g:0, b:0, a:0 };
+    return {
+      r:(top.r * top.a + bottom.r * bottom.a * (1 - top.a)) / outA,
+      g:(top.g * top.a + bottom.g * bottom.a * (1 - top.a)) / outA,
+      b:(top.b * top.a + bottom.b * bottom.a * (1 - top.a)) / outA,
+      a:outA
+    };
+  }
+
+  function opaqueHexFromRgba(rgbaValue) {
+    var rendered = compositeCssRgba(rgbaValue, { r:255, g:255, b:255, a:1 });
+    return colorUtils.rgbToHex({ r:rendered.r, g:rendered.g, b:rendered.b }).toLowerCase();
+  }
+
+  function renderedTextContrastRatio(textValue, renderedBackground) {
+    var text = parseCssRgba(textValue);
+    var bg = parseCssRgba(renderedBackground);
+    if (!text || !bg) return null;
+    var opaqueBg = compositeCssRgba(bg, { r:255, g:255, b:255, a:1 });
+    var opaqueText = compositeCssRgba(text, opaqueBg);
+    return contrastRatioForColors(opaqueHexFromRgba(opaqueText), opaqueHexFromRgba(opaqueBg));
+  }
+
+  function switchSemanticText(background) {
+    // V468: jQM switch labels follow one deterministic light/dark contract.
+    // A light rendered switch surface always receives pure black text; a dark
+    // surface always receives pure white text. The WCAG crossover luminance
+    // (0.179) guarantees that the selected black/white value is the stronger
+    // of the two contrast choices.
+    var parsed = parseCssRgba(background);
+    if (!parsed) return '#000000';
+    var renderedHex = opaqueHexFromRgba(parsed);
+    return themeRelativeLuminance(renderedHex) > 0.179 ? '#000000' : '#ffffff';
+  }
+
+  function firstWorkingThenMergedCssColorToken(working, names) {
+    working = working || {};
+    names = names || [];
+    var merged = Object.assign({}, coreTokens || {}, working);
+    var i;
+
+    // Explicit theme values remain authoritative over unrelated Core defaults.
+    for (i = 0; i < names.length; i += 1) {
+      if (!Object.prototype.hasOwnProperty.call(working, names[i])) continue;
+      var explicitRaw = resolvedTokenValue(merged, names[i]);
+      var explicitColor = parseCssRgba(explicitRaw);
+      if (explicitColor) return { token:names[i], value:explicitRaw, rgba:explicitColor, explicit:true };
+    }
+    for (i = 0; i < names.length; i += 1) {
+      var inheritedRaw = resolvedTokenValue(merged, names[i]);
+      var inheritedColor = parseCssRgba(inheritedRaw);
+      if (inheritedColor) return { token:names[i], value:inheritedRaw, rgba:inheritedColor, explicit:false };
+    }
+    return null;
+  }
+
+  function effectiveSwitchSurface(tokens, state) {
+    tokens = tokens || {};
+    var on = state === 'on';
+    var stateNames = on
+      ? ['--lb-switch-on-bg', '--lb-toggle-active-bg', '--lb-active-bg', '--lb-primary', '--lb-btn-primary-bg']
+      : ['--lb-switch-off-bg', '--lb-toggle-bg', '--lb-btn-bg'];
+    var top = firstWorkingThenMergedCssColorToken(tokens, stateNames);
+    if (!top) {
+      var fallbackRaw = on ? '#007aff' : 'rgba(0,0,0,.18)';
+      top = { token:on ? 'jQM ON fallback' : 'jQM OFF fallback', value:fallbackRaw, rgba:parseCssRgba(fallbackRaw), explicit:false };
+    }
+
+    var layers = [top];
+    if (on) {
+      var offUnderlay = firstWorkingThenMergedCssColorToken(tokens, ['--lb-switch-off-bg', '--lb-toggle-bg', '--lb-btn-bg']);
+      if (offUnderlay && offUnderlay.token !== top.token) layers.push(offUnderlay);
+    }
+    var pageUnderlay = firstWorkingThenMergedCssColorToken(tokens, ['--lb-bg', '--lb-card-bg', '--lb-input-bg']);
+    if (pageUnderlay && !layers.some(function (layer) { return layer.token === pageUnderlay.token; })) layers.push(pageUnderlay);
+
+    var rendered = { r:255, g:255, b:255, a:1 };
+    for (var i = layers.length - 1; i >= 0; i -= 1) rendered = compositeCssRgba(layers[i].rgba, rendered);
+    return {
+      token:top.token,
+      raw:top.value,
+      value:opaqueHexFromRgba(rendered),
+      layers:layers
+    };
+  }
+
+  function effectiveSwitchLabelSurface(tokens) {
+    // V468: Both visible jQM labels are rendered on the neutral switch/page
+    // surface. The active color is not a reliable text underlay because the
+    // generated <a class="ui-flipswitch-on"> is also the moving handle and is
+    // frequently transparent or white. Use the OFF/input surface over the page
+    // background as the common, browser-visible light/dark reference instead.
+    tokens = tokens || {};
+    var top = firstWorkingThenMergedCssColorToken(tokens, [
+      '--lb-switch-off-bg', '--lb-toggle-bg', '--lb-input-bg', '--lb-card-bg', '--lb-bg'
+    ]);
+    var base = firstWorkingThenMergedCssColorToken(tokens, ['--lb-bg', '--lb-card-bg', '--lb-input-bg']);
+    if (!top && !base) {
+      return { token:'jQM label fallback', raw:'#ffffff', value:'#ffffff', layers:[] };
+    }
+    var layers = [];
+    if (top) layers.push(top);
+    if (base && (!top || base.token !== top.token)) layers.push(base);
+    var rendered = { r:255, g:255, b:255, a:1 };
+    for (var i = layers.length - 1; i >= 0; i -= 1) rendered = compositeCssRgba(layers[i].rgba, rendered);
+    return {
+      token:top ? top.token : base.token,
+      raw:top ? top.value : base.value,
+      value:opaqueHexFromRgba(rendered),
+      layers:layers
+    };
+  }
+
+  function switchTextContract(tokens, state) {
+    tokens = tokens || {};
+    var on = state === 'on';
+    var primaryToken = on ? '--lb-switch-on-text' : '--lb-switch-off-text';
+    var aliasToken = on ? '--lb-toggle-active-text' : '--lb-toggle-text';
+    var background = effectiveSwitchLabelSurface(tokens);
+    var dedicated = firstWorkingThenMergedCssColorToken(tokens, [primaryToken, aliasToken]);
+    var suggestion = background ? switchSemanticText(background.value) : '#000000';
+    var ratio = background && dedicated
+      ? renderedTextContrastRatio(dedicated.value, background.value)
+      : null;
+    var currentHex = dedicated ? normalizeHexColor(dedicated.value) : '';
+    return {
+      state: state,
+      background: background,
+      dedicated: dedicated,
+      ratio: ratio,
+      suggestion: suggestion,
+      primaryToken: primaryToken,
+      aliasToken: aliasToken,
+      missing: !dedicated || !dedicated.explicit,
+      semanticMismatch: currentHex !== suggestion,
+      invalid: !dedicated || currentHex !== suggestion
+    };
+  }
+
+  function syncSwitchTextTokens(tokens) {
+    tokens = tokens || {};
+    var surface = effectiveSwitchLabelSurface(tokens);
+    var value = surface ? switchSemanticText(surface.value) : '#000000';
+
+    // V468: ON and OFF intentionally use the same black/white label color.
+    // Light themes receive black labels in both states; dark themes receive
+    // white labels in both states. This is deterministic on load and save.
+    tokens['--lb-switch-on-text'] = value;
+    tokens['--lb-toggle-active-text'] = value;
+    tokens['--lb-switch-off-text'] = value;
+    tokens['--lb-toggle-text'] = value;
+    return tokens;
+  }
+
+  function persistSwitchTextTokensToWorkingState() {
+    var before = collectTokens() || {};
+    var normalized = syncSwitchTextTokens(Object.assign({}, before));
+    [
+      '--lb-switch-on-text',
+      '--lb-toggle-active-text',
+      '--lb-switch-off-text',
+      '--lb-toggle-text'
+    ].forEach(function (token) {
+      if (normalized[token]) directTokenOverrides[token] = normalized[token];
+    });
+    return normalized;
+  }
+
   function applyDesignRules(tokens) {
     tokens = Object.assign({}, tokens || {});
 
@@ -3532,6 +3994,11 @@
     forceReadableText('--lb-header-text', '--lb-header-bg', 4.5);
     forceReadableText('--lb-header-btn-text', '--lb-header-btn-bg', 4.5);
     forceReadableText('--lb-header-btn-hover-text', '--lb-header-btn-hover-bg', 4.5);
+
+    // V464: The jQM labels must use the contrast of their own ON/OFF surface,
+    // not a generic button/page foreground that may be wrong for light primary
+    // colors such as yellow.
+    syncSwitchTextTokens(tokens);
 
     return tokens;
   }
@@ -3773,15 +4240,43 @@
      is changed by this feature. Only explicitly selected text tokens can be
      written to the existing Working State override layer. */
   function validatorSourceTokens() {
-    var out = {};
-    Object.assign(out, coreTokens || {});
-    Object.assign(out, collectTokens() || {});
-    return out;
+    var working = collectTokens() || {};
+    return {
+      working: working,
+      merged: Object.assign({}, coreTokens || {}, working)
+    };
   }
 
-  function validatorResolved(tokens, names) {
+  function validatorResolved(source, names, preferWorking) {
+    var merged = source && source.merged ? source.merged : (source || {});
+    var working = source && source.working ? source.working : {};
+    var i;
+
+    // V465: For semantic fallback chains, an explicit theme token such as
+    // --lb-primary must win over an unrelated Core default such as
+    // --lb-switch-on-bg. Otherwise the validator checks a surface that the
+    // generated user theme does not actually use.
+    if (preferWorking) {
+      for (i = 0; i < names.length; i += 1) {
+        if (!Object.prototype.hasOwnProperty.call(working, names[i])) continue;
+        var preferredValue = normalizeHexColor(resolvedTokenValue(merged, names[i]));
+        if (preferredValue) return { token: names[i], value: preferredValue };
+      }
+    }
+
+    for (i = 0; i < names.length; i += 1) {
+      var value = normalizeHexColor(resolvedTokenValue(merged, names[i]));
+      if (value) return { token: names[i], value: value };
+    }
+    return null;
+  }
+
+  function validatorDedicatedResolved(source, names) {
+    var merged = source && source.merged ? source.merged : (source || {});
+    var working = source && source.working ? source.working : {};
     for (var i = 0; i < names.length; i += 1) {
-      var value = normalizeHexColor(resolvedTokenValue(tokens, names[i]));
+      if (!Object.prototype.hasOwnProperty.call(working, names[i])) continue;
+      var value = normalizeHexColor(resolvedTokenValue(merged, names[i]));
       if (value) return { token: names[i], value: value };
     }
     return null;
@@ -3815,6 +4310,12 @@
       { area:'radio', state:'label', bg:['--lb-radio-group-bg','--lb-bg'], text:['--lb-radio-text','--lb-text'], target:'--lb-radio-text', min:4.5 },
       { area:'radio', state:'checkedDot', bg:['--lb-radio-checked-bg','--lb-active-bg','--lb-primary'], text:['--lb-radio-dot-bg','--lb-active-text','--lb-btn-primary-text'], target:'--lb-radio-dot-bg', min:3.0 },
 
+      // V464: jQM data-role=slider and ui-flipswitch labels are independent
+      // foreground/background contracts. Auto-fix writes only the dedicated
+      // switch text token and therefore does not recolor generic buttons.
+      { area:'jqmToggle', state:'on', switchState:'on', bg:['--lb-switch-on-bg','--lb-toggle-active-bg','--lb-active-bg','--lb-primary','--lb-btn-primary-bg'], text:['--lb-switch-on-text','--lb-toggle-active-text','--lb-active-text','--lb-btn-primary-text','--lb-on-primary'], target:'--lb-switch-on-text', aliasTarget:'--lb-toggle-active-text', min:4.5, preferWorking:true, semanticText:true, requireDedicated:true },
+      { area:'jqmToggle', state:'off', switchState:'off', bg:['--lb-switch-off-bg','--lb-toggle-bg','--lb-btn-bg','--lb-card-bg','--lb-bg'], text:['--lb-switch-off-text','--lb-toggle-text','--lb-btn-text','--lb-text'], target:'--lb-switch-off-text', aliasTarget:'--lb-toggle-text', min:4.5, preferWorking:true, semanticText:true, requireDedicated:true },
+
       { area:'select', state:'normal', bg:['--lb-select-bg','--lb-input-bg'], text:['--lb-select-text','--lb-input-text'], target:'--lb-select-text', min:4.5 },
       { area:'select', state:'hover', bg:['--lb-select-hover-bg','--lb-select-bg'], text:['--lb-select-hover-text','--lb-select-text'], target:'--lb-select-hover-text', min:4.5 },
       { area:'select', state:'menu', bg:['--lb-select-menu-bg','--lb-select-bg'], text:['--lb-select-menu-text','--lb-select-text'], target:'--lb-select-menu-text', min:4.5 },
@@ -3823,7 +4324,11 @@
       { area:'nativeSelect', state:'normal', bg:['--lb-native-select-bg','--lb-input-bg'], text:['--lb-native-select-text','--lb-input-text'], target:'--lb-native-select-text', min:4.5 },
       { area:'multiselect', state:'summary', bg:['--lb-multiselect-summary-bg','--lb-multiselect-bg','--lb-input-bg'], text:['--lb-multiselect-text','--lb-input-text'], target:'--lb-multiselect-text', min:4.5 },
       { area:'multiselect', state:'menu', bg:['--lb-dropdown-menu-bg','--lb-select-menu-bg','--lb-input-bg'], text:['--lb-dropdown-menu-text','--lb-select-menu-text','--lb-input-text'], target:'--lb-dropdown-menu-text', min:4.5 },
-      { area:'multiselect', state:'optionHover', bg:['--lb-multiselect-option-hover-bg','--lb-select-option-hover-bg'], text:['--lb-select-option-hover-text','--lb-select-hover-text','--lb-multiselect-text'], target:'--lb-select-option-hover-text', min:4.5 },
+      /* V477: Do not validate multiselect option hover as a second, conflicting
+         contract while it shares --lb-select-option-hover-text with native/select
+         option hover. The two backgrounds can require opposite foregrounds and
+         caused endless light/dark auto-fix oscillation. A dedicated multiselect
+         hover-text token can be introduced later together with its render rule. */
 
       { area:'sidebar', state:'normal', bg:['--lb-sidebar-bg'], text:['--lb-sidebar-text','--lb-text'], target:'--lb-sidebar-text', min:4.5 },
       { area:'sidebar', state:'hover', bg:['--lb-sidebar-link-hover-bg','--lb-sidebar-hover-bg','--lb-sidebar-bg'], text:['--lb-sidebar-link-hover-text','--lb-sidebar-hover-text','--lb-sidebar-text'], target:'--lb-sidebar-link-hover-text', min:4.5 },
@@ -3858,24 +4363,78 @@
     return 'info';
   }
 
+  /* V481: Pick the actually better WCAG text color. The generic luminance
+     threshold used by readableTextFor() is suitable for UI previews, but it
+     can select near-white even when its contrast is just below 4.5:1. That
+     produced validator warnings whose current and suggested values were
+     identical and therefore could never be corrected. */
+  function validatorBinaryText(background) {
+    var black = '#000000';
+    var white = '#ffffff';
+    var blackRatio = contrastRatioForColors(black, background) || 0;
+    var whiteRatio = contrastRatioForColors(white, background) || 0;
+    return blackRatio >= whiteRatio ? black : white;
+  }
+
   function validateThemeTokens() {
     var tokens = validatorSourceTokens();
     var pairs = validatorComponentContracts();
     var issues = [];
     var checked = 0;
     pairs.forEach(function (pair) {
-      var bg = validatorResolved(tokens, pair.bg);
-      var text = validatorResolved(tokens, pair.text);
-      if (!bg || !text) return;
+      var switchContract = pair.switchState ? switchTextContract(tokens.working || {}, pair.switchState) : null;
+      var bg = switchContract ? switchContract.background : validatorResolved(tokens, pair.bg, !!pair.preferWorking);
+      var text = switchContract
+        ? switchContract.dedicated
+        : (pair.requireDedicated
+          ? validatorDedicatedResolved(tokens, [pair.target, pair.aliasTarget].filter(Boolean))
+          : validatorResolved(tokens, pair.text, !!pair.preferWorking));
+      if (!bg) return;
+
       checked += 1;
-      var ratio = contrastRatioForColors(text.value, bg.value);
-      if (ratio + 0.001 >= pair.min) return;
-      var suggestion = readableTextFor(bg.value, '#f8fafc', '#111827');
-      issues.push({ area:pair.area, state:pair.state, severity:validationSeverity(ratio, pair.min),
+      var missingDedicated = !!pair.requireDedicated && (
+        !Object.prototype.hasOwnProperty.call(tokens.working || {}, pair.target) ||
+        (pair.aliasTarget && !Object.prototype.hasOwnProperty.call(tokens.working || {}, pair.aliasTarget))
+      );
+      var fallbackText = text || validatorResolved(tokens, pair.text, !!pair.preferWorking);
+      var ratio = switchContract
+        ? (switchContract.ratio == null ? 0 : switchContract.ratio)
+        : (text ? contrastRatioForColors(text.value, bg.value) : 0);
+      if (!missingDedicated && text && ratio + 0.001 >= pair.min && !(switchContract && switchContract.semanticMismatch)) return;
+
+      var suggestion;
+      if (pair.semanticText) {
+        suggestion = switchContract ? switchContract.suggestion : switchSemanticText(bg.value);
+      } else {
+        suggestion = validatorBinaryText(bg.value);
+      }
+      var currentValue = fallbackText ? fallbackText.value : '';
+      var currentRatio = 0;
+      if (fallbackText) {
+        currentRatio = pair.switchState
+          ? (renderedTextContrastRatio(currentValue, bg.value) || 0)
+          : (contrastRatioForColors(currentValue, bg.value) || 0);
+      }
+      /* Never offer a no-op correction. This is especially important for
+         warning-level contrasts near 4.5:1: a modal entry with identical
+         current/suggested values can only reappear forever. */
+      var normalizedCurrent = normalizeHexColor(currentValue);
+      var normalizedSuggestion = normalizeHexColor(suggestion);
+      var suggestedRatioValue = pair.switchState
+        ? (renderedTextContrastRatio(suggestion, bg.value) || 0)
+        : (contrastRatioForColors(suggestion, bg.value) || 0);
+      if (!missingDedicated && normalizedCurrent && normalizedSuggestion === normalizedCurrent && suggestedRatioValue <= currentRatio + 0.001) return;
+
+      issues.push({ area:pair.area, state:pair.state,
+        severity:(missingDedicated || (switchContract && switchContract.semanticMismatch)) ? 'warning' : validationSeverity(ratio, pair.min),
         backgroundToken:bg.token, background:bg.value,
-        textToken:pair.target, currentToken:text.token, current:text.value,
-        suggested:suggestion, ratio:ratio,
-        suggestedRatio:contrastRatioForColors(suggestion, bg.value), minimum:pair.min });
+        textToken:pair.target, aliasTextToken:pair.aliasTarget || '',
+        targets:[pair.target].concat(pair.aliasTarget ? [pair.aliasTarget] : []),
+        currentToken:fallbackText ? fallbackText.token : '',
+        current:currentValue || '—',
+        missingDedicated:missingDedicated,
+        suggested:suggestion, ratio:currentRatio || 0,
+        suggestedRatio:suggestedRatioValue, minimum:pair.min });
     });
     var counts = { error:0, warning:0, info:0 };
     issues.forEach(function (issue) { counts[issue.severity] += 1; });
@@ -3895,6 +4454,7 @@
 
   function showValidationResult(result, forSave) {
     lastValidationResult = result;
+    if (validationAutoFixButton) validationAutoFixButton.disabled = false;
     pendingValidationSave = !!forSave;
     if (!result.issues.length) {
       setStatus(t('validator.summaryOk', 'validator.summaryOk', { count:result.checked }), false);
@@ -3909,7 +4469,7 @@
       return '<label class="cfw-validation-item cfw-validation-' + escapeValidationHtml(issue.severity) + '">' +
         '<input type="checkbox" data-validation-index="' + index + '" checked data-role="none">' +
         '<span class="cfw-validation-item-body"><strong><span class="cfw-validation-severity">' + escapeValidationHtml(severity) + '</span> ' + escapeValidationHtml(area) + ' · ' + escapeValidationHtml(state) + '</strong>' +
-        '<span class="cfw-validation-token">' + escapeValidationHtml(issue.textToken) + ' ↔ ' + escapeValidationHtml(issue.backgroundToken) + ' · ' + escapeValidationHtml(tx('validator.minimum')) + ' ' + issue.minimum.toFixed(1) + ':1</span>' +
+        '<span class="cfw-validation-token">' + escapeValidationHtml(issue.textToken + (issue.aliasTextToken ? ' / ' + issue.aliasTextToken : '')) + ' ↔ ' + escapeValidationHtml(issue.backgroundToken) + ' · ' + escapeValidationHtml(tx('validator.minimum')) + ' ' + issue.minimum.toFixed(1) + ':1</span>' +
         '<span class="cfw-validation-values"><span><i style="background:' + escapeValidationHtml(issue.current) + '"></i>' + escapeValidationHtml(tx('validator.current')) + ': ' + escapeValidationHtml(issue.current) + ' · ' + escapeValidationHtml(tx('validator.contrast')) + ' ' + issue.ratio.toFixed(2) + ':1</span>' +
         '<span><i style="background:' + escapeValidationHtml(issue.suggested) + '"></i>' + escapeValidationHtml(tx('validator.suggested')) + ': ' + escapeValidationHtml(issue.suggested) + ' · ' + escapeValidationHtml(tx('validator.contrast')) + ' ' + issue.suggestedRatio.toFixed(2) + ':1</span></span></span></label>';
     }).join('');
@@ -3921,21 +4481,64 @@
     showValidationResult(validateThemeTokens(), !!forSave);
   }
 
+  /* V472: Apply selected validation fixes as one coherent batch. Several
+     component contracts may deliberately share the same text token. Writing
+     each issue suggestion sequentially made the last issue win and could
+     invalidate a component that had just been fixed. Choose one black/white
+     value per shared target group against all selected backgrounds instead. */
+  function validationBatchCandidate(issues) {
+    var candidates = ['#111827', '#f8fafc', '#000000', '#ffffff'];
+    var best = candidates[0];
+    var bestScore = -1;
+    candidates.forEach(function (candidate) {
+      var score = Infinity;
+      issues.forEach(function (issue) {
+        var ratio = issue && issue.background
+          ? (issue.state === 'on' || issue.state === 'off'
+            ? (renderedTextContrastRatio(candidate, issue.background) || 0)
+            : contrastRatioForColors(candidate, issue.background))
+          : 0;
+        score = Math.min(score, ratio);
+      });
+      if (score > bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
+    });
+    return best;
+  }
+
   function applySelectedValidationFixes() {
     if (!lastValidationResult) return;
     var selected = validationIssueList.querySelectorAll('input[data-validation-index]:checked');
     if (!selected.length) { setStatus(tx('validator.nothingSelected'), true); return; }
+
+    /* V476: Restore the proven single-modal save flow. Apply every selected
+       correction in one pass, refresh once and then continue the pending save
+       directly. Do not start a second validation cycle from inside the save
+       workflow; that V472+ revalidation caused the repeated modal loop. */
+    pushUndoSnapshot('validation-fixes');
+    var count = 0;
     selected.forEach(function (input) {
       var issue = lastValidationResult.issues[parseInt(input.getAttribute('data-validation-index'), 10)];
-      if (issue) directTokenOverrides[issue.textToken] = issue.suggested;
+      if (!issue) return;
+      (issue.targets && issue.targets.length ? issue.targets : [issue.textToken]).forEach(function (token) {
+        if (token) directTokenOverrides[token] = issue.suggested;
+      });
+      count += 1;
     });
-    var count = selected.length;
+
     refreshPreviewAndPalette();
     renderPropertyInspector();
+    updateDirtyState();
     setStatus(t('validator.fixed', 'validator.fixed', { count:count }), false);
+
     var shouldSave = pendingValidationSave;
     validationModal.hidden = true;
     pendingValidationSave = false;
+    lastValidationResult = null;
+    if (validationAutoFixButton) validationAutoFixButton.disabled = false;
+
     if (shouldSave) saveTheme(true);
   }
 
@@ -3945,12 +4548,21 @@
       setStatus(protectedStudioThemeMessage(themeId.value), true);
       return;
     }
-    if (!skipValidation) {
+    /* V482: Liquid Glass is a protected wallpaper-only package. It must never
+       enter the generic component/token validator, including when Save calls
+       saveTheme(false). The validator button is hidden separately, but the
+       save path also needs this hard guard before runThemeValidation(). */
+    var protectedWallpaperOnly = !!(themeId && isLiquidGlassThemeId(themeId.value));
+    if (!skipValidation && !protectedWallpaperOnly) {
       runThemeValidation(true);
       return;
     }
+    if (!updateDirtyState()) {
+      closeSaveModal();
+      setStatus(tx('messages.noChangesToSave'), false);
+      return;
+    }
     var wallpaperPayload = buildWallpaperPayload();
-    var protectedWallpaperOnly = !!(themeId && isLiquidGlassThemeId(themeId.value));
     if (protectedWallpaperOnly && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
       setStatus(protectedStudioThemeMessage(themeId.value), true);
       return;
@@ -3959,7 +4571,7 @@
     // including Design Rules Engine output. This prevents empty CSS files when the
     // preview was based on AI/imported tokens or rule-derived values.
     // V262: The protected packaged Liquid Glass theme may only save wallpaper data.
-    var effectiveTokens = protectedWallpaperOnly ? {} : syncTintedSurfaceTokens(applyDesignRules(collectTokens()));
+    var effectiveTokens = protectedWallpaperOnly ? {} : syncTintedSurfaceTokens(applyDesignRules(persistSwitchTextTokensToWorkingState()));
     var effectiveCustomCss = protectedWallpaperOnly ? '' : normalizeCustomCssValue(customCss && customCss.value);
     if (!Object.keys(effectiveTokens).filter(function (name) { return /^--lb-/.test(name); }).length && !meaningfulCustomCss(effectiveCustomCss) && !(wallpaperPayload.enabled && wallpaperPayload.image)) {
       setStatus(tx('messages.noSaveableContent'), true);
@@ -3994,6 +4606,14 @@
         /* V349: The server response is authoritative. This keeps the in-memory
            theme, controls and a subsequent re-selection aligned with the exact
            values written to config/plugins/cssframework/themes/*.json. */
+        if (json.tokens && typeof json.tokens === 'object') {
+          payload.tokens = enforceForcedOpaqueTokens(Object.assign({}, json.tokens));
+          aiImportedTokens = Object.assign({}, payload.tokens);
+          directTokenOverrides = {};
+          syncCurrentControlsFromAiTokens(aiImportedTokens);
+          refreshPreviewAndPalette();
+          renderPropertyInspector();
+        }
         if (json.wallpaper && typeof json.wallpaper === 'object') {
           payload.wallpaper = json.wallpaper;
           wallpaperState = {
@@ -4007,6 +4627,8 @@
           applyWallpaperPreview();
         }
         rememberSavedTheme(payload);
+        resetHistory();
+        markCurrentStateAsSaved();
         var msg = t('messages.themeSaved', 'messages.themeSaved', {
           theme: (json.name || payload.name),
           version: (json.version || payload.version),
@@ -4157,7 +4779,7 @@
 
 
   function resetToNeutralNewTheme() {
-    pushUndoSnapshot('new-theme');
+    resetHistory();
     forceNeutralNewTheme = true;
     studioModel = {};
     directTokenOverrides = {};
@@ -4199,6 +4821,7 @@
     updateAll(false);
     refreshEmbeddedFrame('preview');
     refreshEmbeddedFrame('documentation');
+    markCurrentStateAsSaved();
   }
 
   function populateUserThemeSelect() {
@@ -4231,7 +4854,7 @@
     var theme = userThemes[Number(index)];
     if (!theme) return;
     forceNeutralNewTheme = false;
-    pushUndoSnapshot('load-theme');
+    resetHistory();
 
     // V126: Loading a different theme is a complete Working-State replacement.
     // Clear local edits, import all theme tokens, clear old inline preview vars,
@@ -4241,6 +4864,10 @@
     directTokenOverrides = {};
     activeDirectToken = '';
     aiImportedTokens = enforceForcedOpaqueTokens(themeTokensFromJson(theme));
+    // V466: Upgrade older saved themes in the Working State immediately. This
+    // makes the semantic jQM ON/OFF text tokens visible to the inspector and
+    // guarantees that the next Save persists the corrected values.
+    syncSwitchTextTokens(aiImportedTokens);
     aiImportedCss = normalizeCustomCssValue(theme.custom_css || theme.css || '');
     lastImportMeta = importMetaHasVisibleContent(theme.import_meta) ? theme.import_meta : null;
 
@@ -4296,6 +4923,7 @@
     } else {
       setTimeout(reapplyLoadedWallpaperState, 0);
     }
+    markCurrentStateAsSaved();
     setStatus(t('messages.userThemeLoaded', 'messages.userThemeLoaded', { theme: (theme.name || theme.id) }), false);
   }
 
@@ -5200,9 +5828,19 @@
     out['--lb-slider-value-text'] = colorValue(componentValue(slider, ['value_text', 'value_color'], primary), primary);
 
     var toggle = componentsDesign.toggle || componentsDesign.switch || {};
-    put(['--lb-toggle-bg', '--lb-switch-off-bg'], componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt));
-    put(['--lb-toggle-hover-bg'], componentValue(toggle, ['hover'], mixColor(componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt), -5)));
-    put(['--lb-switch-on-bg', '--lb-toggle-active-bg'], componentValue(toggle, ['active', 'on', 'on_bg'], primary));
+    var toggleOffBg = colorValue(componentValue(toggle, ['off', 'off_bg', 'background', 'bg'], surfaceAlt), surfaceAlt);
+    var toggleOnBg = colorValue(componentValue(toggle, ['active', 'on', 'on_bg'], primary), primary);
+    var toggleOffText = colorValue(componentValue(toggle, ['off_text', 'text', 'text_color'], readableTextFor(toggleOffBg, '#f8fafc', '#111827')), readableTextFor(toggleOffBg, '#f8fafc', '#111827'));
+    var toggleOnText = colorValue(componentValue(toggle, ['active_text', 'on_text'], readableTextFor(toggleOnBg, '#f8fafc', '#111827')), readableTextFor(toggleOnBg, '#f8fafc', '#111827'));
+    put(['--lb-toggle-bg', '--lb-switch-off-bg'], toggleOffBg);
+    put(['--lb-toggle-hover-bg'], componentValue(toggle, ['hover'], mixColor(toggleOffBg, -5)));
+    put(['--lb-switch-on-bg', '--lb-toggle-active-bg'], toggleOnBg);
+    // V464: The generated-theme CSS already consumes these aliases. Write them
+    // directly because older Core token registries may not expose them yet.
+    out['--lb-switch-off-text'] = toggleOffText;
+    out['--lb-toggle-text'] = toggleOffText;
+    out['--lb-switch-on-text'] = toggleOnText;
+    out['--lb-toggle-active-text'] = toggleOnText;
     put(['--lb-switch-border'], componentValue(toggle, ['border'], border));
     put(['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'], componentValue(toggle, ['thumb', 'thumb_bg'], '#ffffff'));
 
@@ -5684,10 +6322,9 @@
 
   if (statusModalBack) statusModalBack.addEventListener('click', closeStatusModal);
 
-  if (undoThemeButton) {
-    undoThemeButton.addEventListener('click', function () { undoLastChange(); });
-    updateUndoButton();
-  }
+  if (undoThemeButton) undoThemeButton.addEventListener('click', function () { undoLastChange(); });
+  if (redoThemeButton) redoThemeButton.addEventListener('click', function () { redoLastChange(); });
+  resetHistory();
   [colorPicker, alphaRange, brightnessRange, radiusRange, borderWidthRange, shadowRange, customCss, wallpaperEnabled, wallpaperImage, wallpaperBrightness, wallpaperOpacity].forEach(bindUndoControl);
 
   document.getElementById('saveTheme').addEventListener('click', openSaveModal);
@@ -5699,8 +6336,11 @@
   if (cancelDeleteButton) cancelDeleteButton.addEventListener('click', closeDeleteModal);
   if (confirmDeleteButton) confirmDeleteButton.addEventListener('click', deleteSelectedTheme);
   document.getElementById('cancelSave').addEventListener('click', closeSaveModal);
-  document.getElementById('confirmSave').addEventListener('click', saveTheme);
-  if (themeName) themeName.addEventListener('blur', updateThemeIdentityFromName);
+  document.getElementById('confirmSave').addEventListener('click', function () { saveTheme(false); });
+  if (themeName) {
+    themeName.addEventListener('input', updateDirtyState);
+    themeName.addEventListener('blur', function () { updateThemeIdentityFromName(); updateDirtyState(); });
+  }
   areaSelect.addEventListener('change', renderElements);
   elementSelect.addEventListener('change', renderColorGroups);
   if (affectedTokenSelect) affectedTokenSelect.addEventListener('click', function (event) {
@@ -5800,16 +6440,22 @@
   var aiResultBox = document.getElementById('aiResult');
   if (aiResultBox) aiResultBox.addEventListener('input', invalidateAiValidation);
   if (userThemeSelect) userThemeSelect.addEventListener('change', function () {
-    updateDeleteThemeButton();
-    if (userThemeSelect.value === '') {
-      resetToNeutralNewTheme();
-      return;
-    }
-    loadUserThemeByIndex(userThemeSelect.value);
-    window.setTimeout(function () {
-      refreshEmbeddedFrame('preview');
-      refreshEmbeddedFrame('documentation');
-    }, 120);
+    var requestedValue = userThemeSelect.value;
+    var currentIndex = userThemes.findIndex(function (theme) { return theme && theme.id === (themeId ? themeId.value : ''); });
+    var previousValue = currentIndex >= 0 ? String(currentIndex) : '';
+    userThemeSelect.value = previousValue;
+    requestThemeSelection(requestedValue);
+  });
+  if (unsavedModalCancel) unsavedModalCancel.addEventListener('click', closeUnsavedChangesModal);
+  if (unsavedModalDiscard) unsavedModalDiscard.addEventListener('click', function () {
+    var requestedValue = pendingThemeSelection;
+    if (unsavedModal) unsavedModal.hidden = true;
+    pendingThemeSelection = null;
+    if (userThemeSelect) userThemeSelect.value = requestedValue;
+    applyThemeSelection(requestedValue);
+  });
+  if (unsavedModal) unsavedModal.addEventListener('click', function (event) {
+    if (event.target === unsavedModal) closeUnsavedChangesModal();
   });
   if (selectedComponentCard) {
     selectedComponentCard.setAttribute('title', tx('inspector.selectedCardTitle'));
@@ -5981,6 +6627,8 @@
   buildComponentRegistry();
   renderAreas();
   renderElements();
+  resetHistory();
+  markCurrentStateAsSaved();
   runTokenPersistenceAudit();
   setStatus(t('messages.coreRead', 'messages.coreRead', { tokens: Object.keys(coreTokens).length, themes: ((coreData.themes || []).length) }), false);
 }());

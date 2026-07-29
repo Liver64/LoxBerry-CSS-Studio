@@ -4698,3 +4698,18 @@ body > .cfw-modal .cfw-modal-card textarea::placeholder {
   content: none !important;
   display: none !important;
 }
+
+/* V471: explicit unsaved working-state marker. */
+.cfw-dirty-indicator {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px dashed currentColor;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cfw-dirty-indicator[hidden] { display: none !important; }
+#saveTheme.is-dirty::after { content: " •"; }

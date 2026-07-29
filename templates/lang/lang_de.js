@@ -11,8 +11,10 @@ window.LBDesignStudioLangs.de = {
       "close": "Schließen",
       "apply": "Übernehmen",
       "undo": "↶ Rückgängig",
+      "redo": "↷ Wiederholen",
       "ok": "OK",
-      "back": "Zurück"
+      "back": "Zurück",
+      "discard": "Änderungen verwerfen"
     },
     "common": {
       "yes": "Ja",
@@ -559,10 +561,10 @@ window.LBDesignStudioLangs.de = {
     "fixed": "{count} Text-Token(s) korrigiert. Die Vorschau wurde aktualisiert.",
     "severity": { "error": "Fehler", "warning": "Warnung", "info": "Info" },
     "states": {
-      "normal": "Normal", "secondary": "Sekundär", "muted": "Gedämpft", "hover": "Hover", "active": "Aktiv", "activeHover": "Aktiv-Hover", "inactive": "Inaktiv", "label": "Beschriftung", "checkedSymbol": "Aktiv-Symbol", "checkedDot": "Aktiv-Punkt", "menu": "Menü", "option": "Option", "optionHover": "Option-Hover", "summary": "Auswahl", "body": "Inhalt", "header": "Kopfzeile"
+      "normal": "Normal", "secondary": "Sekundär", "muted": "Gedämpft", "hover": "Hover", "active": "Aktiv", "activeHover": "Aktiv-Hover", "inactive": "Inaktiv", "on": "Ein", "off": "Aus", "label": "Beschriftung", "checkedSymbol": "Aktiv-Symbol", "checkedDot": "Aktiv-Punkt", "menu": "Menü", "option": "Option", "optionHover": "Option-Hover", "summary": "Auswahl", "body": "Inhalt", "header": "Kopfzeile"
     },
     "areas": {
-      "page": "Seitenfläche", "card": "Karte", "input": "Eingabefeld", "button": "Schaltfläche", "primaryButton": "Primärschaltfläche", "buttonGroup": "Buttongroup", "checkbox": "Checkbox", "radio": "Radiobutton", "select": "Select", "nativeSelect": "Native Select", "multiselect": "Mehrfachauswahl", "sidebar": "Sidebar", "header": "Kopfzeile", "headerButton": "Kopfzeilen-Schaltfläche", "modal": "Modal", "tooltip": "Tooltip", "note": "Hinweisfläche", "success": "Erfolgsmeldung", "warning": "Warnmeldung", "error": "Fehlermeldung", "notify": "Benachrichtigung", "table": "Tabelle", "compactTable": "Kompakttabelle", "active": "Aktive Fläche", "sliderValue": "Sliderwert"
+      "page": "Seitenfläche", "card": "Karte", "input": "Eingabefeld", "button": "Schaltfläche", "primaryButton": "Primärschaltfläche", "buttonGroup": "Buttongroup", "checkbox": "Checkbox", "radio": "Radiobutton", "jqmToggle": "jQM-Toggle", "select": "Select", "nativeSelect": "Native Select", "multiselect": "Mehrfachauswahl", "sidebar": "Sidebar", "header": "Kopfzeile", "headerButton": "Kopfzeilen-Schaltfläche", "modal": "Modal", "tooltip": "Tooltip", "note": "Hinweisfläche", "success": "Erfolgsmeldung", "warning": "Warnmeldung", "error": "Fehlermeldung", "notify": "Benachrichtigung", "table": "Tabelle", "compactTable": "Kompakttabelle", "active": "Aktive Fläche", "sliderValue": "Sliderwert"
     }
   },
   "messages": {
@@ -572,6 +574,9 @@ window.LBDesignStudioLangs.de = {
     "deletingTheme": "Lösche User Theme ...",
     "themeDeleted": "Gelöscht: {theme}. Entfernt: JSON {json}, CSS {css}, Manifest {manifest}.",
     "savingTheme": "Speichere Theme und erzeuge CSS ...",
+    "noChangesToSave": "Keine Änderungen: Das Theme entspricht bereits dem gespeicherten Stand.",
+    "unsavedChanges": "Nicht gespeichert",
+    "unsavedLeaveConfirm": "Es gibt ungespeicherte Änderungen. Wirklich verwerfen?",
     "legacyCssImported": "Legacy-CSS importiert: {file}. {count} bekannte LoxBerry-Tokens wurden in die finale Preview übernommen. Beim Speichern wird daraus eine JSON-Quelle erzeugt.",
     "hybridCssImported": "Hybrid-CSS importiert: {file}. {tokens} LoxBerry-Tokens erkannt, {rules} individuelle CSS-Regeln erhalten.",
     "cssImportedNoTokens": "CSS importiert: {file}. Keine bekannten --lb-* Tokens gefunden; CSS bleibt als Custom CSS erhalten.",
@@ -604,12 +609,17 @@ window.LBDesignStudioLangs.de = {
     "deleteReadonlyTheme": "Dieses CSS-only Paket-Theme kann nicht direkt gelöscht werden.",
     "deleteFailed": "Löschen fehlgeschlagen.",
     "undoDone": "Letzte Änderung rückgängig gemacht.",
+    "redoDone": "Änderung wiederholt.",
     "puterLoadError": "Puter.js konnte nicht geladen werden.",
     "invalidJsonResponse": "Antwort enthält kein gültiges JSON."
   },
   "undo": {
     "availableTitle": "Letzte Änderung rückgängig machen",
     "emptyTitle": "Keine Änderung zum Rückgängigmachen"
+  },
+  "redo": {
+    "availableTitle": "Rückgängig gemachte Änderung wiederholen",
+    "emptyTitle": "Keine Änderung zum Wiederholen"
   },
   "customCss": {
     "defaultText": "/* USER CUSTOM CSS START */\n/* Eigene Ergänzungen bleiben beim Speichern erhalten. */\n/* USER CUSTOM CSS END */"
@@ -628,6 +638,7 @@ window.LBDesignStudioLangs.de = {
     "emptyTheme": "Keine Theme-Tokens oder nutzbaren Custom-CSS-Regeln empfangen. CSS wäre leer.",
     "cannotWriteFile": "Datei kann nicht geschrieben werden: {path}",
     "cannotCloseWriteFile": "Datei kann nicht abgeschlossen/geschrieben werden: {path}",
-    "cssNotCreatedOrEmpty": "CSS wurde nicht erstellt oder ist leer: {path}"
+    "cssNotCreatedOrEmpty": "CSS wurde nicht erstellt oder ist leer: {path}",
+    "transactionalSaveFailed": "Transaktionales Speichern fehlgeschlagen. Der bisherige Theme-Stand wurde wiederhergestellt."
   }
 };

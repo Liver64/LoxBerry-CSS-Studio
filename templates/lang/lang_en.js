@@ -11,8 +11,10 @@ window.LBDesignStudioLangs.en = {
       "close": "Close",
       "apply": "Apply",
       "undo": "↶ Undo",
+      "redo": "↷ Redo",
       "ok": "OK",
-      "back": "Back"
+      "back": "Back",
+      "discard": "Discard changes"
     },
     "common": {
       "yes": "Yes",
@@ -559,10 +561,10 @@ window.LBDesignStudioLangs.en = {
     "fixed": "Corrected {count} text token(s). The preview has been updated.",
     "severity": { "error": "Error", "warning": "Warning", "info": "Info" },
     "states": {
-      "normal": "Normal", "secondary": "Secondary", "muted": "Muted", "hover": "Hover", "active": "Active", "activeHover": "Active hover", "inactive": "Inactive", "label": "Label", "checkedSymbol": "Checked symbol", "checkedDot": "Checked dot", "menu": "Menu", "option": "Option", "optionHover": "Option hover", "summary": "Summary", "body": "Body", "header": "Header"
+      "normal": "Normal", "secondary": "Secondary", "muted": "Muted", "hover": "Hover", "active": "Active", "activeHover": "Active hover", "inactive": "Inactive", "on": "On", "off": "Off", "label": "Label", "checkedSymbol": "Checked symbol", "checkedDot": "Checked dot", "menu": "Menu", "option": "Option", "optionHover": "Option hover", "summary": "Summary", "body": "Body", "header": "Header"
     },
     "areas": {
-      "page": "Page surface", "card": "Card", "input": "Input", "button": "Button", "primaryButton": "Primary button", "buttonGroup": "Button group", "checkbox": "Checkbox", "radio": "Radio button", "select": "Select", "nativeSelect": "Native select", "multiselect": "Multiselect", "sidebar": "Sidebar", "header": "Header", "headerButton": "Header button", "modal": "Modal", "tooltip": "Tooltip", "note": "Notice surface", "success": "Success message", "warning": "Warning message", "error": "Error message", "notify": "Notification", "table": "Table", "compactTable": "Compact table", "active": "Active surface", "sliderValue": "Slider value"
+      "page": "Page surface", "card": "Card", "input": "Input", "button": "Button", "primaryButton": "Primary button", "buttonGroup": "Button group", "checkbox": "Checkbox", "radio": "Radio button", "jqmToggle": "jQM toggle", "select": "Select", "nativeSelect": "Native select", "multiselect": "Multiselect", "sidebar": "Sidebar", "header": "Header", "headerButton": "Header button", "modal": "Modal", "tooltip": "Tooltip", "note": "Notice surface", "success": "Success message", "warning": "Warning message", "error": "Error message", "notify": "Notification", "table": "Table", "compactTable": "Compact table", "active": "Active surface", "sliderValue": "Slider value"
     }
   },
   "messages": {
@@ -572,6 +574,9 @@ window.LBDesignStudioLangs.en = {
     "deletingTheme": "Deleting user theme ...",
     "themeDeleted": "Deleted: {theme}. Removed: JSON {json}, CSS {css}, manifest {manifest}.",
     "savingTheme": "Saving theme and generating CSS ...",
+    "noChangesToSave": "No changes: the theme already matches the saved state.",
+    "unsavedChanges": "Unsaved",
+    "unsavedLeaveConfirm": "There are unsaved changes. Discard them?",
     "hybridCssImported": "Hybrid CSS imported: {file}. {tokens} core tokens detected, {rules} custom CSS rules preserved.",
     "legacyCssImported": "Legacy CSS imported: {file}. {count} known core tokens were applied to the final preview. It will be saved as a JSON source.",
     "cssImportedNoTokens": "CSS imported: {file}. No known --lb-* tokens found; CSS remains as custom CSS.",
@@ -604,12 +609,17 @@ window.LBDesignStudioLangs.en = {
     "deleteReadonlyTheme": "This CSS-only package theme cannot be deleted directly.",
     "deleteFailed": "Deleting failed.",
     "undoDone": "Last change undone.",
+    "redoDone": "Change redone.",
     "puterLoadError": "Puter.js could not be loaded.",
     "invalidJsonResponse": "Response does not contain valid JSON."
   },
   "undo": {
     "availableTitle": "Undo last change",
     "emptyTitle": "No change to undo"
+  },
+  "redo": {
+    "availableTitle": "Redo the undone change",
+    "emptyTitle": "No change to redo"
   },
   "customCss": {
     "defaultText": "/* USER CUSTOM CSS START */\n/* Custom additions are preserved when saving. */\n/* USER CUSTOM CSS END */"
@@ -628,6 +638,7 @@ window.LBDesignStudioLangs.en = {
     "emptyTheme": "No theme tokens or usable custom CSS received. CSS would be empty.",
     "cannotWriteFile": "Cannot write file: {path}",
     "cannotCloseWriteFile": "Cannot close/write file: {path}",
-    "cssNotCreatedOrEmpty": "CSS was not created or is empty: {path}"
+    "cssNotCreatedOrEmpty": "CSS was not created or is empty: {path}",
+    "transactionalSaveFailed": "Transactional save failed. The previous theme state was restored."
   }
 };

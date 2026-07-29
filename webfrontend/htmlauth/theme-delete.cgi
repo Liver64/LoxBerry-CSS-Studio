@@ -7,6 +7,7 @@ use utf8;
 use lib "/opt/loxberry/libs/perllib";
 use CGI qw(:standard);
 use JSON::PP qw(decode_json encode_json);
+use File::Path qw(make_path remove_tree);
 use LoxBerry::System;
 use LoxBerry::Web;
 
@@ -23,6 +24,44 @@ my $datadir = $lbpdatadir || $ENV{LBPDATA} || "/opt/loxberry/data/plugins/$plugi
 my $theme_json_dir = "$cfgdir/themes";
 my $theme_dir      = "$datadir/themes";
 my $manifest_dir   = "$cfgdir/manifests";
+
+# V480: All volatile save state is centralized in RAM. Theme deletion uses
+# the same per-theme lock as theme-save.cgi and removes the theme's retained
+# RAM snapshots and stale transaction directories. Final manifests remain
+# persistent under config/plugins/cssframework/manifests.
+my $shm_root = '/run/shm/cssframework';
+my $ram_backup_root = "$shm_root/backups";
+my $ram_transaction_root = "$shm_root/transactions";
+my $ram_lock_root = "$shm_root/locks";
+
+sub _safe_ram_theme_id {
+    my ($id) = @_;
+    my $safe = defined($id) ? "$id" : 'theme';
+    $safe =~ s/[^A-Za-z0-9_.-]+/_/g;
+    return $safe;
+}
+
+sub _remove_theme_transactions {
+    my ($id) = @_;
+    return 0 if !-d $ram_transaction_root;
+    my $removed = 0;
+    opendir(my $dh, $ram_transaction_root) or return 0;
+    my @entries = grep { $_ ne '.' && $_ ne '..' && -d "$ram_transaction_root/$_" } readdir($dh);
+    closedir($dh);
+
+    for my $entry (@entries) {
+        my $dir = "$ram_transaction_root/$entry";
+        my $manifest = "$dir/transaction.json";
+        next if !-f $manifest;
+        my $raw = _read_text_file($manifest);
+        my $tx = eval { decode_json($raw || '{}') };
+        next if $@ || ref($tx) ne 'HASH';
+        next if !defined($tx->{theme}) || $tx->{theme} ne $id;
+        eval { remove_tree($dir); 1 };
+        $removed++ if !-d $dir;
+    }
+    return $removed;
+}
 
 sub _respond {
     my ($status, $payload) = @_;
@@ -83,6 +122,22 @@ if (exists $protected_package_theme{lc($id)}) {
     });
 }
 
+my $safe_ram_id = _safe_ram_theme_id($id);
+make_path($ram_lock_root, { mode => 0775 }) if !-d $ram_lock_root;
+my $lock_dir = "$ram_lock_root/$safe_ram_id.lock";
+if (-d $lock_dir) {
+    my $age = time() - ((stat($lock_dir))[9] || time());
+    rmdir($lock_dir) if $age > 300;
+}
+if (!mkdir($lock_dir, 0775)) {
+    _respond('409 Conflict', {
+        ok => JSON::PP::false,
+        error => 'Theme is currently being saved or deleted',
+        error_key => 'themeLocked',
+        id => $id,
+    });
+}
+
 my $json_path = "$theme_json_dir/$id.json";
 my $legacy_data_json_path = "$theme_dir/$id.json";
 my $manifest_path = "$manifest_dir/$id.manifest.json";
@@ -112,6 +167,15 @@ if (-f $css_path) {
 }
 
 
+my $ram_backup_dir = "$ram_backup_root/$safe_ram_id";
+my $deleted_ram_backups = 0;
+if (-d $ram_backup_dir) {
+    eval { remove_tree($ram_backup_dir); 1 };
+    $deleted_ram_backups = !-d($ram_backup_dir) ? 1 : 0;
+}
+my $deleted_ram_transactions = _remove_theme_transactions($id);
+rmdir($lock_dir) if -d $lock_dir;
+
 _respond('200 OK', {
     ok => JSON::PP::true,
     id => $id,
@@ -120,5 +184,7 @@ _respond('200 OK', {
     deleted_manifest => $deleted_manifest ? JSON::PP::true : JSON::PP::false,
     deleted_css => $deleted_css ? JSON::PP::true : JSON::PP::false,
     deleted_data_css => $deleted_css ? JSON::PP::true : JSON::PP::false,
+    deleted_ram_backups => $deleted_ram_backups ? JSON::PP::true : JSON::PP::false,
+    deleted_ram_transactions => 0 + $deleted_ram_transactions,
     css_skipped_manual => $css_skipped_manual ? JSON::PP::true : JSON::PP::false,
 });

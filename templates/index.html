@@ -20,9 +20,11 @@
           <option value="" data-i18n="toolbar.currentPreviewNewTheme"></option>
         </select>
       </label>
-      <button type="button" id="undoTheme" class="cfw-button" data-role="none" disabled title="" data-i18n="main.buttons.undo" data-i18n-attr="title:undo.availableTitle">↶ Rückgängig</button>
+      <button type="button" id="undoTheme" class="cfw-button" data-role="none" hidden aria-hidden="true" disabled title="" data-i18n="main.buttons.undo" data-i18n-attr="title:undo.availableTitle">↶ Rückgängig</button>
+      <button type="button" id="redoTheme" class="cfw-button" data-role="none" hidden aria-hidden="true" disabled title="" data-i18n="main.buttons.redo" data-i18n-attr="title:redo.availableTitle">↷ Wiederholen</button>
       <button type="button" id="validateTheme" class="cfw-button" data-role="none" data-i18n="main.buttons.validate"></button>
       <button type="button" id="saveTheme" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.save"></button>
+      <span id="themeDirtyIndicator" class="cfw-dirty-indicator" hidden aria-hidden="true" data-i18n="messages.unsavedChanges"></span>
       <button type="button" id="deleteTheme" class="cfw-button" data-role="none" data-i18n="main.buttons.delete"></button>
     </div>
   </div>
@@ -627,6 +629,18 @@ body.theme-user-mein-theme,
 </div>
 
 
+
+<div id="unsavedChangesModal" class="cfw-modal" hidden role="dialog" aria-modal="true" aria-labelledby="unsavedChangesTitle">
+  <div class="cfw-modal-card">
+    <h2 id="unsavedChangesTitle" data-i18n="messages.unsavedChanges"></h2>
+    <p class="cfw-help" data-i18n="messages.unsavedLeaveConfirm"></p>
+    <div class="cfw-modal-actions">
+      <button type="button" id="unsavedChangesCancel" class="cfw-button" data-role="none" data-i18n="main.buttons.cancel"></button>
+      <button type="button" id="unsavedChangesDiscard" class="cfw-button cfw-button-primary" data-role="none" data-i18n="main.buttons.discard"></button>
+    </div>
+  </div>
+</div>
+
 <div id="statusModal" class="cfw-modal cfw-status-modal" hidden role="dialog" aria-modal="true" aria-labelledby="statusModalTitle">
   <div class="cfw-modal-card cfw-status-modal-card">
     <div class="cfw-status-modal-header">
@@ -657,6 +671,6 @@ window.CFW_COLOR_STYLE_MAP = <TMPL_VAR COLOR_STYLE_MAP_JSON ESCAPE=NONE>;
 <script src="/plugins/cssframework/js/design-studio/protected-themes.js?v=v362-slider-value-colors"></script>
 <script src="/plugins/cssframework/js/design-studio/wallpaper-range.js?v=v362-slider-value-colors"></script>
 <script src="/plugins/cssframework/js/design-studio/color-directions.js?v=v362-slider-value-colors"></script>
-<script src="/plugins/cssframework/js/design-studio.js?v=v434-component-contract-validator"></script>
-<script src="/plugins/cssframework/js/design-studio/sticky-edit-panels.js?v=v369-preview-palette-scroll-follow"></script>
+<script src="/plugins/cssframework/js/design-studio.js?v=v485-regression-repair"></script>
+<script src="/plugins/cssframework/js/design-studio/sticky-edit-panels.js?v=v462-palette-only-scroll-follow"></script>
 <script src="/plugins/cssframework/js/design-studio/wallpaper-shortcut.js?v=v379-wallpaper-shortcut"></script>

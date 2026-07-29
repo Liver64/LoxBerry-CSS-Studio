@@ -10,8 +10,9 @@ use lib "$Bin/lib";
 
 use CGI qw(:standard);
 use JSON::PP qw(decode_json encode_json);
-use File::Path qw(make_path);
+use File::Path qw(make_path remove_tree);
 use File::Copy qw(move copy);
+use File::Basename qw(dirname basename);
 use POSIX qw(strftime);
 use MIME::Base64 qw(decode_base64);
 use LoxBerry::System;
@@ -57,6 +58,201 @@ sub _error_payload {
         error        => $fallback,
         error_values => $values,
     };
+}
+
+
+my $shm_root = '/run/shm/cssframework';
+my $ram_backup_limit = 5;
+
+sub _prune_ram_theme_backups {
+    my ($theme_backup_root) = @_;
+    return if !defined($theme_backup_root) || !-d $theme_backup_root;
+
+    opendir(my $dh, $theme_backup_root) or die "open-backup-root:$theme_backup_root:$!";
+    my @snapshots = grep {
+        $_ ne '.' && $_ ne '..' && -d "$theme_backup_root/$_"
+    } readdir($dh);
+    closedir($dh);
+
+    @snapshots = sort {
+        my $am = (stat("$theme_backup_root/$a"))[9] || 0;
+        my $bm = (stat("$theme_backup_root/$b"))[9] || 0;
+        $bm <=> $am || $b cmp $a;
+    } @snapshots;
+
+    for my $index ($ram_backup_limit .. $#snapshots) {
+        remove_tree("$theme_backup_root/$snapshots[$index]");
+    }
+}
+
+sub _archive_transaction_backups {
+    my ($theme_id, $backup_dir, $manifest) = @_;
+    return '' if !defined($backup_dir) || !-d $backup_dir;
+    return '' if ref($manifest) ne 'ARRAY';
+
+    my @existing = grep { $_->{existed} && -f $_->{backup} } @{$manifest};
+    return '' if !@existing;
+
+    my $safe_id = $theme_id || 'theme';
+    $safe_id =~ s/[^A-Za-z0-9_.-]+/_/g;
+    my $theme_backup_root = "$shm_root/backups/$safe_id";
+    make_path($theme_backup_root, { mode => 0775 }) if !-d $theme_backup_root;
+
+    my $stamp = strftime('%Y%m%d-%H%M%S', localtime);
+    my $snapshot_name = join('-', $stamp, $$, int(rand(1_000_000)));
+    my $snapshot_dir = "$theme_backup_root/$snapshot_name";
+
+    my @backup_manifest = map {
+        {
+            target => $_->{target},
+            backup => basename($_->{backup}),
+        }
+    } @existing;
+    make_path($snapshot_dir, { mode => 0775 });
+    for my $entry (@existing) {
+        my $destination = "$snapshot_dir/" . basename($entry->{backup});
+        copy($entry->{backup}, $destination)
+            or die "archive-backup-file:$entry->{backup}:$destination:$!";
+        chmod 0664, $destination;
+    }
+    _write_raw_file("$snapshot_dir/backup-manifest.json", _pretty_json({
+        theme      => $theme_id,
+        created_at => strftime('%Y-%m-%dT%H:%M:%S%z', localtime),
+        files      => \@backup_manifest,
+    }));
+    chmod 0775, $snapshot_dir;
+    return $snapshot_dir;
+}
+
+sub _read_raw_file {
+    my ($path) = @_;
+    return undef if !defined $path || !-f $path;
+    open(my $fh, '<:raw', $path) or return undef;
+    local $/;
+    my $content = <$fh>;
+    close($fh);
+    return defined $content ? $content : '';
+}
+
+sub _write_raw_file {
+    my ($path, $content) = @_;
+    open(my $fh, '>:raw', $path) or die "open:$path:$!";
+    print {$fh} defined($content) ? $content : '' or die "write:$path:$!";
+    close($fh) or die "close:$path:$!";
+    return 1;
+}
+
+sub _transactional_write_files {
+    my ($theme_id, $items) = @_;
+    die 'invalid transaction items' if ref($items) ne 'ARRAY' || !@{$items};
+
+    my $tx_root = "$shm_root/transactions";
+    my $lock_root = "$shm_root/locks";
+    make_path($tx_root, { mode => 0775 }) if !-d $tx_root;
+    make_path($lock_root, { mode => 0775 }) if !-d $lock_root;
+
+    my $safe_id = $theme_id || 'theme';
+    $safe_id =~ s/[^A-Za-z0-9_.-]+/_/g;
+    my $lock_dir = "$lock_root/$safe_id.lock";
+    if (-d $lock_dir) {
+        my $age = time() - ((stat($lock_dir))[9] || time());
+        rmdir($lock_dir) if $age > 300;
+    }
+    mkdir($lock_dir, 0775) or die "locked:$lock_dir:$!";
+
+    my $tx_id = join('-', 'save', $$, time(), int(rand(1_000_000)));
+    my $tx_dir = "$tx_root/$tx_id";
+    my $stage_dir = "$tx_dir/stage";
+    my $backup_dir = "$tx_dir/backup";
+    my @committed;
+    my @target_tmps;
+    my $archived_backup = '';
+    my $ok = eval {
+        make_path($stage_dir, { mode => 0775 });
+        make_path($backup_dir, { mode => 0775 });
+
+        my @manifest;
+        for my $index (0 .. $#{$items}) {
+            my ($target, $content, $kind) = @{$items->[$index]};
+            die "invalid-target" if !defined($target) || $target eq '';
+            my $stage = sprintf('%s/%03d-%s', $stage_dir, $index, basename($target));
+            _write_raw_file($stage, $content);
+            die "empty-stage:$target" if !-s $stage;
+            if (($kind || '') eq 'json') {
+                my $parsed = eval { decode_json(_read_raw_file($stage)) };
+                die "invalid-stage-json:$target" if $@ || ref($parsed) ne 'HASH';
+            }
+            my $backup = sprintf('%s/%03d-%s.bak', $backup_dir, $index, basename($target));
+            my $existed = -f $target ? 1 : 0;
+            if ($existed) {
+                copy($target, $backup) or die "backup:$target:$!";
+            }
+            push @manifest, {
+                target => $target, stage => $stage, backup => $backup,
+                existed => $existed ? JSON::PP::true : JSON::PP::false,
+            };
+        }
+        _write_raw_file("$tx_dir/transaction.json", _pretty_json({ theme => $theme_id, files => \@manifest }));
+
+        for my $index (0 .. $#manifest) {
+            my $entry = $manifest[$index];
+            my $target = $entry->{target};
+            my $dir = dirname($target);
+            make_path($dir, { mode => 0775 }) if !-d $dir;
+            my $tmp = "$dir/." . basename($target) . ".cssframework-tx-$$-$index.tmp";
+            push @target_tmps, $tmp;
+            copy($entry->{stage}, $tmp) or die "copy-to-target:$target:$!";
+            chmod 0664, $tmp;
+            rename($tmp, $target) or die "rename-target:$target:$!";
+            push @committed, $entry;
+        }
+
+        # V481: Create the retained RAM snapshot only after every target has
+        # been committed successfully. Verify that the snapshot really exists
+        # and contains its manifest before reporting a successful save.
+        # V485: The atomic target commit must not be rolled back merely because
+        # the optional retained RAM history cannot be archived. Transactional
+        # rollback backups remain available until this block has completed.
+        my $archive_ok = eval {
+            $archived_backup = _archive_transaction_backups($theme_id, $backup_dir, \@manifest);
+            if ($archived_backup ne '') {
+                die "ram-backup-missing:$archived_backup" if !-d $archived_backup;
+                die "ram-backup-manifest-missing:$archived_backup" if !-s "$archived_backup/backup-manifest.json";
+                _prune_ram_theme_backups(dirname($archived_backup));
+            }
+            1;
+        };
+        if (!$archive_ok) {
+            remove_tree($archived_backup) if $archived_backup ne '' && -d $archived_backup;
+            $archived_backup = '';
+        }
+        1;
+    };
+    my $error = $@;
+
+    if (!$ok) {
+        remove_tree($archived_backup) if $archived_backup ne '' && -d $archived_backup;
+        for my $entry (reverse @committed) {
+            my $target = $entry->{target};
+            my $dir = dirname($target);
+            my $rollback_tmp = "$dir/." . basename($target) . ".cssframework-rollback-$$.tmp";
+            if ($entry->{existed}) {
+                if (copy($entry->{backup}, $rollback_tmp)) {
+                    chmod 0664, $rollback_tmp;
+                    rename($rollback_tmp, $target);
+                }
+            } else {
+                unlink($target) if -e $target;
+            }
+            unlink($rollback_tmp) if -e $rollback_tmp;
+        }
+    }
+
+    unlink($_) for grep { defined($_) && -e $_ } @target_tmps;
+    remove_tree($tx_dir) if -d $tx_dir;
+    rmdir($lock_dir) if -d $lock_dir;
+    die $error if !$ok;
+    return $archived_backup;
 }
 
 for my $dir ($theme_json_dir, $theme_dir, $manifest_dir) {
@@ -164,13 +360,6 @@ if (-f $json_path) {
         $old = eval { decode_json($old_raw) };
     }
     $version = _inc_patch(ref($old) eq 'HASH' ? $old->{version} : $version);
-    my $stamp = strftime('%Y%m%d-%H%M%S', localtime);
-    my $bak = "$theme_json_dir/$id.$stamp.v$version.json.bak";
-    if (!move($json_path, $bak)) {
-        _respond('500 Internal Server Error', _error_payload('cannotBackupPreviousJson', 'cannotBackupPreviousJson', { path => $json_path }));
-    }
-    chmod 0664, $bak;
-    $previous_backup = $bak;
 }
 
 my $tokens = ref($data->{tokens}) eq 'HASH' ? $data->{tokens} : {};
@@ -198,6 +387,27 @@ sub _sanitize_custom_css_value {
     }
 
     $value =~ s/^\s+|\s+$//g;
+    return $value;
+}
+
+
+# V488: Remove obsolete generated jQM flipswitch experiments from every input
+# and from the final CSS. Older generated themes may still carry these blocks
+# through imported custom CSS or stale persisted state. They must never survive
+# a new save because V483 recolors the complete moving ON anchor and V486
+# replaces Core/jQM geometry.
+sub _strip_obsolete_jqm_flipswitch_css {
+    my ($value) = @_;
+    $value = '' if !defined $value;
+
+    # V483 consists of one marked declaration block.
+    $value =~ s{
+?/\*\s*V483:\s*JQM\s+ACTIVE\s+FLIPSWITCH\s+KNOB\s*=\s*PRIMARY\s*\*/[\s\S]*?\}\s*}{}ig;
+
+    # V486 has explicit start/end markers.
+    $value =~ s{
+?/\*\s*V486:\s*FINAL\s+JQM\s+FLIPSWITCH\s+GEOMETRY\s+CONTRACT\s*\*/[\s\S]*?/\*\s*V486:\s*FINAL\s+JQM\s+FLIPSWITCH\s+GEOMETRY\s+CONTRACT\s+END\s*\*/\s*}{}ig;
+
     return $value;
 }
 
@@ -278,6 +488,146 @@ sub _normalize_hex_color {
 }
 
 
+
+# V467: Parse alpha-bearing CSS colors and composite them over their actual
+# underlay before contrast decisions. The old helper intentionally normalised
+# rgba() to its opaque RGB channels, which is unsuitable for translucent jQM
+# switch labels.
+sub _parse_css_rgba {
+    my ($value) = @_;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/^\s+|\s+$//g;
+    return undef if $value eq '';
+    return { r => 0, g => 0, b => 0, a => 0 } if lc($value) eq 'transparent';
+
+    if ($value =~ /^#([0-9a-fA-F]{3,8})$/) {
+        my $h = lc($1);
+        if (length($h) == 3 || length($h) == 4) {
+            $h = join('', map { $_ . $_ } split(//, $h));
+        }
+        return undef if length($h) != 6 && length($h) != 8;
+        return {
+            r => hex(substr($h, 0, 2)),
+            g => hex(substr($h, 2, 2)),
+            b => hex(substr($h, 4, 2)),
+            a => length($h) == 8 ? hex(substr($h, 6, 2)) / 255 : 1,
+        };
+    }
+
+    if ($value =~ /^rgba?\(\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)%?)\s*,\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)%?)\s*,\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)%?)(?:\s*,\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)%?))?\s*\)$/i) {
+        my @raw = ($1, $2, $3);
+        my @rgb;
+        for my $part (@raw) {
+            my $percent = $part =~ /%$/ ? 1 : 0;
+            $part =~ s/%$//;
+            my $n = 0 + $part;
+            $n *= 2.55 if $percent;
+            $n = 0 if $n < 0;
+            $n = 255 if $n > 255;
+            push @rgb, $n;
+        }
+        my $alpha = defined $4 && $4 ne '' ? $4 : 1;
+        my $alpha_percent = $alpha =~ /%$/ ? 1 : 0;
+        $alpha =~ s/%$//;
+        $alpha = 0 + $alpha;
+        $alpha /= 100 if $alpha_percent;
+        $alpha = 0 if $alpha < 0;
+        $alpha = 1 if $alpha > 1;
+        return { r => $rgb[0], g => $rgb[1], b => $rgb[2], a => $alpha };
+    }
+    return undef;
+}
+
+sub _composite_css_rgba {
+    my ($top, $bottom) = @_;
+    $top ||= { r => 0, g => 0, b => 0, a => 0 };
+    $bottom ||= { r => 255, g => 255, b => 255, a => 1 };
+    my $out_a = $top->{a} + $bottom->{a} * (1 - $top->{a});
+    return { r => 0, g => 0, b => 0, a => 0 } if $out_a <= 0.000001;
+    return {
+        r => ($top->{r} * $top->{a} + $bottom->{r} * $bottom->{a} * (1 - $top->{a})) / $out_a,
+        g => ($top->{g} * $top->{a} + $bottom->{g} * $bottom->{a} * (1 - $top->{a})) / $out_a,
+        b => ($top->{b} * $top->{a} + $bottom->{b} * $bottom->{a} * (1 - $top->{a})) / $out_a,
+        a => $out_a,
+    };
+}
+
+sub _opaque_hex_from_rgba {
+    my ($rgba) = @_;
+    my $rendered = _composite_css_rgba($rgba, { r => 255, g => 255, b => 255, a => 1 });
+    my @rgb = map {
+        my $n = int($_ + 0.5);
+        $n = 0 if $n < 0;
+        $n = 255 if $n > 255;
+        $n;
+    } ($rendered->{r}, $rendered->{g}, $rendered->{b});
+    return sprintf('#%02x%02x%02x', @rgb);
+}
+
+sub _first_resolved_css_color {
+    my ($tokens, @names) = @_;
+    for my $name (@names) {
+        next if !defined $tokens->{$name};
+        my $raw = _resolve_css_token_value($tokens, $tokens->{$name}, 0);
+        my $rgba = _parse_css_rgba($raw);
+        return { token => $name, value => $raw, rgba => $rgba } if $rgba;
+    }
+    return undef;
+}
+
+sub _effective_switch_surface {
+    my ($tokens, $state) = @_;
+    my $on = defined $state && $state eq 'on';
+    my @state_names = $on
+        ? ('--lb-switch-on-bg', '--lb-toggle-active-bg', '--lb-active-bg', '--lb-primary', '--lb-btn-primary-bg')
+        : ('--lb-switch-off-bg', '--lb-toggle-bg', '--lb-btn-bg');
+    my $top = _first_resolved_css_color($tokens, @state_names);
+    if (!$top) {
+        my $fallback = $on ? '#007aff' : 'rgba(0,0,0,.18)';
+        $top = {
+            token => $on ? 'jQM ON fallback' : 'jQM OFF fallback',
+            value => $fallback,
+            rgba => _parse_css_rgba($fallback),
+        };
+    }
+
+    my @layers = ($top);
+    my %seen = ($top->{token} => 1);
+    if ($on) {
+        my $off = _first_resolved_css_color($tokens, '--lb-switch-off-bg', '--lb-toggle-bg', '--lb-btn-bg');
+        if ($off && !$seen{$off->{token}}) {
+            push @layers, $off;
+            $seen{$off->{token}} = 1;
+        }
+    }
+    my $base = _first_resolved_css_color($tokens, '--lb-bg', '--lb-card-bg', '--lb-input-bg');
+    if ($base && !$seen{$base->{token}}) {
+        push @layers, $base;
+        $seen{$base->{token}} = 1;
+    }
+
+    my $rendered = { r => 255, g => 255, b => 255, a => 1 };
+    for (my $i = $#layers; $i >= 0; $i--) {
+        $rendered = _composite_css_rgba($layers[$i]->{rgba}, $rendered);
+    }
+    return {
+        token => $top->{token},
+        raw => $top->{value},
+        value => _opaque_hex_from_rgba($rendered),
+        layers => \@layers,
+    };
+}
+
+sub _rendered_css_contrast_ratio {
+    my ($foreground, $background) = @_;
+    my $fg = _parse_css_rgba($foreground);
+    my $bg = _parse_css_rgba($background);
+    return undef if !$fg || !$bg;
+    my $opaque_bg = _composite_css_rgba($bg, { r => 255, g => 255, b => 255, a => 1 });
+    my $opaque_fg = _composite_css_rgba($fg, $opaque_bg);
+    return _css_contrast_ratio(_opaque_hex_from_rgba($opaque_fg), _opaque_hex_from_rgba($opaque_bg));
+}
+
 sub _css_relative_luminance {
     my ($value) = @_;
     my $hex = _normalize_hex_color($value);
@@ -350,6 +700,40 @@ sub _first_clean_token_value {
     return '';
 }
 
+# V465: Resolve simple and nested CSS custom-property references before
+# semantic contrast checks. V464 only accepted direct hexadecimal values, so
+# common values such as var(--lb-primary) bypassed the switch derivation.
+sub _resolve_css_token_value {
+    my ($tokens, $value, $depth) = @_;
+    $depth ||= 0;
+    return '' if $depth > 10;
+    $value = defined $value ? "$value" : '';
+    $value =~ s/^\s+|\s+$//g;
+    return '' if $value eq '';
+
+    if ($value =~ /^var\(\s*(--[A-Za-z0-9_-]+)\s*(?:,\s*(.+))?\)$/s) {
+        my ($name, $fallback) = ($1, defined $2 ? $2 : '');
+        my $resolved = '';
+        if (defined $tokens->{$name}) {
+            $resolved = _resolve_css_token_value($tokens, $tokens->{$name}, $depth + 1);
+        }
+        return $resolved if $resolved ne '';
+        return _resolve_css_token_value($tokens, $fallback, $depth + 1) if $fallback ne '';
+        return '';
+    }
+    return $value;
+}
+
+sub _first_resolved_token_value {
+    my ($tokens, @names) = @_;
+    for my $name (@names) {
+        next if !defined $tokens->{$name};
+        my $value = _resolve_css_token_value($tokens, $tokens->{$name}, 0);
+        return $value if $value ne '';
+    }
+    return '';
+}
+
 sub _sync_primary_slider_value_tokens {
     my ($tokens) = @_;
     return if ref($tokens) ne 'HASH';
@@ -379,7 +763,63 @@ sub _sync_primary_slider_value_tokens {
     }
 }
 
-my $custom_css = _normalize_custom_css_value($data->{custom_css});
+# V468: jQM slider-switch and flipswitch labels use one deterministic
+# black/white contract. Both states are evaluated against the common neutral
+# switch/input surface over the page background: light surface => #000000,
+# dark surface => #ffffff. This mirrors the actual generated jQM markup where
+# the ON anchor is also the moving handle and its active color is not a reliable
+# text underlay.
+sub _effective_switch_label_surface {
+    my ($tokens) = @_;
+    return undef if ref($tokens) ne 'HASH';
+
+    my $top = _first_resolved_css_color($tokens,
+        '--lb-switch-off-bg',
+        '--lb-toggle-bg',
+        '--lb-input-bg',
+        '--lb-card-bg',
+        '--lb-bg'
+    );
+    my $base = _first_resolved_css_color($tokens,
+        '--lb-bg',
+        '--lb-card-bg',
+        '--lb-input-bg'
+    );
+    return { token => 'jQM label fallback', raw => '#ffffff', value => '#ffffff', layers => [] }
+        if !$top && !$base;
+
+    my @layers;
+    push @layers, $top if $top;
+    push @layers, $base if $base && (!$top || $base->{token} ne $top->{token});
+    my $rendered = { r => 255, g => 255, b => 255, a => 1 };
+    for (my $i = $#layers; $i >= 0; $i--) {
+        $rendered = _composite_css_rgba($layers[$i]->{rgba}, $rendered);
+    }
+    return {
+        token => $top ? $top->{token} : $base->{token},
+        raw => $top ? $top->{value} : $base->{value},
+        value => _opaque_hex_from_rgba($rendered),
+        layers => \@layers,
+    };
+}
+
+sub _sync_switch_text_tokens {
+    my ($tokens) = @_;
+    return if ref($tokens) ne 'HASH';
+
+    my $surface = _effective_switch_label_surface($tokens);
+    my $value = '#000000';
+    if ($surface && _normalize_hex_color($surface->{value}) ne '') {
+        $value = _readable_text_for_surface($surface->{value}, '#ffffff', '#000000');
+    }
+
+    $tokens->{'--lb-switch-on-text'} = $value;
+    $tokens->{'--lb-toggle-active-text'} = $value;
+    $tokens->{'--lb-switch-off-text'} = $value;
+    $tokens->{'--lb-toggle-text'} = $value;
+}
+
+my $custom_css = _strip_obsolete_jqm_flipswitch_css(_normalize_custom_css_value($data->{custom_css}));
 
 my $import_meta = {};
 if (ref($data->{import_meta}) eq 'HASH') {
@@ -706,16 +1146,6 @@ sub _save_protected_wallpaper_only {
     # wallpaper detection contract as normal Studio-generated themes.
     $css_content = _sync_wallpaper_header_metadata($css_content, $wallpaper_ref);
 
-    my $fh;
-    if (!open($fh, '>:encoding(UTF-8)', $css_path)) {
-        _respond('500 Internal Server Error', _error_payload('cannotWriteFile', 'cannotWriteFile', { path => $css_path }));
-    }
-    print {$fh} $css_content;
-    if (!close($fh)) {
-        _respond('500 Internal Server Error', _error_payload('cannotWriteFile', 'cannotWriteFile', { path => $css_path }));
-    }
-    chmod 0664, $css_path;
-
     my $editable_wallpaper = {
         id                       => $theme_id,
         name                     => $theme_name,
@@ -730,12 +1160,13 @@ sub _save_protected_wallpaper_only {
         updated_at               => strftime('%Y-%m-%dT%H:%M:%S%z', localtime),
     };
 
-    my $jfh;
-    if (open($jfh, '>:encoding(UTF-8)', $json_path)) {
-        print {$jfh} _pretty_json($editable_wallpaper);
-        close($jfh);
-        chmod 0664, $json_path;
-    }
+    eval {
+        _transactional_write_files($theme_id, [
+            [$css_path, $css_content, 'css'],
+            [$json_path, _pretty_json($editable_wallpaper), 'json'],
+        ]);
+        1;
+    } or _respond('500 Internal Server Error', _error_payload('transactionalSaveFailed', 'transactionalSaveFailed', { detail => "$@" }));
 
     _respond('200 OK', {
         ok        => JSON::PP::true,
@@ -786,6 +1217,7 @@ for my $token (sort keys %{$tokens}) {
     $clean_tokens{$token} = $value;
 }
 _sync_primary_slider_value_tokens(\%clean_tokens) if keys(%clean_tokens);
+_sync_switch_text_tokens(\%clean_tokens) if keys(%clean_tokens);
 _sync_tinted_surface_tokens(\%clean_tokens) if keys(%clean_tokens);
 
 # V423: Server-side save validation for dark and light themes. The browser
@@ -943,8 +1375,10 @@ $css .= "  background: var(--lb-bg, transparent) !important;\n";
 $css .= "  color: var(--lb-text, inherit) !important;\n";
 $css .= "  text-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-btn, body.$id .ui-btn:visited, body.$id .ui-btn:link, body.$id a.ui-btn, body.$id button.ui-btn,\n";
-$css .= ".$id .ui-btn, .$id .ui-btn:visited, .$id .ui-btn:link, .$id a.ui-btn, .$id button.ui-btn {\n";
+# V489: The internal jQM flipswitch anchor also carries .ui-btn. It is not a
+# normal button and must stay entirely under Core legacy-jqm-compat.css.
+$css .= "body.$id .ui-btn:not(.ui-flipswitch-on), body.$id .ui-btn:not(.ui-flipswitch-on):visited, body.$id .ui-btn:not(.ui-flipswitch-on):link, body.$id a.ui-btn:not(.ui-flipswitch-on), body.$id button.ui-btn:not(.ui-flipswitch-on),\n";
+$css .= ".$id .ui-btn:not(.ui-flipswitch-on), .$id .ui-btn:not(.ui-flipswitch-on):visited, .$id .ui-btn:not(.ui-flipswitch-on):link, .$id a.ui-btn:not(.ui-flipswitch-on), .$id button.ui-btn:not(.ui-flipswitch-on) {\n";
 $css .= "  background-image: none !important;\n";
 $css .= "  background-color: var(--lb-btn-bg, var(--lb-card-bg, #fff)) !important;\n";
 $css .= "  color: var(--lb-btn-text, var(--lb-text, inherit)) !important;\n";
@@ -955,8 +1389,8 @@ $css .= "  border-radius: var(--lb-btn-radius, var(--lb-radius, 4px)) !important
 $css .= "  text-shadow: none !important;\n";
 $css .= "  box-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-btn:hover, body.$id a.ui-btn:hover, body.$id button.ui-btn:hover,\n";
-$css .= ".$id .ui-btn:hover, .$id a.ui-btn:hover, .$id button.ui-btn:hover {\n";
+$css .= "body.$id .ui-btn:not(.ui-flipswitch-on):hover, body.$id a.ui-btn:not(.ui-flipswitch-on):hover, body.$id button.ui-btn:not(.ui-flipswitch-on):hover,\n";
+$css .= ".$id .ui-btn:not(.ui-flipswitch-on):hover, .$id a.ui-btn:not(.ui-flipswitch-on):hover, .$id button.ui-btn:not(.ui-flipswitch-on):hover {\n";
 $css .= "  background-image: none !important;\n";
 $css .= "  background-color: var(--lb-btn-hover-bg, var(--lb-btn-bg, var(--lb-card-bg, #fff))) !important;\n";
 $css .= "  color: var(--lb-btn-hover-text, var(--lb-btn-text, var(--lb-text, inherit))) !important;\n";
@@ -964,8 +1398,8 @@ $css .= "  border-color: var(--lb-btn-hover-border, var(--lb-btn-border, var(--l
 $css .= "  text-shadow: none !important;\n";
 $css .= "  box-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-btn.ui-btn-active, body.$id .ui-btn.ui-state-persist, body.$id .ui-btn-active,\n";
-$css .= ".$id .ui-btn.ui-btn-active, .$id .ui-btn.ui-state-persist, .$id .ui-btn-active {\n";
+$css .= "body.$id .ui-btn:not(.ui-flipswitch-on).ui-btn-active, body.$id .ui-btn:not(.ui-flipswitch-on).ui-state-persist, body.$id .ui-btn-active:not(.ui-flipswitch-on),\n";
+$css .= ".$id .ui-btn:not(.ui-flipswitch-on).ui-btn-active, .$id .ui-btn:not(.ui-flipswitch-on).ui-state-persist, .$id .ui-btn-active:not(.ui-flipswitch-on) {\n";
 $css .= "  background-image: none !important;\n";
 $css .= "  background-color: var(--lb-active-bg, var(--lb-btn-primary-bg, var(--lb-primary, #007aff))) !important;\n";
 $css .= "  color: var(--lb-active-text, var(--lb-btn-primary-text, #fff)) !important;\n";
@@ -1121,7 +1555,6 @@ $css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--l
 $css .= "  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))))) !important;\n";
 $css .= "  border-style: solid !important;\n";
 $css .= "  border-width: 1px !important;\n";
-$css .= "  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-btn-radius, var(--lb-radius, 999px)))) !important;\n";
 $css .= "  box-shadow: none !important;\n";
 $css .= "  text-shadow: none !important;\n";
 $css .= "}\n";
@@ -1131,42 +1564,31 @@ $css .= "  text-shadow: none !important;\n";
 $css .= "  box-shadow: none !important;\n";
 $css .= "  font-family: var(--lb-font) !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-slider-switch .ui-slider-label-a, .$id .ui-slider-switch .ui-slider-label-a {\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-label-a, body.$id .ui-slider-switch .ui-slider-label-a .ui-btn-text,\n";
+$css .= ".$id .ui-slider-switch .ui-slider-label-a, .$id .ui-slider-switch .ui-slider-label-a .ui-btn-text {\n";
 $css .= "  background-color: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;\n";
 $css .= "  color: var(--lb-switch-on-text, var(--lb-toggle-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;\n";
+$css .= "  -webkit-text-fill-color: var(--lb-switch-on-text, var(--lb-toggle-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-slider-switch .ui-slider-label-b, .$id .ui-slider-switch .ui-slider-label-b {\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-label-b, body.$id .ui-slider-switch .ui-slider-label-b .ui-btn-text,\n";
+$css .= ".$id .ui-slider-switch .ui-slider-label-b, .$id .ui-slider-switch .ui-slider-label-b .ui-btn-text {\n";
 $css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;\n";
 $css .= "  color: var(--lb-switch-off-text, var(--lb-toggle-text, var(--lb-btn-text, var(--lb-text, inherit)))) !important;\n";
+$css .= "  -webkit-text-fill-color: var(--lb-switch-off-text, var(--lb-toggle-text, var(--lb-btn-text, var(--lb-text, inherit)))) !important;\n";
+$css .= "  text-shadow: none !important;\n";
 $css .= "}\n";
 $css .= "body.$id .ui-slider-switch .ui-slider-handle, body.$id .ui-slider-switch .ui-btn.ui-slider-handle,\n";
 $css .= ".$id .ui-slider-switch .ui-slider-handle, .$id .ui-slider-switch .ui-btn.ui-slider-handle {\n";
 $css .= "  background-image: none !important;\n";
 $css .= "  background-color: var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, var(--lb-slider-thumb-bg, #fff)))) !important;\n";
 $css .= "  border-color: var(--lb-switch-thumb-border, var(--lb-toggle-thumb-border, var(--lb-slider-thumb-border-color, rgba(0,0,0,.18)))) !important;\n";
-$css .= "  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, 999px)) !important;\n";
 $css .= "  box-shadow: var(--lb-switch-thumb-shadow, var(--lb-toggle-thumb-shadow, 0 1px 4px rgba(0,0,0,.22))) !important;\n";
 $css .= "  text-shadow: none !important;\n";
 $css .= "}\n";
-$css .= "body.$id .ui-flipswitch, .$id .ui-flipswitch {\n";
-$css .= "  background-image: none !important;\n";
-$css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, var(--lb-btn-bg, rgba(0,0,0,.18)))) !important;\n";
-$css .= "  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-btn-border, var(--lb-border-color, rgba(0,0,0,.18))))) !important;\n";
-$css .= "  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-btn-radius, var(--lb-radius, 999px)))) !important;\n";
-$css .= "  box-shadow: none !important;\n";
-$css .= "  text-shadow: none !important;\n";
-$css .= "}\n";
-$css .= "body.$id .ui-flipswitch.ui-flipswitch-active, .$id .ui-flipswitch.ui-flipswitch-active {\n";
-$css .= "  background-color: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;\n";
-$css .= "  color: var(--lb-switch-on-text, var(--lb-toggle-active-text, var(--lb-active-text, var(--lb-btn-primary-text, #fff)))) !important;\n";
-$css .= "}\n";
-$css .= "body.$id .ui-flipswitch .ui-flipswitch-on, .$id .ui-flipswitch .ui-flipswitch-on {\n";
-$css .= "  background-image: none !important;\n";
-$css .= "  background-color: var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, #fff))) !important;\n";
-$css .= "  border-color: var(--lb-switch-thumb-border, var(--lb-toggle-thumb-border, rgba(0,0,0,.18))) !important;\n";
-$css .= "  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, 999px)) !important;\n";
-$css .= "  box-shadow: var(--lb-switch-thumb-shadow, var(--lb-toggle-thumb-shadow, 0 1px 4px rgba(0,0,0,.22))) !important;\n";
-$css .= "}\n";
+# V489: Do not emit any .ui-flipswitch styling here. Generated themes provide
+# switch color tokens only; Core legacy-jqm-compat.css owns the complete jQM
+# flipswitch implementation, including state, disabled handling and geometry.
 $css .= "/* DESIGN STUDIO JQM COMPAT END */\n";
 
 # Design Studio generated compatibility helpers. These are scoped to the user
@@ -1704,6 +2126,31 @@ $css .= "  /* component-specific rules remain authoritative */\n";
 $css .= "}\n";
 $css .= "/* DESIGN STUDIO LEGACY CONTENT TRANSPARENCY END */\n";
 
+# V468: Final jQM label foreground guard. Emitted after every generated
+# compatibility/layout rule so generic .ui-btn, .ui-btn-inherit and
+# .ui-btn-active declarations cannot restore an unsuitable foreground.
+$css .= "/* V468: FINAL JQM SWITCH LABEL FOREGROUND GUARD */\n";
+$css .= "html body.$id #page_content .ui-slider-switch .ui-slider-label-a,\n";
+$css .= "html body.$id #page_content .ui-slider-switch .ui-slider-label-a *,\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-label-a, body.$id .ui-slider-switch .ui-slider-label-a *,\n";
+$css .= ".$id .ui-slider-switch .ui-slider-label-a, .$id .ui-slider-switch .ui-slider-label-a * {\n";
+$css .= "  color: var(--lb-switch-on-text, var(--lb-toggle-active-text, #000000)) !important;\n";
+$css .= "  -webkit-text-fill-color: var(--lb-switch-on-text, var(--lb-toggle-active-text, #000000)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "html body.$id #page_content .ui-slider-switch .ui-slider-label-b,\n";
+$css .= "html body.$id #page_content .ui-slider-switch .ui-slider-label-b *,\n";
+$css .= "body.$id .ui-slider-switch .ui-slider-label-b, body.$id .ui-slider-switch .ui-slider-label-b *,\n";
+$css .= ".$id .ui-slider-switch .ui-slider-label-b, .$id .ui-slider-switch .ui-slider-label-b * {\n";
+$css .= "  color: var(--lb-switch-off-text, var(--lb-toggle-text, #000000)) !important;\n";
+$css .= "  -webkit-text-fill-color: var(--lb-switch-off-text, var(--lb-toggle-text, #000000)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+
+# V489: No generated flipswitch foreground/geometry guards. Core owns them.
+
+# V489: jQM/Core owns flipswitch state, colors and geometry. Generated themes only expose tokens.
+
 sub _read_file_head {
     my ($file, $limit) = @_;
     $limit ||= 8192;
@@ -1724,24 +2171,25 @@ sub _cleanup_orphan_studio_css {
     return [];
 }
 
+# V488: Final output guard. Even if a stale block entered through an older
+# persisted state, imported CSS or future merge path, it is removed before the
+# transactional write.
+$css = _strip_obsolete_jqm_flipswitch_css($css);
+
 my @writes = (
     [$json_path, _pretty_json($editable)],
     ["$manifest_dir/$id.manifest.json", _pretty_json($manifest)],
     ["$theme_dir/$css_file", $css],
 );
 
-for my $item (@writes) {
-    my ($file, $content) = @{$item};
-    my $fh;
-    if (!open($fh, '>:encoding(UTF-8)', $file)) {
-        _respond('500 Internal Server Error', _error_payload('cannotWriteFile', 'cannotWriteFile', { path => $file }));
-    }
-    print {$fh} $content;
-    if (!close($fh)) {
-        _respond('500 Internal Server Error', _error_payload('cannotCloseWriteFile', 'cannotCloseWriteFile', { path => $file }));
-    }
-    chmod 0664, $file;
-}
+eval {
+    $previous_backup = _transactional_write_files($id, [
+        [$json_path, _pretty_json($editable), 'json'],
+        ["$manifest_dir/$id.manifest.json", _pretty_json($manifest), 'json'],
+        ["$theme_dir/$css_file", $css, 'css'],
+    ]);
+    1;
+} or _respond('500 Internal Server Error', _error_payload('transactionalSaveFailed', 'transactionalSaveFailed', { detail => "$@" }));
 
 my $orphan_css_deleted = _cleanup_orphan_studio_css();
 
@@ -1760,6 +2208,11 @@ _respond('200 OK', {
     css        => "data/plugins/cssframework/themes/$css_file",
     public_css => "theme-file.cgi?file=$css_file",
     css_written => JSON::PP::true,
+    transactional => JSON::PP::true,
+    transaction_root => '/run/shm/cssframework',
+    tokens      => \%clean_tokens,
     previous_backup => $previous_backup,
+    ram_backup_created => $previous_backup ne '' ? JSON::PP::true : JSON::PP::false,
+    ram_backup_limit => $ram_backup_limit,
     orphan_css_deleted => scalar(@{$orphan_css_deleted || []}),
 });

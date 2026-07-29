@@ -1,6 +1,7 @@
 /* LoxBerry CSS Framework Design Studio
- * V370: vertical document-scroll follow for "Vorschaufarben",
- * "Arbeitsbereich / Vorschau" and the Studio status block.
+ * V462: only "Vorschaufarben" follows the vertical document scroll.
+ * "Arbeitsbereich / Vorschau" and the Studio status block remain at their
+ * natural document positions. The palette still stops above the status block.
  */
 (function (global) {
   'use strict';
@@ -9,13 +10,14 @@
   var MIN_VIEWPORT_WIDTH = 761;
   var MIN_VIEWPORT_HEIGHT = 480;
   var CENTERING_SCROLL_DISTANCE = 160;
-  var STATUS_ENTRY_SCROLL_DISTANCE = 96;
+  var STATUS_COLLISION_GAP = 16;
 
   var workbench = null;
   var tabPanel = null;
   var page = null;
+  var palette = null;
+  var preview = null;
   var statusBar = null;
-  var targets = [];
   var frameId = 0;
   var resizeObserver = null;
   var mutationObserver = null;
@@ -65,11 +67,11 @@
   }
 
   function isTwoColumnWorkbench() {
-    if (!workbench || targets.length < 2) return false;
+    if (!workbench || !palette || !preview) return false;
 
     var workbenchRect = workbench.getBoundingClientRect();
-    var paletteRect = targets[0].getBoundingClientRect();
-    var previewRect = targets[1].getBoundingClientRect();
+    var paletteRect = palette.getBoundingClientRect();
+    var previewRect = preview.getBoundingClientRect();
 
     /* Geometry is more reliable than a fixed media-query threshold because
      * the available LoxBerry content width can differ from window.innerWidth. */
@@ -77,86 +79,77 @@
       paletteRect.right < (previewRect.left - 4);
   }
 
-  function updateMainTargets(y, viewHeight, workbenchTop, workbenchBottom) {
-    var progress = Math.min(1, Math.max(0, y / CENTERING_SCROLL_DISTANCE));
-
-    targets.forEach(function (element) {
-      if (!isVisible(element)) {
-        clearShift(element);
-        return;
-      }
-
-      var oldShift = currentShift(element);
-      var rect = element.getBoundingClientRect();
-      var elementHeight = element.offsetHeight || rect.height;
-
-      /* Remove the existing visual translation from the measured document
-       * position to recover the element's stable grid position. */
-      var naturalTop = rect.top + y - oldShift;
-
-      /* Short panels are centered vertically. A panel almost as tall as the
-       * viewport (the Preview) is kept at the safe top edge instead. */
-      var availableHeight = Math.max(0, viewHeight - (EDGE_GAP * 2));
-      var visibleHeight = Math.min(elementHeight, availableHeight);
-      var viewportTop = Math.max(
-        EDGE_GAP,
-        Math.round((viewHeight - visibleHeight) / 2)
-      );
-
-      var requiredShift = Math.max(0, (y + viewportTop) - naturalTop);
-      var softenedShift = requiredShift * progress;
-
-      /* Never leave the Workbench. When the left inspector becomes taller,
-       * this range grows automatically and both requested blocks can follow
-       * the vertical browser scroll through the newly available space. */
-      var maxShift = Math.max(
-        0,
-        workbenchBottom - naturalTop - elementHeight
-      );
-
-      setShift(element, Math.min(softenedShift, maxShift));
-    });
-  }
-
-  function updateStatus(y, viewHeight, workbenchTop) {
-    if (!statusBar || !tabPanel || !isVisible(statusBar)) {
-      clearShift(statusBar);
+  function updatePalette(y, viewHeight, workbenchBottom) {
+    if (!isVisible(palette)) {
+      clearShift(palette);
       return;
     }
 
-    var oldShift = currentShift(statusBar);
-    var rect = statusBar.getBoundingClientRect();
-    var elementHeight = statusBar.offsetHeight || rect.height;
+    var oldShift = currentShift(palette);
+    var rect = palette.getBoundingClientRect();
+    var elementHeight = palette.offsetHeight || rect.height;
+
+    /* Remove the existing visual translation from the measured document
+     * position to recover the palette's stable grid position. */
     var naturalTop = rect.top + y - oldShift;
 
-    var tabRect = tabPanel.getBoundingClientRect();
-    var tabTop = tabRect.top + y;
-    var tabBottom = tabTop + tabPanel.offsetHeight;
-
-    /* Keep Status horizontally in its existing 50vw layout and move only on
-     * the Y axis. It follows close to the lower viewport edge so it does not
-     * cover the centered Preview and palette panels. */
+    var availableHeight = Math.max(0, viewHeight - (EDGE_GAP * 2));
+    var visibleHeight = Math.min(elementHeight, availableHeight);
     var viewportTop = Math.max(
       EDGE_GAP,
-      viewHeight - elementHeight - EDGE_GAP
+      Math.round((viewHeight - visibleHeight) / 2)
     );
-    var requiredShift = (y + viewportTop) - naturalTop;
-    var progress = Math.min(1, Math.max(0, y / STATUS_ENTRY_SCROLL_DISTANCE));
+
+    var requiredShift = Math.max(0, (y + viewportTop) - naturalTop);
+    var progress = Math.min(1, Math.max(0, y / CENTERING_SCROLL_DISTANCE));
     var softenedShift = requiredShift * progress;
 
-    /* The status bar may move upward from its natural position, but never
-     * above the Workbench start and never below the active tab panel. */
-    var minShift = Math.min(0, (workbenchTop + EDGE_GAP) - naturalTop);
-    var maxShift = Math.max(0, tabBottom - naturalTop - elementHeight);
-    var boundedShift = Math.max(minShift, Math.min(softenedShift, maxShift));
+    /* Never leave the Workbench. Its height grows automatically with the
+     * taller left inspector, so the palette can follow only inside that area. */
+    var maxShift = Math.max(
+      0,
+      workbenchBottom - naturalTop - elementHeight
+    );
 
-    setShift(statusBar, boundedShift);
+    setShift(palette, Math.min(softenedShift, maxShift));
+  }
+
+  function constrainPaletteAgainstStatus(y) {
+    if (!palette || !statusBar || !isVisible(palette) || !isVisible(statusBar)) return;
+
+    var paletteShift = currentShift(palette);
+    var paletteRect = palette.getBoundingClientRect();
+    var statusRect = statusBar.getBoundingClientRect();
+
+    /* Only apply the vertical collision guard where both blocks actually share
+     * horizontal screen space. */
+    var overlapsHorizontally = paletteRect.right > statusRect.left + 1 &&
+      paletteRect.left < statusRect.right - 1;
+    if (!overlapsHorizontally) return;
+
+    var paletteHeight = palette.offsetHeight || paletteRect.height;
+    var paletteNaturalTop = paletteRect.top + y - paletteShift;
+    var statusNaturalTop = statusRect.top + y;
+
+    /* V462: Status no longer follows the viewport. Cap only the palette's
+     * translation so its lower edge stays above the static status block. */
+    var collisionLimitedShift = statusNaturalTop - STATUS_COLLISION_GAP -
+      paletteNaturalTop - paletteHeight;
+
+    if (paletteShift > collisionLimitedShift) {
+      setShift(palette, Math.max(0, collisionLimitedShift));
+    }
   }
 
   function update() {
     frameId = 0;
 
-    if (!page || !workbench || !tabPanel || targets.length !== 2) return;
+    if (!page || !workbench || !tabPanel || !palette || !preview) return;
+
+    /* V462: explicitly remove any old follow state from the two blocks that
+     * must remain at their natural document positions. */
+    clearShift(preview);
+    clearShift(statusBar);
 
     var viewHeight = viewportHeight();
     var enabled = global.innerWidth >= MIN_VIEWPORT_WIDTH &&
@@ -166,8 +159,7 @@
       isTwoColumnWorkbench();
 
     if (!enabled) {
-      targets.forEach(clearShift);
-      clearShift(statusBar);
+      clearShift(palette);
       return;
     }
 
@@ -176,8 +168,8 @@
     var workbenchTop = workbenchRect.top + y;
     var workbenchBottom = workbenchTop + workbench.offsetHeight;
 
-    updateMainTargets(y, viewHeight, workbenchTop, workbenchBottom);
-    updateStatus(y, viewHeight, workbenchTop);
+    updatePalette(y, viewHeight, workbenchBottom);
+    constrainPaletteAgainstStatus(y);
   }
 
   function scheduleUpdate() {
@@ -190,12 +182,13 @@
     tabPanel = document.getElementById('cfwTabWorkbench');
     workbench = document.querySelector('#cfwTabWorkbench .cfw-workbench');
     statusBar = document.getElementById('studioStatusBar');
+    palette = document.querySelector('#cfwTabWorkbench .cfw-left-secondary-stack .cfw-palette-panel');
+    preview = document.querySelector('#cfwTabWorkbench .cfw-right');
 
-    var palette = document.querySelector('#cfwTabWorkbench .cfw-left-secondary-stack .cfw-palette-panel');
-    var preview = document.querySelector('#cfwTabWorkbench .cfw-right');
-    targets = [palette, preview].filter(Boolean);
+    if (!page || !tabPanel || !workbench || !statusBar || !palette || !preview) return;
 
-    if (!page || !tabPanel || !workbench || !statusBar || targets.length !== 2) return;
+    clearShift(preview);
+    clearShift(statusBar);
 
     global.addEventListener('scroll', scheduleUpdate, { passive: true });
     global.addEventListener('resize', scheduleUpdate, { passive: true });
@@ -209,10 +202,9 @@
       resizeObserver.observe(tabPanel);
       resizeObserver.observe(workbench);
       resizeObserver.observe(document.querySelector('.cfw-left-primary-stack'));
+      resizeObserver.observe(palette);
+      resizeObserver.observe(preview);
       resizeObserver.observe(statusBar);
-      targets.forEach(function (element) {
-        resizeObserver.observe(element);
-      });
     }
 
     if ('MutationObserver' in global) {
