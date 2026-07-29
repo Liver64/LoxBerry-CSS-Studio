@@ -3106,9 +3106,13 @@
   margin: 10px 0;
 }
 
-.cfw-affected-token-picker select {
+.cfw-affected-token-explorer {
   width: 100%;
-  min-height: 38px;
+  border: 1px solid var(--lb-border, var(--lb-border-color, #cbd5e1));
+  border-radius: var(--lb-radius-sm, 8px);
+  background: var(--lb-input-bg, transparent);
+  color: var(--lb-input-text, var(--lb-text, inherit));
+  overflow: hidden;
 }
 
 .cfw-token-action,
@@ -4540,4 +4544,157 @@ body > .cfw-modal .cfw-modal-card textarea::placeholder {
   font-weight: 900;
   line-height: 1;
   opacity: 1;
+}
+
+
+/* V432: Pre-save validator; strictly scoped to its own Studio modal. */
+.cfw-validation-modal-card { width:min(760px, calc(100vw - 32px)); max-height:min(82vh, 760px); overflow:auto; }
+.cfw-validation-list { display:grid; gap:10px; margin:14px 0; }
+.cfw-validation-item { display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:start; padding:12px; border:1px solid var(--cfw-border, var(--lb-border-color)); border-radius:var(--lb-radius-sm, 8px); background:var(--cfw-surface-soft, var(--lb-card-bg)); color:var(--cfw-text, var(--lb-text)); }
+.cfw-validation-item > input { margin-top:3px; }
+.cfw-validation-item-body { display:grid; gap:5px; min-width:0; }
+.cfw-validation-token { font-family:var(--lb-font-mono, monospace); font-size:12px; color:var(--cfw-text-muted, var(--lb-text-secondary)); overflow-wrap:anywhere; }
+.cfw-validation-values { display:grid; gap:4px; font-size:12px; }
+.cfw-validation-values > span { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.cfw-validation-values i { width:14px; height:14px; border-radius:50%; border:1px solid var(--cfw-border, var(--lb-border-color)); display:inline-block; flex:0 0 auto; }
+.cfw-validation-note { margin-top:8px; }
+@media (max-width:640px) { .cfw-validation-actions { align-items:stretch; } .cfw-validation-actions .cfw-button { width:100%; } }
+
+/* V434: Component validator severity markers; scoped to validator modal only. */
+.cfw-validation-item .cfw-validation-severity {
+  display:inline-flex;
+  align-items:center;
+  min-width:64px;
+  justify-content:center;
+  padding:2px 7px;
+  margin-right:4px;
+  border-radius:999px;
+  font-size:11px;
+  line-height:1.25;
+  font-weight:800;
+  border:1px solid currentColor;
+}
+.cfw-validation-item.cfw-validation-error { border-left:4px solid var(--lb-danger, #dc2626); }
+.cfw-validation-item.cfw-validation-error .cfw-validation-severity { color:var(--lb-danger, #dc2626); }
+.cfw-validation-item.cfw-validation-warning { border-left:4px solid var(--lb-warning, #ca8a04); }
+.cfw-validation-item.cfw-validation-warning .cfw-validation-severity { color:var(--lb-warning, #ca8a04); }
+.cfw-validation-item.cfw-validation-info { border-left:4px solid var(--lb-primary, #2563eb); }
+.cfw-validation-item.cfw-validation-info .cfw-validation-severity { color:var(--lb-primary, #2563eb); }
+
+
+/* V442: grouped, collapsible affected-token explorer */
+.cfw-affected-token-explorer {
+  width: 100%;
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid var(--lb-border, var(--lb-border-color, #cbd5e1));
+  border-radius: var(--lb-radius-sm, 8px);
+  background: var(--lb-input-bg, #fff);
+  color: var(--lb-input-text, var(--lb-text, #111827));
+}
+.cfw-affected-token-group {
+  border-bottom: 1px solid var(--lb-border, var(--lb-border-color, #e2e8f0));
+}
+.cfw-affected-token-group:last-child { border-bottom: 0; }
+.cfw-affected-token-group > summary {
+  cursor: pointer;
+  padding: 8px 10px;
+  font-weight: 700;
+  user-select: none;
+  background: transparent;
+  color: inherit;
+}
+.cfw-affected-token-group > summary span { font-weight: 400; opacity: .72; }
+.cfw-affected-token-group-items {
+  display: grid;
+  gap: 2px;
+  padding: 0 6px 7px 18px;
+}
+.cfw-affected-token-entry {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cfw-affected-token-entry:hover,
+.cfw-affected-token-entry:focus-visible {
+  background: var(--lb-hover-bg, rgba(127,127,127,.12));
+  outline: none;
+}
+.cfw-affected-token-entry.is-active {
+  background: var(--lb-primary, #2563eb);
+  color: var(--lb-primary-text, #fff);
+}
+.cfw-affected-token-entry code { color: inherit; }
+.cfw-affected-token-entry:disabled { cursor: not-allowed; opacity: .55; }
+
+/* V444: unmistakable synchronized selection in explorer and token chips. */
+.cfw-page.cfw-design-studio .cfw-affected-token-entry.is-active,
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.is-active,
+.cfw-page.cfw-design-studio .cfw-inline-token-action.is-active {
+  position: relative;
+  border: 2px solid #e53935 !important;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, .16) !important;
+  font-weight: 600;
+  outline: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-affected-token-entry.is-active {
+  padding-left: 30px;
+  background: var(--lb-selection-bg, var(--lb-primary-soft, #bae6fd));
+  color: var(--lb-selection-text, var(--lb-text, #111827));
+}
+
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.is-active,
+.cfw-page.cfw-design-studio .cfw-inline-token-action.is-active {
+  padding-left: 25px;
+}
+
+.cfw-page.cfw-design-studio .cfw-affected-token-entry.is-active::before,
+.cfw-page.cfw-design-studio #selectedTokenList .cfw-token-action.is-active::before,
+.cfw-page.cfw-design-studio .cfw-inline-token-action.is-active::before {
+  content: "📍";
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 1;
+  font-size: 14px;
+}
+
+
+
+/* V454: Persistent preview selection outline follows the active preview theme. */
+.cfw-page.cfw-design-studio #previewRoot .cfw-preview-selected {
+  outline: 2px dashed var(
+    --lb-focus-ring,
+    var(--lb-primary, var(--lb-active-bg, var(--lb-accent, currentColor)))
+  ) !important;
+  outline-offset: 4px !important;
+  box-shadow: none !important;
+}
+
+/* V459: Button-group selection uses the wrapper's native outline.
+   The former ::after construction was clipped by preview/layout containers and
+   also disabled the generic persistent outline with outline:none. */
+.cfw-page.cfw-design-studio #previewRoot .cfw-preview-btn-group.cfw-preview-selected,
+.cfw-page.cfw-design-studio #previewRoot .lb-btn-group.cfw-preview-selected {
+  position: relative !important;
+  z-index: 2 !important;
+  outline: 2px dashed var(
+    --lb-focus-ring,
+    var(--lb-primary, var(--lb-active-bg, var(--lb-accent, currentColor)))
+  ) !important;
+  outline-offset: 4px !important;
+}
+
+.cfw-page.cfw-design-studio #previewRoot .cfw-preview-btn-group.cfw-preview-selected::after,
+.cfw-page.cfw-design-studio #previewRoot .lb-btn-group.cfw-preview-selected::after {
+  content: none !important;
+  display: none !important;
 }

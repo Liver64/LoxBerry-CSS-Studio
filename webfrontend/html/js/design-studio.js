@@ -14,6 +14,14 @@
 
   var coreTokens = window.CFW_CORE_TOKENS || {};
   var coreData = window.CFW_CORE_DATA || {};
+  // V456: A genuinely new theme must use the canonical design-token baseline.
+  // components.css/utilities.css may repeat compatibility values, while the
+  // design-tokens file is the authoritative neutral starting point.
+  var neutralNewThemeTokens = Object.assign(
+    {},
+    coreTokens || {},
+    (coreData.tokens_by_file && coreData.tokens_by_file.design_tokens) || {}
+  );
   var userThemes = Array.isArray(window.CFW_USER_THEMES) ? window.CFW_USER_THEMES : [];
   var themeState = window.CFWThemeStateManager || null;
 
@@ -114,6 +122,9 @@
   var expandedPropertyTokenKeys = {};
   var activeDirectToken = '';
   var directTokenOverrides = {};
+  // V455: After explicitly choosing "New theme", preview and controls must start
+  // from neutral Core tokens instead of inheriting the previously loaded/runtime theme.
+  var forceNeutralNewTheme = false;
   var aiValidatedDraft = null;
   var aiResultSignature = '';
   var selectedComponentTarget = null;
@@ -342,18 +353,18 @@
   var areas = {
     'Input': {
       'Input Text': {
-        'Grundfarbe': ['--lb-input-bg'],
-        'Textfarbe': ['--lb-input-text'],
-        'Rahmen': ['--lb-input-border'],
+        'Grundfarbe': ['--lb-input-bg', '--lb-textarea-bg', '--lb-select-bg', '--lb-native-select-bg', '--lb-multiselect-summary-bg'],
+        'Textfarbe': ['--lb-input-text', '--lb-textarea-text', '--lb-select-text', '--lb-native-select-text', '--lb-multiselect-text'],
+        'Rahmen': ['--lb-input-border', '--lb-textarea-border', '--lb-select-border', '--lb-native-select-border', '--lb-multiselect-border'],
         'Focus': ['--lb-input-focus-border', '--lb-input-focus-shadow'],
         'Disabled': ['--lb-input-disabled-bg', '--lb-input-disabled-text'],
-        'Radius': ['--lb-input-radius', '--lb-radius-input', '--lb-radius-sm']
+        'Radius': ['--lb-input-radius', '--lb-radius-input', '--lb-textarea-radius', '--lb-select-radius', '--lb-radius-select', '--lb-radius-sm']
       },
       'Textarea': {
-        'Grundfarbe': ['--lb-textarea-bg', '--lb-input-bg'],
-        'Textfarbe': ['--lb-textarea-text', '--lb-input-text'],
-        'Rahmen': ['--lb-textarea-border', '--lb-input-border'],
-        'Radius': ['--lb-textarea-radius', '--lb-input-radius', '--lb-radius-input']
+        'Grundfarbe': ['--lb-input-bg', '--lb-textarea-bg', '--lb-select-bg', '--lb-native-select-bg', '--lb-multiselect-summary-bg'],
+        'Textfarbe': ['--lb-input-text', '--lb-textarea-text', '--lb-select-text', '--lb-native-select-text', '--lb-multiselect-text'],
+        'Rahmen': ['--lb-input-border', '--lb-textarea-border', '--lb-select-border', '--lb-native-select-border', '--lb-multiselect-border'],
+        'Radius': ['--lb-input-radius', '--lb-radius-input', '--lb-textarea-radius', '--lb-select-radius', '--lb-radius-select', '--lb-radius-sm']
       },
       'Input mit Fokus': {
         'Grundfarbe': ['--lb-input-focus-bg', '--lb-input-bg'],
@@ -363,9 +374,9 @@
     },
     'Selects': {
       'Standard Select': {
-        'Grundfarbe': ['--lb-select-bg', '--lb-input-bg'],
-        'Textfarbe': ['--lb-select-text', '--lb-input-text'],
-        'Rahmen': ['--lb-select-border', '--lb-input-border'],
+        'Grundfarbe': ['--lb-input-bg', '--lb-textarea-bg', '--lb-select-bg', '--lb-native-select-bg', '--lb-multiselect-summary-bg'],
+        'Textfarbe': ['--lb-input-text', '--lb-textarea-text', '--lb-select-text', '--lb-native-select-text', '--lb-multiselect-text'],
+        'Rahmen': ['--lb-input-border', '--lb-textarea-border', '--lb-select-border', '--lb-native-select-border', '--lb-multiselect-border'],
         'Hover': ['--lb-select-hover-bg'],
         'Hover Textfarbe': ['--lb-select-hover-text'],
         'Hover Rahmen': ['--lb-select-hover-border'],
@@ -374,12 +385,13 @@
         'Option Textfarbe': ['--lb-select-option-text', '--lb-select-text'],
         'Option Hover': ['--lb-select-option-hover-bg', '--lb-select-hover-bg'],
         'Option Hover Textfarbe': ['--lb-select-option-hover-text', '--lb-select-hover-text'],
-        'Radius': ['--lb-select-radius', '--lb-radius-select', '--lb-input-radius', '--lb-radius-input']
+        'Radius': ['--lb-input-radius', '--lb-radius-input', '--lb-textarea-radius', '--lb-select-radius', '--lb-radius-select', '--lb-radius-sm']
       },
       'Native Select': {
-        'Grundfarbe': ['--lb-native-select-bg', '--lb-input-bg'],
-        'Textfarbe': ['--lb-native-select-text', '--lb-input-text'],
-        'Rahmen': ['--lb-native-select-border', '--lb-input-border']
+        'Grundfarbe': ['--lb-input-bg', '--lb-textarea-bg', '--lb-select-bg', '--lb-native-select-bg', '--lb-multiselect-summary-bg'],
+        'Textfarbe': ['--lb-input-text', '--lb-textarea-text', '--lb-select-text', '--lb-native-select-text', '--lb-multiselect-text'],
+        'Rahmen': ['--lb-input-border', '--lb-textarea-border', '--lb-select-border', '--lb-native-select-border', '--lb-multiselect-border'],
+        'Radius': ['--lb-input-radius', '--lb-radius-input', '--lb-textarea-radius', '--lb-select-radius', '--lb-radius-select', '--lb-radius-sm']
       },
       'Select Menü offen': {
         'Grundfarbe': ['--lb-select-menu-bg'],
@@ -406,11 +418,11 @@
     },
     'Radio': {
       'Standard Radio': {
-        'Grundfarbe': ['--lb-radio-bg', '--lb-checkbox-bg', '--lb-input-bg'],
+        'Grundfarbe': ['--lb-radio-bg'],
         'Active': ['--lb-radio-checked-bg', '--lb-active-bg', '--lb-primary'],
         'Active Rahmen': ['--lb-radio-checked-border', '--lb-radio-checked-bg', '--lb-active-bg', '--lb-primary'],
         'Active Punkt': ['--lb-radio-dot-bg', '--lb-active-text', '--lb-btn-primary-text'],
-        'Rahmen': ['--lb-radio-border', '--lb-checkbox-border', '--lb-input-border', '--lb-border-color'],
+        'Rahmen': ['--lb-radio-border'],
         'Textfarbe': ['--lb-radio-text', '--lb-text']
       },
       'Radio Gruppe': {
@@ -428,10 +440,10 @@
         'Schatten': ['--lb-multiselect-shadow']
       },
       'Dropdown Button': {
-        'Grundfarbe': ['--lb-multiselect-summary-bg', '--lb-select-bg'],
-        'Textfarbe': ['--lb-multiselect-text', '--lb-select-text'],
-        'Rahmen': ['--lb-multiselect-border', '--lb-select-border'],
-        'Radius': ['--lb-select-radius', '--lb-radius-select']
+        'Grundfarbe': ['--lb-input-bg', '--lb-textarea-bg', '--lb-select-bg', '--lb-native-select-bg', '--lb-multiselect-summary-bg'],
+        'Textfarbe': ['--lb-input-text', '--lb-textarea-text', '--lb-select-text', '--lb-native-select-text', '--lb-multiselect-text'],
+        'Rahmen': ['--lb-input-border', '--lb-textarea-border', '--lb-select-border', '--lb-native-select-border', '--lb-multiselect-border'],
+        'Radius': ['--lb-input-radius', '--lb-radius-input', '--lb-textarea-radius', '--lb-select-radius', '--lb-radius-select', '--lb-radius-sm']
       }
     },
     'Slider': {
@@ -460,7 +472,7 @@
     'Toggle': {
       'Standard Toggle': {
         'Active': ['--lb-switch-on-bg', '--lb-toggle-active-bg', '--lb-active-bg', '--lb-primary'],
-        'Hintergrund': ['--lb-switch-off-bg', '--lb-toggle-bg', '--lb-input-bg'],
+        'Hintergrund': ['--lb-switch-off-bg', '--lb-toggle-bg'],
         'Rahmen': ['--lb-switch-border', '--lb-toggle-border', '--lb-border-color', '--lb-border'],
         'Knopf': ['--lb-switch-thumb-bg', '--lb-toggle-thumb-bg', '--lb-toggle-knob-bg'],
         'Radius': ['--lb-switch-radius', '--lb-toggle-radius', '--lb-toggle-slider-radius', '--lb-toggle-thumb-radius', '--lb-toggle-knob-radius']
@@ -1404,6 +1416,7 @@
 
   function applyLocalThemeColor() {
     if (!newThemeColorPicker || isProtectedStudioThemeId(themeId && themeId.value)) return;
+    forceNeutralNewTheme = false;
     var sourceInfo = selectedUserThemeInfo();
     var sourceName = sourceInfo && sourceInfo.theme ? (sourceInfo.theme.name || sourceInfo.theme.id) : (themeName && themeName.value ? themeName.value : tx('toolbar.currentPreviewNewTheme'));
     var sourceTokens = effectivePreviewTokens();
@@ -1782,8 +1795,8 @@
       return applyDesignRules(tokens);
     }
 
-    Object.assign(tokens, coreTokens || {});
-    Object.assign(tokens, readRuntimeThemeTokens(extraNames) || {});
+    Object.assign(tokens, forceNeutralNewTheme ? neutralNewThemeTokens : (coreTokens || {}));
+    if (!forceNeutralNewTheme) Object.assign(tokens, readRuntimeThemeTokens(extraNames) || {});
     Object.assign(tokens, collectTokens() || {});
     return applyDesignRules(tokens);
   }
@@ -2688,22 +2701,42 @@
   }
 
   function affectedTokenRoleLabel(token, property) {
+    // V441: Keep the affected-token list compact. The previous label combined
+    // the editor property and the token role even when both described the same
+    // thing (for example "Textfarbe – Textfarbe" or "Rahmen – Rahmen").
+    // Show state + role and only keep the property when it adds information.
     var de = i18nLanguage === 'de';
     var lower = String(token || '').toLowerCase();
-    var detail = '';
-    if (/(?:-on|-active)(?:-|$)/.test(lower)) detail = de ? 'Aktiv' : 'Active';
-    else if (/(?:-off|-inactive)(?:-|$)/.test(lower)) detail = de ? 'Inaktiv' : 'Inactive';
-    else if (/-hover(?:-|$)/.test(lower)) detail = 'Hover';
-    else if (/-focus(?:-|$)/.test(lower)) detail = 'Focus';
-    else if (/(?:-thumb|-knob)(?:-|$)/.test(lower)) detail = de ? 'Knopf' : 'Thumb';
-    else if (/-placeholder(?:-|$)/.test(lower)) detail = 'Placeholder';
-    if (/-text(?:-|$)/.test(lower) || /-color$/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Textfarbe' : 'Text color');
-    else if (/-bg(?:-|$)/.test(lower) || /background/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Hintergrund' : 'Background');
-    else if (/-border(?:-|$)/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Rahmen' : 'Border');
-    else if (/-radius(?:-|$)/.test(lower)) detail += (detail ? ' · ' : '') + 'Radius';
-    else if (/border-width/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Rahmenstärke' : 'Border width');
-    else if (/-shadow(?:-|$)/.test(lower)) detail += (detail ? ' · ' : '') + (de ? 'Schatten' : 'Shadow');
-    return [displayGroupName(property || ''), detail].filter(Boolean).join(' – ') || token;
+    var state = '';
+    var role = '';
+    if (/(?:-on|-active)(?:-|$)/.test(lower)) state = de ? 'Aktiv' : 'Active';
+    else if (/(?:-off|-inactive)(?:-|$)/.test(lower)) state = de ? 'Inaktiv' : 'Inactive';
+    else if (/-hover(?:-|$)/.test(lower)) state = 'Hover';
+    else if (/-focus(?:-|$)/.test(lower)) state = de ? 'Fokus' : 'Focus';
+    else if (/(?:-thumb|-knob)(?:-|$)/.test(lower)) state = de ? 'Knopf' : 'Thumb';
+    else if (/-placeholder(?:-|$)/.test(lower)) state = 'Placeholder';
+
+    // Check the more specific border-width role before the generic border role.
+    if (/border-width/.test(lower)) role = de ? 'Rahmenstärke' : 'Border width';
+    else if (/-text(?:-|$)/.test(lower) || /-color$/.test(lower)) role = de ? 'Textfarbe' : 'Text color';
+    else if (/-bg(?:-|$)/.test(lower) || /background/.test(lower)) role = de ? 'Hintergrund' : 'Background';
+    else if (/-border(?:-|$)/.test(lower)) role = de ? 'Rahmen' : 'Border';
+    else if (/-radius(?:-|$)/.test(lower)) role = 'Radius';
+    else if (/-shadow(?:-|$)/.test(lower)) role = de ? 'Schatten' : 'Shadow';
+
+    var propertyLabel = displayGroupName(property || '');
+    var normalizedProperty = String(propertyLabel || '').toLowerCase().replace(/[^a-z0-9äöüß]+/g, '');
+    var normalizedRole = String(role || '').toLowerCase().replace(/[^a-z0-9äöüß]+/g, '');
+    var genericProperties = de
+      ? ['grundfarbe', 'textfarbe', 'rahmen', 'radius', 'rahmenstärke', 'schatten']
+      : ['basecolor', 'textcolor', 'border', 'radius', 'borderwidth', 'shadow'];
+    var propertyAddsMeaning = propertyLabel &&
+      normalizedProperty !== normalizedRole &&
+      genericProperties.indexOf(normalizedProperty) < 0;
+
+    var compact = [state, role].filter(Boolean).join(' · ');
+    if (propertyAddsMeaning) compact = [propertyLabel, compact].filter(Boolean).join(' · ');
+    return compact || propertyLabel || token;
   }
 
   function affectedTokenValue(token) {
@@ -2756,6 +2789,20 @@
     updateConditionalSettingVisibility();
     renderPropertyInspector();
     updateAffectedTokenDescription(token);
+
+    // V444: Keep the matching chip visible after selecting a token in the
+    // grouped explorer. The inspector is re-rendered above, so query the new
+    // DOM and scroll only inside the nearest viewport where necessary.
+    if (selectedTokenList) {
+      var selectedChip = Array.prototype.find.call(
+        selectedTokenList.querySelectorAll('[data-token]'),
+        function (node) { return node.getAttribute('data-token') === token; }
+      );
+      if (selectedChip) {
+        selectedChip.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+      }
+    }
+
     var control = kind === 'radius' ? radiusRange : (kind === 'borderWidth' ? borderWidthRange : colorPicker);
     if (control) {
       control.focus({ preventScroll: true });
@@ -2763,18 +2810,48 @@
     }
   }
 
+  function affectedTokenGroup(token) {
+    var de = i18nLanguage === 'de';
+    var lower = String(token || '').toLowerCase();
+    if (/(?:-on|-active)(?:-|$)/.test(lower)) return { key: 'active', label: de ? 'Aktiv' : 'Active', order: 10 };
+    if (/(?:-off|-inactive)(?:-|$)/.test(lower)) return { key: 'inactive', label: de ? 'Inaktiv' : 'Inactive', order: 20 };
+    if (/-hover(?:-|$)/.test(lower)) return { key: 'hover', label: 'Hover', order: 30 };
+    if (/-focus(?:-|$)/.test(lower)) return { key: 'focus', label: de ? 'Fokus' : 'Focus', order: 40 };
+    if (/-disabled(?:-|$)/.test(lower)) return { key: 'disabled', label: de ? 'Deaktiviert' : 'Disabled', order: 50 };
+    if (/(?:-thumb|-knob)(?:-|$)/.test(lower)) return { key: 'thumb', label: de ? 'Knopf' : 'Thumb', order: 60 };
+    if (/-radius(?:-|$)/.test(lower)) return { key: 'radius', label: 'Radius', order: 70 };
+    if (/-border(?:-|$)/.test(lower) || /border-width/.test(lower)) return { key: 'border', label: de ? 'Rahmen' : 'Border', order: 80 };
+    if (/-shadow(?:-|$)/.test(lower)) return { key: 'shadow', label: de ? 'Schatten' : 'Shadow', order: 90 };
+    if (/-text(?:-|$)/.test(lower) || /-color$/.test(lower)) return { key: 'text', label: de ? 'Text' : 'Text', order: 100 };
+    if (/-bg(?:-|$)/.test(lower) || /background/.test(lower)) return { key: 'background', label: de ? 'Hintergrund' : 'Background', order: 110 };
+    return { key: 'other', label: de ? 'Weitere' : 'Other', order: 999 };
+  }
+
   function renderAffectedTokenPicker(tokens) {
     tokens = (tokens || []).filter(function (token, index, list) { return list.indexOf(token) === index; });
     if (affectedTokenSelect) {
-      affectedTokenSelect.innerHTML = '';
-      var placeholder = makeOption('', tx('tokens.selectPlaceholder'));
-      affectedTokenSelect.appendChild(placeholder);
+      var groups = {};
       tokens.forEach(function (token) {
-        var property = tokenPropertyForVariant(currentArea(), currentElement(), token);
-        affectedTokenSelect.appendChild(makeOption(token, affectedTokenRoleLabel(token, property) + ' — ' + token));
+        var group = affectedTokenGroup(token);
+        if (!groups[group.key]) groups[group.key] = { meta: group, tokens: [] };
+        groups[group.key].tokens.push(token);
       });
-      affectedTokenSelect.value = tokens.indexOf(activeDirectToken) >= 0 ? activeDirectToken : '';
-      affectedTokenSelect.disabled = isProtectedStudioThemeId(themeId && themeId.value);
+      var currentTokens = (((areas[currentArea()] || {})[currentElement()] || {})[currentGroup()] || []);
+      var ordered = Object.keys(groups).map(function (key) { return groups[key]; }).sort(function (a, b) {
+        return a.meta.order - b.meta.order;
+      });
+      affectedTokenSelect.innerHTML = ordered.map(function (group) {
+        var shouldOpen = group.tokens.some(function (token) {
+          return token === activeDirectToken || currentTokens.indexOf(token) >= 0;
+        });
+        return '<details class="cfw-affected-token-group"' + (shouldOpen ? ' open' : '') + '>' +
+          '<summary>' + escapeHtml(group.meta.label) + ' <span>(' + group.tokens.length + ')</span></summary>' +
+          '<div class="cfw-affected-token-group-items">' + group.tokens.map(function (token) {
+            var classes = 'cfw-affected-token-entry' + (token === activeDirectToken ? ' is-active' : '');
+            return '<button type="button" class="' + classes + '" data-token="' + escapeHtml(token) + '"' +
+              (isProtectedStudioThemeId(themeId && themeId.value) ? ' disabled' : '') + '><code>' + escapeHtml(token) + '</code></button>';
+          }).join('') + '</div></details>';
+      }).join('');
     }
     updateAffectedTokenDescription(tokens.indexOf(activeDirectToken) >= 0 ? activeDirectToken : '');
   }
@@ -3682,10 +3759,194 @@
     return text;
   }
 
-  function saveTheme() {
+  var validationModal = document.getElementById('validationModal');
+  var validationSummary = document.getElementById('validationSummary');
+  var validationIssueList = document.getElementById('validationIssueList');
+  var validationCancelButton = document.getElementById('validationCancel');
+  var validationSaveAnywayButton = document.getElementById('validationSaveAnyway');
+  var validationAutoFixButton = document.getElementById('validationAutoFix');
+  var validateThemeButton = document.getElementById('validateTheme');
+  var pendingValidationSave = false;
+  var lastValidationResult = null;
+
+  /* V432: Pure token validation. No selector, layout, background or Custom CSS
+     is changed by this feature. Only explicitly selected text tokens can be
+     written to the existing Working State override layer. */
+  function validatorSourceTokens() {
+    var out = {};
+    Object.assign(out, coreTokens || {});
+    Object.assign(out, collectTokens() || {});
+    return out;
+  }
+
+  function validatorResolved(tokens, names) {
+    for (var i = 0; i < names.length; i += 1) {
+      var value = normalizeHexColor(resolvedTokenValue(tokens, names[i]));
+      if (value) return { token: names[i], value: value };
+    }
+    return null;
+  }
+
+  /* V434: Component-contract validator. Each entry describes one rendered
+     component state as a surface/text pair. The validator remains read-only
+     until the user explicitly selects an auto correction; only the declared
+     text token is then written to Working State. */
+  function validatorComponentContracts() {
+    return [
+      { area:'page', state:'normal', bg:['--lb-bg'], text:['--lb-text'], target:'--lb-text', min:4.5 },
+      { area:'page', state:'secondary', bg:['--lb-bg'], text:['--lb-text-secondary','--lb-text'], target:'--lb-text-secondary', min:4.5 },
+      { area:'page', state:'muted', bg:['--lb-bg'], text:['--lb-text-muted','--lb-text-secondary'], target:'--lb-text-muted', min:3.0 },
+
+      { area:'card', state:'normal', bg:['--lb-card-bg','--lb-bg'], text:['--lb-card-text','--lb-text'], target:'--lb-card-text', min:4.5 },
+      { area:'input', state:'normal', bg:['--lb-input-bg','--lb-card-bg'], text:['--lb-input-text','--lb-text'], target:'--lb-input-text', min:4.5 },
+
+      { area:'button', state:'normal', bg:['--lb-btn-bg','--lb-card-bg'], text:['--lb-btn-text','--lb-text'], target:'--lb-btn-text', min:4.5 },
+      { area:'button', state:'hover', bg:['--lb-btn-hover-bg','--lb-btn-bg'], text:['--lb-btn-hover-text','--lb-btn-text'], target:'--lb-btn-hover-text', min:4.5 },
+      { area:'primaryButton', state:'normal', bg:['--lb-btn-primary-bg','--lb-primary'], text:['--lb-btn-primary-text','--lb-on-primary'], target:'--lb-btn-primary-text', min:4.5 },
+      { area:'primaryButton', state:'hover', bg:['--lb-btn-primary-hover-bg','--lb-primary-hover','--lb-btn-primary-bg'], text:['--lb-btn-primary-hover-text','--lb-btn-primary-text','--lb-on-primary'], target:'--lb-btn-primary-hover-text', min:4.5 },
+
+      { area:'buttonGroup', state:'inactive', bg:['--lb-btn-group-inactive-bg','--lb-btn-bg'], text:['--lb-btn-group-inactive-text','--lb-btn-text'], target:'--lb-btn-group-inactive-text', min:4.5 },
+      { area:'buttonGroup', state:'hover', bg:['--lb-btn-group-hover-bg','--lb-btn-hover-bg','--lb-btn-group-inactive-bg'], text:['--lb-btn-group-hover-text','--lb-btn-hover-text','--lb-btn-group-inactive-text'], target:'--lb-btn-group-hover-text', min:4.5 },
+      { area:'buttonGroup', state:'active', bg:['--lb-btn-group-active-bg','--lb-active-bg','--lb-primary'], text:['--lb-btn-group-active-text','--lb-active-text','--lb-btn-primary-text'], target:'--lb-btn-group-active-text', min:4.5 },
+      { area:'buttonGroup', state:'activeHover', bg:['--lb-btn-group-active-hover-bg','--lb-primary-hover','--lb-btn-group-active-bg'], text:['--lb-btn-group-active-hover-text','--lb-btn-group-active-text','--lb-active-text'], target:'--lb-btn-group-active-hover-text', min:4.5 },
+
+      { area:'checkbox', state:'label', bg:['--lb-checkbox-group-bg','--lb-bg'], text:['--lb-checkbox-text','--lb-text'], target:'--lb-checkbox-text', min:4.5 },
+      { area:'checkbox', state:'checkedSymbol', bg:['--lb-checkbox-checked-bg','--lb-active-bg','--lb-primary'], text:['--lb-checkbox-checkmark-text','--lb-active-text','--lb-btn-primary-text'], target:'--lb-checkbox-checkmark-text', min:3.0 },
+      { area:'radio', state:'label', bg:['--lb-radio-group-bg','--lb-bg'], text:['--lb-radio-text','--lb-text'], target:'--lb-radio-text', min:4.5 },
+      { area:'radio', state:'checkedDot', bg:['--lb-radio-checked-bg','--lb-active-bg','--lb-primary'], text:['--lb-radio-dot-bg','--lb-active-text','--lb-btn-primary-text'], target:'--lb-radio-dot-bg', min:3.0 },
+
+      { area:'select', state:'normal', bg:['--lb-select-bg','--lb-input-bg'], text:['--lb-select-text','--lb-input-text'], target:'--lb-select-text', min:4.5 },
+      { area:'select', state:'hover', bg:['--lb-select-hover-bg','--lb-select-bg'], text:['--lb-select-hover-text','--lb-select-text'], target:'--lb-select-hover-text', min:4.5 },
+      { area:'select', state:'menu', bg:['--lb-select-menu-bg','--lb-select-bg'], text:['--lb-select-menu-text','--lb-select-text'], target:'--lb-select-menu-text', min:4.5 },
+      { area:'select', state:'option', bg:['--lb-select-option-bg','--lb-select-menu-bg'], text:['--lb-select-option-text','--lb-select-menu-text'], target:'--lb-select-option-text', min:4.5 },
+      { area:'select', state:'optionHover', bg:['--lb-select-option-hover-bg','--lb-select-hover-bg'], text:['--lb-select-option-hover-text','--lb-select-hover-text'], target:'--lb-select-option-hover-text', min:4.5 },
+      { area:'nativeSelect', state:'normal', bg:['--lb-native-select-bg','--lb-input-bg'], text:['--lb-native-select-text','--lb-input-text'], target:'--lb-native-select-text', min:4.5 },
+      { area:'multiselect', state:'summary', bg:['--lb-multiselect-summary-bg','--lb-multiselect-bg','--lb-input-bg'], text:['--lb-multiselect-text','--lb-input-text'], target:'--lb-multiselect-text', min:4.5 },
+      { area:'multiselect', state:'menu', bg:['--lb-dropdown-menu-bg','--lb-select-menu-bg','--lb-input-bg'], text:['--lb-dropdown-menu-text','--lb-select-menu-text','--lb-input-text'], target:'--lb-dropdown-menu-text', min:4.5 },
+      { area:'multiselect', state:'optionHover', bg:['--lb-multiselect-option-hover-bg','--lb-select-option-hover-bg'], text:['--lb-select-option-hover-text','--lb-select-hover-text','--lb-multiselect-text'], target:'--lb-select-option-hover-text', min:4.5 },
+
+      { area:'sidebar', state:'normal', bg:['--lb-sidebar-bg'], text:['--lb-sidebar-text','--lb-text'], target:'--lb-sidebar-text', min:4.5 },
+      { area:'sidebar', state:'hover', bg:['--lb-sidebar-link-hover-bg','--lb-sidebar-hover-bg','--lb-sidebar-bg'], text:['--lb-sidebar-link-hover-text','--lb-sidebar-hover-text','--lb-sidebar-text'], target:'--lb-sidebar-link-hover-text', min:4.5 },
+      { area:'sidebar', state:'active', bg:['--lb-sidebar-active-bg','--lb-primary'], text:['--lb-sidebar-active-text','--lb-sidebar-text'], target:'--lb-sidebar-active-text', min:4.5 },
+      { area:'header', state:'normal', bg:['--lb-header-bg','--lb-sidebar-bg'], text:['--lb-header-text','--lb-sidebar-text'], target:'--lb-header-text', min:4.5 },
+      { area:'headerButton', state:'normal', bg:['--lb-header-btn-bg','--lb-header-bg'], text:['--lb-header-btn-text','--lb-header-text'], target:'--lb-header-btn-text', min:3.0 },
+      { area:'headerButton', state:'hover', bg:['--lb-header-btn-hover-bg','--lb-header-btn-bg'], text:['--lb-header-btn-hover-text','--lb-header-btn-text'], target:'--lb-header-btn-hover-text', min:3.0 },
+
+      { area:'modal', state:'normal', bg:['--lb-modal-bg','--lb-card-bg'], text:['--lb-modal-text','--lb-text'], target:'--lb-modal-text', min:4.5 },
+      { area:'tooltip', state:'normal', bg:['--lb-tooltip-bg','--lb-primary-hover'], text:['--lb-tooltip-text','--lb-on-primary'], target:'--lb-tooltip-text', min:4.5 },
+      { area:'note', state:'normal', bg:['--lb-note-bg','--lb-card-bg'], text:['--lb-note-text','--lb-card-text','--lb-text'], target:'--lb-note-text', min:4.5 },
+      { area:'success', state:'normal', bg:['--lb-success-bg'], text:['--lb-success-text','--lb-text'], target:'--lb-success-text', min:4.5 },
+      { area:'warning', state:'normal', bg:['--lb-warning-bg'], text:['--lb-warning-text','--lb-text'], target:'--lb-warning-text', min:4.5 },
+      { area:'error', state:'normal', bg:['--lb-error-bg'], text:['--lb-error-text','--lb-text'], target:'--lb-error-text', min:4.5 },
+      { area:'notify', state:'normal', bg:['--lb-notify-bg','--lb-success-bg'], text:['--lb-notify-text','--lb-success-text','--lb-text'], target:'--lb-notify-text', min:4.5 },
+
+      { area:'table', state:'body', bg:['--lb-table-cell-bg','--lb-table-row-bg','--lb-table-body-bg','--lb-table-bg'], text:['--lb-table-cell-text','--lb-table-row-text','--lb-table-text','--lb-text'], target:'--lb-table-cell-text', min:4.5 },
+      { area:'table', state:'header', bg:['--lb-table-header-bg','--lb-table-bg'], text:['--lb-table-header-text','--lb-table-text'], target:'--lb-table-header-text', min:4.5 },
+      { area:'table', state:'hover', bg:['--lb-table-row-hover-bg','--lb-table-hover-bg','--lb-table-row-bg'], text:['--lb-table-row-hover-text','--lb-table-hover-text','--lb-table-row-text'], target:'--lb-table-row-hover-text', min:4.5 },
+      { area:'compactTable', state:'body', bg:['--lb-table-compact-bg','--lb-table-bg'], text:['--lb-table-compact-text','--lb-table-text'], target:'--lb-table-compact-text', min:4.5 },
+      { area:'compactTable', state:'header', bg:['--lb-table-compact-header-bg','--lb-table-header-bg'], text:['--lb-table-compact-header-text','--lb-table-header-text'], target:'--lb-table-compact-header-text', min:4.5 },
+      { area:'compactTable', state:'hover', bg:['--lb-table-compact-hover-bg','--lb-table-hover-bg'], text:['--lb-table-compact-hover-text','--lb-table-hover-text'], target:'--lb-table-compact-hover-text', min:4.5 },
+
+      { area:'active', state:'normal', bg:['--lb-active-bg','--lb-primary'], text:['--lb-active-text','--lb-on-primary'], target:'--lb-active-text', min:4.5 },
+      { area:'sliderValue', state:'normal', bg:['--lb-slider-value-bg','--lb-primary'], text:['--lb-slider-value-text','--lb-on-primary'], target:'--lb-slider-value-text', min:4.5 }
+    ];
+  }
+
+  function validationSeverity(ratio, minimum) {
+    if (ratio < 3.0) return 'error';
+    if (ratio < minimum) return 'warning';
+    return 'info';
+  }
+
+  function validateThemeTokens() {
+    var tokens = validatorSourceTokens();
+    var pairs = validatorComponentContracts();
+    var issues = [];
+    var checked = 0;
+    pairs.forEach(function (pair) {
+      var bg = validatorResolved(tokens, pair.bg);
+      var text = validatorResolved(tokens, pair.text);
+      if (!bg || !text) return;
+      checked += 1;
+      var ratio = contrastRatioForColors(text.value, bg.value);
+      if (ratio + 0.001 >= pair.min) return;
+      var suggestion = readableTextFor(bg.value, '#f8fafc', '#111827');
+      issues.push({ area:pair.area, state:pair.state, severity:validationSeverity(ratio, pair.min),
+        backgroundToken:bg.token, background:bg.value,
+        textToken:pair.target, currentToken:text.token, current:text.value,
+        suggested:suggestion, ratio:ratio,
+        suggestedRatio:contrastRatioForColors(suggestion, bg.value), minimum:pair.min });
+    });
+    var counts = { error:0, warning:0, info:0 };
+    issues.forEach(function (issue) { counts[issue.severity] += 1; });
+    return { checked:checked, issues:issues, counts:counts };
+  }
+
+  function escapeValidationHtml(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+
+  function closeValidationModal() {
+    if (validationModal) validationModal.hidden = true;
+    pendingValidationSave = false;
+  }
+
+  function showValidationResult(result, forSave) {
+    lastValidationResult = result;
+    pendingValidationSave = !!forSave;
+    if (!result.issues.length) {
+      setStatus(t('validator.summaryOk', 'validator.summaryOk', { count:result.checked }), false);
+      if (forSave) saveTheme(true);
+      return;
+    }
+    validationSummary.textContent = t('validator.summaryIssues', 'validator.summaryIssues', { issues:result.issues.length, checks:result.checked, errors:result.counts.error, warnings:result.counts.warning });
+    validationIssueList.innerHTML = result.issues.map(function (issue, index) {
+      var area = tx('validator.areas.' + issue.area);
+      var state = tx('validator.states.' + issue.state);
+      var severity = tx('validator.severity.' + issue.severity);
+      return '<label class="cfw-validation-item cfw-validation-' + escapeValidationHtml(issue.severity) + '">' +
+        '<input type="checkbox" data-validation-index="' + index + '" checked data-role="none">' +
+        '<span class="cfw-validation-item-body"><strong><span class="cfw-validation-severity">' + escapeValidationHtml(severity) + '</span> ' + escapeValidationHtml(area) + ' · ' + escapeValidationHtml(state) + '</strong>' +
+        '<span class="cfw-validation-token">' + escapeValidationHtml(issue.textToken) + ' ↔ ' + escapeValidationHtml(issue.backgroundToken) + ' · ' + escapeValidationHtml(tx('validator.minimum')) + ' ' + issue.minimum.toFixed(1) + ':1</span>' +
+        '<span class="cfw-validation-values"><span><i style="background:' + escapeValidationHtml(issue.current) + '"></i>' + escapeValidationHtml(tx('validator.current')) + ': ' + escapeValidationHtml(issue.current) + ' · ' + escapeValidationHtml(tx('validator.contrast')) + ' ' + issue.ratio.toFixed(2) + ':1</span>' +
+        '<span><i style="background:' + escapeValidationHtml(issue.suggested) + '"></i>' + escapeValidationHtml(tx('validator.suggested')) + ': ' + escapeValidationHtml(issue.suggested) + ' · ' + escapeValidationHtml(tx('validator.contrast')) + ' ' + issue.suggestedRatio.toFixed(2) + ':1</span></span></span></label>';
+    }).join('');
+    validationSaveAnywayButton.hidden = !forSave;
+    validationModal.hidden = false;
+  }
+
+  function runThemeValidation(forSave) {
+    showValidationResult(validateThemeTokens(), !!forSave);
+  }
+
+  function applySelectedValidationFixes() {
+    if (!lastValidationResult) return;
+    var selected = validationIssueList.querySelectorAll('input[data-validation-index]:checked');
+    if (!selected.length) { setStatus(tx('validator.nothingSelected'), true); return; }
+    selected.forEach(function (input) {
+      var issue = lastValidationResult.issues[parseInt(input.getAttribute('data-validation-index'), 10)];
+      if (issue) directTokenOverrides[issue.textToken] = issue.suggested;
+    });
+    var count = selected.length;
+    refreshPreviewAndPalette();
+    renderPropertyInspector();
+    setStatus(t('validator.fixed', 'validator.fixed', { count:count }), false);
+    var shouldSave = pendingValidationSave;
+    validationModal.hidden = true;
+    pendingValidationSave = false;
+    if (shouldSave) saveTheme(true);
+  }
+
+  function saveTheme(skipValidation) {
     updateThemeIdentityFromName();
     if (themeId && isReadOnlyProtectedStudioThemeId(themeId.value)) {
       setStatus(protectedStudioThemeMessage(themeId.value), true);
+      return;
+    }
+    if (!skipValidation) {
+      runThemeValidation(true);
       return;
     }
     var wallpaperPayload = buildWallpaperPayload();
@@ -3894,6 +4155,52 @@
   }
 
 
+
+  function resetToNeutralNewTheme() {
+    pushUndoSnapshot('new-theme');
+    forceNeutralNewTheme = true;
+    studioModel = {};
+    directTokenOverrides = {};
+    activeDirectToken = '';
+    aiImportedTokens = {};
+    aiImportedCss = '';
+    lastImportMeta = null;
+    hasActiveEditorSelection = false;
+    selectedComponentTarget = null;
+    wallpaperState = { enabled: false, image: '', brightness: 100, opacity: 100 };
+
+    if (themeId) themeId.value = '';
+    if (themeName) themeName.value = tx('globalColor.newTheme');
+    if (themeVersion) themeVersion.value = '0.1.0';
+    if (customCss) customCss.value = tx('customCss.defaultText');
+    if (wallpaperEnabled) wallpaperEnabled.checked = false;
+    if (wallpaperImage) wallpaperImage.value = '';
+    if (wallpaperBrightness) wallpaperBrightness.value = '100';
+    if (wallpaperOpacity) wallpaperOpacity.value = '100';
+
+    hideImportSummary();
+    updateLiquidGlassPackagePreviewMode();
+    updateLiquidGlassWallpaperEditorMode();
+    updateWallpaperLabels();
+    updateWallpaperControlVisibility();
+
+    if (previewRoot) {
+      appliedPreviewVars.forEach(function (name) { previewRoot.style.removeProperty(name); });
+      appliedPreviewVars = [];
+      previewRoot.querySelectorAll('.cfw-edit-highlight').forEach(function (node) { node.classList.remove('cfw-edit-highlight'); });
+    }
+
+    // Reset the currently visible editor controls from the same neutral
+    // baseline that is applied to the preview. This prevents the last loaded
+    // theme's Checkbox/Radio/Toggle colors from surviving the transition.
+    syncCurrentControlsFromAiTokens(neutralNewThemeTokens);
+    applyTokensToPreviewRoot(neutralNewThemeTokens);
+    broadcastEmbeddedFrameTokens(neutralNewThemeTokens);
+    updateAll(false);
+    refreshEmbeddedFrame('preview');
+    refreshEmbeddedFrame('documentation');
+  }
+
   function populateUserThemeSelect() {
     if (!userThemeSelect) return;
     while (userThemeSelect.options.length > 1) userThemeSelect.remove(1);
@@ -3923,6 +4230,7 @@
     if (index === '' || index == null) return;
     var theme = userThemes[Number(index)];
     if (!theme) return;
+    forceNeutralNewTheme = false;
     pushUndoSnapshot('load-theme');
 
     // V126: Loading a different theme is a complete Working-State replacement.
@@ -5162,8 +5470,7 @@
     var tokenCount = (definition.tokens || []).length;
     card.innerHTML = '' +
       '<strong>' + selectionPathLabel(definition.area, definition.variant) + '</strong>' +
-      '<span>' + displayGroupName(definition.property) + ' · ' + tokenCount + ' ' + tx(tokenCount === 1 ? 'tokens.token' : 'tokens.tokens') + '</span>' +
-      '<em>' + tx('componentInspector.hoverHint') + '</em>';
+      '<span>' + displayGroupName(definition.property) + ' · ' + tokenCount + ' ' + tx(tokenCount === 1 ? 'tokens.token' : 'tokens.tokens') + '</span>';
     var rect = target.getBoundingClientRect();
     var top = Math.max(8, rect.top + window.scrollY - card.offsetHeight - 12);
     var left = Math.min(window.scrollX + document.documentElement.clientWidth - 280, Math.max(8, rect.left + window.scrollX));
@@ -5234,6 +5541,24 @@
     return true;
   }
 
+  function previewSelectionNode(target, definition) {
+    if (!target) return target;
+
+    var area = String((definition && definition.area) || target.getAttribute('data-cfw-area') || '').trim();
+    var variant = String((definition && definition.variant) || target.getAttribute('data-cfw-element') || '').trim();
+    var normalizedVariant = variant.toLowerCase().replace(/[\s_-]+/g, '');
+
+    /* V460: A click on one of the individual buttons must mark the complete
+       button-group wrapper. The child buttons carry their own data-cfw-group
+       attributes, therefore event.target.closest('[data-cfw-area]') naturally
+       resolves to the child instead of the surrounding .lb-btn-group. */
+    if (area === 'Buttons' && normalizedVariant === 'buttongruppe') {
+      return target.closest('.lb-btn-group, .cfw-preview-btn-group') || target;
+    }
+
+    return target;
+  }
+
   function setupPreviewClickToEdit() {
     if (!previewRoot) return;
     markPreviewEditables();
@@ -5265,11 +5590,11 @@
       };
       var ok = selectEditorTarget(registered.area, registered.variant, registered.property);
       if (!ok) return;
-      previewRoot.querySelectorAll('.cfw-edit-highlight').forEach(function (node) { node.classList.remove('cfw-edit-highlight'); });
-      target.classList.add('cfw-edit-highlight');
-      setTimeout(function () { target.classList.remove('cfw-edit-highlight'); }, 1600);
+      previewRoot.querySelectorAll('.cfw-preview-selected').forEach(function (node) { node.classList.remove('cfw-preview-selected'); });
+      var selectionNode = previewSelectionNode(target, registered);
+      selectionNode.classList.add('cfw-preview-selected');
       setStatus(t('messages.previewSelected', 'messages.previewSelected', { path: selectionPathLabel(currentArea(), currentElement(), currentGroup()) }), false);
-    });
+    }, true);
   }
 
 
@@ -5366,6 +5691,10 @@
   [colorPicker, alphaRange, brightnessRange, radiusRange, borderWidthRange, shadowRange, customCss, wallpaperEnabled, wallpaperImage, wallpaperBrightness, wallpaperOpacity].forEach(bindUndoControl);
 
   document.getElementById('saveTheme').addEventListener('click', openSaveModal);
+  if (validateThemeButton) validateThemeButton.addEventListener('click', function () { runThemeValidation(false); });
+  if (validationCancelButton) validationCancelButton.addEventListener('click', closeValidationModal);
+  if (validationAutoFixButton) validationAutoFixButton.addEventListener('click', applySelectedValidationFixes);
+  if (validationSaveAnywayButton) validationSaveAnywayButton.addEventListener('click', function () { validationModal.hidden = true; pendingValidationSave = false; saveTheme(true); });
   if (deleteThemeButton) deleteThemeButton.addEventListener('click', openDeleteModal);
   if (cancelDeleteButton) cancelDeleteButton.addEventListener('click', closeDeleteModal);
   if (confirmDeleteButton) confirmDeleteButton.addEventListener('click', deleteSelectedTheme);
@@ -5374,7 +5703,11 @@
   if (themeName) themeName.addEventListener('blur', updateThemeIdentityFromName);
   areaSelect.addEventListener('change', renderElements);
   elementSelect.addEventListener('change', renderColorGroups);
-  if (affectedTokenSelect) affectedTokenSelect.addEventListener('change', function () { focusAffectedToken(affectedTokenSelect.value); });
+  if (affectedTokenSelect) affectedTokenSelect.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-token]');
+    if (!button || button.disabled) return;
+    focusAffectedToken(button.getAttribute('data-token'));
+  });
   if (selectedTokenList) selectedTokenList.addEventListener('click', function (event) {
     var action = event.target && event.target.closest ? event.target.closest('.cfw-token-action') : null;
     if (action) focusAffectedToken(action.getAttribute('data-token'));
@@ -5469,11 +5802,7 @@
   if (userThemeSelect) userThemeSelect.addEventListener('change', function () {
     updateDeleteThemeButton();
     if (userThemeSelect.value === '') {
-      if (themeId) themeId.value = '';
-      updateLiquidGlassWallpaperEditorMode();
-      updateWallpaperControlVisibility();
-      refreshEmbeddedFrame('preview');
-      refreshEmbeddedFrame('documentation');
+      resetToNeutralNewTheme();
       return;
     }
     loadUserThemeByIndex(userThemeSelect.value);

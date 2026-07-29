@@ -544,6 +544,27 @@ window.LBDesignStudioLangs.en = {
     "baseClassicMac": "Classic Mac",
     "defaultThemeName": "Demo Theme"
   },
+  "validator": {
+    "title": "Theme validation",
+    "summaryOk": "Validation completed: {count} component states are readable.",
+    "summaryIssues": "Found {issues} contrast issue(s) in {checks} checked component states: {errors} errors, {warnings} warnings.",
+    "current": "Current",
+    "suggested": "Suggested",
+    "contrast": "Contrast",
+    "minimum": "Minimum",
+    "autoFixNote": "Auto correction changes only the selected text tokens. Backgrounds, layout, custom CSS and component rules remain unchanged.",
+    "autoFixSelected": "Automatically correct selected",
+    "saveAnyway": "Save anyway",
+    "nothingSelected": "No correction selected.",
+    "fixed": "Corrected {count} text token(s). The preview has been updated.",
+    "severity": { "error": "Error", "warning": "Warning", "info": "Info" },
+    "states": {
+      "normal": "Normal", "secondary": "Secondary", "muted": "Muted", "hover": "Hover", "active": "Active", "activeHover": "Active hover", "inactive": "Inactive", "label": "Label", "checkedSymbol": "Checked symbol", "checkedDot": "Checked dot", "menu": "Menu", "option": "Option", "optionHover": "Option hover", "summary": "Summary", "body": "Body", "header": "Header"
+    },
+    "areas": {
+      "page": "Page surface", "card": "Card", "input": "Input", "button": "Button", "primaryButton": "Primary button", "buttonGroup": "Button group", "checkbox": "Checkbox", "radio": "Radio button", "select": "Select", "nativeSelect": "Native select", "multiselect": "Multiselect", "sidebar": "Sidebar", "header": "Header", "headerButton": "Header button", "modal": "Modal", "tooltip": "Tooltip", "note": "Notice surface", "success": "Success message", "warning": "Warning message", "error": "Error message", "notify": "Notification", "table": "Table", "compactTable": "Compact table", "active": "Active surface", "sliderValue": "Slider value"
+    }
+  },
   "messages": {
     "noSaveableContent": "Not saved: there are no theme tokens or usable custom CSS rules. Load an AI draft, import CSS, or change a value first.",
     "deleteNoThemeSelected": "No user theme selected for deletion.",

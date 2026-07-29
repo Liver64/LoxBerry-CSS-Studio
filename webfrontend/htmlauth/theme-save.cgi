@@ -277,6 +277,48 @@ sub _normalize_hex_color {
     return '';
 }
 
+
+sub _css_relative_luminance {
+    my ($value) = @_;
+    my $hex = _normalize_hex_color($value);
+    return undef if $hex eq '';
+    my @rgb = map { hex($_) / 255 } ($hex =~ /^#(..)(..)(..)$/);
+    my @linear = map { $_ <= 0.03928 ? $_ / 12.92 : (($_ + 0.055) / 1.055) ** 2.4 } @rgb;
+    return 0.2126 * $linear[0] + 0.7152 * $linear[1] + 0.0722 * $linear[2];
+}
+
+sub _css_contrast_ratio {
+    my ($foreground, $background) = @_;
+    my $fg = _css_relative_luminance($foreground);
+    my $bg = _css_relative_luminance($background);
+    return undef if !defined $fg || !defined $bg;
+    my ($lighter, $darker) = $fg >= $bg ? ($fg, $bg) : ($bg, $fg);
+    return ($lighter + 0.05) / ($darker + 0.05);
+}
+
+sub _readable_text_for_surface {
+    my ($background, $light, $dark) = @_;
+    $light ||= '#f8fafc';
+    $dark  ||= '#111827';
+    my $light_ratio = _css_contrast_ratio($light, $background);
+    my $dark_ratio  = _css_contrast_ratio($dark, $background);
+    return $light if !defined $dark_ratio;
+    return $dark if !defined $light_ratio;
+    return $light_ratio >= $dark_ratio ? $light : $dark;
+}
+
+sub _enforce_saved_text_contrast {
+    my ($tokens, $text_token, $background_token, $minimum, $light, $dark) = @_;
+    return if ref($tokens) ne 'HASH';
+    my $background = _first_clean_token_value($tokens, $background_token);
+    return if _normalize_hex_color($background) eq '';
+    my $text = _first_clean_token_value($tokens, $text_token);
+    my $ratio = $text ne '' ? _css_contrast_ratio($text, $background) : undef;
+    if (!defined $ratio || $ratio < $minimum) {
+        $tokens->{$text_token} = _readable_text_for_surface($background, $light, $dark);
+    }
+}
+
 sub _is_classic_loxberry_green {
     my ($value) = @_;
     my $hex = _normalize_hex_color($value);
@@ -746,6 +788,18 @@ for my $token (sort keys %{$tokens}) {
 _sync_primary_slider_value_tokens(\%clean_tokens) if keys(%clean_tokens);
 _sync_tinted_surface_tokens(\%clean_tokens) if keys(%clean_tokens);
 
+# V423: Server-side save validation for dark and light themes. The browser
+# rules engine is helpful for preview, but the saved CSS is the final contract.
+# Validate the text tokens used by LoxBerry system apps and LBV4 forms against
+# their actual surfaces so dark themes cannot persist black labels/values.
+if (keys(%clean_tokens)) {
+    _enforce_saved_text_contrast(\%clean_tokens, '--lb-text', '--lb-bg', 4.5, '#f8fafc', '#111827');
+    _enforce_saved_text_contrast(\%clean_tokens, '--lb-text-secondary', '--lb-bg', 4.5, '#e5e7eb', '#374151');
+    _enforce_saved_text_contrast(\%clean_tokens, '--lb-text-muted', '--lb-bg', 3.0, '#cbd5e1', '#4b5563');
+    _enforce_saved_text_contrast(\%clean_tokens, '--lb-sidebar-text', '--lb-sidebar-bg', 4.5, '#f8fafc', '#111827');
+    _enforce_saved_text_contrast(\%clean_tokens, '--lb-card-text', '--lb-card-bg', 4.5, '#f8fafc', '#111827');
+}
+
 # V420: Cards in generated themes must never fall through to a light-theme
 # hard default. Keep the semantic card/note text tokens aligned with the
 # theme's effective text color when no dedicated value was supplied.
@@ -1117,6 +1171,114 @@ $css .= "/* DESIGN STUDIO JQM COMPAT END */\n";
 
 # Design Studio generated compatibility helpers. These are scoped to the user
 # theme and keep protected/compound components consistent without touching Core.
+$css .= "/* V431: LoxBerry Core dark-surface text contract.\n";
+$css .= "   The active user theme supplies the page foreground. Core widgets then\n";
+$css .= "   receive explicit component foreground/background pairs instead of broad\n";
+$css .= "   label/table overrides. Plugin component rules remain untouched. */\n";
+
+# Base LoxBerry system page foreground. This is inheritance-first on purpose.
+$css .= "body.$id #page_content, .$id #page_content,\n";
+$css .= "body.$id .page_content, .$id .page_content,\n";
+$css .= "body.$id .lb-content, .$id .lb-content {\n";
+$css .= "  color: var(--lb-text, inherit);\n";
+$css .= "  text-shadow: none;\n";
+$css .= "}\n";
+
+# Standard Core prose, captions and form labels on the page surface.
+$css .= "body.$id #page_content > p, .$id #page_content > p,\n";
+$css .= "body.$id #page_content > h1, body.$id #page_content > h2, body.$id #page_content > h3, body.$id #page_content > h4,\n";
+$css .= ".$id #page_content > h1, .$id #page_content > h2, .$id #page_content > h3, .$id #page_content > h4,\n";
+$css .= "body.$id #page_content .lb-form-label, .$id #page_content .lb-form-label,\n";
+$css .= "body.$id #page_content .formlabel, .$id #page_content .formlabel,\n";
+$css .= "body.$id #page_content fieldset > legend, .$id #page_content fieldset > legend {\n";
+$css .= "  color: var(--lb-text, inherit) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id #page_content .lb-form-help, .$id #page_content .lb-form-help,\n";
+$css .= "body.$id #page_content .hint, .$id #page_content .hint,\n";
+$css .= "body.$id #page_content [style*='color: var(--lb-gray-400)'], .$id #page_content [style*='color: var(--lb-gray-400)'],\n";
+$css .= "body.$id #page_content [style*='color: var(--lb-gray-500)'], .$id #page_content [style*='color: var(--lb-gray-500)'],\n";
+$css .= "body.$id #page_content [style*='color: var(--lb-gray-600)'], .$id #page_content [style*='color: var(--lb-gray-600)'] {\n";
+$css .= "  color: var(--lb-text-secondary, var(--lb-text, inherit)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+
+# Native Core checkbox/radio captions. Limit the selector to labels that actually
+# own such a control so component labels and status badges are not recoloured.
+$css .= "body.$id #page_content label:has(input[type='checkbox']), .$id #page_content label:has(input[type='checkbox']),\n";
+$css .= "body.$id #page_content label:has(input[type='radio']), .$id #page_content label:has(input[type='radio']) {\n";
+$css .= "  color: var(--lb-text, inherit) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+
+# Log Manager uses normal lb-table components. Keep semantic status cells with
+# their inline foreground/background, and theme only ordinary cells/captions.
+$css .= "body.$id #page_content details.lb-collapsible > h4, .$id #page_content details.lb-collapsible > h4,\n";
+$css .= "body.$id #page_content table.lb-table td:not([style*='background-color']), .$id #page_content table.lb-table td:not([style*='background-color']),\n";
+$css .= "body.$id #page_content table.lb-table th, .$id #page_content table.lb-table th {\n";
+$css .= "  color: var(--lb-table-text, var(--lb-text, inherit)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+
+# MQTT Core pages: pair every dark-theme component surface with its own text
+# token. This avoids both black-on-dark and the previous white-on-light regression.
+$css .= "body.$id #page_content .mqttgw-group, .$id #page_content .mqttgw-group,\n";
+$css .= "body.$id #page_content .mqttgw-group > summary, .$id #page_content .mqttgw-group > summary,\n";
+$css .= "body.$id #page_content .mqttgw-group > .lb-collapsible-content, .$id #page_content .mqttgw-group > .lb-collapsible-content,\n";
+$css .= "body.$id #page_content .mqttgw-subgroup, .$id #page_content .mqttgw-subgroup,\n";
+$css .= "body.$id #page_content .mqttgw-topic-row, .$id #page_content .mqttgw-topic-row,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-panel, .$id #page_content .mqttgw-traffic-panel,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-panel-header, .$id #page_content .mqttgw-traffic-panel-header,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-toolbar, .$id #page_content .mqttgw-traffic-toolbar,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-colheader, .$id #page_content .mqttgw-traffic-colheader,\n";
+$css .= "body.$id #page_content .mqttgw-tgroup, .$id #page_content .mqttgw-tgroup,\n";
+$css .= "body.$id #page_content .mqttgw-tgroup > summary, .$id #page_content .mqttgw-tgroup > summary,\n";
+$css .= "body.$id #page_content #topic_groups_container > details, .$id #page_content #topic_groups_container > details,\n";
+$css .= "body.$id #page_content #topic_groups_container details > summary, .$id #page_content #topic_groups_container details > summary {\n";
+$css .= "  background-color: var(--lb-card-bg, var(--lb-bg-elevated, var(--lb-bg, transparent))) !important;\n";
+$css .= "  color: var(--lb-card-text, var(--lb-text, inherit)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+
+$css .= "body.$id #page_content .mqttgw-filter-label, .$id #page_content .mqttgw-filter-label,\n";
+$css .= "body.$id #page_content .mqttgw-filter-count, .$id #page_content .mqttgw-filter-count,\n";
+$css .= "body.$id #page_content .mqttgw-topic-name, .$id #page_content .mqttgw-topic-name,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-title, .$id #page_content .mqttgw-traffic-title,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-name, .$id #page_content .mqttgw-traffic-name,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-cmd-text, .$id #page_content .mqttgw-traffic-cmd-text,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-value, .$id #page_content .mqttgw-traffic-value,\n";
+$css .= "body.$id #page_content #topic_groups_container summary, .$id #page_content #topic_groups_container summary,\n";
+$css .= "body.$id #page_content #topic_groups_container strong, .$id #page_content #topic_groups_container strong,\n";
+$css .= "body.$id #page_content #topic_groups_container label, .$id #page_content #topic_groups_container label {\n";
+$css .= "  color: var(--lb-card-text, var(--lb-text, inherit)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id #page_content .mqttgw-topic-payload, .$id #page_content .mqttgw-topic-payload,\n";
+$css .= "body.$id #page_content .mqttgw-group-count, .$id #page_content .mqttgw-group-count,\n";
+$css .= "body.$id #page_content .mqttgw-status-detail, .$id #page_content .mqttgw-status-detail,\n";
+$css .= "body.$id #page_content .mqttgw-status-uptime, .$id #page_content .mqttgw-status-uptime,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-count, .$id #page_content .mqttgw-traffic-count,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-topic, .$id #page_content .mqttgw-traffic-topic,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-ms-label, .$id #page_content .mqttgw-traffic-ms-label,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-time, .$id #page_content .mqttgw-traffic-time,\n";
+$css .= "body.$id #page_content .mqttgw-traffic-proc, .$id #page_content .mqttgw-traffic-proc {\n";
+$css .= "  color: var(--lb-text-secondary, var(--lb-text, inherit)) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+
+# Legacy MQTT Finder/Transformer output rendered directly on the dark page.
+$css .= "body.$id #page_content .topic, .$id #page_content .topic,\n";
+$css .= "body.$id #page_content .topic_time, .$id #page_content .topic_time,\n";
+$css .= "body.$id #page_content .trans_table, .$id #page_content .trans_table,\n";
+$css .= "body.$id #page_content .trans_table td, .$id #page_content .trans_table td,\n";
+$css .= "body.$id #page_content .trans_table th, .$id #page_content .trans_table th {\n";
+$css .= "  color: var(--lb-text, inherit) !important;\n";
+$css .= "  text-shadow: none !important;\n";
+$css .= "}\n";
+$css .= "body.$id #page_content .topic_payload, .$id #page_content .topic_payload {\n";
+$css .= "  color: var(--lb-primary, var(--lb-text, inherit)) !important;\n";
+$css .= "}\n";
+
 $css .= "/* V422: Generated LBV4 card content text compatibility. */\n";
 $css .= "body.$id .lb-card, .$id .lb-card,\n";
 $css .= "body.$id .lb-card .lb-card-body, .$id .lb-card .lb-card-body,\n";
@@ -1256,16 +1418,25 @@ $css .= "}\n";
 $css .= "body.$id .lb-toggle .lb-toggle-slider, body.$id .lb-toggle input:not(:checked) + .lb-toggle-slider, .$id .lb-toggle .lb-toggle-slider, .$id .lb-toggle input:not(:checked) + .lb-toggle-slider {\n";
 $css .= "  background-color: var(--lb-switch-off-bg, var(--lb-toggle-bg, rgba(0,0,0,.22))) !important;\n";
 $css .= "  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 1px !important;\n";
 $css .= "  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-toggle-slider-radius, 999px))) !important;\n";
+$css .= "  box-sizing: border-box !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-toggle input:checked + .lb-toggle-slider, .$id .lb-toggle input:checked + .lb-toggle-slider {\n";
 $css .= "  background-color: var(--lb-switch-on-bg, var(--lb-toggle-active-bg, var(--lb-active-bg, var(--lb-primary, #007aff)))) !important;\n";
 $css .= "  border-color: var(--lb-switch-border, var(--lb-toggle-border, var(--lb-border-color, rgba(0,0,0,.18)))) !important;\n";
+$css .= "  border-style: solid !important;\n";
+$css .= "  border-width: 1px !important;\n";
 $css .= "  border-radius: var(--lb-switch-radius, var(--lb-toggle-radius, var(--lb-toggle-slider-radius, 999px))) !important;\n";
+$css .= "  box-sizing: border-box !important;\n";
 $css .= "}\n";
 $css .= "body.$id .lb-toggle .lb-toggle-slider:before, body.$id .lb-toggle .lb-toggle-slider:after, .$id .lb-toggle .lb-toggle-slider:before, .$id .lb-toggle .lb-toggle-slider:after {\n";
 $css .= "  background-color: var(--lb-switch-thumb-bg, var(--lb-toggle-thumb-bg, var(--lb-toggle-knob-bg, #fff))) !important;\n";
 $css .= "  border-radius: var(--lb-toggle-thumb-radius, var(--lb-toggle-knob-radius, var(--lb-switch-radius, 999px))) !important;\n";
+$css .= "  top: 50% !important;\n";
+$css .= "  bottom: auto !important;\n";
+$css .= "  translate: 0 -50% !important;\n";
 $css .= "}\n";
 $css .= "body.$id input[type=checkbox], .$id input[type=checkbox] {\n";
 $css .= "  accent-color: var(--lb-checkbox-checked-bg, var(--lb-primary, var(--lb-active-bg, #007aff))) !important;\n";
@@ -1444,6 +1615,92 @@ $css .= "  background-image: none !important;\n";
 $css .= "  box-shadow: none !important;\n";
 $css .= "  backdrop-filter: none !important;\n";
 $css .= "  -webkit-backdrop-filter: none !important;\n";
+$css .= "}\n";
+$css .= "/* V433: The historical LoxBerry form wrapper is a pure layout wrapper.\n";
+$css .= "   Its FONT placeholder and every structural descendant must never become\n";
+$css .= "   a card/table surface through generic theme rules. Real controls keep\n";
+$css .= "   their own component styling. */\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable),\n";
+$css .= "html body.$id #page_content div.form-group:has(> font + table.formtable),\n";
+$css .= "html body.$id #page_content div.form-group:has(> font + table.formtable) > font,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable,\n";
+$css .= "html body.$id #page_content div.form-group:has(> font + table.formtable) > table.formtable,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > thead,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tbody,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tfoot,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > thead > tr,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tbody > tr,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tfoot > tr,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > thead > tr > th,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > thead > tr > td,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tbody > tr > th,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tbody > tr > td,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tfoot > tr > th,\n";
+$css .= "html body.$id #page_content div.form-group:has(> table.formtable) > table.formtable > tfoot > tr > td {\n";
+$css .= "  background: transparent !important;\n";
+$css .= "  background-color: transparent !important;\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  backdrop-filter: none !important;\n";
+$css .= "  -webkit-backdrop-filter: none !important;\n";
+$css .= "}\n";
+
+# V435: Legacy plugin/system form rows are layout containers, not cards.
+# Several LBv3/LBV4 pages wrap controls in fieldcontain/formtable helper DIVs.
+# Generic component backgrounds must never turn those wrappers into white strips
+# on light themes. Only structural wrappers are reset; controls and explicit
+# components keep their own surfaces.
+$css .= "/* V435: Legacy layout-row transparency invariant. */\n";
+$css .= "html body.$id #page_content [data-role='fieldcontain'],\n";
+$css .= "html body.$id #page_content .ui-field-contain,\n";
+$css .= "html body.$id #page_content .ui-field-contain > div,\n";
+$css .= "html body.$id #page_content table.formtable td > div:not(.lb-card):not(.lb-panel):not(.lb-modal):not(.lb-tooltip):not(.lb-alert),\n";
+$css .= "html body.$id #page_content table.formtable th > div:not(.lb-card):not(.lb-panel):not(.lb-modal):not(.lb-tooltip):not(.lb-alert),\n";
+$css .= "html body.$id #page_content div.form-group > div:not(.lb-card):not(.lb-panel):not(.lb-modal):not(.lb-tooltip):not(.lb-alert),\n";
+$css .= "body.$id #page_content [data-role='fieldcontain'],\n";
+$css .= "body.$id #page_content .ui-field-contain,\n";
+$css .= ".$id #page_content [data-role='fieldcontain'],\n";
+$css .= ".$id #page_content .ui-field-contain {\n";
+$css .= "  background: transparent !important;\n";
+$css .= "  background-color: transparent !important;\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  backdrop-filter: none !important;\n";
+$css .= "  -webkit-backdrop-filter: none !important;\n";
+$css .= "}\n";
+# V436: Many legacy plugins use additional anonymous layout tables inside the
+# outer table.formtable. These nested tables are not semantic lb-table
+# components; they only align labels, controls and hints. Generic table rules
+# can otherwise paint them white. Reset the complete anonymous nested table
+# structure while excluding explicit framework/data table components.
+$css .= "/* V436: Nested legacy layout-table transparency invariant. */\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table),\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > thead,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tbody,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tfoot,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > thead > tr,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tbody > tr,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tfoot > tr,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > thead > tr > th,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > thead > tr > td,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tbody > tr > th,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tbody > tr > td,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tfoot > tr > th,\n";
+$css .= "html body.$id #page_content table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) > tfoot > tr > td,\n";
+$css .= "body.$id table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table),\n";
+$css .= ".$id table.formtable table:not(.lb-table):not(.dataTable):not(.ui-table) {\n";
+$css .= "  background: transparent !important;\n";
+$css .= "  background-color: transparent !important;\n";
+$css .= "  background-image: none !important;\n";
+$css .= "  box-shadow: none !important;\n";
+$css .= "  backdrop-filter: none !important;\n";
+$css .= "  -webkit-backdrop-filter: none !important;\n";
+$css .= "}\n";
+
+$css .= "/* V435: Keep actual controls/components out of the wrapper reset. */\n";
+$css .= "html body.$id #page_content [data-role='fieldcontain'] :is(input, select, textarea, button, .lb-btn, .lb-select, .lb-input, .lb-card, .lb-panel, .lb-modal, .lb-tooltip, .lb-alert),\n";
+$css .= "html body.$id #page_content .ui-field-contain :is(input, select, textarea, button, .lb-btn, .lb-select, .lb-input, .lb-card, .lb-panel, .lb-modal, .lb-tooltip, .lb-alert) {\n";
+$css .= "  /* component-specific rules remain authoritative */\n";
 $css .= "}\n";
 $css .= "/* DESIGN STUDIO LEGACY CONTENT TRANSPARENCY END */\n";
 

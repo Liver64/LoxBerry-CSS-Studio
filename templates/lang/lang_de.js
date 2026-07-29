@@ -544,6 +544,27 @@ window.LBDesignStudioLangs.de = {
     "baseClassicMac": "Classic Mac",
     "defaultThemeName": "Demo Theme"
   },
+  "validator": {
+    "title": "Theme-Validierung",
+    "summaryOk": "Validierung abgeschlossen: {count} Komponenten-Zustände sind lesbar.",
+    "summaryIssues": "{issues} Kontrastproblem(e) in {checks} geprüften Komponenten-Zuständen: {errors} Fehler, {warnings} Warnungen.",
+    "current": "Aktuell",
+    "suggested": "Vorschlag",
+    "contrast": "Kontrast",
+    "minimum": "Minimum",
+    "autoFixNote": "Die Auto-Korrektur ändert ausschließlich die ausgewählten Text-Tokens. Hintergründe, Layout, Custom CSS und Komponentenregeln bleiben unverändert.",
+    "autoFixSelected": "Ausgewählte automatisch korrigieren",
+    "saveAnyway": "Trotzdem speichern",
+    "nothingSelected": "Keine Korrektur ausgewählt.",
+    "fixed": "{count} Text-Token(s) korrigiert. Die Vorschau wurde aktualisiert.",
+    "severity": { "error": "Fehler", "warning": "Warnung", "info": "Info" },
+    "states": {
+      "normal": "Normal", "secondary": "Sekundär", "muted": "Gedämpft", "hover": "Hover", "active": "Aktiv", "activeHover": "Aktiv-Hover", "inactive": "Inaktiv", "label": "Beschriftung", "checkedSymbol": "Aktiv-Symbol", "checkedDot": "Aktiv-Punkt", "menu": "Menü", "option": "Option", "optionHover": "Option-Hover", "summary": "Auswahl", "body": "Inhalt", "header": "Kopfzeile"
+    },
+    "areas": {
+      "page": "Seitenfläche", "card": "Karte", "input": "Eingabefeld", "button": "Schaltfläche", "primaryButton": "Primärschaltfläche", "buttonGroup": "Buttongroup", "checkbox": "Checkbox", "radio": "Radiobutton", "select": "Select", "nativeSelect": "Native Select", "multiselect": "Mehrfachauswahl", "sidebar": "Sidebar", "header": "Kopfzeile", "headerButton": "Kopfzeilen-Schaltfläche", "modal": "Modal", "tooltip": "Tooltip", "note": "Hinweisfläche", "success": "Erfolgsmeldung", "warning": "Warnmeldung", "error": "Fehlermeldung", "notify": "Benachrichtigung", "table": "Tabelle", "compactTable": "Kompakttabelle", "active": "Aktive Fläche", "sliderValue": "Sliderwert"
+    }
+  },
   "messages": {
     "noSaveableContent": "Nicht gespeichert: Es sind keine Theme-Tokens oder nutzbaren Custom-CSS-Regeln vorhanden. Bitte erst KI-Entwurf laden, CSS importieren oder einen Wert ändern.",
     "deleteNoThemeSelected": "Kein User Theme zum Löschen ausgewählt.",
