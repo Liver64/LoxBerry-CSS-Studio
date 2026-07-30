@@ -44,6 +44,8 @@
   var liquidGlassWallpaperPreview = document.getElementById('liquidGlassWallpaperPreview');
   var liquidGlassStudioWallpaper = document.getElementById('liquidGlassStudioWallpaper');
   var statusBox = document.getElementById('status');
+  var topMessage = document.getElementById('studioTopMessage');
+  var topMessageTimer = null;
   var statusModal = document.getElementById('statusModal');
   var statusModalCard = statusModal ? statusModal.querySelector('.cfw-status-modal-card') : null;
   var statusModalTitle = document.getElementById('statusModalTitle');
@@ -848,15 +850,48 @@
     return kind === 'error';
   }
 
+  function hideTopMessage() {
+    if (topMessageTimer) {
+      clearTimeout(topMessageTimer);
+      topMessageTimer = null;
+    }
+    if (!topMessage) return;
+    topMessage.hidden = true;
+    topMessage.textContent = '';
+    topMessage.classList.remove('cfw-status-error', 'cfw-status-info', 'cfw-status-success', 'cfw-status-warning', 'is-visible');
+  }
+
+  function showTopMessage(message, kind) {
+    if (!topMessage || !message) return;
+    if (topMessageTimer) clearTimeout(topMessageTimer);
+    topMessage.textContent = message;
+    topMessage.hidden = false;
+    applyStatusKind(topMessage, kind);
+    requestAnimationFrame(function () {
+      topMessage.classList.add('is-visible');
+    });
+    topMessageTimer = setTimeout(hideTopMessage, 4000);
+  }
+
   function setStatus(message, isError, kind, options) {
-    if (!statusBox) return;
     options = options || {};
     var resolvedKind = classifyStatusKind(message, isError, kind);
-    statusBox.textContent = message || '';
-    applyStatusKind(statusBox, resolvedKind);
-    if (message && shouldShowStatusModal(message, resolvedKind, options)) {
-      showStatusModal(message, resolvedKind, { timeout: 0 });
+
+    // Keep the lower status field available for accessibility and legacy code,
+    // but show normal user feedback only in the quiet top message area.
+    if (statusBox) {
+      statusBox.textContent = '';
+      applyStatusKind(statusBox, resolvedKind);
     }
+
+    if (message && shouldShowStatusModal(message, resolvedKind, options)) {
+      hideTopMessage();
+      showStatusModal(message, resolvedKind, { timeout: 0 });
+      return;
+    }
+
+    if (message) showTopMessage(message, resolvedKind);
+    else hideTopMessage();
   }
 
 
@@ -2987,6 +3022,232 @@
     return compact || propertyLabel || token;
   }
 
+  function affectedTokenSemanticDescription(token, property) {
+    var de = i18nLanguage === 'de';
+    var lower = String(token || '').toLowerCase();
+
+    var subject = '';
+    var subjects = [
+      [/--lb-btn-group-/, de ? 'Button-Gruppen' : 'button groups'],
+      [/--lb-btn-primary-/, de ? 'Primärschaltflächen' : 'primary buttons'],
+      [/--lb-header-btn-/, de ? 'Kopfzeilen-Schaltflächen' : 'header buttons'],
+      [/--lb-btn-/, de ? 'Schaltflächen' : 'buttons'],
+      [/--lb-multiselect-/, de ? 'Mehrfachauswahlen' : 'multi-select controls'],
+      [/--lb-select-/, de ? 'Auswahllisten' : 'select controls'],
+      [/--lb-dropdown-/, de ? 'Dropdown-Menüs' : 'dropdown menus'],
+      [/--lb-input-/, de ? 'Eingabefelder' : 'input fields'],
+      [/--lb-textarea-/, de ? 'Textbereiche' : 'text areas'],
+      [/--lb-checkbox-/, de ? 'Checkboxen' : 'checkboxes'],
+      [/--lb-radio-/, de ? 'Optionsfelder' : 'radio buttons'],
+      [/--lb-(?:switch|toggle)-/, de ? 'Schalter' : 'toggles'],
+      [/--lb-(?:slider|range)-/, de ? 'Slider' : 'sliders'],
+      [/--lb-table-/, de ? 'Tabellen' : 'tables'],
+      [/--lb-card-/, de ? 'Karten' : 'cards'],
+      [/--lb-sidebar-/, de ? 'Sidebar-Elemente' : 'sidebar elements'],
+      [/--lb-tooltip-/, de ? 'Tooltips' : 'tooltips'],
+      [/--lb-tab-/, de ? 'Tabs' : 'tabs']
+    ];
+    for (var i = 0; i < subjects.length; i += 1) {
+      if (subjects[i][0].test(lower)) { subject = subjects[i][1]; break; }
+    }
+    if (!subject) subject = de ? 'Elemente' : 'elements';
+
+    var state = '';
+    if (/-active-hover(?:-|$)/.test(lower)) state = de ? 'aktiver ' : 'active ';
+    else if (/-hover(?:-|$)/.test(lower)) state = de ? 'beim Darüberfahren über ' : 'when hovering over ';
+    else if (/-focus(?:-|$)/.test(lower)) state = de ? 'fokussierter ' : 'focused ';
+    else if (/-disabled(?:-|$)/.test(lower)) state = de ? 'deaktivierter ' : 'disabled ';
+    else if (/(?:-on|-active)(?:-|$)/.test(lower)) state = de ? 'aktiver ' : 'active ';
+    else if (/(?:-off|-inactive)(?:-|$)/.test(lower)) state = de ? 'inaktiver ' : 'inactive ';
+    else if (/-placeholder(?:-|$)/.test(lower)) state = de ? 'Platzhalter in ' : 'placeholders in ';
+
+    var role = '';
+    if (/border-width/.test(lower)) role = de ? 'Rahmenstärke' : 'Border width';
+    else if (/-text(?:-|$)/.test(lower) || /-color$/.test(lower)) role = de ? 'Textfarbe' : 'Text color';
+    else if (/-bg(?:-|$)/.test(lower) || /background/.test(lower)) role = de ? 'Hintergrundfarbe' : 'Background color';
+    else if (/-border(?:-|$)/.test(lower)) role = de ? 'Rahmenfarbe' : 'Border color';
+    else if (/-radius(?:-|$)/.test(lower)) role = de ? 'Eckenradius' : 'Corner radius';
+    else if (/-shadow(?:-|$)/.test(lower)) role = de ? 'Schatten' : 'Shadow';
+    else if (/(?:-thumb|-knob)(?:-|$)/.test(lower)) role = de ? 'Farbe des Schalterknopfs' : 'Toggle thumb color';
+
+    if (!role) {
+      var propertyLabel = displayGroupName(property || '');
+      role = propertyLabel || (de ? 'Darstellung' : 'Appearance');
+    }
+
+    if (de) {
+      if (state.indexOf('beim ') === 0 || state.indexOf('Platzhalter') === 0) return role + ' ' + state + subject;
+      return role + ' ' + state + subject;
+    }
+    if (state.indexOf('when ') === 0 || state.indexOf('placeholders') === 0) return role + ' ' + state + subject;
+    return role + ' of ' + state + subject;
+  }
+
+  function affectedTokenTooltipData(token, property) {
+    var value = affectedTokenValue(token);
+    return {
+      description: affectedTokenSemanticDescription(token, property),
+      token: String(token || ''),
+      value: String(value || '')
+    };
+  }
+
+  function affectedTokenTooltipAttributes(token, property) {
+    var data = affectedTokenTooltipData(token, property);
+    return ' data-cfw-token-tooltip="1"' +
+      ' data-cfw-tooltip-description="' + escapeHtml(data.description) + '"' +
+      ' data-cfw-tooltip-token="' + escapeHtml(data.token) + '"' +
+      ' data-cfw-tooltip-value="' + escapeHtml(data.value) + '"';
+  }
+
+  var cfwTokenTooltip = null;
+  var cfwTokenTooltipAnchor = null;
+
+  function tokenTooltipThemeValue(tokens, names, fallback) {
+    for (var i = 0; i < names.length; i += 1) {
+      var value = resolvedTokenValue(tokens, names[i], 0);
+      if (value != null && String(value).trim()) return String(value).trim();
+    }
+    return fallback;
+  }
+
+  function ensureTokenTooltip() {
+    if (cfwTokenTooltip && document.documentElement.contains(cfwTokenTooltip)) return cfwTokenTooltip;
+    cfwTokenTooltip = document.createElement('div');
+    cfwTokenTooltip.className = 'cfw-token-tooltip';
+    cfwTokenTooltip.setAttribute('role', 'tooltip');
+    cfwTokenTooltip.setAttribute('aria-hidden', 'true');
+    cfwTokenTooltip.innerHTML =
+      '<div class="cfw-token-tooltip-description"></div>' +
+      '<code class="cfw-token-tooltip-name"></code>' +
+      '<div class="cfw-token-tooltip-value-row">' +
+        '<span class="cfw-token-tooltip-swatch" aria-hidden="true"></span>' +
+        '<code class="cfw-token-tooltip-value"></code>' +
+      '</div>';
+    document.body.appendChild(cfwTokenTooltip);
+    return cfwTokenTooltip;
+  }
+
+  function tokenTooltipResolvedHexColor(value) {
+    value = String(value || '').trim();
+    var direct = normalizeHexColor(value);
+    if (direct) return direct;
+
+    var probe = document.createElement('span');
+    probe.style.cssText = 'position:fixed;left:-10000px;top:-10000px;visibility:hidden;pointer-events:none;color:' + value + ';';
+    document.body.appendChild(probe);
+    var computed = window.getComputedStyle(probe).color || '';
+    probe.remove();
+
+    var match = computed.match(/rgba?\(\s*(\d+(?:\.\d+)?)\s*[, ]\s*(\d+(?:\.\d+)?)\s*[, ]\s*(\d+(?:\.\d+)?)/i);
+    if (!match) return null;
+    function channelToHex(channel) {
+      var number = Math.max(0, Math.min(255, Math.round(Number(channel) || 0)));
+      return number.toString(16).padStart(2, '0');
+    }
+    return '#' + channelToHex(match[1]) + channelToHex(match[2]) + channelToHex(match[3]);
+  }
+
+  function applyTokenTooltipTheme(tooltip, value) {
+    var tokens = effectivePreviewTokens();
+    var bg = tokenTooltipThemeValue(tokens,
+      ['--lb-tooltip-bg', '--lb-card-bg', '--lb-bg-elevated', '--lb-bg'], '#172033');
+
+    /* V493: Foreground is always calculated from the real tooltip background.
+       Theme text tokens are intentionally not trusted here because some themes
+       define a dark tooltip text token for a dark chromatic tooltip surface. */
+    var resolvedBg = tokenTooltipResolvedHexColor(bg) || '#172033';
+    var text = readableTextFor(resolvedBg, '#ffffff', '#111827');
+    var muted = text === '#ffffff' ? '#e2e8f0' : '#374151';
+    var border = tokenTooltipThemeValue(tokens,
+      ['--lb-tooltip-border', '--lb-card-border', '--lb-border-color', '--lb-border'], 'rgba(0,0,0,.22)');
+    var radius = tokenTooltipThemeValue(tokens,
+      ['--lb-tooltip-radius', '--lb-radius-sm', '--lb-radius'], '10px');
+    var shadow = tokenTooltipThemeValue(tokens,
+      ['--lb-tooltip-shadow', '--lb-card-shadow'], '0 10px 30px rgba(0,0,0,.22)');
+
+    tooltip.style.setProperty('--cfw-token-tooltip-bg', bg);
+    tooltip.style.setProperty('--cfw-token-tooltip-text', text);
+    tooltip.style.setProperty('--cfw-token-tooltip-muted', muted);
+    tooltip.style.setProperty('--cfw-token-tooltip-border', border);
+    tooltip.style.setProperty('--cfw-token-tooltip-radius', radius);
+    tooltip.style.setProperty('--cfw-token-tooltip-shadow', shadow);
+
+    var color = normalizeHexColor(value);
+    tooltip.classList.toggle('has-color-value', !!color);
+    tooltip.style.setProperty('--cfw-token-tooltip-swatch', color || 'transparent');
+  }
+
+  function positionTokenTooltip(anchor, tooltip) {
+    var rect = anchor.getBoundingClientRect();
+    var gap = 10;
+    var viewportGap = 8;
+    var box = tooltip.getBoundingClientRect();
+    var left = rect.left + (rect.width / 2) - (box.width / 2);
+    left = Math.max(viewportGap, Math.min(left, window.innerWidth - box.width - viewportGap));
+    var top = rect.top - box.height - gap;
+    var below = false;
+    if (top < viewportGap) {
+      top = rect.bottom + gap;
+      below = true;
+    }
+    tooltip.style.left = Math.round(left) + 'px';
+    tooltip.style.top = Math.round(top) + 'px';
+    tooltip.classList.toggle('is-below', below);
+  }
+
+  function showTokenTooltip(anchor) {
+    if (!anchor || !anchor.getAttribute) return;
+    anchor.removeAttribute('title');
+    var propertyItem = anchor.closest && anchor.closest('.cfw-property-item');
+    if (propertyItem) propertyItem.removeAttribute('title');
+    var tooltip = ensureTokenTooltip();
+    var description = anchor.getAttribute('data-cfw-tooltip-description') || '';
+    var token = anchor.getAttribute('data-cfw-tooltip-token') || '';
+    var value = anchor.getAttribute('data-cfw-tooltip-value') || '';
+    tooltip.querySelector('.cfw-token-tooltip-description').textContent = description;
+    tooltip.querySelector('.cfw-token-tooltip-name').textContent = token;
+    tooltip.querySelector('.cfw-token-tooltip-value').textContent = value;
+    tooltip.querySelector('.cfw-token-tooltip-value-row').hidden = !value;
+    applyTokenTooltipTheme(tooltip, value);
+    cfwTokenTooltipAnchor = anchor;
+    tooltip.classList.add('is-visible');
+    tooltip.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(function () {
+      if (cfwTokenTooltipAnchor === anchor) positionTokenTooltip(anchor, tooltip);
+    });
+  }
+
+  function hideTokenTooltip(anchor) {
+    if (!cfwTokenTooltip || (anchor && cfwTokenTooltipAnchor !== anchor)) return;
+    cfwTokenTooltipAnchor = null;
+    cfwTokenTooltip.classList.remove('is-visible');
+    cfwTokenTooltip.setAttribute('aria-hidden', 'true');
+  }
+
+  document.addEventListener('mouseover', function (event) {
+    var anchor = event.target.closest && event.target.closest('[data-cfw-token-tooltip="1"]');
+    if (anchor) showTokenTooltip(anchor);
+  });
+  document.addEventListener('mouseout', function (event) {
+    var anchor = event.target.closest && event.target.closest('[data-cfw-token-tooltip="1"]');
+    if (anchor && (!event.relatedTarget || !anchor.contains(event.relatedTarget))) hideTokenTooltip(anchor);
+  });
+  document.addEventListener('focusin', function (event) {
+    var anchor = event.target.closest && event.target.closest('[data-cfw-token-tooltip="1"]');
+    if (anchor) showTokenTooltip(anchor);
+  });
+  document.addEventListener('focusout', function (event) {
+    var anchor = event.target.closest && event.target.closest('[data-cfw-token-tooltip="1"]');
+    if (anchor) hideTokenTooltip(anchor);
+  });
+  window.addEventListener('scroll', function () {
+    if (cfwTokenTooltipAnchor && cfwTokenTooltip) positionTokenTooltip(cfwTokenTooltipAnchor, cfwTokenTooltip);
+  }, true);
+  window.addEventListener('resize', function () {
+    if (cfwTokenTooltipAnchor && cfwTokenTooltip) positionTokenTooltip(cfwTokenTooltipAnchor, cfwTokenTooltip);
+  });
+
   function affectedTokenValue(token) {
     if (Object.prototype.hasOwnProperty.call(directTokenOverrides, token)) return directTokenOverrides[token];
     var working = collectTokens();
@@ -3096,7 +3357,9 @@
           '<summary>' + escapeHtml(group.meta.label) + ' <span>(' + group.tokens.length + ')</span></summary>' +
           '<div class="cfw-affected-token-group-items">' + group.tokens.map(function (token) {
             var classes = 'cfw-affected-token-entry' + (token === activeDirectToken ? ' is-active' : '');
+            var property = tokenPropertyForVariant(currentArea(), currentElement(), token);
             return '<button type="button" class="' + classes + '" data-token="' + escapeHtml(token) + '"' +
+              affectedTokenTooltipAttributes(token, property) +
               (isProtectedStudioThemeId(themeId && themeId.value) ? ' disabled' : '') + '><code>' + escapeHtml(token) + '</code></button>';
           }).join('') + '</div></details>';
       }).join('');
@@ -3136,16 +3399,16 @@
 
     if (!color) {
       return '<span class="' + classes + '" role="button" tabindex="0" data-token="' +
-        escapeHtml(token) + '" title="' + escapeHtml(token + (rawValue ? '\n' + rawValue : '')) +
-        '"><code>' + escapeHtml(token) + '</code></span>';
+        escapeHtml(token) + '"' + affectedTokenTooltipAttributes(token, tokenPropertyForVariant(currentArea(), currentElement(), token)) +
+        '><code>' + escapeHtml(token) + '</code></span>';
     }
 
     var foreground = readableTextFor(color, '#ffffff', '#111827');
     classes += ' has-token-color';
     return '<span class="' + classes + '" role="button" tabindex="0" data-token="' +
       escapeHtml(token) + '" style="--cfw-token-chip-bg:' + escapeHtml(color) +
-      ';--cfw-token-chip-text:' + escapeHtml(foreground) + ';" title="' +
-      escapeHtml(token + '\n' + color) + '"><code>' + escapeHtml(token) + '</code></span>';
+      ';--cfw-token-chip-text:' + escapeHtml(foreground) + ';"' +
+      affectedTokenTooltipAttributes(token, tokenPropertyForVariant(currentArea(), currentElement(), token)) + '><code>' + escapeHtml(token) + '</code></span>';
   }
 
   function affectedTokenChipHtml(token, property) {
@@ -3154,14 +3417,12 @@
     var effective = effectivePreviewTokens();
     var rawValue = resolvedTokenValue(effective, token, 0);
     var color = normalizeHexColor(rawValue);
-    var title = affectedTokenRoleLabel(token, property) +
-      (rawValue ? '\n' + rawValue : '');
 
     if (!color) {
       return '<button type="button" class="' + classes +
         '" data-token="' + escapeHtml(token) +
-        '" title="' + escapeHtml(title) +
-        '"><code>' + escapeHtml(token) + '</code></button>';
+        '"' + affectedTokenTooltipAttributes(token, property) +
+        '><code>' + escapeHtml(token) + '</code></button>';
     }
 
     var foreground = readableTextFor(color, '#ffffff', '#111827');
@@ -3171,8 +3432,8 @@
       '" data-token="' + escapeHtml(token) +
       '" style="--cfw-token-chip-bg:' + escapeHtml(color) +
       ';--cfw-token-chip-text:' + escapeHtml(foreground) +
-      ';" title="' + escapeHtml(title) +
-      '"><code>' + escapeHtml(token) + '</code></button>';
+      ';"' + affectedTokenTooltipAttributes(token, property) +
+      '><code>' + escapeHtml(token) + '</code></button>';
   }
 
   function renderPropertyInspector() {
@@ -3204,7 +3465,6 @@
       item.type = 'button';
       item.className = 'cfw-property-item' + (isActive ? ' is-active' : '');
       item.setAttribute('data-role', 'none');
-      item.setAttribute('title', tokens.join('\n'));
       var colorStyle = propertyInspectorColorStyle(tokens);
       if (colorStyle) {
         item.classList.add('has-current-color');
@@ -3254,7 +3514,6 @@
           renderPropertyInspector();
         }
       });
-      item.setAttribute('title', tx('inspector.propertyTitlePrefix') + '\n' + tokens.join('\n'));
       propertyInspector.appendChild(item);
     });
   }

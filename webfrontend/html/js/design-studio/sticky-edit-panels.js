@@ -1,7 +1,7 @@
 /* LoxBerry CSS Framework Design Studio
- * V462: only "Vorschaufarben" follows the vertical document scroll.
- * "Arbeitsbereich / Vorschau" and the Studio status block remain at their
- * natural document positions. The palette still stops above the status block.
+ * V490: only "Vorschaufarben" follows the vertical document scroll.
+ * The palette uses a viewport-edge collision correction so its visible lower
+ * edge always remains above the static Studio status block.
  */
 (function (global) {
   'use strict';
@@ -114,7 +114,7 @@
     setShift(palette, Math.min(softenedShift, maxShift));
   }
 
-  function constrainPaletteAgainstStatus(y) {
+  function constrainPaletteAgainstStatus(y, workbenchTop) {
     if (!palette || !statusBar || !isVisible(palette) || !isVisible(statusBar)) return;
 
     var paletteShift = currentShift(palette);
@@ -127,18 +127,19 @@
       paletteRect.left < statusRect.right - 1;
     if (!overlapsHorizontally) return;
 
-    var paletteHeight = palette.offsetHeight || paletteRect.height;
+    var allowedBottom = statusRect.top - STATUS_COLLISION_GAP;
+    var visualOverlap = paletteRect.bottom - allowedBottom;
+    if (visualOverlap <= 0) return;
+
+    /* V490: Correct the actual visible overlap instead of only capping the
+     * theoretical downward translation. This also works for very tall palettes
+     * near the end of the page. A small negative shift is allowed when needed,
+     * but the palette may never move above the Workbench's natural top edge. */
     var paletteNaturalTop = paletteRect.top + y - paletteShift;
-    var statusNaturalTop = statusRect.top + y;
+    var minShift = (workbenchTop + EDGE_GAP) - paletteNaturalTop;
+    var correctedShift = Math.max(minShift, paletteShift - visualOverlap);
 
-    /* V462: Status no longer follows the viewport. Cap only the palette's
-     * translation so its lower edge stays above the static status block. */
-    var collisionLimitedShift = statusNaturalTop - STATUS_COLLISION_GAP -
-      paletteNaturalTop - paletteHeight;
-
-    if (paletteShift > collisionLimitedShift) {
-      setShift(palette, Math.max(0, collisionLimitedShift));
-    }
+    setShift(palette, correctedShift);
   }
 
   function update() {
@@ -169,7 +170,7 @@
     var workbenchBottom = workbenchTop + workbench.offsetHeight;
 
     updatePalette(y, viewHeight, workbenchBottom);
-    constrainPaletteAgainstStatus(y);
+    constrainPaletteAgainstStatus(y, workbenchTop);
   }
 
   function scheduleUpdate() {

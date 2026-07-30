@@ -4699,17 +4699,174 @@ body > .cfw-modal .cfw-modal-card textarea::placeholder {
   display: none !important;
 }
 
-/* V471: explicit unsaved working-state marker. */
-.cfw-dirty-indicator {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0 9px;
-  border: 1px dashed currentColor;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  white-space: nowrap;
+/* =========================================================
+   V493: Theme-aware semantic token tooltip with automatic contrast
+   ========================================================= */
+.cfw-token-tooltip {
+  --cfw-token-tooltip-bg: var(--lb-tooltip-bg, var(--lb-card-bg, #172033));
+  --cfw-token-tooltip-text: var(--lb-tooltip-text, var(--lb-card-text, #ffffff));
+  --cfw-token-tooltip-muted: var(--lb-text-secondary, var(--lb-text-muted, currentColor));
+  --cfw-token-tooltip-border: var(--lb-tooltip-border, var(--lb-border-color, rgba(0,0,0,.22)));
+  --cfw-token-tooltip-radius: var(--lb-tooltip-radius, var(--lb-radius-sm, 10px));
+  --cfw-token-tooltip-shadow: var(--lb-tooltip-shadow, var(--lb-card-shadow, 0 10px 30px rgba(0,0,0,.22)));
+  --cfw-token-tooltip-swatch: transparent;
+
+  position: fixed;
+  z-index: 10050;
+  display: grid;
+  gap: 5px;
+  width: max-content;
+  max-width: min(340px, calc(100vw - 16px));
+  padding: 10px 12px;
+  box-sizing: border-box;
+
+  background: var(--cfw-token-tooltip-bg) !important;
+  background-color: var(--cfw-token-tooltip-bg) !important;
+  background-image: none !important;
+  color: var(--cfw-token-tooltip-text) !important;
+  border: 1px solid var(--cfw-token-tooltip-border) !important;
+  border-radius: var(--cfw-token-tooltip-radius) !important;
+  box-shadow: var(--cfw-token-tooltip-shadow) !important;
+
+  font-family: var(--lb-font, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+  text-shadow: none !important;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px) scale(.985);
+  transform-origin: 50% 100%;
+  transition: opacity .12s ease, transform .12s ease, visibility 0s linear .12s;
 }
-.cfw-dirty-indicator[hidden] { display: none !important; }
-#saveTheme.is-dirty::after { content: " •"; }
+
+.cfw-token-tooltip.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  transition-delay: 0s;
+}
+
+.cfw-token-tooltip.is-below {
+  transform-origin: 50% 0;
+}
+
+.cfw-token-tooltip * {
+  text-shadow: none !important;
+}
+
+.cfw-token-tooltip-description {
+  color: var(--cfw-token-tooltip-text) !important;
+  -webkit-text-fill-color: var(--cfw-token-tooltip-text) !important;
+  font-weight: 700;
+}
+
+.cfw-token-tooltip-name,
+.cfw-token-tooltip-value {
+  color: var(--cfw-token-tooltip-muted) !important;
+  -webkit-text-fill-color: var(--cfw-token-tooltip-muted) !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-shadow: none !important;
+}
+
+.cfw-token-tooltip-value-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.cfw-token-tooltip-value-row[hidden] {
+  display: none !important;
+}
+
+.cfw-token-tooltip-swatch {
+  display: none;
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  box-sizing: border-box;
+  background: var(--cfw-token-tooltip-swatch) !important;
+  border: 1px solid color-mix(in srgb, var(--cfw-token-tooltip-text) 42%, transparent) !important;
+  border-radius: 999px !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cfw-token-tooltip-bg) 35%, transparent) !important;
+}
+
+.cfw-token-tooltip.has-color-value .cfw-token-tooltip-swatch {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfw-token-tooltip {
+    transition: none;
+    transform: none;
+  }
+}
+
+
+/* =========================================================
+   V494: Four-second text-only Studio status message
+   ---------------------------------------------------------
+   Normal feedback uses the otherwise quiet area above the Studio toolbar.
+   Errors and explicit manual guidance remain in the existing Studio modal.
+   ========================================================= */
+.cfw-page.cfw-design-studio {
+  position: relative;
+}
+
+.cfw-page.cfw-design-studio .cfw-top-message {
+  min-height: 24px;
+  margin: 0 auto 10px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: .96rem;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .18s ease, transform .18s ease;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-top-message[hidden] {
+  display: none !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-top-message.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cfw-page.cfw-design-studio .cfw-top-message.cfw-status-success {
+  color: var(--lb-success-text, #15803d) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-top-message.cfw-status-info {
+  color: var(--lb-info-text, #1d4ed8) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-top-message.cfw-status-warning {
+  color: var(--lb-warning-text, #b45309) !important;
+}
+
+.cfw-page.cfw-design-studio .cfw-top-message.cfw-status-error {
+  color: var(--lb-danger-text, #b00020) !important;
+}
+
+@media (max-width: 760px) {
+  .cfw-page.cfw-design-studio .cfw-top-message {
+    margin-bottom: 8px;
+    font-size: .9rem;
+  }
+}
