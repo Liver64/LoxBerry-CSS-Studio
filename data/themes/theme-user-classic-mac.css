@@ -8,7 +8,7 @@
  * Filename: theme-user-classic-mac.css
  * Scope: body.theme-user-classic-mac
  * Legacy-Scope: body.theme-classic-mac
- * Version: V327_2026_07_22_CLASSIC_MAC_DATA_ONLY_ASSETS
+ * Version: V1_2026_07_22_CLASSIC_MAC_DATA_ONLY_ASSETS
  * Compatible: LoxBerry >= 4
  * Storage: data/plugins/cssframework/themes/
  * Generated-By: LoxBerry CSS Framework / protected package theme
@@ -26,8 +26,8 @@
 
 @font-face {
   font-family: "ChiKareGo2-DE";
-  src: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChiKareGo2-DE.woff2?v=378") format("woff2"),
-       url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChiKareGo2-DE.woff?v=378") format("woff");
+  src: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChiKareGo2-DE.woff2?v=1") format("woff2"),
+       url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChiKareGo2-DE.woff?v=1") format("woff");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -35,8 +35,8 @@
 
 @font-face {
   font-family: "Chicago";
-  src: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChicagoFLF.woff2?v=378") format("woff2"),
-       url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChicagoFLF.woff?v=378") format("woff");
+  src: url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChicagoFLF.woff2?v=1") format("woff2"),
+       url("/admin/plugins/cssframework/theme-file.cgi/assets/fonts/mac-classic/fonts/ChicagoFLF.woff?v=1") format("woff");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
